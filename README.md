@@ -2,7 +2,11 @@
 
 Interactive MVP demo for redeemable collectible card packs on GIWA.
 
+- Website: `https://playiruka.io`
+- Docs: `https://docs.playiruka.io`
+
 Design direction and UI rules live in [design.md](./design.md).
+GitBook-ready documentation lives in [docs/gitbook](./docs/gitbook).
 
 ## Scripts
 

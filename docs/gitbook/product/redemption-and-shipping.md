@@ -1,0 +1,36 @@
+# Redemption and Shipping
+
+Redemption lets a user request delivery of a vaulted physical item.
+
+## Redemption Flow
+
+1. User selects a vaulted item.
+2. User requests shipment.
+3. Iruka validates custody and shipping eligibility.
+4. User confirms shipping details and fees.
+5. Item moves to `Redeem queued`.
+6. Operations team packs and ships the item.
+7. Tracking information is attached to the item record.
+
+## Shipping Requirements
+
+Production shipping should track:
+
+- Recipient name
+- Shipping address
+- Phone or contact email
+- Shipping fee
+- Carrier
+- Tracking number
+- Fulfillment status
+
+## Status Model
+
+| Status | Meaning |
+| --- | --- |
+| Redeem queued | User requested shipment |
+| Preparing | Item is being packed |
+| Shipped | Carrier has the item |
+| Delivered | Delivery confirmed |
+| Failed | Address, payment, or carrier problem |
+

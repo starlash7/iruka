@@ -151,7 +151,8 @@ a:focus-visible {
   gap: 4px;
 }
 
-.nav-links button {
+.nav-links button,
+.nav-links a {
   display: inline-flex;
   align-items: center;
   min-height: 40px;
@@ -159,6 +160,7 @@ a:focus-visible {
   color: var(--muted);
   font-size: 13px;
   font-weight: 600;
+  text-decoration: none;
   border-radius: var(--radius-pill);
   background: transparent;
   cursor: pointer;
@@ -169,6 +171,7 @@ a:focus-visible {
 }
 
 .nav-links button:hover,
+.nav-links a:hover,
 .nav-links button.selected {
   color: var(--blue);
   background: var(--sky);
@@ -1696,7 +1699,8 @@ html[lang="ko"] .hero-panel h1 {
   gap: 7px;
 }
 
-.footer-social-list span {
+.footer-social-list span,
+.footer-social-list a {
   display: inline-flex;
   align-items: center;
   min-height: 30px;
@@ -1704,6 +1708,7 @@ html[lang="ko"] .hero-panel h1 {
   color: var(--blue);
   font-size: 12px;
   font-weight: 700;
+  text-decoration: none;
   border: 1px solid rgba(22, 119, 255, 0.14);
   border-radius: var(--radius-pill);
   background: rgba(22, 119, 255, 0.07);
@@ -1766,7 +1771,8 @@ html[lang="ko"] .hero-panel h1 {
   min-height: 64px;
 }
 
-.nav-links button {
+.nav-links button,
+.nav-links a {
   min-height: 64px;
   padding: 0 clamp(12px, 2vw, 28px);
   font-size: 12px;
@@ -1775,6 +1781,7 @@ html[lang="ko"] .hero-panel h1 {
 }
 
 .nav-links button:hover,
+.nav-links a:hover,
 .nav-links button.selected {
   background:
     linear-gradient(180deg, rgba(22, 119, 255, 0.08), rgba(22, 119, 255, 0.02));
@@ -2234,7 +2241,8 @@ html[lang="ko"] .hero-panel h1 {
     display: none;
   }
 
-  .nav-links button {
+  .nav-links button,
+  .nav-links a {
     flex: 1;
     justify-content: center;
     min-height: 44px;

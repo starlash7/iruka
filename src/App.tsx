@@ -19,6 +19,8 @@ type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Iruka";
 type VaultStatus = "Vaulted" | "Listed" | "Sold" | "Redeem queued";
 type Category = "K-pop" | "TCG";
 
+const DOCS_URL = "https://docs.playiruka.io";
+
 type RarityConfig = {
   rarity: Rarity;
   odds: number;
@@ -63,6 +65,7 @@ const copy = {
       chase: "Chase",
       vault: "Vault",
       roadmap: "Roadmap",
+      docs: "Docs",
       wallet: "Connect wallet",
       walletConnected: "Connected",
       walletConnecting: "Connecting",
@@ -191,6 +194,7 @@ const copy = {
       chase: "체이스",
       vault: "보관함",
       roadmap: "로드맵",
+      docs: "문서",
       wallet: "지갑 연결",
       walletConnected: "연결됨",
       walletConnecting: "연결 중",
@@ -812,6 +816,9 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           >
             {t.nav.roadmap}
           </button>
+          <a href={DOCS_URL} rel="noreferrer" target="_blank">
+            {t.nav.docs}
+          </a>
         </nav>
         <div className="nav-actions">
           <div className="language-toggle" aria-label={t.nav.language}>
@@ -1140,10 +1147,10 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
         <nav className="footer-column" aria-label={t.footer.support}>
           <h2>{t.footer.support}</h2>
-          <a href="mailto:hello@iruka.xyz">{t.footer.links.contact}</a>
-          <button onClick={() => showView("roadmap")} type="button">
+          <a href="mailto:hello@playiruka.io">{t.footer.links.contact}</a>
+          <a href={DOCS_URL} rel="noreferrer" target="_blank">
             {t.footer.links.documentation}
-          </button>
+          </a>
           <a href="#footer">{t.footer.links.terms}</a>
           <a href="#footer">{t.footer.links.privacy}</a>
         </nav>
@@ -1152,9 +1159,15 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           <h2>{t.footer.social}</h2>
           <p>{t.footer.socialBody}</p>
           <div className="footer-social-list" aria-label={t.footer.social}>
-            {t.footer.socialItems.map((item) => (
-              <span key={item}>{item}</span>
-            ))}
+            {t.footer.socialItems.map((item) => {
+              return item === "GitBook" ? (
+                <a href={DOCS_URL} key={item} rel="noreferrer" target="_blank">
+                  {item}
+                </a>
+              ) : (
+                <span key={item}>{item}</span>
+              );
+            })}
           </div>
         </div>
       </footer>
