@@ -14,12 +14,10 @@ import packProductImage from "./assets/iruka-pack-product.png";
 
 type WalletAuthMode = "disabled" | "privy";
 type Locale = "en" | "ko";
-type AppView = "marketplace" | "vault" | "roadmap";
+type AppView = "marketplace" | "vault" | "roadmap" | "docs";
 type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Iruka";
 type VaultStatus = "Vaulted" | "Listed" | "Sold" | "Redeem queued";
 type Category = "K-pop" | "TCG";
-
-const DOCS_URL = "https://docs.playiruka.io";
 
 type RarityConfig = {
   rarity: Rarity;
@@ -167,6 +165,36 @@ const copy = {
         body: "Publish detailed docs for vault flows, redemption structure, service architecture, and GIWA integration."
       }
     ],
+    docs: {
+      eyebrow: "Documentation",
+      title: "Iruka Docs",
+      body: "Local documentation for the current Iruka MVP. GitBook publishing will be connected later when playiruka.io is ready.",
+      sourceTitle: "GitBook source",
+      sourceBody: "The future GitBook structure is already prepared in the repository under docs/gitbook.",
+      sourcePath: "docs/gitbook/SUMMARY.md",
+      sections: [
+        {
+          title: "Project overview",
+          body: "Iruka connects random collectible packs, verified vault storage, marketplace exits, and physical redemption in one GIWA-ready product."
+        },
+        {
+          title: "Pack information",
+          body: "Each drop shows price, remaining supply, rarity tiers, odds, and estimated value bands before users pull."
+        },
+        {
+          title: "Vault",
+          body: "Pulled items can stay in a verified vault, then move into listing, sale, trade, or shipping flows."
+        },
+        {
+          title: "Marketplace",
+          body: "Listings should identify genuine physical items clearly while avoiding official affiliation claims unless licensed."
+        },
+        {
+          title: "Roadmap",
+          body: "Next steps cover inventory records, marketplace listings, redemption operations, fan community boards, and GitBook publishing."
+        }
+      ]
+    },
     footer: {
       body: "Pull K-pop and collectible packs, reveal cards, keep them vaulted, sell, or ship them from one GIWA-ready marketplace.",
       about: "About Us",
@@ -296,6 +324,36 @@ const copy = {
         body: "Vault 흐름, 리딤 구조, 서비스 구조, GIWA 연동을 GitBook에 상세히 정리할 예정입니다."
       }
     ],
+    docs: {
+      eyebrow: "문서",
+      title: "Iruka 문서",
+      body: "현재 Iruka MVP 문서는 로컬 앱 안에서 확인합니다. playiruka.io 배포 시점에 GitBook 공개 문서를 연결할 예정입니다.",
+      sourceTitle: "GitBook 소스",
+      sourceBody: "향후 배포할 GitBook 구조는 저장소의 docs/gitbook 폴더에 준비되어 있습니다.",
+      sourcePath: "docs/gitbook/SUMMARY.md",
+      sections: [
+        {
+          title: "프로젝트 개요",
+          body: "Iruka는 랜덤 컬렉터블 팩, 검증된 Vault 보관, 마켓플레이스 판매, 실물 배송을 하나로 연결하는 GIWA-ready 제품입니다."
+        },
+        {
+          title: "팩 정보",
+          body: "각 드롭은 가격, 남은 수량, 등급, 확률, 예상 가격 범위를 사용자가 뽑기 전에 확인할 수 있게 보여줍니다."
+        },
+        {
+          title: "Vault",
+          body: "뽑은 아이템은 검증된 보관함에 보관하고, 이후 리스팅, 판매, 교환, 배송 흐름으로 이동할 수 있습니다."
+        },
+        {
+          title: "마켓플레이스",
+          body: "거래 화면은 실물 아이템 식별에 필요한 정보를 명확히 보여주되, 라이선스 없이 공식 제휴처럼 보이는 표현은 피합니다."
+        },
+        {
+          title: "로드맵",
+          body: "다음 단계는 재고 기록, 마켓플레이스 리스팅, 리딤 운영, 팬 커뮤니티 게시판, GitBook 공개 문서화입니다."
+        }
+      ]
+    },
     footer: {
       body: "케이팝과 컬렉터블 팩을 뽑고, 카드를 리빌하고, 보관/판매/배송까지 이어지는 GIWA-ready 마켓플레이스입니다.",
       about: "소개",
@@ -816,9 +874,14 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           >
             {t.nav.roadmap}
           </button>
-          <a href={DOCS_URL} rel="noreferrer" target="_blank">
+          <button
+            aria-pressed={activeView === "docs"}
+            className={activeView === "docs" ? "selected" : ""}
+            onClick={() => showView("docs")}
+            type="button"
+          >
             {t.nav.docs}
-          </a>
+          </button>
         </nav>
         <div className="nav-actions">
           <div className="language-toggle" aria-label={t.nav.language}>
@@ -1107,6 +1170,34 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         </section>
       ) : null}
 
+      {activeView === "docs" ? (
+        <section className="docs-section" id="docs">
+          <div className="section-heading docs-heading">
+            <div>
+              <span>{t.docs.eyebrow}</span>
+              <h2>{t.docs.title}</h2>
+            </div>
+          </div>
+
+          <p className="docs-lede">{t.docs.body}</p>
+
+          <div className="docs-grid">
+            {t.docs.sections.map((item) => (
+              <article className="docs-card" key={item.title}>
+                <strong>{item.title}</strong>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="docs-source">
+            <strong>{t.docs.sourceTitle}</strong>
+            <p>{t.docs.sourceBody}</p>
+            <code>{t.docs.sourcePath}</code>
+          </div>
+        </section>
+      ) : null}
+
       <footer className="site-footer" id="footer">
         <div className="footer-brand">
           <a className="brand" href="/" aria-label="Iruka home">
@@ -1148,9 +1239,9 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         <nav className="footer-column" aria-label={t.footer.support}>
           <h2>{t.footer.support}</h2>
           <a href="mailto:hello@playiruka.io">{t.footer.links.contact}</a>
-          <a href={DOCS_URL} rel="noreferrer" target="_blank">
+          <button onClick={() => showView("docs")} type="button">
             {t.footer.links.documentation}
-          </a>
+          </button>
           <a href="#footer">{t.footer.links.terms}</a>
           <a href="#footer">{t.footer.links.privacy}</a>
         </nav>
@@ -1161,9 +1252,9 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           <div className="footer-social-list" aria-label={t.footer.social}>
             {t.footer.socialItems.map((item) => {
               return item === "GitBook" ? (
-                <a href={DOCS_URL} key={item} rel="noreferrer" target="_blank">
+                <button key={item} onClick={() => showView("docs")} type="button">
                   {item}
-                </a>
+                </button>
               ) : (
                 <span key={item}>{item}</span>
               );

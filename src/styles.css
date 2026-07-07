@@ -349,7 +349,8 @@ a:focus-visible {
 .reveal-section,
 .chase-section,
 .vault-section,
-.roadmap-section {
+.roadmap-section,
+.docs-section {
   position: relative;
   z-index: 1;
 }
@@ -775,7 +776,8 @@ html[lang="ko"] .hero-panel h1 {
 .reveal-section,
 .chase-section,
 .vault-section,
-.roadmap-section {
+.roadmap-section,
+.docs-section {
   margin-top: 26px;
   scroll-margin-top: 96px;
 }
@@ -1436,7 +1438,8 @@ html[lang="ko"] .hero-panel h1 {
   font-weight: 600;
 }
 
-.vault-section {
+.vault-section,
+.docs-section {
   padding: 28px 0 0;
   border-top: 1px solid rgba(211, 228, 248, 0.86);
 }
@@ -1622,6 +1625,77 @@ html[lang="ko"] .hero-panel h1 {
   line-height: 1.55;
 }
 
+.docs-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.docs-lede {
+  max-width: 760px;
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: clamp(16px, 1.7vw, 20px);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.docs-card,
+.docs-source {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 251, 255, 0.9)),
+    var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.docs-card strong,
+.docs-source strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.docs-card p,
+.docs-source p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.docs-source {
+  margin-top: 12px;
+}
+
+.docs-source code {
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 10px;
+  overflow-wrap: anywhere;
+  color: var(--blue);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid rgba(22, 119, 255, 0.14);
+  border-radius: 9px;
+  background: var(--blue-soft);
+}
+
 .site-footer {
   position: relative;
   z-index: 1;
@@ -1700,7 +1774,8 @@ html[lang="ko"] .hero-panel h1 {
 }
 
 .footer-social-list span,
-.footer-social-list a {
+.footer-social-list a,
+.footer-social-list button {
   display: inline-flex;
   align-items: center;
   min-height: 30px;
@@ -1712,6 +1787,10 @@ html[lang="ko"] .hero-panel h1 {
   border: 1px solid rgba(22, 119, 255, 0.14);
   border-radius: var(--radius-pill);
   background: rgba(22, 119, 255, 0.07);
+}
+
+.footer-social-list button {
+  cursor: pointer;
 }
 
 .status-toast {
@@ -1956,7 +2035,8 @@ html[lang="ko"] .hero-panel h1 {
 .reveal-section,
 .chase-section,
 .vault-section,
-.roadmap-section {
+.roadmap-section,
+.docs-section {
   margin-top: clamp(38px, 5vw, 72px);
   padding-top: 18px;
   border-top: 1px solid rgba(174, 205, 239, 0.62);
@@ -2101,7 +2181,9 @@ html[lang="ko"] .hero-panel h1 {
 }
 
 .chase-card,
-.roadmap-card {
+.roadmap-card,
+.docs-card,
+.docs-source {
   border-radius: 16px;
   box-shadow: none;
 }
@@ -2127,7 +2209,9 @@ html[lang="ko"] .hero-panel h1 {
 }
 
 .vault-row,
-.roadmap-card {
+.roadmap-card,
+.docs-card,
+.docs-source {
   border-radius: 14px;
   box-shadow: none;
 }
@@ -2314,6 +2398,7 @@ html[lang="ko"] .hero-panel h1 {
   .hero-price-row,
   .chase-grid,
   .roadmap-grid,
+  .docs-grid,
   .site-footer {
     grid-template-columns: 1fr;
   }
@@ -2363,7 +2448,9 @@ html[lang="ko"] .hero-panel h1 {
     width: min(340px, 100%);
   }
 
-  .roadmap-card {
+  .roadmap-card,
+  .docs-card,
+  .docs-source {
     border-radius: 14px;
   }
 
