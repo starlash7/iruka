@@ -10,16 +10,6 @@ Iruka uses five rarity tiers.
 | Legendary | Very scarce premium pulls |
 | Iruka | Top chase tier |
 
-## Example Odds
-
-| Pack | Common | Rare | Epic | Legendary | Iruka |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Girl Group Iruka Pack | 60% | 28% | 9% | 2% | 1% |
-| Boy Group Iruka Pack | 58% | 29% | 10% | 2% | 1% |
-| Premium Idol Drop #001 | 52% | 33% | 11% | 3% | 1% |
-| Rookie Idol Drop #001 | 54% | 31% | 11% | 3% | 1% |
-| TCG Slab Pack | 50% | 32% | 13% | 4% | 1% |
-
 ## Disclosure Standard
 
 Each public pack should disclose:
@@ -30,7 +20,8 @@ Each public pack should disclose:
 - Odds for each tier
 - Estimated value range per tier
 - Redemption and shipping policy
-- Refund and cancellation policy
+- Cancellation or refund policy
 
-This keeps the product understandable and reduces disputes around random pack outcomes.
+## Production Direction
 
+Pack pools, odds, and result assignment should be auditable. Iruka should be able to reconstruct which inventory items were eligible for each pack at the time of pull.

@@ -1,31 +1,31 @@
 # Iruka Docs
 
-Iruka is a collectible pack marketplace built around three actions:
+Iruka is a collectible vending, vault, and marketplace product for physical items.
 
-1. Pull a random pack.
-2. Keep revealed cards in a verified vault.
-3. Sell, trade, or ship the card from one marketplace.
+Users can:
 
-The public site is planned for `https://playiruka.io`. The docs are planned for `https://docs.playiruka.io`.
+1. Choose a vending machine pack.
+2. Pull and reveal a collectible.
+3. Keep it vaulted, list it on the marketplace, or request shipment.
 
-Iruka uses neutral pack branding for public drops. Actual card listings may use artist, group, member, set, album, or card names only when needed to identify genuine physical items in the marketplace or vault.
+The public site is planned for `https://playiruka.io`. The public GitBook is planned for `https://docs.playiruka.io`.
 
-## Core Concept
+## Product Scope
 
-Iruka packages official collectible inventory into themed random packs. Users can pull a pack, reveal a card, keep it vaulted, list it for sale, or request physical delivery.
+Iruka focuses on the flow between random pack discovery, verified custody, marketplace exits, and physical redemption.
 
-The product direction is a bright blue and white "Iruka vending machine" experience: packs, slabs, and capsules are presented like items inside a clean collectible machine rather than a claw-machine game.
+The current MVP covers:
 
-## Main Surfaces
+- Vending machine pack pulls
+- Rarity and odds display
+- Reveal results
+- Vault actions
+- Marketplace listing preview
+- Privy login with external EVM wallets
+- English and Korean UI
 
-- Packs: random pack drops with visible rarity tiers and estimated value bands.
-- Vault: verified storage for pulled cards and redeemed inventory.
-- Marketplace: buy, sell, and exit from vaulted or shipped cards.
-- Docs: public documentation for packs, vault flows, roadmap, and risk policies.
+## Important Positioning
 
-## Important Links
+Iruka is not positioned as an official artist, agency, label, game publisher, card manufacturer, or grading company unless a partnership is explicitly announced.
 
-- Website: `https://playiruka.io`
-- Docs: `https://docs.playiruka.io`
-- Contact: `hello@playiruka.io`
-
+Public pack names should stay neutral. Actual marketplace and vault records may use third-party names only when needed to identify genuine physical items.

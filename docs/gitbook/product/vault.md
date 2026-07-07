@@ -1,10 +1,8 @@
 # Vault
 
-The Iruka vault is the custody layer for pulled and marketplace-listed collectibles.
+The Iruka vault is the custody layer for verified physical inventory.
 
 ## What the Vault Does
-
-The vault stores verified physical items while users keep digital control over marketplace decisions.
 
 Vaulted items can be:
 
@@ -23,9 +21,8 @@ A production vault item should include:
 - Rarity
 - Serial
 - Item name
-- Group, set, or collection name when needed for identification
+- Set, group, or collection name when needed for identification
 - Estimated value
-- Buyback or exit value when supported
 - Custody status
 - Redemption eligibility
 - Shipping status
@@ -41,5 +38,4 @@ A production vault item should include:
 
 ## Custody Principle
 
-Iruka should only show an item as vaulted when there is an internal record proving custody, verification, and redemption eligibility.
-
+Iruka should only show an item as vaulted when internal records prove custody, verification, and redemption eligibility.

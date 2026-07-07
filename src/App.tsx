@@ -1,4 +1,3 @@
-import { usePrivy, useWallets } from "@privy-io/react-auth";
 import {
   Box,
   Clock3,
@@ -9,12 +8,18 @@ import {
   Wallet
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AuthActions } from "./AuthActions";
 import irukaLogo from "./assets/iruka-logo.png";
 import packProductImage from "./assets/iruka-pack-product.png";
+import irukaWordmark from "./assets/iruka-wordmark.png";
+import { DocsView } from "./DocsView";
+import { HomeView } from "./HomeView";
+import { MarketplaceView } from "./MarketplaceView";
+import { marketplaceCards, type MarketplaceCard } from "./marketplaceData";
 
 type WalletAuthMode = "disabled" | "privy";
 type Locale = "en" | "ko";
-type AppView = "marketplace" | "vault" | "roadmap" | "docs";
+type AppView = "home" | "pull" | "marketplace" | "vault" | "roadmap" | "docs";
 type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Iruka";
 type VaultStatus = "Vaulted" | "Listed" | "Sold" | "Redeem queued";
 type Category = "K-pop" | "TCG";
@@ -59,16 +64,34 @@ type CardPull = {
 const copy = {
   en: {
     nav: {
+      home: "Home",
+      pull: "Vending",
+      marketplace: "Marketplace",
       drops: "Drops",
       chase: "Chase",
       vault: "Vault",
       roadmap: "Roadmap",
       docs: "Docs",
+      login: "Login",
+      signUp: "Sign Up",
       wallet: "Connect wallet",
       walletConnected: "Connected",
       walletConnecting: "Connecting",
       walletDisconnect: "Disconnect wallet",
       language: "Language"
+    },
+    home: {
+      action: "Enter Vending",
+      eyebrow: "Iruka Vending Machine",
+      featurePack: "Pack",
+      featureVault: "Vault",
+      leftBody: "Choose collectible packs, reveal vaulted cards, and move into marketplace exits from one clean flow.",
+      leftTitle: "Pull the card. Keep the moment.",
+      proof: "Verified pack pulls for collectors",
+      rightBody: "A bright vending route for pack drops, reveal moments, and vaulted inventory.",
+      rightTitle: "Fresh packs on demand",
+      vendingMeta: "Vending ready",
+      vendingTitle: "Iruka vending machine"
     },
     hero: {
       packPrice: "Pack price",
@@ -109,7 +132,9 @@ const copy = {
       }
     ],
     feedback: {
-      connectWallet: "Connect wallet to open a pack.",
+      connectWallet: "Log in to pull a pack.",
+      listed: "Listed on marketplace.",
+      purchaseQueued: "Added to vault.",
       vaulted: "Saved to vault.",
       sold: "Marked as sold.",
       shipQueued: "Shipping queued."
@@ -168,66 +193,69 @@ const copy = {
     docs: {
       eyebrow: "Documentation",
       title: "Iruka Docs",
-      body: "Local documentation for the current Iruka MVP. GitBook publishing will be connected later when playiruka.io is ready.",
+      body: "GitBook-style documentation for Iruka's vending, marketplace, vault, redemption, policy, and roadmap flows.",
       sourceTitle: "GitBook source",
-      sourceBody: "The future GitBook structure is already prepared in the repository under docs/gitbook.",
-      sourcePath: "docs/gitbook/SUMMARY.md",
-      sections: [
-        {
-          title: "Project overview",
-          body: "Iruka connects random collectible packs, verified vault storage, marketplace exits, and physical redemption in one GIWA-ready product."
-        },
-        {
-          title: "Pack information",
-          body: "Each drop shows price, remaining supply, rarity tiers, odds, and estimated value bands before users pull."
-        },
-        {
-          title: "Vault",
-          body: "Pulled items can stay in a verified vault, then move into listing, sale, trade, or shipping flows."
-        },
-        {
-          title: "Marketplace",
-          body: "Listings should identify genuine physical items clearly while avoiding official affiliation claims unless licensed."
-        },
-        {
-          title: "Roadmap",
-          body: "Next steps cover inventory records, marketplace listings, redemption operations, fan community boards, and GitBook publishing."
-        }
-      ]
+      sourceBody: "The matching GitBook markdown source is prepared in the repository and can be published later.",
+      sourcePath: "docs/gitbook/SUMMARY.md"
     },
     footer: {
       body: "Pull K-pop and collectible packs, reveal cards, keep them vaulted, sell, or ship them from one GIWA-ready marketplace.",
-      about: "About Us",
-      quickLinks: "Quick Links",
+      about: "Platform",
+      quickLinks: "Explore",
       support: "Support",
-      social: "Social Media",
-      socialBody: "Follow Iruka for drop updates, community highlights, and collection news.",
       links: {
         home: "Home",
         marketplace: "Marketplace",
-        drops: "Drops",
         vault: "Vault",
         roadmap: "Roadmap",
         contact: "Contact Us",
-        documentation: "Documentation",
-        terms: "Terms of Service",
-        privacy: "Privacy Policy"
-      },
-      socialItems: ["X", "Discord", "GitBook"]
+        documentation: "Documentation"
+      }
+    },
+    marketplacePage: {
+      buyNow: "Buy now",
+      filterLabels: ["Status", "Category", "Rarity", "Grade", "Price Range"],
+      filters: "Filters",
+      fmv: "FMV",
+      ownedEmpty: "No vaulted cards",
+      ownedTitle: "Sell from vault",
+      results: "Listings",
+      search: "Search cards",
+      sell: "Sell",
+      sort: "Recently listed",
+      title: "Marketplace"
     }
   },
   ko: {
     nav: {
+      home: "홈",
+      pull: "자판기",
+      marketplace: "마켓플레이스",
       drops: "드롭",
       chase: "체이스",
       vault: "보관함",
       roadmap: "로드맵",
       docs: "문서",
+      login: "로그인",
+      signUp: "가입",
       wallet: "지갑 연결",
       walletConnected: "연결됨",
       walletConnecting: "연결 중",
       walletDisconnect: "지갑 연결 해제",
       language: "언어"
+    },
+    home: {
+      action: "자판기 입장",
+      eyebrow: "Iruka Vending Machine",
+      featurePack: "팩",
+      featureVault: "보관",
+      leftBody: "컬렉터블 팩을 고르고, 카드를 리빌하고, 보관함과 마켓플레이스 흐름까지 이어갑니다.",
+      leftTitle: "카드를 뽑고, 순간을 보관하세요.",
+      proof: "컬렉터를 위한 검증된 팩 뽑기",
+      rightBody: "팩 드롭, 리빌, Vault 보관을 밝고 간결한 자판기 경험으로 연결합니다.",
+      rightTitle: "팩을 바로 뽑는 구조",
+      vendingMeta: "자판기 준비 완료",
+      vendingTitle: "Iruka 자판기"
     },
     hero: {
       packPrice: "팩 가격",
@@ -268,7 +296,9 @@ const copy = {
       }
     ],
     feedback: {
-      connectWallet: "팩을 열려면 지갑을 연결하세요.",
+      connectWallet: "팩을 뽑으려면 로그인하세요.",
+      listed: "마켓플레이스에 등록됐어요.",
+      purchaseQueued: "보관함에 추가됐어요.",
       vaulted: "보관함에 저장됐어요.",
       sold: "판매 상태로 변경됐어요.",
       shipQueued: "배송 대기열에 추가됐어요."
@@ -327,52 +357,37 @@ const copy = {
     docs: {
       eyebrow: "문서",
       title: "Iruka 문서",
-      body: "현재 Iruka MVP 문서는 로컬 앱 안에서 확인합니다. playiruka.io 배포 시점에 GitBook 공개 문서를 연결할 예정입니다.",
+      body: "자판기, 마켓플레이스, Vault, 배송, 정책, 로드맵 흐름을 GitBook 스타일로 정리한 문서입니다.",
       sourceTitle: "GitBook 소스",
-      sourceBody: "향후 배포할 GitBook 구조는 저장소의 docs/gitbook 폴더에 준비되어 있습니다.",
-      sourcePath: "docs/gitbook/SUMMARY.md",
-      sections: [
-        {
-          title: "프로젝트 개요",
-          body: "Iruka는 랜덤 컬렉터블 팩, 검증된 Vault 보관, 마켓플레이스 판매, 실물 배송을 하나로 연결하는 GIWA-ready 제품입니다."
-        },
-        {
-          title: "팩 정보",
-          body: "각 드롭은 가격, 남은 수량, 등급, 확률, 예상 가격 범위를 사용자가 뽑기 전에 확인할 수 있게 보여줍니다."
-        },
-        {
-          title: "Vault",
-          body: "뽑은 아이템은 검증된 보관함에 보관하고, 이후 리스팅, 판매, 교환, 배송 흐름으로 이동할 수 있습니다."
-        },
-        {
-          title: "마켓플레이스",
-          body: "거래 화면은 실물 아이템 식별에 필요한 정보를 명확히 보여주되, 라이선스 없이 공식 제휴처럼 보이는 표현은 피합니다."
-        },
-        {
-          title: "로드맵",
-          body: "다음 단계는 재고 기록, 마켓플레이스 리스팅, 리딤 운영, 팬 커뮤니티 게시판, GitBook 공개 문서화입니다."
-        }
-      ]
+      sourceBody: "나중에 공개 GitBook으로 배포할 markdown 원본이 저장소에 준비되어 있습니다.",
+      sourcePath: "docs/gitbook/SUMMARY.md"
     },
     footer: {
       body: "케이팝과 컬렉터블 팩을 뽑고, 카드를 리빌하고, 보관/판매/배송까지 이어지는 GIWA-ready 마켓플레이스입니다.",
-      about: "소개",
-      quickLinks: "바로가기",
+      about: "플랫폼",
+      quickLinks: "둘러보기",
       support: "지원",
-      social: "소셜",
-      socialBody: "드롭 업데이트, 커뮤니티 소식, 컬렉션 뉴스를 Iruka 채널에서 전할 예정입니다.",
       links: {
         home: "홈",
         marketplace: "마켓플레이스",
-        drops: "드롭",
         vault: "보관함",
         roadmap: "로드맵",
         contact: "문의하기",
-        documentation: "문서",
-        terms: "이용약관",
-        privacy: "개인정보 처리방침"
-      },
-      socialItems: ["X", "Discord", "GitBook"]
+        documentation: "문서"
+      }
+    },
+    marketplacePage: {
+      buyNow: "구매하기",
+      filterLabels: ["상태", "카테고리", "등급", "보관 등급", "가격대"],
+      filters: "필터",
+      fmv: "시세",
+      ownedEmpty: "보관 카드 없음",
+      ownedTitle: "보관함에서 판매",
+      results: "리스팅",
+      search: "카드 검색",
+      sell: "판매",
+      sort: "최근 등록순",
+      title: "마켓플레이스"
     }
   }
 } as const;
@@ -604,6 +619,27 @@ function createPull(pack: Pack): CardPull {
   };
 }
 
+function createMarketplacePurchase(item: MarketplaceCard): CardPull {
+  return {
+    id: `${item.id}-${Date.now()}-${Math.round(Math.random() * 10000)}`,
+    packId: item.id,
+    category: item.category,
+    group: item.group,
+    member: item.member,
+    rarity: item.rarity,
+    estimatedValue: item.fmv,
+    buybackValue: Math.round(item.fmv * 0.82),
+    vaultStatus: "Vaulted",
+    redeemable: true,
+    imageStyle: `card-style-${randomInt(1, 5)}`,
+    serial: item.serial,
+    pulledAt: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    })
+  };
+}
+
 function progress(remaining: number, total: number) {
   return Math.round(((total - remaining) / total) * 100);
 }
@@ -613,8 +649,10 @@ function getStoredLocale(): Locale {
   return window.localStorage.getItem("iruka-locale") === "ko" ? "ko" : "en";
 }
 
-function formatAddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+function getInitialView(): AppView {
+  if (typeof window === "undefined") return "home";
+  const hash = window.location.hash.replace("#", "");
+  return ["pull", "marketplace", "vault", "roadmap", "docs"].includes(hash) ? (hash as AppView) : "home";
 }
 
 function DolphinLogo() {
@@ -671,75 +709,6 @@ function RevealedCard({ card, locale }: { card: CardPull; locale: Locale }) {
   );
 }
 
-function FallbackWalletButton({ locale }: { locale: Locale }) {
-  const t = copy[locale];
-
-  return (
-    <button
-      className="wallet-button wallet-button-disabled"
-      disabled
-      title="Set VITE_PRIVY_APP_ID to enable Privy wallet login."
-      type="button"
-      aria-label={t.nav.wallet}
-    >
-      <Wallet size={16} />
-      <span className="wallet-label">{t.nav.wallet}</span>
-    </button>
-  );
-}
-
-function PrivyWalletButton({
-  connectSignal,
-  locale,
-  onConnectedChange
-}: {
-  connectSignal: number;
-  locale: Locale;
-  onConnectedChange: (connected: boolean) => void;
-}) {
-  const { authenticated, connectOrCreateWallet, logout, ready, user } = usePrivy();
-  const { wallets } = useWallets();
-  const t = copy[locale];
-  const connectedAddress = user?.wallet?.address ?? wallets[0]?.address;
-  const label = !ready
-    ? t.nav.walletConnecting
-    : authenticated && connectedAddress
-      ? formatAddress(connectedAddress)
-      : authenticated
-        ? t.nav.walletConnected
-        : t.nav.wallet;
-
-  useEffect(() => {
-    onConnectedChange(authenticated);
-  }, [authenticated, onConnectedChange]);
-
-  useEffect(() => {
-    if (connectSignal > 0 && ready && !authenticated) {
-      void connectOrCreateWallet();
-    }
-  }, [authenticated, connectOrCreateWallet, connectSignal, ready]);
-
-  return (
-    <button
-      className={`wallet-button ${authenticated ? "wallet-button-connected" : ""}`}
-      disabled={!ready}
-      onClick={() => {
-        if (authenticated) {
-          void logout();
-          return;
-        }
-        void connectOrCreateWallet();
-      }}
-      title={authenticated ? t.nav.walletDisconnect : t.nav.wallet}
-      type="button"
-      aria-label={authenticated ? t.nav.walletDisconnect : t.nav.wallet}
-    >
-      <Wallet size={16} />
-      <span className="wallet-label">{label}</span>
-    </button>
-  );
-}
-
 function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const [locale, setLocale] = useState<Locale>(getStoredLocale);
   const [selectedPackId, setSelectedPackId] = useState(packs[0].id);
@@ -749,7 +718,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const [isWalletConnected, setIsWalletConnected] = useState(walletAuth === "disabled");
   const [walletPromptSignal, setWalletPromptSignal] = useState(0);
   const [notice, setNotice] = useState<string | undefined>();
-  const [activeView, setActiveView] = useState<AppView>("marketplace");
+  const [activeView, setActiveView] = useState<AppView>(getInitialView);
   const noticeTimerRef = useRef<number | undefined>(undefined);
   const revealSectionRef = useRef<HTMLElement | null>(null);
   const t = copy[locale];
@@ -771,6 +740,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   );
   const hasVaultOps = soldCount > 0 || redeemQueue.length > 0;
   const walletRequired = walletAuth === "privy" && !isWalletConnected;
+  const isPrimaryView = activeView === "pull";
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -796,14 +766,24 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     });
   }
 
-  function showView(view: AppView) {
+  function showView(view: AppView, targetId?: string) {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     setActiveView(view);
     window.requestAnimationFrame(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: prefersReducedMotion ? "auto" : "smooth"
+      window.requestAnimationFrame(() => {
+        if (!targetId) {
+          window.scrollTo({
+            top: 0,
+            behavior: prefersReducedMotion ? "auto" : "smooth"
+          });
+          return;
+        }
+
+        document.getElementById(targetId)?.scrollIntoView({
+          behavior: prefersReducedMotion ? "auto" : "smooth",
+          block: "start"
+        });
       });
     });
   }
@@ -835,54 +815,58 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     showNotice(
       {
         Vaulted: t.feedback.vaulted,
-        Listed: t.feedback.vaulted,
+        Listed: t.feedback.listed,
         Sold: t.feedback.sold,
         "Redeem queued": t.feedback.shipQueued
       }[vaultStatus]
     );
   }
 
+  function buyMarketplaceCard(item: MarketplaceCard) {
+    if (walletRequired) {
+      setWalletPromptSignal((value) => value + 1);
+      showNotice(t.feedback.connectWallet);
+      return;
+    }
+
+    const purchase = createMarketplacePurchase(item);
+    setCollection((items) => [purchase, ...items]);
+    setActivePull(purchase);
+    showNotice(t.feedback.purchaseQueued);
+  }
+
   return (
     <main className="product-shell">
       <header className="app-nav">
-        <a className="brand" href="/" aria-label="Iruka home">
-          <DolphinLogo />
-          <span>Iruka</span>
-        </a>
         <nav className="nav-links" aria-label="Primary navigation">
+          <button
+            aria-pressed={activeView === "home"}
+            className={activeView === "home" ? "selected" : ""}
+            onClick={() => showView("home")}
+            type="button"
+          >
+            {t.nav.home}
+          </button>
+          <button
+            aria-pressed={activeView === "pull"}
+            className={activeView === "pull" ? "selected" : ""}
+            onClick={() => showView("pull", "drops")}
+            type="button"
+          >
+            {t.nav.pull}
+          </button>
           <button
             aria-pressed={activeView === "marketplace"}
             className={activeView === "marketplace" ? "selected" : ""}
             onClick={() => showView("marketplace")}
             type="button"
           >
-            {t.sections.marketplace}
-          </button>
-          <button
-            aria-pressed={activeView === "vault"}
-            className={activeView === "vault" ? "selected" : ""}
-            onClick={() => showView("vault")}
-            type="button"
-          >
-            {t.nav.vault}
-          </button>
-          <button
-            aria-pressed={activeView === "roadmap"}
-            className={activeView === "roadmap" ? "selected" : ""}
-            onClick={() => showView("roadmap")}
-            type="button"
-          >
-            {t.nav.roadmap}
-          </button>
-          <button
-            aria-pressed={activeView === "docs"}
-            className={activeView === "docs" ? "selected" : ""}
-            onClick={() => showView("docs")}
-            type="button"
-          >
-            {t.nav.docs}
+            {t.nav.marketplace}
           </button>
         </nav>
+        <a className="header-wordmark" href="/" aria-label="Iruka home">
+          <img src={irukaWordmark} alt="Iruka" />
+        </a>
         <div className="nav-actions">
           <div className="language-toggle" aria-label={t.nav.language}>
             {(["en", "ko"] as const).map((item) => (
@@ -897,20 +881,28 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
               </button>
             ))}
           </div>
-          {walletAuth === "privy" ? (
-            <PrivyWalletButton
-              connectSignal={walletPromptSignal}
-              locale={locale}
-              onConnectedChange={setIsWalletConnected}
-            />
-          ) : (
-            <FallbackWalletButton locale={locale} />
-          )}
+          <AuthActions
+            connectSignal={walletPromptSignal}
+            labels={{
+              connected: t.nav.walletConnected,
+              connecting: t.nav.walletConnecting,
+              disconnect: t.nav.walletDisconnect,
+              login: t.nav.login,
+              signUp: t.nav.signUp,
+              unavailable: t.nav.wallet
+            }}
+            mode={walletAuth}
+            onConnectedChange={setIsWalletConnected}
+          />
         </div>
       </header>
 
-      {activeView === "marketplace" ? (
-        <div className="view-panel" data-view="marketplace">
+      {activeView === "home" ? (
+        <HomeView copy={t.home} onEnterVending={() => showView("pull", "drops")} />
+      ) : null}
+
+      {isPrimaryView ? (
+        <div className="view-panel" data-view="pull">
           <section className={`drop-hero tone-${selectedPack.tone}`} id="drops">
             <div className="hero-art" aria-hidden="true">
               <VendingImageSlot pack={selectedPack} />
@@ -977,7 +969,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
                 <span>{t.sections.marketplace}</span>
                 <h2>{t.sections.activity}</h2>
               </div>
-              <button className="section-link" onClick={() => showView("marketplace")} type="button">
+              <button className="section-link" onClick={() => showView("pull", "drops")} type="button">
                 {t.sections.openDrop}
               </button>
             </div>
@@ -1088,6 +1080,17 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         </div>
       ) : null}
 
+      {activeView === "marketplace" ? (
+        <MarketplaceView
+          copy={t.marketplacePage}
+          items={marketplaceCards}
+          locale={locale}
+          onBuy={buyMarketplaceCard}
+          onSell={(card) => updateCardStatus(card.id, "Listed")}
+          ownedCards={collection.filter((card) => card.vaultStatus !== "Sold")}
+        />
+      ) : null}
+
       {activeView === "vault" ? (
         <section className="vault-section" id="vault">
           <div className="section-heading">
@@ -1171,96 +1174,48 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       ) : null}
 
       {activeView === "docs" ? (
-        <section className="docs-section" id="docs">
-          <div className="section-heading docs-heading">
-            <div>
-              <span>{t.docs.eyebrow}</span>
-              <h2>{t.docs.title}</h2>
-            </div>
-          </div>
-
-          <p className="docs-lede">{t.docs.body}</p>
-
-          <div className="docs-grid">
-            {t.docs.sections.map((item) => (
-              <article className="docs-card" key={item.title}>
-                <strong>{item.title}</strong>
-                <p>{item.body}</p>
-              </article>
-            ))}
-          </div>
-
-          <div className="docs-source">
-            <strong>{t.docs.sourceTitle}</strong>
-            <p>{t.docs.sourceBody}</p>
-            <code>{t.docs.sourcePath}</code>
-          </div>
-        </section>
+        <DocsView copy={t.docs} locale={locale} />
       ) : null}
 
       <footer className="site-footer" id="footer">
         <div className="footer-brand">
-          <a className="brand" href="/" aria-label="Iruka home">
+          <a className="footer-brand-link" href="/" aria-label="Iruka home">
             <DolphinLogo />
-            <span>Iruka</span>
+            <img src={irukaWordmark} alt="Iruka" />
           </a>
           <p>{t.footer.body}</p>
         </div>
 
         <nav className="footer-column" aria-label={t.footer.about}>
           <h2>{t.footer.about}</h2>
+          <button onClick={() => showView("home")} type="button">
+            {t.footer.links.home}
+          </button>
+          <button onClick={() => showView("pull")} type="button">
+            {t.nav.pull}
+          </button>
           <button onClick={() => showView("marketplace")} type="button">
             {t.footer.links.marketplace}
           </button>
+        </nav>
+
+        <nav className="footer-column" aria-label={t.footer.quickLinks}>
+          <h2>{t.footer.quickLinks}</h2>
           <button onClick={() => showView("vault")} type="button">
             {t.footer.links.vault}
           </button>
           <button onClick={() => showView("roadmap")} type="button">
             {t.footer.links.roadmap}
           </button>
-        </nav>
-
-        <nav className="footer-column" aria-label={t.footer.quickLinks}>
-          <h2>{t.footer.quickLinks}</h2>
-          <button onClick={() => showView("marketplace")} type="button">
-            {t.footer.links.home}
-          </button>
-          <button onClick={() => showView("marketplace")} type="button">
-            {t.footer.links.drops}
-          </button>
-          <button onClick={() => showView("marketplace")} type="button">
-            {t.nav.chase}
-          </button>
-          <button onClick={() => showView("vault")} type="button">
-            {t.nav.vault}
+          <button onClick={() => showView("docs")} type="button">
+            {t.footer.links.documentation}
           </button>
         </nav>
 
         <nav className="footer-column" aria-label={t.footer.support}>
           <h2>{t.footer.support}</h2>
           <a href="mailto:hello@playiruka.io">{t.footer.links.contact}</a>
-          <button onClick={() => showView("docs")} type="button">
-            {t.footer.links.documentation}
-          </button>
-          <a href="#footer">{t.footer.links.terms}</a>
-          <a href="#footer">{t.footer.links.privacy}</a>
         </nav>
-
-        <div className="footer-column footer-social">
-          <h2>{t.footer.social}</h2>
-          <p>{t.footer.socialBody}</p>
-          <div className="footer-social-list" aria-label={t.footer.social}>
-            {t.footer.socialItems.map((item) => {
-              return item === "GitBook" ? (
-                <button key={item} onClick={() => showView("docs")} type="button">
-                  {item}
-                </button>
-              ) : (
-                <span key={item}>{item}</span>
-              );
-            })}
-          </div>
-        </div>
       </footer>
 
       {notice ? (

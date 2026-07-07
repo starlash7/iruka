@@ -34,3 +34,6 @@ Production shipping should track:
 | Delivered | Delivery confirmed |
 | Failed | Address, payment, or carrier problem |
 
+## Important Rule
+
+Items listed for sale should be delisted before shipment can be requested.

@@ -12,6 +12,8 @@
 - The user should understand in 3 seconds: choose pack, open, vault, sell, ship.
 - Use English UI for the MVP judging surface.
 - The brand can use `Iruka`; social/domain can use `playiruka`.
+- Do not add instructional or explanatory UI copy unless the user asks for it.
+- Do not change existing visible copy during design edits unless the request is about copy.
 
 ---
 
@@ -56,24 +58,28 @@ Danger:        #F04438
 ### Hero
 
 ```text
-[Header] Iruka / Drops / Vault / GIWA / Wallet
+[Header] Home / Vending / Marketplace / Iruka / Wallet
 [Hero] Left: pack product image
        Right: selected drop, price, remaining, progress, primary Open button
 [Below] horizontal pack selector
 [Flow] Reveal + settlement details
 [Vault] collection/action surface
+[Footer] Vault / Roadmap / Docs and policy/support links
 ```
 
 - Keep the first viewport bright, calm, and product-led.
 - Use white/blue depth, not dark panels.
 - The pack image should feel like a real product thumbnail, not a placeholder.
 - Secondary packs should look selectable and tactile, like finance app product cards.
+- Header stays focused on the primary user path: home, pack pull, marketplace.
+- Vault, roadmap, and docs belong in the footer unless the user asks to promote them.
 
 ### App Copy
 
 - Short labels only: `Open pack`, `Vault`, `Sell now`, `Ship`.
 - Avoid `demo`, `mock`, or explanatory investor wording in visible UI.
 - Trust line can be one concise sentence near CTA.
+- Avoid duplicate ideas across hero, cards, and footer.
 
 ---
 

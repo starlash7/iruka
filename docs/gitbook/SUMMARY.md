@@ -2,27 +2,28 @@
 
 * [Iruka Docs](README.md)
 
-## Project
+## Start Here
 
 * [Project Overview](project/overview.md)
 * [How Iruka Works](project/how-it-works.md)
+* [Official Links](project/official-links.md)
 
-## Packs
+## Product
+
+* [Vending Machine](product/vending-machine.md)
+* [Marketplace](product/marketplace.md)
+* [Vault](product/vault.md)
+* [Redemption and Shipping](product/redemption-and-shipping.md)
+
+## Packs and Odds
 
 * [Pack Information](packs/pack-information.md)
 * [Rarities and Odds](packs/rarities-and-odds.md)
 
-## Product
+## Trust and Policy
 
-* [Vault](product/vault.md)
-* [Marketplace](product/marketplace.md)
-* [Redemption and Shipping](product/redemption-and-shipping.md)
+* [IP and Listing Policy](policies/ip-and-listing-policy.md)
 
 ## Roadmap
 
 * [Roadmap](roadmap.md)
-
-## Policies
-
-* [IP and Listing Policy](policies/ip-and-listing-policy.md)
-

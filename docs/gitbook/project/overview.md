@@ -1,40 +1,26 @@
 # Project Overview
 
-Iruka is a GIWA-ready marketplace for collectible random packs, verified vault storage, marketplace exits, and physical redemption.
+Iruka connects collectible pack discovery, verified storage, marketplace trading, and physical redemption.
 
-The first product focus is collectible card packs. Users can pull a pack, reveal a card, and decide what happens next:
+## What Iruka Does
 
-- Keep the card in the Iruka vault.
-- List it on the marketplace.
-- Sell through a supported exit flow.
-- Request shipping for the physical item.
+- Lets users pull random collectible packs.
+- Reveals an item with rarity, serial, estimated value, and vault status.
+- Keeps eligible items in a verified vault record.
+- Lets users list, sell, or request shipment from one product flow.
 
-## Positioning
+## What Iruka Does Not Claim
 
-Iruka is not positioned as an official artist, agency, label, game publisher, or card manufacturer. The product should be described as a marketplace and vault layer for collectible inventory.
+Iruka should not imply official affiliation with any artist, agency, label, publisher, manufacturer, or grading company unless that relationship exists.
 
-Public pack branding should stay neutral. Examples:
-
-- Girl Group Iruka Pack
-- Boy Group Iruka Pack
-- Premium Idol Drop
-- Rookie Idol Drop
-- TCG Slab Pack
-
-Actual marketplace listings can include descriptive item information when necessary to identify the genuine physical item, such as artist, member, set, album, card number, condition, or grading details.
-
-## Website and Docs
-
-- Website: `https://playiruka.io`
-- Docs: `https://docs.playiruka.io`
+Neutral public pack branding is required. Specific names can appear in listing and vault details only when they identify a genuine physical item.
 
 ## Current Status
 
-Iruka is currently in MVP development. The frontend demonstrates the main product loop:
+Iruka is in MVP development. The frontend demonstrates the core loop:
 
-1. Select an active pack.
-2. Connect with Privy and an external EVM wallet.
+1. Enter the vending machine.
+2. Log in with Privy.
 3. Pull a pack.
-4. Reveal a card.
+4. Reveal an item.
 5. Vault, sell, or ship the result.
-
