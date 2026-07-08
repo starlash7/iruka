@@ -937,7 +937,9 @@ html[lang="ko"] .hero-panel h1 {
   position: relative;
   z-index: 1;
   display: grid;
+  align-content: end;
   align-items: end;
+  grid-template-rows: minmax(0, 1fr);
   min-height: clamp(560px, 72dvh, 700px);
   margin-top: clamp(18px, 3vw, 36px);
   overflow-x: clip;
@@ -982,7 +984,7 @@ html[lang="ko"] .home-headline {
 
 .home-brandline {
   position: absolute;
-  top: clamp(14px, 5.2vh, 52px);
+  top: clamp(14px, 5.2dvh, 52px);
   right: clamp(28px, 5vw, 76px);
   left: clamp(28px, 5vw, 76px);
   z-index: 2;
@@ -1172,7 +1174,7 @@ html[lang="ko"] .home-copy h2 {
   width: fit-content;
   max-width: 100%;
   min-height: 52px;
-  margin-top: clamp(28px, 7vh, 84px);
+  margin-top: clamp(28px, 7dvh, 84px);
   padding: 0 16px;
   color: var(--ink);
   font-size: 12px;
@@ -1187,11 +1189,12 @@ html[lang="ko"] .home-copy h2 {
 
 .home-character {
   position: absolute;
-  top: -38px;
+  top: auto;
   bottom: 0;
   left: 50%;
   z-index: 3;
   display: grid;
+  aspect-ratio: 510 / 765;
   width: clamp(390px, 39vw, 570px);
   transform: translateX(-50%);
 }
@@ -1201,6 +1204,7 @@ html[lang="ko"] .home-copy h2 {
   display: grid;
   width: 100%;
   height: 100%;
+  aspect-ratio: inherit;
   place-items: end center;
   overflow: visible;
   border: 0;
@@ -1212,9 +1216,7 @@ html[lang="ko"] .home-copy h2 {
 .home-character-card img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: 50% 100%;
+  height: auto;
   transform: scale(1.055);
   transform-origin: center bottom;
 }
@@ -3659,12 +3661,174 @@ html[lang="ko"] .hero-panel h1 {
   }
 
   .home-character {
-    top: -28px;
+    top: auto;
     width: clamp(390px, 36vw, 520px);
   }
 
   .home-featured-card {
     width: min(100%, 252px);
+  }
+}
+
+@media (min-width: 1121px) and (max-height: 820px) {
+  .home-showcase {
+    min-height: calc(100dvh - 64px);
+    margin-top: 8px;
+  }
+
+  .home-brandline {
+    top: clamp(10px, 2.4dvh, 18px);
+  }
+
+  .home-brandline > span {
+    font-size: clamp(74px, 9.4vw, 132px);
+    transform: translate(clamp(136px, 12vw, 184px), clamp(28px, 5.8dvh, 52px)) skew(-6deg);
+  }
+
+  .home-brandline strong {
+    max-width: 17ch;
+    font-size: clamp(26px, 2.7vw, 38px);
+    transform: translate(clamp(-98px, -6vw, -36px), clamp(42px, 6.4dvh, 58px)) skew(-6deg);
+  }
+
+  .home-brandline-line-1 {
+    transform: translateX(-34px);
+  }
+
+  .home-brandline-line-2 {
+    transform: translateX(38px);
+  }
+
+  .home-brandline-keyword {
+    font-size: 1.6em;
+  }
+
+  .home-panel {
+    grid-template-columns: minmax(240px, 330px) minmax(0, 1fr) minmax(200px, 240px);
+    gap: clamp(12px, 1.6vw, 22px);
+    min-height: clamp(270px, 34dvh, 350px);
+    padding: 16px clamp(22px, 2.6vw, 36px);
+  }
+
+  .home-copy {
+    gap: 11px;
+  }
+
+  .home-copy h2 {
+    font-size: clamp(32px, 3.2vw, 48px);
+  }
+
+  html[lang="ko"] .home-copy h2 {
+    font-size: clamp(26px, 2.8vw, 38px);
+  }
+
+  .home-copy p {
+    max-width: 28ch;
+    font-size: 13px;
+    line-height: 1.48;
+  }
+
+  .home-copy button {
+    min-height: 46px;
+  }
+
+  .home-copy button svg {
+    width: 31px;
+    height: 31px;
+  }
+
+  .home-proof {
+    min-height: 44px;
+    margin-top: clamp(12px, 2.5dvh, 20px);
+    padding: 0 14px;
+  }
+
+  .home-character {
+    top: auto;
+    width: clamp(390px, 33vw, 500px);
+  }
+
+  .home-feature-row {
+    gap: 6px;
+  }
+
+  .home-feature-row span {
+    min-height: 30px;
+    padding: 0 9px;
+  }
+
+  .home-featured-card {
+    width: min(100%, 236px);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .home-vending-machine {
+    padding: 6px;
+  }
+}
+
+@media (min-width: 1121px) and (max-width: 1320px) and (max-height: 820px) {
+  .home-brandline strong {
+    max-width: 15ch;
+    font-size: clamp(25px, 2.5vw, 34px);
+    transform: translate(clamp(56px, 7vw, 98px), clamp(28px, 5dvh, 42px)) skew(-6deg);
+  }
+
+  .home-brandline-line-1 {
+    transform: translateX(-16px);
+  }
+
+  .home-brandline-line-2 {
+    transform: translateX(18px);
+  }
+
+  .home-brandline-keyword {
+    font-size: 1.44em;
+  }
+}
+
+@media (min-width: 1321px) and (max-width: 1600px) and (min-height: 821px) {
+  .home-brandline strong {
+    max-width: 16ch;
+    font-size: clamp(28px, 2.45vw, 36px);
+    transform: translate(clamp(-54px, -3vw, -34px), clamp(42px, 5.6dvh, 56px)) skew(-6deg);
+  }
+
+  .home-brandline-line-1 {
+    transform: translateX(-22px);
+  }
+
+  .home-brandline-line-2 {
+    transform: translateX(28px);
+  }
+
+  .home-brandline-keyword {
+    font-size: 1.36em;
+  }
+
+  .home-character {
+    width: clamp(390px, 37vw, 540px);
+  }
+}
+
+@media (min-width: 1601px) and (max-height: 950px) {
+  .home-brandline strong {
+    max-width: 16ch;
+    font-size: clamp(32px, 2.2vw, 42px);
+    transform: translate(clamp(-92px, -4.8vw, -64px), clamp(22px, 3.4dvh, 36px)) skew(-6deg);
+  }
+
+  .home-brandline-line-1 {
+    transform: translateX(-34px);
+  }
+
+  .home-brandline-line-2 {
+    transform: translateX(36px);
+  }
+
+  .home-brandline-keyword {
+    font-size: 1.48em;
   }
 }
 
