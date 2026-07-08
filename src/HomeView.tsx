@@ -1,5 +1,6 @@
 import { ArrowRight, PackageOpen, ShieldCheck, Sparkles } from "lucide-react";
 import homeIdolStage from "./assets/home-idol-stage-cutout.png";
+import vendingMachineImage from "./assets/iruka-vending-machine.png";
 import { IrukaBeam } from "./IrukaBeam";
 
 type HomeViewCopy = {
@@ -82,18 +83,13 @@ export function HomeView({ copy, onEnterVending }: HomeViewProps) {
               {copy.featureVault}
             </span>
           </div>
-          <span className="home-featured-label">{copy.vendingMeta}</span>
+          {copy.vendingMeta ? <span className="home-featured-label">{copy.vendingMeta}</span> : null}
           <div className="home-featured-card">
             <div className="home-vending-machine" aria-hidden="true">
-              <span className="home-vending-glass">
-                <i />
-                <i />
-                <i />
-              </span>
-              <span className="home-vending-slot" />
+              <img alt="" src={vendingMachineImage} />
             </div>
             <strong>{copy.vendingTitle}</strong>
-            <p>{copy.rightBody}</p>
+            {copy.rightBody ? <p>{copy.rightBody}</p> : null}
           </div>
         </aside>
       </div>

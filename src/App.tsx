@@ -90,9 +90,9 @@ const copy = {
       featureVault: "Vault",
       leftBody: "Choose collectible packs, reveal vaulted cards, and move into marketplace exits from one clean flow.",
       proof: "Verified pack pulls for collectors",
-      rightBody: "A bright vending route for pack drops, reveal moments, and vaulted inventory.",
+      rightBody: "",
       rightTitle: "Fresh packs on demand",
-      vendingMeta: "Vending ready",
+      vendingMeta: "",
       vendingTitle: "Iruka vending machine"
     },
     hero: {
@@ -255,9 +255,9 @@ const copy = {
       featureVault: "보관",
       leftBody: "팩을 고르면 바로 열고, 나온 카드는 보관하거나 판매할 수 있어요.",
       proof: "안심하고 뽑을 수 있어요",
-      rightBody: "팩을 열고, 나온 카드는 보관함에서 바로 관리해요.",
+      rightBody: "",
       rightTitle: "팩을 고르고 바로 열어요",
-      vendingMeta: "지금 열 수 있어요",
+      vendingMeta: "",
       vendingTitle: "Iruka 자판기"
     },
     hero: {
