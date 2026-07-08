@@ -41,7 +41,6 @@ const privyConfig: PrivyClientConfig = {
       createOnLogin: "users-without-wallets"
     }
   },
-  defaultChain: giwaSepolia,
   supportedChains: [giwaSepolia]
 };
 

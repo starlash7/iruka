@@ -1,9 +1,11 @@
 import { ArrowRight, PackageOpen, ShieldCheck, Sparkles } from "lucide-react";
-import homeIdolStage from "./assets/home-idol-stage.jpg";
+import homeIdolStage from "./assets/home-idol-stage-cutout.png";
 import { IrukaBeam } from "./IrukaBeam";
 
 type HomeViewCopy = {
   action: string;
+  brandSlogan: string;
+  brandTitle: string;
   eyebrow: string;
   featurePack: string;
   featureVault: string;
@@ -20,9 +22,32 @@ type HomeViewProps = {
   onEnterVending: () => void;
 };
 
+function renderSloganLine(line: string) {
+  const words = line.split(" ");
+  const keyword = words.pop();
+
+  return (
+    <>
+      {words.length > 0 ? <span className="home-brandline-copy">{words.join(" ")}</span> : null}
+      {keyword ? <span className="home-brandline-keyword">{keyword}</span> : null}
+    </>
+  );
+}
+
 export function HomeView({ copy, onEnterVending }: HomeViewProps) {
   return (
     <section className="home-showcase" aria-label={copy.eyebrow}>
+      <div className="home-brandline">
+        <span>{copy.brandTitle}</span>
+        <strong>
+          {copy.brandSlogan.split("\n").map((line, index) => (
+            <span className={`home-brandline-line home-brandline-line-${index + 1}`} key={line}>
+              {renderSloganLine(line)}
+            </span>
+          ))}
+        </strong>
+      </div>
+
       <div className="home-character" aria-hidden="true">
         <span className="home-character-card">
           <img alt="" src={homeIdolStage} />

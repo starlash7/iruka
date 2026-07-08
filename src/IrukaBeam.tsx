@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 type IrukaBeamProps = {
   active?: boolean;
+  borderRadius?: number;
   children: ReactNode;
   className?: string;
   strength?: number;
@@ -10,6 +11,7 @@ type IrukaBeamProps = {
 
 export function IrukaBeam({
   active = true,
+  borderRadius = 999,
   children,
   className,
   strength = 0.34
@@ -17,7 +19,7 @@ export function IrukaBeam({
   return (
     <BorderBeam
       active={active}
-      borderRadius={999}
+      borderRadius={borderRadius}
       brightness={0.92}
       className={["iruka-beam", className].filter(Boolean).join(" ")}
       colorVariant="ocean"

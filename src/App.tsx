@@ -83,6 +83,8 @@ const copy = {
     },
     home: {
       action: "Enter Vending",
+      brandSlogan: "K-pop in Packs\nMoments in Your Vault",
+      brandTitle: "Iruka",
       eyebrow: "Iruka Vending Machine",
       featurePack: "Pack",
       featureVault: "Vault",
@@ -237,92 +239,94 @@ const copy = {
       roadmap: "로드맵",
       docs: "문서",
       login: "로그인",
-      signUp: "가입",
+      signUp: "가입하기",
       wallet: "지갑 연결",
       walletConnected: "연결됨",
       walletConnecting: "연결 중",
-      walletDisconnect: "지갑 연결 해제",
+      walletDisconnect: "연결 해제",
       language: "언어"
     },
     home: {
-      action: "자판기 입장",
+      action: "팩 뽑기",
+      brandSlogan: "K-pop in Packs\nMoments in Your Vault",
+      brandTitle: "Iruka",
       eyebrow: "Iruka Vending Machine",
       featurePack: "팩",
       featureVault: "보관",
-      leftBody: "컬렉터블 팩을 고르고, 카드를 리빌하고, 보관함과 마켓플레이스 흐름까지 이어갑니다.",
-      proof: "컬렉터를 위한 검증된 팩 뽑기",
-      rightBody: "팩 드롭, 리빌, Vault 보관을 밝고 간결한 자판기 경험으로 연결합니다.",
-      rightTitle: "팩을 바로 뽑는 구조",
-      vendingMeta: "자판기 준비 완료",
+      leftBody: "팩을 고르면 바로 열고, 나온 카드는 보관하거나 판매할 수 있어요.",
+      proof: "안심하고 뽑을 수 있어요",
+      rightBody: "팩을 열고, 나온 카드는 보관함에서 바로 관리해요.",
+      rightTitle: "팩을 고르고 바로 열어요",
+      vendingMeta: "지금 열 수 있어요",
       vendingTitle: "Iruka 자판기"
     },
     hero: {
-      packPrice: "팩 가격",
-      remaining: "남은 수량",
-      supplyLabel: "팩 판매 현황",
+      packPrice: "가격",
+      remaining: "남은 팩",
+      supplyLabel: "판매 현황",
       openPack: "팩 뽑기",
       opening: "뽑는 중"
     },
     marketStrip: [
-      { label: "보관", value: "실물 보관" },
-      { label: "정산", value: "판매/배송" },
-      { label: "지갑", value: "EVM 지원" }
+      { label: "보관", value: "안전하게 보관" },
+      { label: "정산", value: "팔거나 배송받기" },
+      { label: "지갑", value: "EVM 지갑 연결" }
     ],
     activity: [
       {
         title: "오로라 스테이지",
-        pack: "걸그룹 이루카 팩",
-        status: "오픈됨",
+        pack: "걸그룹 Iruka 팩",
+        status: "열림",
         time: "42초 전"
       },
       {
         title: "사인 이벤트",
-        pack: "걸그룹 이루카 팩",
+        pack: "걸그룹 Iruka 팩",
         status: "보관됨",
         time: "1분 전"
       },
       {
         title: "벨벳 시그널",
-        pack: "프리미엄 아이돌 드롭 #001",
-        status: "리스팅",
+        pack: "프리미엄 아이돌 팩 #001",
+        status: "판매 중",
         time: "3분 전"
       },
       {
         title: "블루 아워",
-        pack: "보이그룹 이루카 팩",
-        status: "오픈됨",
+        pack: "보이그룹 Iruka 팩",
+        status: "열림",
         time: "5분 전"
       }
     ],
     feedback: {
-      connectWallet: "팩을 뽑으려면 로그인하세요.",
-      listed: "마켓플레이스에 등록됐어요.",
-      purchaseQueued: "보관함에 추가됐어요.",
-      vaulted: "보관함에 저장됐어요.",
-      sold: "판매 상태로 변경됐어요.",
-      shipQueued: "배송 대기열에 추가됐어요."
+      connectWallet: "먼저 로그인해 주세요.",
+      listed: "판매 목록에 올렸어요.",
+      purchaseQueued: "보관함에 담았어요.",
+      vaulted: "보관함에 넣었어요.",
+      sold: "판매 상태로 바꿨어요.",
+      shipQueued: "배송 신청이 접수됐어요."
     },
     sections: {
       marketplace: "마켓",
-      activity: "방금 열린 카드",
-      liveDrops: "진행 중인 드롭",
+      activity: "방금 나온 카드",
+      liveDrops: "지금 열 수 있는 팩",
       openDrop: "팩 뽑기",
       left: "남음",
-      reveal: "리빌",
-      odds: "확률",
-      chaseCards: "체이스 카드",
+      reveal: "결과",
+      odds: "나올 확률",
+      chaseCards: "인기 카드",
       vault: "보관함",
       roadmap: "로드맵",
-      empty: "비어 있음",
+      empty: "아직 없음",
       cards: "장",
-      vaultEmpty: "보관함이 비어 있어요",
-      sold: "판매",
-      redeem: "배송"
+      vaultEmpty: "아직 보관한 카드가 없어요",
+      sold: "판매됨",
+      redeem: "배송 대기"
     },
     actions: {
-      vault: "보관",
-      sellNow: "즉시 판매",
-      ship: "배송"
+      vault: "보관하기",
+      sellNow: "판매하기",
+      ship: "배송받기"
     },
     categories: {
       "K-pop": "케이팝",
@@ -336,29 +340,29 @@ const copy = {
       Iruka: "Iruka"
     },
     statuses: {
-      Vaulted: "보관중",
-      Listed: "리스팅됨",
-      Sold: "판매됨",
+      Vaulted: "보관 중",
+      Listed: "판매 중",
+      Sold: "판매 완료",
       "Redeem queued": "배송 대기"
     },
     roadmap: [
       {
         status: "예정",
         title: "팬 커뮤니티 게시판",
-        body: "아이돌 팬들이 그룹별 게시판에서 팩 결과와 드롭 정보를 함께 나눌 수 있게 열 예정입니다."
+        body: "그룹별 게시판에서 팩 결과와 새 팩 소식을 나눌 수 있게 할 예정이에요."
       },
       {
         status: "예정",
         title: "GitBook 문서화",
-        body: "Vault 흐름, 리딤 구조, 서비스 구조, GIWA 연동을 GitBook에 상세히 정리할 예정입니다."
+        body: "보관함, 배송, 서비스 구조, GIWA 연동을 GitBook에 자세히 정리할 예정이에요."
       }
     ],
     docs: {
       eyebrow: "문서",
       title: "Iruka 문서",
-      body: "자판기, 마켓플레이스, Vault, 배송, 정책, 로드맵 흐름을 GitBook 스타일로 정리한 문서입니다.",
+      body: "자판기, 마켓, 보관함, 배송, 정책, 로드맵을 한곳에 모았어요.",
       sourceTitle: "GitBook 소스",
-      sourceBody: "나중에 공개 GitBook으로 배포할 markdown 원본이 저장소에 준비되어 있습니다.",
+      sourceBody: "배포 전까지는 저장소 문서로 확인할 수 있어요.",
       sourcePath: "docs/gitbook/SUMMARY.md"
     },
     footer: {
@@ -371,21 +375,21 @@ const copy = {
         marketplace: "마켓플레이스",
         vault: "보관함",
         roadmap: "로드맵",
-        contact: "문의하기",
-        documentation: "문서"
+        contact: "문의",
+        documentation: "문서 보기"
       }
     },
     marketplacePage: {
       buyNow: "구매하기",
-      filterLabels: ["상태", "카테고리", "등급", "보관 등급", "가격대"],
+      filterLabels: ["상태", "분류", "등급", "보관 등급", "가격"],
       filters: "필터",
-      fmv: "시세",
-      ownedEmpty: "보관 카드 없음",
-      ownedTitle: "보관함에서 판매",
-      results: "리스팅",
-      search: "카드 검색",
-      sell: "판매",
-      sort: "최근 등록순",
+      fmv: "예상 시세",
+      ownedEmpty: "판매할 카드가 없어요",
+      ownedTitle: "보관함에서 팔기",
+      results: "개",
+      search: "카드, 등급 검색",
+      sell: "내 카드 팔기",
+      sort: "최근순",
       title: "마켓플레이스"
     }
   }
@@ -424,22 +428,22 @@ const packCopy: Record<
   },
   ko: {
     "girl-grail": {
-      name: "걸그룹 이루카 팩",
+      name: "걸그룹 Iruka 팩",
       shortName: "걸그룹",
       chaseCards: ["오로라 스테이지", "블루 아워", "사인 이벤트"]
     },
     "boy-grail": {
-      name: "보이그룹 이루카 팩",
+      name: "보이그룹 Iruka 팩",
       shortName: "보이그룹",
       chaseCards: ["월드 투어", "팬사인", "데뷔 시절"]
     },
     "ive-drop": {
-      name: "프리미엄 아이돌 드롭 #001",
+      name: "프리미엄 아이돌 팩 #001",
       shortName: "프리미엄 아이돌",
       chaseCards: ["벨벳 시그널", "애프터글로우", "블루 스테이지"]
     },
     "aespa-drop": {
-      name: "루키 아이돌 드롭 #001",
+      name: "루키 아이돌 팩 #001",
       shortName: "루키 아이돌",
       chaseCards: ["싱크 라이브", "드라마 유닛", "크롬 스테이지"]
     },
@@ -675,7 +679,7 @@ function VendingImageSlot({ pack }: { pack: Pack }) {
   return (
     <div className={`vending-image-slot tone-${pack.tone}`}>
       <div className="vending-image-frame">
-        <DolphinLogo />
+        <img src={packProductImage} alt="" />
         <span className="vending-image-sheen" />
       </div>
       <span className="light-sweep" />
@@ -740,6 +744,28 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const hasVaultOps = soldCount > 0 || redeemQueue.length > 0;
   const walletRequired = walletAuth === "privy" && !isWalletConnected;
   const isPrimaryView = activeView === "pull";
+  const shouldHighlightActivePull =
+    activePull?.rarity === "Legendary" || activePull?.rarity === "Iruka";
+  const recentActivity = useMemo(() => {
+    const pullRows = collection.slice(0, 4).map((card) => {
+      const sourcePack = packs.find((pack) => pack.id === card.packId);
+      const sourceCopy = sourcePack ? packCopy[locale][sourcePack.id] : undefined;
+
+      return {
+        title: card.member,
+        pack: sourceCopy?.name ?? card.group,
+        status: t.statuses[card.vaultStatus],
+        time: card.pulledAt,
+        tone: sourcePack?.tone ?? "aqua"
+      };
+    });
+    const fallbackRows = t.activity.map((item, index) => ({
+      ...item,
+      tone: packs[index % packs.length].tone
+    }));
+
+    return [...pullRows, ...fallbackRows].slice(0, 4);
+  }, [collection, locale, t.activity, t.statuses]);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -760,6 +786,16 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     revealSectionRef.current?.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start"
+    });
+  }
+
+  function choosePack(packId: string) {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    setSelectedPackId(packId);
+    document.getElementById("drops")?.scrollIntoView({
       behavior: prefersReducedMotion ? "auto" : "smooth",
       block: "start"
     });
@@ -818,6 +854,30 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         Sold: t.feedback.sold,
         "Redeem queued": t.feedback.shipQueued
       }[vaultStatus]
+    );
+  }
+
+  function renderActivePullActions() {
+    if (!activePull) return null;
+
+    return (
+      <div className="asset-actions">
+        <button onClick={() => updateCardStatus(activePull.id, "Vaulted")} type="button">
+          <ShieldCheck size={16} />
+          {t.actions.vault}
+        </button>
+        <button onClick={() => updateCardStatus(activePull.id, "Sold")} type="button">
+          <Store size={16} />
+          {t.actions.sellNow}
+        </button>
+        <button
+          onClick={() => updateCardStatus(activePull.id, "Redeem queued")}
+          type="button"
+        >
+          <Send size={16} />
+          {t.actions.ship}
+        </button>
+      </div>
     );
   }
 
@@ -979,9 +1039,9 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             </div>
 
             <div className="activity-grid">
-              {t.activity.map((item, index) => (
-                <article className="activity-card" key={`${item.title}-${item.time}`}>
-                  <div className={`activity-slab tone-${packs[index % packs.length].tone}`} aria-hidden="true">
+              {recentActivity.map((item, index) => (
+                <article className="activity-card" key={`${item.title}-${item.time}-${index}`}>
+                  <div className={`activity-slab tone-${item.tone}`} aria-hidden="true">
                     <DolphinLogo />
                   </div>
                   <div className="activity-copy">
@@ -1010,7 +1070,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
                     <button
                       className={`drop-tile ${selectedPack.id === pack.id ? "selected" : ""}`}
                       key={pack.id}
-                      onClick={() => setSelectedPackId(pack.id)}
+                      onClick={() => choosePack(pack.id)}
                       type="button"
                     >
                       <PackVisual pack={pack} compact />
@@ -1033,7 +1093,22 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
                 {activePull ? <span>{activePull.serial}</span> : null}
               </div>
               {activePull ? (
-                <RevealedCard card={activePull} locale={locale} />
+                <div className="reveal-result">
+                  {shouldHighlightActivePull ? (
+                    <IrukaBeam
+                      borderRadius={34}
+                      className="reveal-card-beam"
+                      strength={0.48}
+                    >
+                      <RevealedCard card={activePull} locale={locale} />
+                    </IrukaBeam>
+                  ) : (
+                    <div className="reveal-card-cell">
+                      <RevealedCard card={activePull} locale={locale} />
+                    </div>
+                  )}
+                  {renderActivePullActions()}
+                </div>
               ) : (
                 <div className="sealed-stage vending-slot-stage">
                   <div className="vending-drop-slot" aria-hidden="true">
@@ -1130,25 +1205,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             </div>
           )}
 
-          {activePull ? (
-            <div className="asset-actions">
-              <button onClick={() => updateCardStatus(activePull.id, "Vaulted")} type="button">
-                <ShieldCheck size={16} />
-                {t.actions.vault}
-              </button>
-              <button onClick={() => updateCardStatus(activePull.id, "Sold")} type="button">
-                <Store size={16} />
-                {t.actions.sellNow}
-              </button>
-              <button
-                onClick={() => updateCardStatus(activePull.id, "Redeem queued")}
-                type="button"
-              >
-                <Send size={16} />
-                {t.actions.ship}
-              </button>
-            </div>
-          ) : null}
+          {renderActivePullActions()}
 
           {hasVaultOps ? (
             <div className="vault-ops" id="redeem">
