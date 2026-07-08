@@ -19,6 +19,7 @@
 
 * [Pack Information](packs/pack-information.md)
 * [Rarities and Odds](packs/rarities-and-odds.md)
+* [Pack Reveal Experience](packs/pack-reveal.md)
 
 ## Trust and Policy
 

@@ -14,6 +14,7 @@ import packProductImage from "./assets/iruka-pack-product.png";
 import irukaWordmark from "./assets/iruka-wordmark.png";
 import { DocsView } from "./DocsView";
 import { HomeView } from "./HomeView";
+import { IrukaBeam } from "./IrukaBeam";
 import { MarketplaceView } from "./MarketplaceView";
 import { marketplaceCards, type MarketplaceCard } from "./marketplaceData";
 
@@ -86,7 +87,6 @@ const copy = {
       featurePack: "Pack",
       featureVault: "Vault",
       leftBody: "Choose collectible packs, reveal vaulted cards, and move into marketplace exits from one clean flow.",
-      leftTitle: "Pull the card. Keep the moment.",
       proof: "Verified pack pulls for collectors",
       rightBody: "A bright vending route for pack drops, reveal moments, and vaulted inventory.",
       rightTitle: "Fresh packs on demand",
@@ -199,7 +199,7 @@ const copy = {
       sourcePath: "docs/gitbook/SUMMARY.md"
     },
     footer: {
-      body: "Pull K-pop and collectible packs, reveal cards, keep them vaulted, sell, or ship them from one GIWA-ready marketplace.",
+      body: "2026 Iruka Labs, Inc. All rights reserved.",
       about: "Platform",
       quickLinks: "Explore",
       support: "Support",
@@ -250,7 +250,6 @@ const copy = {
       featurePack: "팩",
       featureVault: "보관",
       leftBody: "컬렉터블 팩을 고르고, 카드를 리빌하고, 보관함과 마켓플레이스 흐름까지 이어갑니다.",
-      leftTitle: "카드를 뽑고, 순간을 보관하세요.",
       proof: "컬렉터를 위한 검증된 팩 뽑기",
       rightBody: "팩 드롭, 리빌, Vault 보관을 밝고 간결한 자판기 경험으로 연결합니다.",
       rightTitle: "팩을 바로 뽑는 구조",
@@ -363,7 +362,7 @@ const copy = {
       sourcePath: "docs/gitbook/SUMMARY.md"
     },
     footer: {
-      body: "케이팝과 컬렉터블 팩을 뽑고, 카드를 리빌하고, 보관/판매/배송까지 이어지는 GIWA-ready 마켓플레이스입니다.",
+      body: "2026 Iruka Labs, Inc. All rights reserved.",
       about: "플랫폼",
       quickLinks: "둘러보기",
       support: "지원",
@@ -936,15 +935,20 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
                 <span style={{ width: `${supplyProgress}%` }} />
               </div>
 
-              <button
-                className={`primary-action ${isOpening ? "opening" : ""}`}
-                disabled={isOpening || selectedRemaining === 0}
-                onClick={openPack}
-                type="button"
+              <IrukaBeam
+                active={!isOpening && selectedRemaining > 0}
+                className="primary-action-beam"
               >
-                {walletRequired ? <Wallet size={19} /> : <PackageOpen size={19} />}
-                {isOpening ? t.hero.opening : t.hero.openPack}
-              </button>
+                <button
+                  className={`primary-action ${isOpening ? "opening" : ""}`}
+                  disabled={isOpening || selectedRemaining === 0}
+                  onClick={openPack}
+                  type="button"
+                >
+                  {walletRequired ? <Wallet size={19} /> : <PackageOpen size={19} />}
+                  {isOpening ? t.hero.opening : t.hero.openPack}
+                </button>
+              </IrukaBeam>
 
               <div className="market-strip" aria-label={t.sections.marketplace}>
                 {t.marketStrip.map((item) => (
