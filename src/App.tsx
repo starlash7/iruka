@@ -10,6 +10,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AuthActions } from "./AuthActions";
 import irukaLogo from "./assets/iruka-logo.png";
+import packGirlGroupImage from "./assets/pack-girl-group.png";
 import packProductImage from "./assets/iruka-pack-product.png";
 import irukaWordmark from "./assets/iruka-wordmark.png";
 import { DocsView } from "./DocsView";
@@ -17,6 +18,8 @@ import { HomeView } from "./HomeView";
 import { IrukaBeam } from "./IrukaBeam";
 import { MarketplaceView } from "./MarketplaceView";
 import { marketplaceCards, type MarketplaceCard } from "./marketplaceData";
+import { RoadmapView } from "./RoadmapView";
+import { VaultGuide } from "./VaultGuide";
 
 type WalletAuthMode = "disabled" | "privy";
 type Locale = "en" | "ko";
@@ -24,6 +27,8 @@ type AppView = "home" | "pull" | "marketplace" | "vault" | "roadmap" | "docs";
 type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Iruka";
 type VaultStatus = "Vaulted" | "Listed" | "Sold" | "Redeem queued";
 type Category = "K-pop" | "TCG";
+
+const MINTLIFY_DOCS_URL = "https://docs.playiruka.space/overview";
 
 type RarityConfig = {
   rarity: Rarity;
@@ -180,18 +185,6 @@ const copy = {
       Sold: "Sold",
       "Redeem queued": "Redeem queued"
     },
-    roadmap: [
-      {
-        status: "Planned",
-        title: "Fan community boards",
-        body: "Open group boards where idol fans can share pulls, discuss drops, and follow collections together."
-      },
-      {
-        status: "Planned",
-        title: "GitBook documentation",
-        body: "Publish detailed docs for vault flows, redemption structure, service architecture, and GIWA integration."
-      }
-    ],
     docs: {
       eyebrow: "Documentation",
       title: "Iruka Docs",
@@ -345,18 +338,6 @@ const copy = {
       Sold: "판매 완료",
       "Redeem queued": "배송 대기"
     },
-    roadmap: [
-      {
-        status: "예정",
-        title: "팬 커뮤니티 게시판",
-        body: "그룹별 게시판에서 팩 결과와 새 팩 소식을 나눌 수 있게 할 예정이에요."
-      },
-      {
-        status: "예정",
-        title: "GitBook 문서화",
-        body: "보관함, 배송, 서비스 구조, GIWA 연동을 GitBook에 자세히 정리할 예정이에요."
-      }
-    ],
     docs: {
       eyebrow: "문서",
       title: "Iruka 문서",
@@ -666,20 +647,36 @@ function DolphinLogo() {
   );
 }
 
+const packImages: Record<string, string> = {
+  "girl-grail": packGirlGroupImage
+};
+
+function getPackImage(pack: Pack) {
+  return packImages[pack.id] ?? packProductImage;
+}
+
 function PackVisual({ pack, compact = false }: { pack: Pack; compact?: boolean }) {
+  const image = getPackImage(pack);
+  const isPhoto = image !== packProductImage;
+
   return (
-    <div className={`pack-visual tone-${pack.tone} ${compact ? "compact" : ""}`}>
-      <img src={packProductImage} alt="" />
+    <div
+      className={`pack-visual tone-${pack.tone} ${compact ? "compact" : ""} ${isPhoto ? "pack-visual-photo" : ""}`}
+    >
+      <img className={isPhoto ? "pack-image-full" : ""} src={image} alt="" />
       <span className="light-sweep" />
     </div>
   );
 }
 
 function VendingImageSlot({ pack }: { pack: Pack }) {
+  const image = getPackImage(pack);
+  const isPhoto = image !== packProductImage;
+
   return (
-    <div className={`vending-image-slot tone-${pack.tone}`}>
+    <div className={`vending-image-slot tone-${pack.tone} ${isPhoto ? "vending-image-photo" : ""}`}>
       <div className="vending-image-frame">
-        <img src={packProductImage} alt="" />
+        <img className={isPhoto ? "pack-image-full" : ""} src={image} alt="" />
         <span className="vending-image-sheen" />
       </div>
       <span className="light-sweep" />
@@ -1213,25 +1210,13 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
               {redeemQueue.length > 0 ? <span>{t.sections.redeem} {redeemQueue.length}</span> : null}
             </div>
           ) : null}
+
+          <VaultGuide locale={locale} statusLabels={t.statuses} />
         </section>
       ) : null}
 
       {activeView === "roadmap" ? (
-        <section className="roadmap-section" id="roadmap">
-          <div className="section-heading">
-            <h2>{t.sections.roadmap}</h2>
-          </div>
-
-          <div className="roadmap-grid">
-            {t.roadmap.map((item) => (
-              <article className="roadmap-card" key={item.title}>
-                <span>{item.status}</span>
-                <strong>{item.title}</strong>
-                <p>{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+        <RoadmapView heading={t.sections.roadmap} locale={locale} />
       ) : null}
 
       {activeView === "docs" ? (
@@ -1268,9 +1253,9 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           <button onClick={() => showView("roadmap")} type="button">
             {t.footer.links.roadmap}
           </button>
-          <button onClick={() => showView("docs")} type="button">
+          <a href={MINTLIFY_DOCS_URL} target="_blank" rel="noreferrer">
             {t.footer.links.documentation}
-          </button>
+          </a>
         </nav>
 
         <nav className="footer-column" aria-label={t.footer.support}>

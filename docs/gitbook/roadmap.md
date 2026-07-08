@@ -19,7 +19,7 @@ This roadmap describes the near-term direction for Iruka.
 - Real vault custody workflow
 - Marketplace listings and settlement
 - Redemption and shipping operations
-- Public GitBook docs at `https://docs.playiruka.io`
+- Public docs at `https://docs.playiruka.space`
 
 ## Later
 

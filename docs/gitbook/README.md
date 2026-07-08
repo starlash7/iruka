@@ -8,7 +8,7 @@ Users can:
 2. Pull and reveal a collectible.
 3. Keep it vaulted, list it on the marketplace, or request shipment.
 
-The public site is planned for `https://playiruka.io`. The public GitBook is planned for `https://docs.playiruka.io`.
+The public site is planned for `https://playiruka.space`. The public docs are planned for `https://docs.playiruka.space`.
 
 ## Product Scope
 

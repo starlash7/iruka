@@ -6,8 +6,8 @@ Use official Iruka links when sharing the project, contacting support, or prepar
 
 | Surface | URL |
 | --- | --- |
-| Website | `https://playiruka.io` |
-| Docs | `https://docs.playiruka.io` |
+| Website | `https://playiruka.space` |
+| Docs | `https://docs.playiruka.space` |
 | Support | `hello@playiruka.io` |
 
 ## Security Note
