@@ -1305,10 +1305,10 @@ html[lang="ko"] .home-headline {
   color: rgba(7, 17, 31, 0.82);
   display: grid;
   justify-items: end;
-  font-size: clamp(32px, 3.4vw, 50px);
+  font-size: clamp(30px, 2.45vw, 44px);
   line-height: 0.92;
   text-align: right;
-  transform: translate(-130px, 88px) skew(-6deg);
+  transform: translate(0, clamp(34px, 4.4dvh, 52px)) skew(-6deg);
   transform-origin: right center;
   white-space: pre-line;
 }
@@ -1321,22 +1321,22 @@ html[lang="ko"] .home-headline {
 }
 
 .home-brandline-line-1 {
-  transform: translateX(-80px);
+  transform: translateX(-42px);
 }
 
 .home-brandline-line-2 {
-  transform: translateX(92px);
+  transform: translateX(42px);
 }
 
 .home-brandline-keyword {
-  font-size: 2em;
+  font-size: 1.48em;
   line-height: 0.72;
 }
 
 html[lang="ko"] .home-brandline strong {
   max-width: 18ch;
   font-family: var(--font-display);
-  font-size: clamp(32px, 3.4vw, 50px);
+  font-size: clamp(30px, 2.45vw, 44px);
   font-weight: 700;
   line-height: 0.92;
 }
@@ -4191,7 +4191,7 @@ html[lang="ko"] .hero-panel h1 {
   .home-brandline strong {
     max-width: 16ch;
     font-size: clamp(32px, 2.2vw, 42px);
-    transform: translate(clamp(-92px, -4.8vw, -64px), clamp(22px, 3.4dvh, 36px)) skew(-6deg);
+    transform: translate(clamp(-20px, -1.2vw, 0px), clamp(22px, 3.4dvh, 36px)) skew(-6deg);
   }
 
   .home-brandline-line-1 {
@@ -4317,6 +4317,36 @@ html[lang="ko"] .hero-panel h1 {
     margin-top: 24px;
   }
 
+  @media (min-width: 761px) {
+    .home-brandline {
+      padding-top: clamp(18px, 3vw, 32px);
+    }
+
+    .home-brandline > span {
+      font-size: clamp(66px, 11vw, 116px);
+      transform: translate(24px, 12px) skew(-6deg);
+    }
+
+    .home-brandline strong {
+      font-size: clamp(28px, 4vw, 42px);
+      transform: translate(0, 12px) skew(-6deg);
+    }
+
+    .home-brandline-keyword {
+      font-size: 1.42em;
+    }
+
+    .home-character {
+      width: min(460px, 74vw);
+      margin-top: calc(-1 * clamp(72px, 9vw, 112px));
+      margin-bottom: calc(-1 * clamp(150px, 23vw, 236px));
+    }
+
+    .home-panel {
+      padding-top: clamp(150px, 25vw, 250px);
+    }
+  }
+
   .drop-hero {
     grid-template-columns: 1fr;
     min-height: auto;
@@ -4409,6 +4439,95 @@ html[lang="ko"] .hero-panel h1 {
 
   .vault-status-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 961px) and (max-width: 1120px) {
+  .home-showcase {
+    align-content: end;
+    align-items: end;
+    grid-template-rows: minmax(0, 1fr);
+    min-height: clamp(560px, calc(100dvh - 98px), 680px);
+    margin-top: clamp(10px, 2vw, 22px);
+  }
+
+  .home-brandline {
+    position: absolute;
+    top: clamp(10px, 2.8dvh, 24px);
+    right: clamp(48px, 6vw, 72px);
+    left: clamp(28px, 4vw, 44px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding: 0;
+  }
+
+  .home-brandline > span {
+    font-size: clamp(72px, 9vw, 98px);
+    transform: translate(clamp(94px, 10vw, 116px), clamp(24px, 5dvh, 42px)) skew(-6deg);
+  }
+
+  .home-brandline strong {
+    justify-self: end;
+    max-width: 16ch;
+    font-size: clamp(25px, 3vw, 32px);
+    text-align: right;
+    transform: translate(0, clamp(26px, 5dvh, 40px)) skew(-6deg);
+  }
+
+  .home-brandline-line {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  .home-brandline-line-1 {
+    transform: translateX(-10px);
+  }
+
+  .home-brandline-line-2 {
+    transform: translateX(8px);
+  }
+
+  .home-brandline-keyword {
+    font-size: 1.36em;
+  }
+
+  .home-character {
+    position: absolute;
+    top: auto;
+    bottom: 0;
+    left: 50%;
+    justify-self: auto;
+    width: min(390px, 41vw);
+    margin: 0;
+    transform: translateX(-50%);
+  }
+
+  .home-panel {
+    grid-template-columns: minmax(230px, 300px) minmax(0, 1fr) minmax(200px, 240px);
+    gap: clamp(14px, 2vw, 24px);
+    min-height: clamp(310px, 42dvh, 370px);
+    padding: clamp(16px, 2vw, 24px) clamp(22px, 3vw, 34px);
+  }
+
+  .home-copy h2 {
+    font-size: clamp(32px, 3.8vw, 42px);
+  }
+
+  .home-copy p {
+    max-width: 28ch;
+    font-size: 13px;
+  }
+
+  .home-proof {
+    margin-top: clamp(16px, 4dvh, 32px);
+  }
+
+  .home-panel-right {
+    grid-column: 3;
+  }
+
+  .home-featured-card {
+    width: min(100%, 230px);
+    padding: 12px;
   }
 }
 
