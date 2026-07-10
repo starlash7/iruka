@@ -60,7 +60,7 @@ export function MarketplaceCardTile(props: MarketplaceCardTileProps) {
 
   if (props.featured) {
     return (
-      <IrukaBeam borderRadius={16} className="market-card-beam" strength={0.46}>
+      <IrukaBeam className="market-card-beam" variant="selection">
         {card}
       </IrukaBeam>
     );

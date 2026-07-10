@@ -7,29 +7,63 @@ type IrukaBeamProps = {
   children: ReactNode;
   className?: string;
   strength?: number;
+  variant?: "action" | "selection" | "reveal";
+};
+
+const beamPresets = {
+  action: {
+    borderRadius: 999,
+    brightness: 1.05,
+    duration: 4.8,
+    saturation: 0.95,
+    size: "pulse-inner" as const,
+    strength: 0.62,
+    theme: "dark" as const
+  },
+  selection: {
+    borderRadius: 16,
+    brightness: 1,
+    duration: 6.4,
+    saturation: 0.95,
+    size: "pulse-inner" as const,
+    strength: 0.34,
+    theme: "dark" as const
+  },
+  reveal: {
+    borderRadius: 34,
+    brightness: 1.08,
+    duration: 4.2,
+    saturation: 1,
+    size: "pulse-inner" as const,
+    strength: 0.62,
+    theme: "light" as const
+  }
 };
 
 export function IrukaBeam({
   active = true,
-  borderRadius = 999,
+  borderRadius,
   children,
   className,
-  strength = 0.34
+  strength,
+  variant = "action"
 }: IrukaBeamProps) {
+  const preset = beamPresets[variant];
+
   return (
     <BorderBeam
       active={active}
-      borderRadius={borderRadius}
-      brightness={0.92}
-      className={["iruka-beam", className].filter(Boolean).join(" ")}
+      borderRadius={borderRadius ?? preset.borderRadius}
+      brightness={preset.brightness}
+      className={["iruka-beam", `iruka-beam-${variant}`, className].filter(Boolean).join(" ")}
       colorVariant="ocean"
-      duration={4.2}
+      duration={preset.duration}
       hueRange={0}
-      saturation={0.86}
-      size="pulse-inner"
+      saturation={preset.saturation}
+      size={preset.size}
       staticColors
-      strength={strength}
-      theme="light"
+      strength={strength ?? preset.strength}
+      theme={preset.theme}
     >
       {children}
     </BorderBeam>

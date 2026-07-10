@@ -1,51 +1,41 @@
-import { ArrowRight, Check, Clock3, Users } from "lucide-react";
+import roadmapIrukaVendingImage from "./assets/roadmap-iruka-vending.jpg";
 import { roadmapContent } from "./roadmapContent";
 
 type RoadmapViewProps = {
-  heading: string;
   locale: "en" | "ko";
 };
 
-const phaseIcons = [Check, ArrowRight, Clock3];
+const roadmapPhaseImages: Array<string | undefined> = [roadmapIrukaVendingImage];
 
-export function RoadmapView({ heading, locale }: RoadmapViewProps) {
+export function RoadmapView({ locale }: RoadmapViewProps) {
   const content = roadmapContent[locale];
 
   return (
     <section className="roadmap-section" id="roadmap">
-      <div className="section-heading">
-        <h2>{heading}</h2>
+      <div className="section-heading roadmap-heading">
+        <h2>
+          {content.heading.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </h2>
       </div>
-      <p className="section-intro">{content.intro}</p>
 
       <div className="roadmap-phases">
-        {content.phases.map((phase, index) => {
-          const Icon = phaseIcons[index] ?? Check;
+        {content.phases.map((title, index) => {
+          const image = roadmapPhaseImages[index];
 
           return (
-            <article className="roadmap-card roadmap-phase" key={phase.title}>
-              <span>{phase.title}</span>
-              <ul>
-                {phase.items.map((item) => (
-                  <li key={item}>
-                    <Icon size={15} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+            <article className={`roadmap-card roadmap-phase roadmap-phase-${index + 1}`} key={title}>
+              <div className="roadmap-card-media" aria-hidden="true">
+                {image ? <img alt="" decoding="async" src={image} /> : null}
+              </div>
+              <div className="roadmap-phase-copy">
+                <span>PHASE {String(index + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+              </div>
             </article>
           );
         })}
-      </div>
-
-      <div className="brand-callout">
-        <span className="brand-callout-icon">
-          <Users size={20} />
-        </span>
-        <div>
-          <strong>{content.community.title}</strong>
-          <p>{content.community.body}</p>
-        </div>
       </div>
     </section>
   );

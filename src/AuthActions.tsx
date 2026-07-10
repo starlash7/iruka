@@ -1,6 +1,7 @@
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { LogIn, LogOut, UserPlus, Wallet } from "lucide-react";
 import { useEffect } from "react";
+import { IrukaBeam } from "./IrukaBeam";
 
 type WalletAuthMode = "disabled" | "privy";
 
@@ -95,10 +96,12 @@ function PrivyAuthActions({
         <LogIn size={15} />
         {ready ? labels.login : labels.connecting}
       </button>
-      <button className="auth-button auth-button-primary" disabled={!ready} onClick={() => login()} type="button">
-        <UserPlus size={15} />
-        {labels.signUp}
-      </button>
+      <IrukaBeam className="auth-primary-beam" strength={0.52}>
+        <button className="auth-button auth-button-primary" disabled={!ready} onClick={() => login()} type="button">
+          <UserPlus size={15} />
+          {labels.signUp}
+        </button>
+      </IrukaBeam>
     </div>
   );
 }

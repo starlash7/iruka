@@ -17,7 +17,7 @@ Only the reveal moment should use 3D. The surrounding purchase, result, vault, a
 | Tier | Timing | Treatment |
 | --- | --- | --- |
 | Common | 1.5s | Fast card fade-in and rarity stamp |
-| Rare | 3.0s | Short shake, tear, purple flare, lift, stamp |
+| Rare | 3.0s | Short shake, tear, green flare, lift, stamp |
 | Epic | 3.0s | Rare sequence with stronger red flare |
 | Legendary | 4.5s | Full stage sequence, orbit, and foil sweep |
 | Iruka | 4.5s | Full grail sequence with the strongest holographic treatment |
@@ -27,9 +27,9 @@ Rarity presentation should not feel uniform. The full sequence should be reserve
 ## Visual Direction
 
 - Common: neutral chrome and soft white light
-- Rare: purple spotlight and moderate foil reflection
+- Rare: green spotlight and moderate foil reflection
 - Epic: red spotlight and sharper reveal flash
-- Legendary: warm foil, stronger bloom, and full card orbit
+- Legendary: yellow foil, stronger bloom, and full card orbit
 - Iruka: blue, chrome, and iridescent foil with the most dramatic lift
 
 Final colors should follow the live Iruka design tokens when implemented.

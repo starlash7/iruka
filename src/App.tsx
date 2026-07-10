@@ -1,33 +1,34 @@
 import {
   Box,
-  Clock3,
-  PackageOpen,
   Send,
   ShieldCheck,
-  Store,
-  Wallet
+  Store
 } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AuthActions } from "./AuthActions";
 import irukaLogo from "./assets/iruka-logo.png";
-import packGirlGroupImage from "./assets/pack-girl-group.png";
 import packProductImage from "./assets/iruka-pack-product.png";
 import irukaWordmark from "./assets/iruka-wordmark.png";
 import { DocsView } from "./DocsView";
 import { HomeView } from "./HomeView";
-import { IrukaBeam } from "./IrukaBeam";
 import { MarketplaceView } from "./MarketplaceView";
 import { marketplaceCards, type MarketplaceCard } from "./marketplaceData";
 import type { IrukaRarity, RevealCard } from "./features/pack-reveal/revealConfig";
 import { RoadmapView } from "./RoadmapView";
 import { VaultGuide } from "./VaultGuide";
+import { VendingView } from "./VendingView";
+import type {
+  CardPull,
+  ChaseCard,
+  Pack,
+  Rarity,
+  RarityConfig,
+  VaultStatus
+} from "./vendingTypes";
 
 type WalletAuthMode = "disabled" | "privy";
 type Locale = "en" | "ko";
 type AppView = "home" | "pull" | "marketplace" | "vault" | "roadmap" | "docs";
-type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Iruka";
-type VaultStatus = "Vaulted" | "Listed" | "Sold" | "Redeem queued";
-type Category = "K-pop" | "TCG";
 
 const MINTLIFY_DOCS_URL = "https://docs.playiruka.space/overview";
 const PackRevealOverlay = lazy(() =>
@@ -35,43 +36,6 @@ const PackRevealOverlay = lazy(() =>
     default: module.PackRevealOverlay
   }))
 );
-
-type RarityConfig = {
-  rarity: Rarity;
-  odds: number;
-  valueRange: [number, number];
-};
-
-type Pack = {
-  id: string;
-  name: string;
-  shortName: string;
-  category: Category;
-  price: number;
-  remaining: number;
-  total: number;
-  closeTime: string;
-  theme: string;
-  tone: string;
-  chaseCards: string[];
-  odds: RarityConfig[];
-};
-
-type CardPull = {
-  id: string;
-  packId: string;
-  category: Category;
-  group: string;
-  member: string;
-  rarity: Rarity;
-  estimatedValue: number;
-  buybackValue: number;
-  vaultStatus: VaultStatus;
-  redeemable: boolean;
-  imageStyle: string;
-  serial: string;
-  pulledAt: string;
-};
 
 const copy = {
   en: {
@@ -113,37 +77,14 @@ const copy = {
       openPack: "Pull a pack",
       opening: "Pulling"
     },
-    marketStrip: [
-      { label: "Vault", value: "Verified storage" },
-      { label: "Exit", value: "Sell or ship" },
-      { label: "Wallet", value: "EVM ready" }
-    ],
-    activity: [
-      {
-        title: "Aurora Stage",
-        pack: "Girl Group Iruka Pack",
-        status: "Pulled",
-        time: "42 sec ago"
-      },
-      {
-        title: "Signed Event",
-        pack: "Girl Group Iruka Pack",
-        status: "Vaulted",
-        time: "1 min ago"
-      },
-      {
-        title: "Velvet Signal",
-        pack: "Premium Idol Drop #001",
-        status: "Listed",
-        time: "3 min ago"
-      },
-      {
-        title: "Blue Hour",
-        pack: "Boy Group Iruka Pack",
-        status: "Pulled",
-        time: "5 min ago"
-      }
-    ],
+    vending: {
+      morePacks: "More packs",
+      packOdds: "Pack odds",
+      physicalRedemption: "Physical redemption",
+      recentPulls: "Recent pulls",
+      vaultEligible: "Vault eligible",
+      yourPull: "Your pull"
+    },
     feedback: {
       connectWallet: "Log in to pull a pack.",
       listed: "Listed on marketplace.",
@@ -272,37 +213,14 @@ const copy = {
       openPack: "팩 뽑기",
       opening: "뽑는 중"
     },
-    marketStrip: [
-      { label: "보관", value: "안전하게 보관" },
-      { label: "정산", value: "팔거나 배송받기" },
-      { label: "지갑", value: "EVM 지갑 연결" }
-    ],
-    activity: [
-      {
-        title: "오로라 스테이지",
-        pack: "걸그룹 Iruka 팩",
-        status: "열림",
-        time: "42초 전"
-      },
-      {
-        title: "사인 이벤트",
-        pack: "걸그룹 Iruka 팩",
-        status: "보관됨",
-        time: "1분 전"
-      },
-      {
-        title: "벨벳 시그널",
-        pack: "프리미엄 아이돌 팩 #001",
-        status: "판매 중",
-        time: "3분 전"
-      },
-      {
-        title: "블루 아워",
-        pack: "보이그룹 Iruka 팩",
-        status: "열림",
-        time: "5분 전"
-      }
-    ],
+    vending: {
+      morePacks: "다른 팩",
+      packOdds: "팩 확률",
+      physicalRedemption: "실물 배송 가능",
+      recentPulls: "최근 뽑은 카드",
+      vaultEligible: "보관 가능",
+      yourPull: "뽑은 카드"
+    },
     feedback: {
       connectWallet: "먼저 로그인해 주세요.",
       listed: "판매 목록에 올렸어요.",
@@ -402,57 +320,68 @@ const packCopy: Record<
     "girl-grail": {
       name: "Girl Group Iruka Pack",
       shortName: "Girl Group",
-      chaseCards: ["Aurora Stage", "Blue Hour", "Signed Event"]
+      chaseCards: ["Aurora Stage", "Blue Hour", "Signed Event", "Prism Encore"]
     },
     "boy-grail": {
       name: "Boy Group Iruka Pack",
       shortName: "Boy Group",
-      chaseCards: ["World Tour", "Fan Sign", "Debut Era"]
+      chaseCards: ["World Tour", "Fan Sign", "Debut Era", "Midnight Unit"]
     },
     "ive-drop": {
       name: "Premium Idol Drop #001",
       shortName: "Premium Idol",
-      chaseCards: ["Velvet Signal", "Afterglow", "Blue Stage"]
+      chaseCards: ["Velvet Signal", "Afterglow", "Blue Stage", "Holo Encore"]
     },
     "aespa-drop": {
       name: "Rookie Idol Drop #001",
       shortName: "Rookie Idol",
-      chaseCards: ["Sync Live", "Drama Unit", "Chrome Stage"]
+      chaseCards: ["Sync Live", "Drama Unit", "Chrome Stage", "First Light"]
     },
     "pokemon-slab": {
       name: "TCG Slab Pack",
       shortName: "TCG Slab",
-      chaseCards: ["Holo Starter", "Trainer Rare", "Gem Mint Chase"]
+      chaseCards: ["Holo Starter", "Trainer Rare", "Gem Mint Chase", "Foil Vault"]
     }
   },
   ko: {
     "girl-grail": {
       name: "걸그룹 Iruka 팩",
       shortName: "걸그룹",
-      chaseCards: ["오로라 스테이지", "블루 아워", "사인 이벤트"]
+      chaseCards: ["오로라 스테이지", "블루 아워", "사인 이벤트", "프리즘 앙코르"]
     },
     "boy-grail": {
       name: "보이그룹 Iruka 팩",
       shortName: "보이그룹",
-      chaseCards: ["월드 투어", "팬사인", "데뷔 시절"]
+      chaseCards: ["월드 투어", "팬사인", "데뷔 시절", "미드나잇 유닛"]
     },
     "ive-drop": {
       name: "프리미엄 아이돌 팩 #001",
       shortName: "프리미엄 아이돌",
-      chaseCards: ["벨벳 시그널", "애프터글로우", "블루 스테이지"]
+      chaseCards: ["벨벳 시그널", "애프터글로우", "블루 스테이지", "홀로 앙코르"]
     },
     "aespa-drop": {
       name: "루키 아이돌 팩 #001",
       shortName: "루키 아이돌",
-      chaseCards: ["싱크 라이브", "드라마 유닛", "크롬 스테이지"]
+      chaseCards: ["싱크 라이브", "드라마 유닛", "크롬 스테이지", "퍼스트 라이트"]
     },
     "pokemon-slab": {
       name: "TCG 슬랩 팩",
       shortName: "TCG 슬랩",
-      chaseCards: ["홀로 스타터", "트레이너 레어", "젬민트 체이스"]
+      chaseCards: ["홀로 스타터", "트레이너 레어", "젬민트 체이스", "포일 볼트"]
     }
   }
 };
+
+function createChaseCards(packId: string, values: [number, number, number, number]): ChaseCard[] {
+  const rarities: Rarity[] = ["Iruka", "Legendary", "Epic", "Rare"];
+
+  return values.map((estimatedValue, index) => ({
+    estimatedValue,
+    id: `${packId}-chase-${index + 1}`,
+    imageUrl: packProductImage,
+    rarity: rarities[index]
+  }));
+}
 
 const packs: Pack[] = [
   {
@@ -464,9 +393,10 @@ const packs: Pack[] = [
     remaining: 84,
     total: 120,
     closeTime: "18:42:09",
+    heroImage: packProductImage,
     theme: "Multi-group grails",
     tone: "aqua",
-    chaseCards: ["Aurora Stage", "Blue Hour", "Signed Event"],
+    chaseCards: createChaseCards("girl-grail", [1500000, 1200000, 300000, 80000]),
     odds: [
       { rarity: "Common", odds: 60, valueRange: [8000, 25000] },
       { rarity: "Rare", odds: 28, valueRange: [30000, 80000] },
@@ -484,9 +414,10 @@ const packs: Pack[] = [
     remaining: 66,
     total: 100,
     closeTime: "1D 03:16",
+    heroImage: packProductImage,
     theme: "Fan-sign era cards",
     tone: "smoke",
-    chaseCards: ["World Tour", "Fan Sign", "Debut Era"],
+    chaseCards: createChaseCards("boy-grail", [1700000, 1500000, 340000, 90000]),
     odds: [
       { rarity: "Common", odds: 58, valueRange: [9000, 28000] },
       { rarity: "Rare", odds: 29, valueRange: [35000, 90000] },
@@ -504,9 +435,10 @@ const packs: Pack[] = [
     remaining: 31,
     total: 60,
     closeTime: "06:22:41",
+    heroImage: packProductImage,
     theme: "Verified idol mix",
     tone: "cyan",
-    chaseCards: ["Velvet Signal", "Afterglow", "Blue Stage"],
+    chaseCards: createChaseCards("ive-drop", [1800000, 1600000, 380000, 110000]),
     odds: [
       { rarity: "Common", odds: 52, valueRange: [12000, 32000] },
       { rarity: "Rare", odds: 33, valueRange: [42000, 110000] },
@@ -524,9 +456,10 @@ const packs: Pack[] = [
     remaining: 44,
     total: 70,
     closeTime: "22:08:33",
+    heroImage: packProductImage,
     theme: "Verified rookie mix",
     tone: "mint",
-    chaseCards: ["Sync Live", "Drama Unit", "Chrome Stage"],
+    chaseCards: createChaseCards("aespa-drop", [1600000, 1400000, 360000, 105000]),
     odds: [
       { rarity: "Common", odds: 54, valueRange: [10000, 30000] },
       { rarity: "Rare", odds: 31, valueRange: [38000, 105000] },
@@ -544,9 +477,10 @@ const packs: Pack[] = [
     remaining: 18,
     total: 40,
     closeTime: "2D 11:30",
+    heroImage: packProductImage,
     theme: "Graded slab proof",
     tone: "rose",
-    chaseCards: ["Holo Starter", "Trainer Rare", "Gem Mint Chase"],
+    chaseCards: createChaseCards("pokemon-slab", [2600000, 2400000, 550000, 180000]),
     odds: [
       { rarity: "Common", odds: 50, valueRange: [30000, 70000] },
       { rarity: "Rare", odds: 32, valueRange: [85000, 180000] },
@@ -665,14 +599,6 @@ function DolphinLogo() {
   );
 }
 
-const packImages: Record<string, string> = {
-  "girl-grail": packGirlGroupImage
-};
-
-function getPackImage(pack: Pack) {
-  return packImages[pack.id] ?? packProductImage;
-}
-
 function escapeSvgText(value: string) {
   return value.replace(/[&<>"']/g, (character) => {
     const entities: Record<string, string> = {
@@ -700,9 +626,9 @@ function createRevealImageUrl(card: CardPull, locale: Locale) {
   const value = escapeSvgText(formatWon(card.estimatedValue));
   const accent = {
     Common: "#98A2B3",
-    Rare: "#4F9DFF",
-    Epic: "#8B5CF6",
-    Legendary: "#FF73B7",
+    Rare: "#12B76A",
+    Epic: "#F04438",
+    Legendary: "#F5C842",
     Iruka: "#6F8DFF"
   }[card.rarity];
   const svg = `
@@ -748,35 +674,6 @@ function createRevealCard(card: CardPull, locale: Locale): RevealCard {
   };
 }
 
-function PackVisual({ pack, compact = false }: { pack: Pack; compact?: boolean }) {
-  const image = getPackImage(pack);
-  const isPhoto = image !== packProductImage;
-
-  return (
-    <div
-      className={`pack-visual tone-${pack.tone} ${compact ? "compact" : ""} ${isPhoto ? "pack-visual-photo" : ""}`}
-    >
-      <img className={isPhoto ? "pack-image-full" : ""} src={image} alt="" />
-      <span className="light-sweep" />
-    </div>
-  );
-}
-
-function VendingImageSlot({ pack }: { pack: Pack }) {
-  const image = getPackImage(pack);
-  const isPhoto = image !== packProductImage;
-
-  return (
-    <div className={`vending-image-slot tone-${pack.tone} ${isPhoto ? "vending-image-photo" : ""}`}>
-      <div className="vending-image-frame">
-        <img className={isPhoto ? "pack-image-full" : ""} src={image} alt="" />
-        <span className="vending-image-sheen" />
-      </div>
-      <span className="light-sweep" />
-    </div>
-  );
-}
-
 function RevealedCard({ card, locale }: { card: CardPull; locale: Locale }) {
   const t = copy[locale];
 
@@ -787,12 +684,11 @@ function RevealedCard({ card, locale }: { card: CardPull; locale: Locale }) {
         <span>{card.serial}</span>
       </div>
       <div className="revealed-image">
-        <div className="card-slab" aria-hidden="true">
-          <span className="card-slab-rail" />
-          <span className="card-slab-emblem">
-            <DolphinLogo />
-          </span>
-        </div>
+        <img
+          alt=""
+          className="revealed-card-art"
+          src={createRevealImageUrl(card, locale)}
+        />
       </div>
       <div className="revealed-copy">
         <strong>{card.member}</strong>
@@ -822,7 +718,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     () => packs.find((pack) => pack.id === selectedPackId) ?? packs[0],
     [selectedPackId]
   );
-  const selectedPackCopy = packCopy[locale][selectedPack.id];
   const pendingRevealCard = useMemo(
     () => (pendingReveal ? createRevealCard(pendingReveal, locale) : undefined),
     [locale, pendingReveal]
@@ -840,28 +735,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const hasVaultOps = soldCount > 0 || redeemQueue.length > 0;
   const walletRequired = walletAuth === "privy" && !isWalletConnected;
   const isPrimaryView = activeView === "pull";
-  const shouldHighlightActivePull =
-    activePull?.rarity === "Legendary" || activePull?.rarity === "Iruka";
-  const recentActivity = useMemo(() => {
-    const pullRows = collection.slice(0, 4).map((card) => {
-      const sourcePack = packs.find((pack) => pack.id === card.packId);
-      const sourceCopy = sourcePack ? packCopy[locale][sourcePack.id] : undefined;
-
-      return {
-        title: card.member,
-        pack: sourceCopy?.name ?? card.group,
-        status: t.statuses[card.vaultStatus],
-        time: card.pulledAt,
-        tone: sourcePack?.tone ?? "aqua"
-      };
-    });
-    const fallbackRows = t.activity.map((item, index) => ({
-      ...item,
-      tone: packs[index % packs.length].tone
-    }));
-
-    return [...pullRows, ...fallbackRows].slice(0, 4);
-  }, [collection, locale, t.activity, t.statuses]);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -890,6 +763,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   function choosePack(packId: string) {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    setActivePull(undefined);
     setSelectedPackId(packId);
     document.getElementById("drops")?.scrollIntoView({
       behavior: prefersReducedMotion ? "auto" : "smooth",
@@ -1063,197 +937,39 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       ) : null}
 
       {isPrimaryView ? (
-        <div className="view-panel" data-view="pull">
-          <section className={`drop-hero tone-${selectedPack.tone}`} id="drops">
-            <div className="hero-art" aria-hidden="true">
-              <VendingImageSlot pack={selectedPack} />
-            </div>
-
-            <div className="hero-panel">
-              <div className="drop-label-row">
-                <span>{t.categories[selectedPack.category]}</span>
-                <span>
-                  <Clock3 size={15} />
-                  {selectedPack.closeTime}
-                </span>
-              </div>
-
-              <h1>{selectedPackCopy.name}</h1>
-
-              <div className="hero-price-row">
-                <div>
-                  <span>{t.hero.packPrice}</span>
-                  <strong>{formatWon(selectedPack.price)}</strong>
-                </div>
-                <div>
-                  <span>{t.hero.remaining}</span>
-                  <strong>
-                    {selectedRemaining}/{selectedPack.total}
-                  </strong>
-                </div>
-              </div>
-
-              <div className="supply-meter" aria-label={t.hero.supplyLabel}>
-                <span style={{ width: `${supplyProgress}%` }} />
-              </div>
-
-              <IrukaBeam
-                active={!isOpening && selectedRemaining > 0}
-                className="primary-action-beam"
-              >
-                <button
-                  className={`primary-action ${isOpening ? "opening" : ""}`}
-                  disabled={isOpening || selectedRemaining === 0}
-                  onClick={openPack}
-                  type="button"
-                >
-                  {walletRequired ? <Wallet size={19} /> : <PackageOpen size={19} />}
-                  {isOpening ? t.hero.opening : t.hero.openPack}
-                </button>
-              </IrukaBeam>
-
-              <div className="market-strip" aria-label={t.sections.marketplace}>
-                {t.marketStrip.map((item) => (
-                  <div className="market-strip-item" key={item.label}>
-                    <span>{item.label}</span>
-                    <strong>{item.value}</strong>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </section>
-
-          <section className="activity-section" aria-label={t.sections.activity}>
-            <div className="section-heading activity-heading">
-              <div>
-                <span>{t.sections.marketplace}</span>
-                <h2>{t.sections.activity}</h2>
-              </div>
-              <button className="section-link" onClick={() => showView("pull", "drops")} type="button">
-                {t.sections.openDrop}
-              </button>
-            </div>
-
-            <div className="activity-grid">
-              {recentActivity.map((item, index) => (
-                <article className="activity-card" key={`${item.title}-${item.time}-${index}`}>
-                  <div className={`activity-slab tone-${item.tone}`} aria-hidden="true">
-                    <DolphinLogo />
-                  </div>
-                  <div className="activity-copy">
-                    <span>{item.time}</span>
-                    <strong>{item.title}</strong>
-                    <small>{item.pack}</small>
-                  </div>
-                  <b>{item.status}</b>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="drop-rail-section" aria-label={t.sections.liveDrops}>
-            <div className="section-heading">
-              <h2>{t.sections.liveDrops}</h2>
-            </div>
-            <div className="drop-rail-wrap">
-              <div className="drop-rail">
-                {packs.map((pack) => {
-                  const opened = collection.filter((card) => card.packId === pack.id).length;
-                  const remaining = Math.max(pack.remaining - opened, 0);
-                  const tileCopy = packCopy[locale][pack.id];
-
-                  return (
-                    <button
-                      className={`drop-tile ${selectedPack.id === pack.id ? "selected" : ""}`}
-                      key={pack.id}
-                      onClick={() => choosePack(pack.id)}
-                      type="button"
-                    >
-                      <PackVisual pack={pack} compact />
-                      <span>{t.categories[pack.category]}</span>
-                      <strong>{tileCopy.name}</strong>
-                      <small>
-                        {formatWon(pack.price)} · {remaining} {t.sections.left}
-                      </small>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-
-          <section className="reveal-section" ref={revealSectionRef}>
-            <div className="reveal-stage">
-              <div className="section-heading">
-                <h2>{t.sections.reveal}</h2>
-                {activePull ? <span>{activePull.serial}</span> : null}
-              </div>
-              {activePull ? (
-                <div className="reveal-result">
-                  {shouldHighlightActivePull ? (
-                    <IrukaBeam
-                      borderRadius={34}
-                      className="reveal-card-beam"
-                      strength={0.48}
-                    >
-                      <RevealedCard card={activePull} locale={locale} />
-                    </IrukaBeam>
-                  ) : (
-                    <div className="reveal-card-cell">
-                      <RevealedCard card={activePull} locale={locale} />
-                    </div>
-                  )}
-                  {renderActivePullActions()}
-                </div>
-              ) : (
-                <div className="sealed-stage vending-slot-stage">
-                  <div className="vending-drop-slot" aria-hidden="true">
-                    <span />
-                  </div>
-                  <div className={`sealed-card tone-${selectedPack.tone}`} aria-hidden="true">
-                    <span className="sealed-card-mark">
-                      <DolphinLogo />
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <aside className="order-panel">
-              <div className="section-heading compact">
-                <h2>{t.sections.odds}</h2>
-              </div>
-              <div className="odds-list">
-                {selectedPack.odds.map((item) => (
-                  <div className="odds-row" key={item.rarity}>
-                    <span className={rarityStyles[item.rarity]}>{t.rarities[item.rarity]}</span>
-                    <strong>{item.odds}%</strong>
-                    <small>
-                      {formatWon(item.valueRange[0])} - {formatWon(item.valueRange[1])}
-                    </small>
-                  </div>
-                ))}
-              </div>
-            </aside>
-          </section>
-
-          <section className="chase-section" id="chase">
-            <div className="section-heading">
-              <h2>{t.sections.chaseCards}</h2>
-            </div>
-            <div className="chase-grid">
-              {selectedPackCopy.chaseCards.map((chase, index) => (
-                <article className="chase-card" key={chase}>
-                  <span className="rarity-iruka">{t.rarities.Iruka}</span>
-                  <strong>{chase}</strong>
-                  <small>{selectedPackCopy.shortName}</small>
-                  <b>{formatWon(selectedPack.odds[4].valueRange[index % 2])}</b>
-                </article>
-              ))}
-            </div>
-          </section>
-        </div>
+        <VendingView
+          activePull={activePull}
+          collection={collection}
+          copy={{
+            categories: t.categories,
+            hero: t.hero,
+            labels: {
+              chaseCards: t.sections.chaseCards,
+              left: t.sections.left,
+              morePacks: t.vending.morePacks,
+              packOdds: t.vending.packOdds,
+              physicalRedemption: t.vending.physicalRedemption,
+              recentPulls: t.vending.recentPulls,
+              vaultEligible: t.vending.vaultEligible,
+              yourPull: t.vending.yourPull
+            },
+            rarities: t.rarities
+          }}
+          formatValue={formatWon}
+          getCardImageUrl={(card) => createRevealImageUrl(card, locale)}
+          isOpening={isOpening}
+          onOpenPack={openPack}
+          onSelectPack={choosePack}
+          packCopies={packCopy[locale]}
+          packs={packs}
+          pullActions={renderActivePullActions()}
+          pullCard={activePull ? <RevealedCard card={activePull} locale={locale} /> : null}
+          resultRef={revealSectionRef}
+          selectedPack={selectedPack}
+          selectedRemaining={selectedRemaining}
+          supplyProgress={supplyProgress}
+          walletRequired={walletRequired}
+        />
       ) : null}
 
       {activeView === "marketplace" ? (
@@ -1316,7 +1032,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       ) : null}
 
       {activeView === "roadmap" ? (
-        <RoadmapView heading={t.sections.roadmap} locale={locale} />
+        <RoadmapView locale={locale} />
       ) : null}
 
       {activeView === "docs" ? (

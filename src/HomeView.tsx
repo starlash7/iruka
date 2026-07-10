@@ -1,7 +1,10 @@
 import { ArrowRight, PackageOpen, ShieldCheck, Sparkles } from "lucide-react";
 import homeIdolStage from "./assets/home-idol-stage-cutout.png";
-import vendingMachineImage from "./assets/iruka-vending-machine.png";
+import vendingMachineImage from "./assets/iruka-vending-machine.jpg";
+import { HomeImageCarousel } from "./HomeImageCarousel";
 import { IrukaBeam } from "./IrukaBeam";
+
+const homeImages = [homeIdolStage, homeIdolStage, homeIdolStage] as const;
 
 type HomeViewCopy = {
   action: string;
@@ -49,11 +52,7 @@ export function HomeView({ copy, onEnterVending }: HomeViewProps) {
         </strong>
       </div>
 
-      <div className="home-character" aria-hidden="true">
-        <span className="home-character-card">
-          <img alt="" src={homeIdolStage} />
-        </span>
-      </div>
+      <HomeImageCarousel images={homeImages} label={copy.brandTitle} />
 
       <div className="home-panel">
         <div className="home-copy home-copy-left">
@@ -86,7 +85,7 @@ export function HomeView({ copy, onEnterVending }: HomeViewProps) {
           {copy.vendingMeta ? <span className="home-featured-label">{copy.vendingMeta}</span> : null}
           <div className="home-featured-card">
             <div className="home-vending-machine" aria-hidden="true">
-              <img alt="" src={vendingMachineImage} />
+              <img alt="" decoding="async" src={vendingMachineImage} />
             </div>
             <strong>{copy.vendingTitle}</strong>
             {copy.rightBody ? <p>{copy.rightBody}</p> : null}

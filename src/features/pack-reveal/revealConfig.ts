@@ -49,10 +49,10 @@ export const revealConfigs: Record<IrukaRarity, RevealConfig> = {
     spotlight: "#F8FBFF"
   },
   rare: {
-    accent: "#4F9DFF",
+    accent: "#12B76A",
     bloom: false,
     duration: 3,
-    foil: "#B8D9FF",
+    foil: "#A6F4C5",
     name: "Rare",
     phaseEvents: [
       { at: 0, phase: "blackout" },
@@ -62,13 +62,13 @@ export const revealConfigs: Record<IrukaRarity, RevealConfig> = {
       { at: 1.9, phase: "lift" },
       { at: 2.55, phase: "stamp" }
     ],
-    spotlight: "#8B5CF6"
+    spotlight: "#32D583"
   },
   epic: {
-    accent: "#8B5CF6",
+    accent: "#F04438",
     bloom: false,
     duration: 3,
-    foil: "#FFC0DF",
+    foil: "#FDA29B",
     name: "Epic",
     phaseEvents: [
       { at: 0, phase: "blackout" },
@@ -81,10 +81,10 @@ export const revealConfigs: Record<IrukaRarity, RevealConfig> = {
     spotlight: "#F04438"
   },
   legendary: {
-    accent: "#FF73B7",
+    accent: "#F5C842",
     bloom: true,
     duration: 4.5,
-    foil: "#F79009",
+    foil: "#FFE99A",
     name: "Legendary",
     phaseEvents: [
       { at: 0, phase: "blackout" },
@@ -96,7 +96,7 @@ export const revealConfigs: Record<IrukaRarity, RevealConfig> = {
       { at: 4, phase: "orbit" },
       { at: 4.35, phase: "stamp" }
     ],
-    spotlight: "#F79009"
+    spotlight: "#FFD84D"
   },
   iruka: {
     accent: "#6F8DFF",
