@@ -1,11 +1,19 @@
+import roadmapCreatorPlaygroundImage from "./assets/roadmap-creator-playground.jpg";
 import roadmapIrukaVendingImage from "./assets/roadmap-iruka-vending.jpg";
+import roadmapIrukaUniverseImage from "./assets/roadmap-iruka-universe.jpg";
+import roadmapLicensedIpImage from "./assets/roadmap-licensed-ip.jpg";
 import { roadmapContent } from "./roadmapContent";
 
 type RoadmapViewProps = {
   locale: "en" | "ko";
 };
 
-const roadmapPhaseImages: Array<string | undefined> = [roadmapIrukaVendingImage];
+const roadmapPhaseImages = [
+  roadmapIrukaVendingImage,
+  roadmapLicensedIpImage,
+  roadmapCreatorPlaygroundImage,
+  roadmapIrukaUniverseImage
+];
 
 export function RoadmapView({ locale }: RoadmapViewProps) {
   const content = roadmapContent[locale];
