@@ -21,11 +21,12 @@ export function RoadmapView({ locale }: RoadmapViewProps) {
   return (
     <section className="roadmap-section" id="roadmap">
       <div className="section-heading roadmap-heading">
-        <h2>
-          {content.heading.map((line) => (
-            <span key={line}>{line}</span>
+        <h2>{content.heading}</h2>
+        <div className="roadmap-heading-support">
+          {content.supporting.map((line) => (
+            <p key={line}>{line}</p>
           ))}
-        </h2>
+        </div>
       </div>
 
       <div className="roadmap-phases">

@@ -13,29 +13,29 @@ type IrukaBeamProps = {
 const beamPresets = {
   action: {
     borderRadius: 999,
-    brightness: 1.05,
-    duration: 4.8,
-    saturation: 0.95,
-    size: "pulse-inner" as const,
-    strength: 0.62,
+    brightness: 1.22,
+    duration: 2.6,
+    saturation: 1.25,
+    size: "sm" as const,
+    strength: 0.9,
     theme: "dark" as const
   },
   selection: {
     borderRadius: 16,
-    brightness: 1,
-    duration: 6.4,
-    saturation: 0.95,
-    size: "pulse-inner" as const,
-    strength: 0.34,
-    theme: "dark" as const
+    brightness: 1.18,
+    duration: 3.4,
+    saturation: 1.2,
+    size: "md" as const,
+    strength: 0.78,
+    theme: "light" as const
   },
   reveal: {
     borderRadius: 34,
-    brightness: 1.08,
-    duration: 4.2,
-    saturation: 1,
+    brightness: 1.2,
+    duration: 3.6,
+    saturation: 1.2,
     size: "pulse-inner" as const,
-    strength: 0.62,
+    strength: 0.78,
     theme: "light" as const
   }
 };
@@ -56,12 +56,11 @@ export function IrukaBeam({
       borderRadius={borderRadius ?? preset.borderRadius}
       brightness={preset.brightness}
       className={["iruka-beam", `iruka-beam-${variant}`, className].filter(Boolean).join(" ")}
-      colorVariant="ocean"
+      colorVariant="colorful"
       duration={preset.duration}
-      hueRange={0}
+      hueRange={55}
       saturation={preset.saturation}
       size={preset.size}
-      staticColors
       strength={strength ?? preset.strength}
       theme={preset.theme}
     >

@@ -242,6 +242,31 @@ a:focus-visible {
   z-index: 0;
 }
 
+.iruka-beam-action[data-active],
+.vending-pack-beam[data-active] {
+  padding: 2px;
+  background: linear-gradient(
+    100deg,
+    #3ee8ff,
+    #4d75ff,
+    #9d5cff,
+    #ff56b3,
+    #ffb84f,
+    #3ee8ff
+  );
+  background-size: 220% 100%;
+  box-shadow:
+    0 0 18px rgba(86, 124, 255, 0.3),
+    0 0 30px rgba(232, 86, 255, 0.16);
+  animation: irukaBeamSpectrum 3s linear infinite;
+}
+
+@keyframes irukaBeamSpectrum {
+  to {
+    background-position: 220% 0;
+  }
+}
+
 .vending-page {
   width: 100%;
   padding: clamp(18px, 2.4vw, 38px) clamp(16px, 3vw, 56px) 0;
@@ -288,22 +313,43 @@ a:focus-visible {
   gap: 7px;
 }
 
-.vending-trust-row span {
+.vending-trust-row > span {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 29px;
-  padding: 0 10px;
+  gap: 7px;
+  min-height: 34px;
+  padding: 4px 11px 4px 5px;
   color: #53637a;
   font-size: 11px;
   font-weight: 700;
+  border: 1px solid rgba(111, 141, 255, 0.1);
   border-radius: var(--radius-pill);
-  background: #f2f7ff;
+  background: rgba(248, 251, 255, 0.94);
 }
 
-.vending-trust-row span:first-child {
+.vending-trust-row > span:first-child {
+  min-height: 34px;
+  padding: 0 11px;
   color: var(--blue-hover);
+  border-color: transparent;
   background: rgba(111, 141, 255, 0.12);
+}
+
+.vending-trust-icon {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #5269e8;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #d9f8ff, #e8e4ff);
+  box-shadow: inset 0 0 0 1px rgba(111, 141, 255, 0.1);
+}
+
+.vending-trust-icon-redemption {
+  color: #a248d8;
+  background: linear-gradient(135deg, #ffe5f1, #eee5ff 54%, #e0f7ff);
 }
 
 .vending-purchase-panel h1 {
@@ -837,10 +883,21 @@ html[lang="ko"] .vending-section-heading h2 {
     border-radius: 18px;
   }
 
-  .vending-trust-row span {
+  .vending-trust-row > span {
     min-height: 27px;
     padding: 0 8px;
     font-size: 10px;
+  }
+
+  .vending-trust-row > span:not(:first-child) {
+    min-height: 31px;
+    padding: 3px 8px 3px 4px;
+  }
+
+  .vending-trust-icon {
+    width: 23px;
+    height: 23px;
+    border-radius: 7px;
   }
 
   .vending-purchase-panel h1,
@@ -982,11 +1039,6 @@ html[lang="ko"] .vending-section-heading h2 {
   transform: none;
 }
 
-.auth-button-connected:disabled {
-  color: #5068df;
-  background: linear-gradient(135deg, rgba(126, 231, 255, 0.28), rgba(111, 141, 255, 0.2) 48%, rgba(191, 150, 255, 0.22));
-}
-
 .language-toggle {
   display: inline-grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1116,8 +1168,7 @@ html[lang="ko"] .vending-section-heading h2 {
 .reveal-section,
 .chase-section,
 .vault-section,
-.roadmap-section,
-.docs-section {
+.roadmap-section {
   position: relative;
   z-index: 1;
 }
@@ -1885,8 +1936,7 @@ html[lang="ko"] .hero-panel h1 {
 .reveal-section,
 .chase-section,
 .vault-section,
-.roadmap-section,
-.docs-section {
+.roadmap-section {
   margin-top: 26px;
   scroll-margin-top: 96px;
 }
@@ -3158,10 +3208,72 @@ html[lang="ko"] .home-copy h2 {
   font-weight: 600;
 }
 
-.vault-section,
-.docs-section {
+.vault-section {
   padding: 28px 0 0;
   border-top: 1px solid rgba(214, 228, 255, 0.86);
+}
+
+.events-section {
+  display: grid;
+  min-height: clamp(420px, 68svh, 760px);
+  place-items: center;
+  margin-top: clamp(38px, 5vw, 72px);
+  padding: 36px 0 48px;
+}
+
+.events-content {
+  display: grid;
+  gap: 0;
+  width: min(920px, calc(100% - 48px));
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(111, 141, 255, 0.14);
+  border-radius: 42px;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.events-content img {
+  display: block;
+  width: 100%;
+  max-height: 58svh;
+  object-fit: contain;
+  border-radius: 34px;
+}
+
+.events-copy {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  padding: 34px 30px 28px;
+  text-align: left;
+}
+
+.events-copy h1 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.events-copy ul {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding-left: 22px;
+  color: var(--muted);
+}
+
+.events-copy li {
+  padding-left: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.events-copy li::marker {
+  color: var(--blue);
 }
 
 .vault-table {
@@ -3380,41 +3492,49 @@ html[lang="ko"] .home-copy h2 {
   grid-template-columns: minmax(0, 1fr);
   width: 100%;
   justify-items: center;
+  gap: 18px;
   margin-bottom: clamp(24px, 3vw, 40px);
   overflow: hidden;
   text-align: center;
 }
 
 .roadmap-heading h2 {
-  display: grid;
-  width: 100%;
-  max-width: none;
-  justify-items: center;
-  font-size: clamp(42px, 5vw, 72px);
-  line-height: 0.9;
-  word-break: keep-all;
-}
-
-.roadmap-heading h2 span {
-  display: block;
   width: fit-content;
   max-width: 100%;
+  margin: 0;
   opacity: 0;
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-.roadmap-heading h2 span:first-child {
+  font-size: 64px;
+  line-height: 0.9;
+  white-space: nowrap;
+  word-break: keep-all;
   animation: roadmapHeadingFromLeft 1400ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.roadmap-heading h2 span:last-child {
+.roadmap-heading-support {
+  display: grid;
+  gap: 5px;
+  max-width: 1120px;
+  opacity: 0;
   animation: roadmapHeadingFromRight 1600ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
 }
 
+.roadmap-heading-support p {
+  margin: 0;
+  color: #5b6d8b;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
 html[lang="ko"] .roadmap-heading h2 {
-  font-size: clamp(34px, 4vw, 54px);
+  font-size: 48px;
   line-height: 1.08;
+}
+
+html[lang="ko"] .roadmap-heading-support p {
+  word-break: keep-all;
+  text-transform: none;
 }
 
 @keyframes roadmapHeadingFromLeft {
@@ -3672,207 +3792,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   font-size: 12.5px;
   font-weight: 600;
   line-height: 1.5;
-}
-
-.docs-page-heading {
-  display: grid;
-  gap: 10px;
-  max-width: 760px;
-  margin-bottom: 24px;
-}
-
-.docs-page-heading > span,
-.docs-article-head > span {
-  width: fit-content;
-  min-height: 28px;
-  padding: 6px 10px;
-  color: var(--blue);
-  font-size: 11px;
-  font-weight: 800;
-  border: 1px solid rgba(111, 141, 255, 0.13);
-  border-radius: 9px;
-  background: rgba(111, 141, 255, 0.06);
-}
-
-.docs-page-heading h1 {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: clamp(52px, 6vw, 92px);
-  font-weight: 600;
-  line-height: 0.86;
-}
-
-.docs-page-heading p,
-.docs-article-head p,
-.docs-article-section p,
-.docs-source p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.65;
-}
-
-.docs-page-heading p {
-  font-size: clamp(16px, 1.7vw, 20px);
-}
-
-.docs-shell {
-  display: grid;
-  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-  gap: 22px;
-  align-items: start;
-}
-
-.docs-sidebar {
-  position: sticky;
-  top: 96px;
-  display: grid;
-  gap: 6px;
-  padding: 12px;
-  border: 1px solid rgba(214, 228, 255, 0.72);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(18px);
-}
-
-.docs-sidebar-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 38px;
-  color: var(--ink);
-  font-size: 13px;
-}
-
-.docs-sidebar button {
-  display: grid;
-  gap: 3px;
-  width: 100%;
-  padding: 10px 11px;
-  color: var(--muted);
-  text-align: left;
-  border-radius: 12px;
-  background: transparent;
-  cursor: pointer;
-  transition:
-    background 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
-}
-
-.docs-sidebar button:hover,
-.docs-sidebar button.selected {
-  color: var(--blue);
-  background: rgba(111, 141, 255, 0.08);
-  transform: translateX(2px);
-}
-
-.docs-sidebar button span {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.docs-sidebar button strong {
-  color: inherit;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.docs-article {
-  display: grid;
-  gap: 22px;
-  min-height: 620px;
-  padding: clamp(22px, 4vw, 42px);
-  border: 1px solid rgba(214, 228, 255, 0.78);
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.88)),
-    var(--surface);
-  box-shadow: var(--shadow-sm);
-}
-
-.docs-article-head {
-  display: grid;
-  gap: 10px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid rgba(214, 228, 255, 0.72);
-}
-
-.docs-article-head h2 {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: clamp(42px, 5vw, 72px);
-  font-weight: 600;
-  line-height: 0.9;
-}
-
-.docs-article-section {
-  display: grid;
-  gap: 9px;
-  max-width: 760px;
-}
-
-.docs-article-section h3,
-.docs-source strong {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: clamp(22px, 2.2vw, 30px);
-  font-weight: 600;
-  line-height: 1.08;
-}
-
-.docs-article-section ul {
-  display: grid;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.docs-article-section li {
-  display: grid;
-  grid-template-columns: 16px minmax(0, 1fr);
-  gap: 7px;
-  align-items: start;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.docs-article-section li svg {
-  margin-top: 3px;
-  color: var(--blue);
-}
-
-.docs-source {
-  display: grid;
-  align-content: start;
-  gap: 10px;
-  margin-top: 12px;
-  padding: 18px;
-  border: 1px solid rgba(214, 228, 255, 0.72);
-  border-radius: 14px;
-  background: rgba(111, 141, 255, 0.05);
-}
-
-.docs-source code {
-  width: fit-content;
-  max-width: 100%;
-  padding: 7px 10px;
-  overflow-wrap: anywhere;
-  color: var(--blue);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  font-weight: 700;
-  border: 1px solid rgba(111, 141, 255, 0.14);
-  border-radius: 9px;
-  background: var(--blue-soft);
 }
 
 .marketplace-page {
@@ -4774,8 +4693,7 @@ html[lang="ko"] .hero-panel h1 {
 .reveal-section,
 .chase-section,
 .vault-section,
-.roadmap-section,
-.docs-section {
+.roadmap-section {
   margin-top: clamp(38px, 5vw, 72px);
   padding-top: 18px;
   border-top: 1px solid rgba(198, 216, 255, 0.62);
@@ -4940,8 +4858,7 @@ html[lang="ko"] .hero-panel h1 {
 }
 
 .chase-card,
-.roadmap-card,
-.docs-source {
+.roadmap-card {
   border-radius: 16px;
   box-shadow: none;
 }
@@ -4966,8 +4883,7 @@ html[lang="ko"] .hero-panel h1 {
   font-size: 26px;
 }
 
-.vault-row,
-.docs-source {
+.vault-row {
   border-radius: 14px;
   box-shadow: none;
 }
@@ -5303,7 +5219,35 @@ html[lang="ko"] .hero-panel h1 {
   }
 }
 
+@media (max-width: 1600px) and (min-width: 761px) {
+  .events-content {
+    width: min(800px, calc(100% - 64px));
+    padding: 16px;
+  }
+
+  .events-copy {
+    gap: 18px;
+    padding: 28px 24px 24px;
+  }
+
+  .events-copy h1 {
+    font-size: 42px;
+  }
+
+  .events-copy li {
+    font-size: 15px;
+  }
+}
+
 @media (max-width: 1120px) {
+  .roadmap-heading h2 {
+    font-size: 52px;
+  }
+
+  html[lang="ko"] .roadmap-heading h2 {
+    font-size: 40px;
+  }
+
   .app-nav {
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   }
@@ -5515,14 +5459,6 @@ html[lang="ko"] .hero-panel h1 {
     position: static;
   }
 
-  .docs-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .docs-sidebar {
-    position: static;
-  }
-
   .marketplace-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -5692,6 +5628,64 @@ html[lang="ko"] .hero-panel h1 {
 }
 
 @media (max-width: 760px) {
+  .roadmap-heading {
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .roadmap-heading h2 {
+    font-size: 32px;
+  }
+
+  .roadmap-heading-support {
+    gap: 7px;
+    padding-inline: 4px;
+  }
+
+  .roadmap-heading-support p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  html[lang="ko"] .roadmap-heading h2 {
+    font-size: 28px;
+  }
+
+  .events-section {
+    margin-top: 24px;
+    padding: 24px 0 40px;
+  }
+
+  .events-content {
+    width: calc(100% - 32px);
+    padding: 10px;
+    border-radius: 36px;
+  }
+
+  .events-content img {
+    border-radius: 30px;
+  }
+
+  .events-copy {
+    gap: 16px;
+    padding: 26px 12px 20px;
+  }
+
+  .events-copy h1 {
+    font-size: 34px;
+  }
+
+  .events-copy ul {
+    gap: 12px;
+    padding-left: 20px;
+  }
+
+  .events-copy li {
+    padding-left: 2px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
   .product-shell {
     padding: 0;
   }
@@ -5955,7 +5949,6 @@ html[lang="ko"] .hero-panel h1 {
   .hero-price-row,
   .chase-grid,
   .roadmap-grid,
-  .docs-shell,
   .marketplace-toolbar,
   .marketplace-grid,
   .site-footer {
@@ -6087,8 +6080,7 @@ html[lang="ko"] .hero-panel h1 {
     width: min(340px, 100%);
   }
 
-  .roadmap-card,
-  .docs-source {
+  .roadmap-card {
     border-radius: 14px;
   }
 
@@ -6126,7 +6118,8 @@ html[lang="ko"] .hero-panel h1 {
     transition-duration: 0.001ms !important;
   }
 
-  .roadmap-heading h2 span {
+  .roadmap-heading h2,
+  .roadmap-heading-support {
     animation: none !important;
     opacity: 1;
     transform: none;

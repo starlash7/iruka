@@ -19,6 +19,7 @@ type AuthActionsProps = {
   labels: AuthLabels;
   mode: WalletAuthMode;
   onConnectedChange: (connected: boolean) => void;
+  onOpenVault: () => void;
 };
 
 function formatAddress(address: string) {
@@ -29,7 +30,8 @@ export function AuthActions({
   connectSignal,
   labels,
   mode,
-  onConnectedChange
+  onConnectedChange,
+  onOpenVault
 }: AuthActionsProps) {
   if (mode !== "privy") {
     return (
@@ -51,6 +53,7 @@ export function AuthActions({
       connectSignal={connectSignal}
       labels={labels}
       onConnectedChange={onConnectedChange}
+      onOpenVault={onOpenVault}
     />
   );
 }
@@ -58,7 +61,8 @@ export function AuthActions({
 function PrivyAuthActions({
   connectSignal,
   labels,
-  onConnectedChange
+  onConnectedChange,
+  onOpenVault
 }: Omit<AuthActionsProps, "mode">) {
   const { authenticated, login, logout, ready, user } = usePrivy();
   const { wallets } = useWallets();
@@ -78,7 +82,7 @@ function PrivyAuthActions({
   if (authenticated) {
     return (
       <div className="auth-actions">
-        <button className="auth-button auth-button-secondary auth-button-connected" disabled type="button">
+        <button className="auth-button auth-button-secondary auth-button-connected" onClick={onOpenVault} type="button">
           <Wallet size={15} />
           {connectedLabel}
         </button>

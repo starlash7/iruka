@@ -1,0 +1,117 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Iruka",
+  "description": "Product documentation for Iruka collectible packs, verified vault storage, marketplace trading, and physical redemption.",
+  "colors": {
+    "primary": "#1677FF",
+    "light": "#20C7DF",
+    "dark": "#0B63F6"
+  },
+  "logo": {
+    "light": "/images/iruka-wordmark.png",
+    "dark": "/images/iruka-wordmark.png",
+    "href": "https://playiruka.space"
+  },
+  "favicon": "/images/iruka-logo.png",
+  "appearance": {
+    "default": "light",
+    "strict": true
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start Here",
+        "pages": [
+          "overview",
+          "project/how-it-works",
+          "project/official-links"
+        ]
+      },
+      {
+        "group": "Product",
+        "pages": [
+          "product/vending-machine",
+          "product/marketplace",
+          "product/vault",
+          "product/redemption-and-shipping"
+        ]
+      },
+      {
+        "group": "Packs and Odds",
+        "pages": [
+          "packs/pack-information",
+          "packs/rarities-and-odds",
+          "packs/pack-reveal"
+        ]
+      },
+      {
+        "group": "Trust and Policy",
+        "pages": [
+          "policies/ip-and-listing-policy"
+        ]
+      },
+      {
+        "group": "Roadmap",
+        "pages": [
+          "roadmap"
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Iruka",
+        "href": "https://playiruka.space"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Open Iruka",
+      "href": "https://playiruka.space"
+    }
+  },
+  "footer": {
+    "socials": {
+      "website": "https://playiruka.space"
+    },
+    "links": [
+      {
+        "header": "Iruka",
+        "items": [
+          {
+            "label": "Website",
+            "href": "https://playiruka.space"
+          },
+          {
+            "label": "Contact",
+            "href": "mailto:hello@playiruka.space"
+          }
+        ]
+      }
+    ]
+  },
+  "redirects": [
+    {
+      "source": "/project/overview",
+      "destination": "/overview"
+    },
+    {
+      "source": "/README",
+      "destination": "/overview"
+    }
+  ],
+  "seo": {
+    "indexing": "navigable",
+    "metatags": {
+      "canonical": "https://docs.playiruka.space"
+    }
+  },
+  "search": {
+    "prompt": "Search Iruka docs"
+  }
+}

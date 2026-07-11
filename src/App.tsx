@@ -1,21 +1,21 @@
 import {
-  Box,
   Send,
   ShieldCheck,
   Store
 } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AuthActions } from "./AuthActions";
+import girlGroupPackImage from "./assets/girl-group-iruka-pack.jpg";
 import irukaLogo from "./assets/iruka-logo.png";
 import packProductImage from "./assets/iruka-pack-product.png";
 import irukaWordmark from "./assets/iruka-wordmark.png";
-import { DocsView } from "./DocsView";
+import { EventsView } from "./EventsView";
 import { HomeView } from "./HomeView";
 import { MarketplaceView } from "./MarketplaceView";
 import { marketplaceCards, type MarketplaceCard } from "./marketplaceData";
 import type { IrukaRarity, RevealCard } from "./features/pack-reveal/revealConfig";
 import { RoadmapView } from "./RoadmapView";
-import { VaultGuide } from "./VaultGuide";
+import { VaultView } from "./VaultView";
 import { VendingView } from "./VendingView";
 import type {
   CardPull,
@@ -28,7 +28,7 @@ import type {
 
 type WalletAuthMode = "disabled" | "privy";
 type Locale = "en" | "ko";
-type AppView = "home" | "pull" | "marketplace" | "vault" | "roadmap" | "docs";
+type AppView = "home" | "pull" | "marketplace" | "events" | "vault" | "roadmap";
 
 const MINTLIFY_DOCS_URL = "https://docs.playiruka.space/overview";
 const PackRevealOverlay = lazy(() =>
@@ -45,9 +45,8 @@ const copy = {
       marketplace: "Marketplace",
       drops: "Drops",
       chase: "Chase",
-      vault: "Vault",
+      event: "Event",
       roadmap: "Roadmap",
-      docs: "Docs",
       login: "Login",
       signUp: "Sign Up",
       wallet: "Connect wallet",
@@ -132,14 +131,6 @@ const copy = {
       Sold: "Sold",
       "Redeem queued": "Redeem queued"
     },
-    docs: {
-      eyebrow: "Documentation",
-      title: "Iruka Docs",
-      body: "GitBook-style documentation for Iruka's vending, marketplace, vault, redemption, policy, and roadmap flows.",
-      sourceTitle: "GitBook source",
-      sourceBody: "The matching GitBook markdown source is prepared in the repository and can be published later.",
-      sourcePath: "docs/gitbook/SUMMARY.md"
-    },
     footer: {
       body: "2026 Iruka Labs, Inc. All rights reserved.",
       about: "Platform",
@@ -148,7 +139,7 @@ const copy = {
       links: {
         home: "Home",
         marketplace: "Marketplace",
-        vault: "Vault",
+        event: "Event",
         roadmap: "Roadmap",
         contact: "Contact Us",
         documentation: "Documentation"
@@ -172,6 +163,15 @@ const copy = {
       skip: "Skip",
       soundOff: "Sound off",
       soundOn: "Sound on"
+    },
+    eventsPage: {
+      heading: "What's ahead",
+      items: [
+        "Exclusive events will bring fans and creators together through live experiences, special access, and moments shared in person.",
+        "Limited promotional cards and collaboration drops will turn every event into something fans can collect and remember.",
+        "New rewards, community activations, and more ways to participate will arrive as the Iruka universe continues to grow."
+      ],
+      title: "Event"
     }
   },
   ko: {
@@ -181,9 +181,8 @@ const copy = {
       marketplace: "마켓플레이스",
       drops: "드롭",
       chase: "체이스",
-      vault: "보관함",
+      event: "이벤트",
       roadmap: "로드맵",
-      docs: "문서",
       login: "로그인",
       signUp: "가입하기",
       wallet: "지갑 연결",
@@ -268,14 +267,6 @@ const copy = {
       Sold: "판매 완료",
       "Redeem queued": "배송 대기"
     },
-    docs: {
-      eyebrow: "문서",
-      title: "Iruka 문서",
-      body: "자판기, 마켓, 보관함, 배송, 정책, 로드맵을 한곳에 모았어요.",
-      sourceTitle: "GitBook 소스",
-      sourceBody: "배포 전까지는 저장소 문서로 확인할 수 있어요.",
-      sourcePath: "docs/gitbook/SUMMARY.md"
-    },
     footer: {
       body: "2026 Iruka Labs, Inc. All rights reserved.",
       about: "플랫폼",
@@ -284,7 +275,7 @@ const copy = {
       links: {
         home: "홈",
         marketplace: "마켓플레이스",
-        vault: "보관함",
+        event: "이벤트",
         roadmap: "로드맵",
         contact: "문의",
         documentation: "문서 보기"
@@ -308,6 +299,15 @@ const copy = {
       skip: "건너뛰기",
       soundOff: "소리 꺼짐",
       soundOn: "소리 켜짐"
+    },
+    eventsPage: {
+      heading: "앞으로 펼쳐질 것들",
+      items: [
+        "독점 이벤트를 통해 팬과 크리에이터가 현장에서 만나고, 특별한 참여 기회와 순간을 함께 나누게 됩니다.",
+        "한정 프로모션 카드와 협업 드롭으로 각 이벤트를 오래 수집하고 기억할 수 있는 경험으로 만듭니다.",
+        "Iruka 유니버스가 성장할수록 새로운 리워드와 커뮤니티 활동, 더 다양한 참여 방식이 계속 추가됩니다."
+      ],
+      title: "이벤트"
     }
   }
 } as const;
@@ -393,7 +393,7 @@ const packs: Pack[] = [
     remaining: 84,
     total: 120,
     closeTime: "18:42:09",
-    heroImage: packProductImage,
+    heroImage: girlGroupPackImage,
     theme: "Multi-group grails",
     tone: "aqua",
     chaseCards: createChaseCards("girl-grail", [1500000, 1200000, 300000, 80000]),
@@ -588,7 +588,13 @@ function getStoredLocale(): Locale {
 function getInitialView(): AppView {
   if (typeof window === "undefined") return "home";
   const hash = window.location.hash.replace("#", "");
-  return ["pull", "marketplace", "vault", "roadmap", "docs"].includes(hash) ? (hash as AppView) : "home";
+
+  if (hash === "docs") {
+    window.location.replace(MINTLIFY_DOCS_URL);
+    return "home";
+  }
+
+  return ["pull", "marketplace", "events", "roadmap"].includes(hash) ? (hash as AppView) : "home";
 }
 
 function DolphinLogo() {
@@ -712,6 +718,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const noticeTimerRef = useRef<number | undefined>(undefined);
   const revealCompleteRef = useRef(false);
   const revealSectionRef = useRef<HTMLElement | null>(null);
+  const wasWalletConnectedRef = useRef(isWalletConnected);
   const t = copy[locale];
 
   const selectedPack = useMemo(
@@ -728,11 +735,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   ).length;
   const selectedRemaining = Math.max(selectedPack.remaining - openedCount, 0);
   const supplyProgress = progress(selectedRemaining, selectedPack.total);
-  const soldCount = collection.filter((card) => card.vaultStatus === "Sold").length;
-  const redeemQueue = collection.filter(
-    (card) => card.vaultStatus === "Redeem queued"
-  );
-  const hasVaultOps = soldCount > 0 || redeemQueue.length > 0;
   const walletRequired = walletAuth === "privy" && !isWalletConnected;
   const isPrimaryView = activeView === "pull";
 
@@ -744,6 +746,20 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   useEffect(() => {
     return () => window.clearTimeout(noticeTimerRef.current);
   }, []);
+
+  useEffect(() => {
+    const wasConnected = wasWalletConnectedRef.current;
+    wasWalletConnectedRef.current = isWalletConnected;
+
+    if (walletAuth !== "privy" || !wasConnected || isWalletConnected) return;
+
+    setCollection([]);
+    setActivePull(undefined);
+    setPendingReveal(undefined);
+    setIsOpening(false);
+    setActiveView("home");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [isWalletConnected, walletAuth]);
 
   function showNotice(message: string) {
     window.clearTimeout(noticeTimerRef.current);
@@ -772,6 +788,12 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   }
 
   function showView(view: AppView, targetId?: string) {
+    if (view === "vault" && walletRequired) {
+      setWalletPromptSignal((value) => value + 1);
+      showNotice(t.feedback.connectWallet);
+      return;
+    }
+
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     setActiveView(view);
@@ -898,6 +920,14 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           >
             {t.nav.marketplace}
           </button>
+          <button
+            aria-pressed={activeView === "events"}
+            className={activeView === "events" ? "selected" : ""}
+            onClick={() => showView("events")}
+            type="button"
+          >
+            {t.nav.event}
+          </button>
         </nav>
         <a className="header-wordmark" href="/" aria-label="Iruka home">
           <img src={irukaWordmark} alt="Iruka" />
@@ -928,6 +958,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             }}
             mode={walletAuth}
             onConnectedChange={setIsWalletConnected}
+            onOpenVault={() => showView("vault")}
           />
         </div>
       </header>
@@ -983,60 +1014,32 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         />
       ) : null}
 
-      {activeView === "vault" ? (
-        <section className="vault-section" id="vault">
-          <div className="section-heading">
-            <h2>{t.sections.vault}</h2>
-            <span>
-              {collection.length > 0
-                ? `${collection.length} ${t.sections.cards}`
-                : t.sections.empty}
-            </span>
-          </div>
+      {activeView === "events" ? (
+        <EventsView copy={t.eventsPage} />
+      ) : null}
 
-          {collection.length > 0 ? (
-            <div className="vault-table">
-              {collection.map((card) => (
-                <button
-                  className="vault-row"
-                  key={card.id}
-                  onClick={() => setActivePull(card)}
-                  type="button"
-                >
-                  <span className={`rarity-dot ${rarityStyles[card.rarity]}`} />
-                  <strong>{card.member}</strong>
-                  <span>{card.group}</span>
-                  <span>{formatWon(card.estimatedValue)}</span>
-                  <span>{t.statuses[card.vaultStatus]}</span>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="vault-empty">
-              <Box size={28} />
-              <strong>{t.sections.vaultEmpty}</strong>
-            </div>
-          )}
-
-          {renderActivePullActions()}
-
-          {hasVaultOps ? (
-            <div className="vault-ops" id="redeem">
-              {soldCount > 0 ? <span>{t.sections.sold} {soldCount}</span> : null}
-              {redeemQueue.length > 0 ? <span>{t.sections.redeem} {redeemQueue.length}</span> : null}
-            </div>
-          ) : null}
-
-          <VaultGuide locale={locale} statusLabels={t.statuses} />
-        </section>
+      {activeView === "vault" && isWalletConnected ? (
+        <VaultView
+          cards={collection}
+          copy={{
+            cards: t.sections.cards,
+            empty: t.sections.empty,
+            redeem: t.sections.redeem,
+            sold: t.sections.sold,
+            title: t.sections.vault,
+            vaultEmpty: t.sections.vaultEmpty
+          }}
+          formatValue={formatWon}
+          locale={locale}
+          onSelectCard={setActivePull}
+          pullActions={renderActivePullActions()}
+          rarityClassNames={rarityStyles}
+          statusLabels={t.statuses}
+        />
       ) : null}
 
       {activeView === "roadmap" ? (
         <RoadmapView locale={locale} />
-      ) : null}
-
-      {activeView === "docs" ? (
-        <DocsView copy={t.docs} locale={locale} />
       ) : null}
 
       <footer className="site-footer" id="footer">
@@ -1063,8 +1066,8 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
         <nav className="footer-column" aria-label={t.footer.quickLinks}>
           <h2>{t.footer.quickLinks}</h2>
-          <button onClick={() => showView("vault")} type="button">
-            {t.footer.links.vault}
+          <button onClick={() => showView("events")} type="button">
+            {t.footer.links.event}
           </button>
           <button onClick={() => showView("roadmap")} type="button">
             {t.footer.links.roadmap}
@@ -1076,7 +1079,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
         <nav className="footer-column" aria-label={t.footer.support}>
           <h2>{t.footer.support}</h2>
-          <a href="mailto:hello@playiruka.io">{t.footer.links.contact}</a>
+          <a href="mailto:hello@playiruka.space">{t.footer.links.contact}</a>
         </nav>
       </footer>
 

@@ -1,4 +1,5 @@
 import { PrivyProvider, type PrivyClientConfig } from "@privy-io/react-auth";
+import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { defineChain } from "viem";
@@ -27,18 +28,27 @@ export const giwaSepolia = defineChain({
   testnet: true
 });
 
+const solanaConnectors = toSolanaWalletConnectors({
+  shouldAutoConnect: true
+});
+
 const privyConfig: PrivyClientConfig = {
   loginMethods: ["wallet", "email", "google"],
   appearance: {
     accentColor: "#1677FF",
     showWalletLoginFirst: true,
     theme: "light",
-    walletChainType: "ethereum-only",
-    walletList: ["metamask", "phantom", "okx_wallet"]
+    walletChainType: "solana-only",
+    walletList: ["phantom", "okx_wallet", "metamask"]
   },
   embeddedWallets: {
     ethereum: {
       createOnLogin: "users-without-wallets"
+    }
+  },
+  externalWallets: {
+    solana: {
+      connectors: solanaConnectors
     }
   },
   supportedChains: [giwaSepolia]

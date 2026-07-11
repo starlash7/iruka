@@ -1,4 +1,4 @@
-import { PackageCheck, PackageOpen, ShieldCheck, Wallet } from "lucide-react";
+import { BadgeCheck, PackageOpen, Truck, Wallet } from "lucide-react";
 import type { ReactNode, Ref } from "react";
 import { IrukaBeam } from "./IrukaBeam";
 import type { CardPull, Category, Pack, PackCopy, Rarity } from "./vendingTypes";
@@ -90,11 +90,15 @@ export function VendingView({
           <div className="vending-trust-row">
             <span>{copy.categories[selectedPack.category]}</span>
             <span>
-              <ShieldCheck size={14} />
+              <i className="vending-trust-icon" aria-hidden="true">
+                <BadgeCheck size={16} strokeWidth={2.1} />
+              </i>
               {copy.labels.vaultEligible}
             </span>
             <span>
-              <PackageCheck size={14} />
+              <i className="vending-trust-icon vending-trust-icon-redemption" aria-hidden="true">
+                <Truck size={15} strokeWidth={1.9} />
+              </i>
               {copy.labels.physicalRedemption}
             </span>
           </div>
