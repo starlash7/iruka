@@ -1,9 +1,8 @@
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { LogIn, LogOut, UserPlus, Wallet } from "lucide-react";
 import { useEffect } from "react";
+import type { WalletAuthMode } from "./appTypes";
 import { IrukaBeam } from "./IrukaBeam";
-
-type WalletAuthMode = "disabled" | "privy";
 
 type AuthLabels = {
   connected: string;

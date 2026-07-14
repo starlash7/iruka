@@ -1,8 +1,9 @@
 import { Send, ShieldCheck, Store, Tag } from "lucide-react";
+import type { Locale } from "./appTypes";
 import { vaultContent, type VaultStatusKey } from "./vaultContent";
 
 type VaultGuideProps = {
-  locale: "en" | "ko";
+  locale: Locale;
   statusLabels: Record<VaultStatusKey, string>;
 };
 

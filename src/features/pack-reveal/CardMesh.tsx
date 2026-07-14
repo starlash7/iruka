@@ -1,6 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import { CanvasTexture, DoubleSide, Group, MathUtils, SRGBColorSpace } from "three";
+import { formatUsd } from "../../currency";
 import type { RevealCard, RevealConfig, RevealPhase } from "./revealConfig";
 
 type CardMeshProps = {
@@ -95,15 +96,7 @@ function createCardTexture(card: RevealCard, config: RevealConfig) {
   context.textAlign = "right";
   context.fillStyle = "#101828";
   context.font = "900 28px Inter, Arial, sans-serif";
-  context.fillText(
-    new Intl.NumberFormat("ko-KR", {
-      currency: "KRW",
-      maximumFractionDigits: 0,
-      style: "currency"
-    }).format(card.estimatedValue),
-    554,
-    820
-  );
+  context.fillText(formatUsd(card.estimatedValue), 554, 820);
 
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;

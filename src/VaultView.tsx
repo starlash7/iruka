@@ -1,5 +1,6 @@
 import { Box } from "lucide-react";
 import type { ReactNode } from "react";
+import type { Locale } from "./appTypes";
 import { VaultGuide } from "./VaultGuide";
 import type { CardPull, Rarity, VaultStatus } from "./vendingTypes";
 
@@ -14,7 +15,8 @@ type VaultViewProps = {
     vaultEmpty: string;
   };
   formatValue: (value: number) => string;
-  locale: "en" | "ko";
+  getCardImageUrl: (card: CardPull) => string;
+  locale: Locale;
   onSelectCard: (card: CardPull) => void;
   pullActions: ReactNode;
   rarityClassNames: Readonly<Record<Rarity, string>>;
@@ -25,6 +27,7 @@ export function VaultView({
   cards,
   copy,
   formatValue,
+  getCardImageUrl,
   locale,
   onSelectCard,
   pullActions,
@@ -50,7 +53,10 @@ export function VaultView({
               onClick={() => onSelectCard(card)}
               type="button"
             >
-              <span className={`rarity-dot ${rarityClassNames[card.rarity]}`} />
+              <span className="vault-card-thumb">
+                <img alt="" src={getCardImageUrl(card)} />
+                <i className={`rarity-dot ${rarityClassNames[card.rarity]}`} />
+              </span>
               <strong>{card.member}</strong>
               <span>{card.group}</span>
               <span>{formatValue(card.estimatedValue)}</span>

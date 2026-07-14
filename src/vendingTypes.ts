@@ -18,7 +18,6 @@ export type ChaseCard = {
 export type Pack = {
   category: Category;
   chaseCards: ChaseCard[];
-  closeTime: string;
   heroImage: string;
   id: string;
   name: string;
@@ -26,8 +25,6 @@ export type Pack = {
   price: number;
   remaining: number;
   shortName: string;
-  theme: string;
-  tone: string;
   total: number;
 };
 
@@ -38,17 +35,17 @@ export type PackCopy = {
 };
 
 export type CardPull = {
-  buybackValue: number;
   category: Category;
   estimatedValue: number;
   group: string;
   id: string;
+  imageUrl?: string;
   imageStyle: string;
+  marketplaceInventoryId?: string;
   member: string;
   packId: string;
   pulledAt: string;
   rarity: Rarity;
-  redeemable: boolean;
   serial: string;
   vaultStatus: VaultStatus;
 };

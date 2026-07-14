@@ -1,183 +1,260 @@
-import { ArrowUpDown, Search, ShieldCheck, Store } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowUpDown, PackageOpen, Search, SlidersHorizontal, Store, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { MarketplaceCardTile } from "./MarketplaceCardTile";
+import { MarketplaceDetailDialog } from "./MarketplaceDetailDialog";
+import { MarketplaceDialog } from "./MarketplaceDialog";
 import { MarketplaceFilterPanel } from "./MarketplaceFilterPanel";
-import type { MarketplaceCard } from "./marketplaceData";
+import { MarketplaceOwnedCards } from "./MarketplaceOwnedCards";
+import {
+  marketplaceBrowseCategories,
+  type MarketplaceBrowseCategory
+} from "./marketplaceBrowse";
+import type { MarketplaceItem, MarketplaceListing, MarketplaceListingStatus } from "./marketplaceData";
 import {
   buildMarketplaceFilterGroups,
-  cycleMarketplaceSort,
   filterMarketplaceCards,
   filterOptionKey,
-  formatMarketWon,
   sortMarketplaceCards,
   type MarketplaceLocale,
   type MarketplaceSort
 } from "./marketplaceFilters";
+import type { CardPull } from "./vendingTypes";
 
-type CardStatus = "Vaulted" | "Listed" | "Sold" | "Redeem queued";
-type CardCategory = "K-pop" | "TCG";
-type CardRarity = "Common" | "Rare" | "Epic" | "Legendary" | "Iruka";
-
-type OwnedCard = {
-  category: CardCategory;
-  estimatedValue: number;
-  group: string;
-  id: string;
-  member: string;
-  rarity: CardRarity;
-  serial: string;
-  vaultStatus: CardStatus;
-};
-
-type MarketplaceCopy = {
+export type MarketplaceViewCopy = {
+  browseCategories: Record<MarketplaceBrowseCategory, string>;
+  browseCategoriesLabel: string;
+  browsePhotocards: string;
   buyNow: string;
+  cancelListing: string;
+  clear: string;
+  close: string;
+  comingSoon: string;
+  condition: string;
+  delivery: string;
+  deliveryEligible: string;
+  editPrice: string;
   filterLabels: readonly string[];
   filters: string;
-  fmv: string;
+  fixedPrice: string;
+  listForSale: string;
+  listingPrice: string;
+  noResults: string;
   ownedEmpty: string;
   ownedTitle: string;
+  priceHistory: string;
+  recentSale: string;
+  recentSales: string;
   results: string;
   search: string;
   sell: string;
+  sellFromVault: string;
+  serial: string;
   sort: string;
+  sortOptions: Record<MarketplaceSort, string>;
+  statusLabels: Record<MarketplaceListingStatus, string>;
+  thirtyDayRange: string;
   title: string;
+  updateListing: string;
+  vaultVerified: string;
+  version: string;
 };
 
 type MarketplaceViewProps = {
-  copy: MarketplaceCopy;
-  items: MarketplaceCard[];
+  browseCategory: MarketplaceBrowseCategory;
+  copy: MarketplaceViewCopy;
+  items: MarketplaceItem[];
+  listings: MarketplaceListing[];
   locale: MarketplaceLocale;
-  onBuy: (item: MarketplaceCard) => void;
-  onSell: (card: OwnedCard) => void;
-  ownedCards: OwnedCard[];
+  onBrowseCategoryChange: (category: MarketplaceBrowseCategory) => void;
+  onBuy: (item: MarketplaceItem) => void;
+  onOpenSell: (card: CardPull) => void;
+  onTargetListingHandled: () => void;
+  ownedCards: CardPull[];
+  targetListingId: string | undefined;
 };
 
 export function MarketplaceView({
+  browseCategory,
   copy,
   items,
+  listings,
   locale,
+  onBrowseCategoryChange,
   onBuy,
-  onSell,
-  ownedCards
+  onOpenSell,
+  onTargetListingHandled,
+  ownedCards,
+  targetListingId
 }: MarketplaceViewProps) {
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<ReadonlySet<string>>(new Set());
+  const [selectedListingId, setSelectedListingId] = useState<string>();
   const [sort, setSort] = useState<MarketplaceSort>("recent");
 
   const groups = useMemo(
     () => buildMarketplaceFilterGroups(items, copy.filterLabels, locale),
-    [items, copy.filterLabels, locale]
+    [copy.filterLabels, items, locale]
   );
   const visibleItems = useMemo(
-    () =>
-      sortMarketplaceCards(
-        filterMarketplaceCards(items, groups, selectedKeys, query),
-        sort
-      ),
-    [items, groups, selectedKeys, query, sort]
+    () => sortMarketplaceCards(filterMarketplaceCards(items, groups, selectedKeys, query), sort),
+    [groups, items, query, selectedKeys, sort]
   );
-  const featuredId = visibleItems.find((item) => item.rarity === "Iruka")?.id;
+  const selectedItem = items.find((item) => item.listing.id === selectedListingId);
+  const showPhotocards = browseCategory === "all" || browseCategory === "photocards";
+  const featuredId = visibleItems.find(
+    (item) => item.card.rarity === "Iruka" && item.listing.status === "Available"
+  )?.listing.id;
 
-  function toggleOption(groupIndex: number, value: string) {
+  useEffect(() => {
+    if (!targetListingId) return;
+    if (items.some((item) => item.listing.id === targetListingId)) {
+      setSelectedListingId(targetListingId);
+    }
+    onTargetListingHandled();
+  }, [items, onTargetListingHandled, targetListingId]);
+
+  function toggleOption(groupKey: string, optionKey: string) {
     setSelectedKeys((keys) => {
       const next = new Set(keys);
-      const key = filterOptionKey(groupIndex, value);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
+      const key = filterOptionKey(groupKey, optionKey);
+      next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
   }
 
   function scrollToOwned() {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    document.getElementById("owned-cards")?.scrollIntoView({
-      behavior: prefersReducedMotion ? "auto" : "smooth",
-      block: "start"
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!showPhotocards) onBrowseCategoryChange("photocards");
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById("owned-cards")?.scrollIntoView({
+          behavior: reduced ? "auto" : "smooth",
+          block: "start"
+        });
+      });
     });
   }
+
+  function selectBrowseCategory(category: MarketplaceBrowseCategory) {
+    setFilterDialogOpen(false);
+    setSelectedListingId(undefined);
+    onBrowseCategoryChange(category);
+  }
+
+  const filterPanel = (
+    <MarketplaceFilterPanel
+      clearLabel={copy.clear}
+      groups={groups}
+      items={items}
+      onClear={() => setSelectedKeys(new Set())}
+      onToggleOption={toggleOption}
+      selectedKeys={selectedKeys}
+      title={copy.filters}
+    />
+  );
 
   return (
     <section className="marketplace-page" id="marketplace">
       <div className="marketplace-title-row">
-        <h1>{copy.title}</h1>
-        <span>{visibleItems.length} {copy.results}</span>
+        <div>
+          <h1>{copy.title}</h1>
+          <span>{showPhotocards ? visibleItems.length : 0} {copy.results}</span>
+        </div>
+        <button onClick={scrollToOwned} type="button"><Store size={16} />{copy.sell}</button>
       </div>
 
-      <div className="marketplace-shell">
-        <MarketplaceFilterPanel
-          groups={groups}
-          items={items}
-          onToggleOption={toggleOption}
-          selectedKeys={selectedKeys}
-          title={copy.filters}
-        />
+      <nav className="marketplace-browse-categories" aria-label={copy.browseCategoriesLabel}>
+        {marketplaceBrowseCategories.map((category) => (
+          <button
+            aria-pressed={browseCategory === category}
+            className={browseCategory === category ? "selected" : ""}
+            key={category}
+            onClick={() => selectBrowseCategory(category)}
+            type="button"
+          >
+            {copy.browseCategories[category]}
+          </button>
+        ))}
+      </nav>
 
-        <div className="marketplace-main">
-          <div className="marketplace-toolbar">
-            <label className="marketplace-search">
-              <Search size={17} />
-              <input
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={copy.search}
-                type="search"
-                value={query}
-              />
-            </label>
-            <button
-              aria-pressed={sort !== "recent"}
-              className={sort === "recent" ? "" : "selected"}
-              onClick={() => setSort(cycleMarketplaceSort)}
-              type="button"
-            >
-              <ArrowUpDown size={16} />
-              {copy.sort}
-              {sort === "recent" ? null : <b>{sort === "price-desc" ? "₩↓" : "₩↑"}</b>}
-            </button>
-            <button onClick={scrollToOwned} type="button">
-              <Store size={16} />
-              {copy.sell}
-            </button>
-          </div>
+      {showPhotocards ? (
+        <div className="marketplace-shell">
+          <aside className="marketplace-filter-sidebar">{filterPanel}</aside>
 
-          <div className="marketplace-grid">
-            {visibleItems.map((item) => (
-              <MarketplaceCardTile
-                buyLabel={copy.buyNow}
-                featured={item.id === featuredId}
-                fmvLabel={copy.fmv}
-                item={item}
-                key={item.id}
-                locale={locale}
-                onBuy={onBuy}
-              />
-            ))}
-          </div>
-
-          <section className="marketplace-owned" aria-label={copy.ownedTitle} id="owned-cards">
-            <div className="section-heading compact">
-              <h2>{copy.ownedTitle}</h2>
+          <div className="marketplace-main">
+            <div className="marketplace-toolbar">
+              <label className="marketplace-search">
+                <Search size={17} />
+                <input onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} type="search" value={query} />
+              </label>
+              <button className="marketplace-mobile-filter" onClick={() => setFilterDialogOpen(true)} type="button">
+                <SlidersHorizontal size={16} />
+                {copy.filters}
+                {selectedKeys.size > 0 ? <b>{selectedKeys.size}</b> : null}
+              </button>
+              <label className="marketplace-sort">
+                <ArrowUpDown size={16} />
+                <span>{copy.sort}</span>
+                <select onChange={(event) => setSort(event.target.value as MarketplaceSort)} value={sort}>
+                  <option value="recent">{copy.sortOptions.recent}</option>
+                  <option value="price-asc">{copy.sortOptions["price-asc"]}</option>
+                  <option value="price-desc">{copy.sortOptions["price-desc"]}</option>
+                </select>
+              </label>
             </div>
-            {ownedCards.length > 0 ? (
-              <div className="owned-list">
-                {ownedCards.map((card) => (
-                  <button key={card.id} onClick={() => onSell(card)} type="button">
-                    <ShieldCheck size={16} />
-                    <span>{card.serial}</span>
-                    <strong>{card.member}</strong>
-                    <small>{formatMarketWon(card.estimatedValue, locale)}</small>
-                  </button>
+
+            {visibleItems.length > 0 ? (
+              <div className="marketplace-grid">
+                {visibleItems.map((item) => (
+                  <MarketplaceCardTile
+                    buyLabel={copy.buyNow}
+                    featured={item.listing.id === featuredId}
+                    item={item}
+                    key={item.listing.id}
+                    locale={locale}
+                    onBuy={onBuy}
+                    onOpen={(selected) => setSelectedListingId(selected.listing.id)}
+                    recentLabel={copy.recentSale}
+                    statusLabel={copy.statusLabels[item.listing.status]}
+                    vaultLabel={copy.vaultVerified}
+                  />
                 ))}
               </div>
             ) : (
-              <div className="owned-empty">{copy.ownedEmpty}</div>
+              <div className="marketplace-no-results">{copy.noResults}</div>
             )}
-          </section>
+
+            <MarketplaceOwnedCards
+              cards={ownedCards}
+              editPriceLabel={copy.editPrice}
+              emptyLabel={copy.ownedEmpty}
+              listForSaleLabel={copy.listForSale}
+              listings={listings}
+              onOpenSell={onOpenSell}
+              title={copy.ownedTitle}
+            />
+          </div>
         </div>
-      </div>
+      ) : (
+        <section className="marketplace-coming-soon" aria-live="polite">
+          <span><PackageOpen size={24} /></span>
+          <h2>{copy.browseCategories[browseCategory]}</h2>
+          <strong>{copy.comingSoon}</strong>
+          <button onClick={() => selectBrowseCategory("photocards")} type="button">
+            {copy.browsePhotocards}
+          </button>
+        </section>
+      )}
+
+      <MarketplaceDialog className="market-filter-dialog" labelId="market-filter-title" onRequestClose={() => setFilterDialogOpen(false)} open={filterDialogOpen}>
+        <div className="market-filter-dialog-panel">
+          <header><h2 id="market-filter-title">{copy.filters}</h2><button aria-label={copy.close} data-autofocus onClick={() => setFilterDialogOpen(false)} title={copy.close} type="button"><X size={20} /></button></header>
+          {filterPanel}
+        </div>
+      </MarketplaceDialog>
+
+      <MarketplaceDetailDialog copy={copy} item={selectedItem} locale={locale} onBuy={onBuy} onClose={() => setSelectedListingId(undefined)} />
     </section>
   );
 }

@@ -7,6 +7,7 @@ import {
   useRef,
   useState
 } from "react";
+import { formatUsd } from "../../currency";
 import { RevealScene } from "./RevealScene";
 import { getRevealConfig, type RevealCard } from "./revealConfig";
 import { useRevealTimeline } from "./useRevealTimeline";
@@ -113,11 +114,7 @@ function RevealFallback({
       </div>
       <div className="pack-reveal-value">
         <span>{labels.estimatedValue}</span>
-        <strong>{new Intl.NumberFormat("ko-KR", {
-          currency: "KRW",
-          maximumFractionDigits: 0,
-          style: "currency"
-        }).format(card.estimatedValue)}</strong>
+        <strong>{formatUsd(card.estimatedValue)}</strong>
       </div>
     </div>
   );

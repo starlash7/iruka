@@ -1,54 +1,60 @@
+import { ShieldCheck } from "lucide-react";
+import { formatUsd } from "./currency";
 import { IrukaBeam } from "./IrukaBeam";
-import type { MarketplaceCard } from "./marketplaceData";
-import { formatMarketWon, type MarketplaceLocale } from "./marketplaceFilters";
+import { getMarketplaceSaleRange, type MarketplaceItem } from "./marketplaceData";
+import {
+  getMarketplaceCardTypeLabel,
+  getMarketplaceConditionLabel,
+  type MarketplaceLocale
+} from "./marketplaceFilters";
 
 type MarketplaceCardTileProps = {
   buyLabel: string;
   featured: boolean;
-  fmvLabel: string;
-  item: MarketplaceCard;
+  item: MarketplaceItem;
   locale: MarketplaceLocale;
-  onBuy: (item: MarketplaceCard) => void;
+  onBuy: (item: MarketplaceItem) => void;
+  onOpen: (item: MarketplaceItem) => void;
+  recentLabel: string;
+  statusLabel: string;
+  vaultLabel: string;
 };
 
-function getCardInitials(item: MarketplaceCard) {
-  return item.member
-    .split(/\s+/)
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
+function MarketCard(props: Omit<MarketplaceCardTileProps, "featured">) {
+  const { buyLabel, item, locale, onBuy, onOpen, recentLabel, statusLabel, vaultLabel } = props;
+  const available = item.listing.status === "Available";
+  const saleRange = getMarketplaceSaleRange(item.sales);
 
-function renderMarketCard({
-  buyLabel,
-  fmvLabel,
-  item,
-  locale,
-  onBuy
-}: Omit<MarketplaceCardTileProps, "featured">) {
   return (
-    <article className="market-card">
-      <div className={`market-card-art tone-${item.tone}`}>
-        <span className="market-card-points">{item.points}</span>
-        <div className={`market-card-slab rarity-${item.rarity.toLowerCase()}`}>
-          <span>{item.grade}</span>
-          <div className="market-card-photo" aria-hidden="true">
-            <i />
-            <b>{getCardInitials(item)}</b>
-          </div>
-          <small>{item.serial}</small>
+    <article className={`market-card rarity-${item.card.rarity.toLowerCase()}`}>
+      <button
+        aria-label={`${item.card.group} ${item.card.title}`}
+        className="market-card-open"
+        onClick={() => onOpen(item)}
+        type="button"
+      >
+        <div className="market-card-art">
+          <img alt="" loading="lazy" src={item.card.imageUrl} />
+          <span className="market-vault-badge">
+            <ShieldCheck size={12} />
+            {vaultLabel}
+          </span>
+          {!available ? <span className={`market-status-badge status-${item.listing.status.toLowerCase()}`}>{statusLabel}</span> : null}
         </div>
-      </div>
-      <div className="market-card-copy">
-        <span>{item.category} · {item.rarity}</span>
-        <strong>{item.title}</strong>
+        <div className="market-card-copy">
+          <span>{item.card.group} · {getMarketplaceCardTypeLabel(item.card.cardType, locale)}</span>
+          <strong>{item.card.title}</strong>
+          <small>{item.card.release} · {getMarketplaceConditionLabel(item.inventory.condition, locale)}</small>
+        </div>
+      </button>
+
+      <div className="market-card-price">
         <div>
-          <b>{formatMarketWon(item.price, locale)}</b>
-          <small>{fmvLabel} {formatMarketWon(item.fmv, locale)}</small>
+          <b>{formatUsd(item.listing.fixedPrice)}</b>
+          <small>{recentLabel} {formatUsd(saleRange.recent)}</small>
         </div>
-        <button onClick={() => onBuy(item)} type="button">
-          {buyLabel}
+        <button disabled={!available} onClick={() => onBuy(item)} type="button">
+          {available ? buyLabel : statusLabel}
         </button>
       </div>
     </article>
@@ -56,15 +62,10 @@ function renderMarketCard({
 }
 
 export function MarketplaceCardTile(props: MarketplaceCardTileProps) {
-  const card = renderMarketCard(props);
-
-  if (props.featured) {
-    return (
-      <IrukaBeam className="market-card-beam" variant="selection">
-        {card}
-      </IrukaBeam>
-    );
-  }
-
-  return <div className="market-card-cell">{card}</div>;
+  const card = <MarketCard {...props} />;
+  return props.featured ? (
+    <IrukaBeam borderRadius={18} className="market-card-beam" variant="selection">{card}</IrukaBeam>
+  ) : (
+    <div className="market-card-cell">{card}</div>
+  );
 }

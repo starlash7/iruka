@@ -1,0 +1,186 @@
+import { ArrowRight } from "lucide-react";
+import acrylicStandsImage from "./assets/home-discovery/acrylic-stands.webp";
+import albumsImage from "./assets/home-discovery/albums.webp";
+import apparelImage from "./assets/home-discovery/apparel.webp";
+import fanKitsImage from "./assets/home-discovery/fan-kits.webp";
+import keyringsImage from "./assets/home-discovery/keyrings.webp";
+import lightsticksImage from "./assets/home-discovery/lightsticks.webp";
+import photocardsImage from "./assets/home-discovery/photocards.webp";
+import plushCharmsImage from "./assets/home-discovery/plush-charms.webp";
+import { formatUsd } from "./currency";
+import { homeBrowseCategories, type MarketplaceBrowseCategory } from "./marketplaceBrowse";
+import type { MarketplaceItem } from "./marketplaceData";
+import {
+  getMarketplaceCardTypeLabel,
+  type MarketplaceLocale
+} from "./marketplaceFilters";
+
+export type HomeDiscoveryCopy = {
+  categoryLabels: Record<MarketplaceBrowseCategory, string>;
+  hotPhotocards: string;
+  newArrivals: string;
+  trendingNow: string;
+  viewAll: string;
+};
+
+type HomeDiscoveryProps = {
+  copy: HomeDiscoveryCopy;
+  items: MarketplaceItem[];
+  locale: MarketplaceLocale;
+  onBrowseCategory: (category: MarketplaceBrowseCategory) => void;
+  onOpenItem: (listingId: string) => void;
+};
+
+const categoryImages: Record<Exclude<MarketplaceBrowseCategory, "all">, string> = {
+  photocards: photocardsImage,
+  albums: albumsImage,
+  lightsticks: lightsticksImage,
+  "fan-kits": fanKitsImage,
+  apparel: apparelImage,
+  "acrylic-stands": acrylicStandsImage,
+  keyrings: keyringsImage,
+  "plush-charms": plushCharmsImage
+};
+
+const hotCardOrder = [
+  "lumina-ari-signal",
+  "museon-yuna-encore",
+  "northstar-ren-signal",
+  "zeroseven-tae-encore",
+  "lumina-nari-signal",
+  "northstar-ido-encore"
+] as const;
+
+function getAvailableItems(items: MarketplaceItem[]) {
+  return items.filter((item) => item.listing.status === "Available");
+}
+
+function getHotItems(items: MarketplaceItem[]) {
+  const available = getAvailableItems(items);
+  const ranked = hotCardOrder.flatMap((cardId) => {
+    const item = available.find((candidate) => candidate.card.id === cardId);
+    return item ? [item] : [];
+  });
+  const rankedIds = new Set(ranked.map((item) => item.card.id));
+  const backfill = available
+    .filter((item) => !rankedIds.has(item.card.id))
+    .sort((a, b) => (b.sales[0]?.soldAt ?? "").localeCompare(a.sales[0]?.soldAt ?? ""));
+
+  return [...ranked, ...backfill].slice(0, 6);
+}
+
+function getNewItems(items: MarketplaceItem[]) {
+  return getAvailableItems(items)
+    .sort((a, b) => b.listing.listedAt.localeCompare(a.listing.listedAt))
+    .slice(0, 6);
+}
+
+function HomePhotocard({
+  item,
+  locale,
+  onOpen
+}: {
+  item: MarketplaceItem;
+  locale: MarketplaceLocale;
+  onOpen: (listingId: string) => void;
+}) {
+  return (
+    <button
+      aria-label={`${item.card.group} ${item.card.title}`}
+      className="home-market-card"
+      onClick={() => onOpen(item.listing.id)}
+      type="button"
+    >
+      <span className="home-market-card-image">
+        <img alt="" decoding="async" loading="lazy" src={item.card.imageUrl} />
+      </span>
+      <span className="home-market-card-copy">
+        <small>{item.card.group} · {getMarketplaceCardTypeLabel(item.card.cardType, locale)}</small>
+        <strong>{item.card.title}</strong>
+        <b>{formatUsd(item.listing.fixedPrice)}</b>
+      </span>
+    </button>
+  );
+}
+
+function PhotocardSection({
+  items,
+  locale,
+  onOpenItem,
+  onViewAll,
+  title,
+  viewAll
+}: {
+  items: MarketplaceItem[];
+  locale: MarketplaceLocale;
+  onOpenItem: (listingId: string) => void;
+  onViewAll: () => void;
+  title: string;
+  viewAll: string;
+}) {
+  return (
+    <section className="home-discovery-section">
+      <header className="home-discovery-heading">
+        <h2>{title}</h2>
+        <button onClick={onViewAll} type="button">
+          {viewAll}
+          <ArrowRight size={16} />
+        </button>
+      </header>
+      <div className="home-market-grid">
+        {items.map((item) => (
+          <HomePhotocard item={item} key={item.listing.id} locale={locale} onOpen={onOpenItem} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function HomeDiscovery({
+  copy,
+  items,
+  locale,
+  onBrowseCategory,
+  onOpenItem
+}: HomeDiscoveryProps) {
+  const hotItems = getHotItems(items);
+  const newItems = getNewItems(items);
+
+  return (
+    <div className="home-discovery">
+      <section className="home-discovery-section">
+        <header className="home-discovery-heading home-trending-heading"><h2>{copy.trendingNow}</h2></header>
+        <div className="home-category-grid">
+          {homeBrowseCategories.map((category) => (
+            <button
+              className="home-category-tile"
+              key={category}
+              onClick={() => onBrowseCategory(category)}
+              type="button"
+            >
+              <span><img alt="" decoding="async" loading="lazy" src={categoryImages[category]} /></span>
+              <strong>{copy.categoryLabels[category]}</strong>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <PhotocardSection
+        items={hotItems}
+        locale={locale}
+        onOpenItem={onOpenItem}
+        onViewAll={() => onBrowseCategory("photocards")}
+        title={copy.hotPhotocards}
+        viewAll={copy.viewAll}
+      />
+      <PhotocardSection
+        items={newItems}
+        locale={locale}
+        onOpenItem={onOpenItem}
+        onViewAll={() => onBrowseCategory("photocards")}
+        title={copy.newArrivals}
+        viewAll={copy.viewAll}
+      />
+    </div>
+  );
+}
