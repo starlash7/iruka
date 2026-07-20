@@ -1,36 +1,15 @@
 import { PrivyProvider, type PrivyClientConfig } from "@privy-io/react-auth";
-import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { defineChain } from "viem";
 import App from "./App";
+import { giwaSepolia } from "./giwaChain.ts";
 import "./styles.css";
-
-export const giwaSepolia = defineChain({
-  id: 91342,
-  name: "GIWA Sepolia",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Ether",
-    symbol: "ETH"
-  },
-  rpcUrls: {
-    default: {
-      http: ["https://sepolia-rpc.giwa.io"]
-    }
-  },
-  blockExplorers: {
-    default: {
-      name: "GIWA Sepolia Explorer",
-      url: "https://sepolia-explorer.giwa.io"
-    }
-  },
-  testnet: true
-});
-
-const solanaConnectors = toSolanaWalletConnectors({
-  shouldAutoConnect: true
-});
+import "./vending-layout.css";
+import "./vending-purchase.css";
+import "./vending-odds.css";
+import "./vending-sections.css";
+import "./vending-inventory.css";
+import "./vending-responsive.css";
 
 const privyConfig: PrivyClientConfig = {
   loginMethods: ["wallet", "email", "google"],
@@ -38,17 +17,12 @@ const privyConfig: PrivyClientConfig = {
     accentColor: "#1677FF",
     showWalletLoginFirst: true,
     theme: "light",
-    walletChainType: "solana-only",
+    walletChainType: "ethereum-only",
     walletList: ["phantom", "okx_wallet", "metamask"]
   },
   embeddedWallets: {
     ethereum: {
       createOnLogin: "users-without-wallets"
-    }
-  },
-  externalWallets: {
-    solana: {
-      connectors: solanaConnectors
     }
   },
   supportedChains: [giwaSepolia]

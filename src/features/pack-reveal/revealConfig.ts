@@ -16,6 +16,7 @@ export type RevealCard = {
   name: string;
   rarity: IrukaRarity;
   serial?: string;
+  valueLabel?: string;
 };
 
 type PhaseEvent = {

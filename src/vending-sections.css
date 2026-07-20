@@ -1,0 +1,123 @@
+.vending-result-section,
+.vending-inventory-section,
+.vending-recent-section {
+  margin-top: 68px;
+}
+
+.vending-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.vending-section-heading h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+html[lang="ko"] .vending-section-heading h2 {
+  font-family: Pretendard, var(--font-sans);
+  font-size: 38px;
+  font-weight: 650;
+  line-height: 1.08;
+}
+
+.vending-text-action,
+.vending-load-more {
+  min-height: 42px;
+  padding: 0 16px;
+  color: var(--blue-hover);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  background: #eaf4ff;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.vending-text-action:hover,
+.vending-load-more:hover {
+  background: #dfeeff;
+  transform: translateY(-1px);
+}
+
+.vending-text-action:disabled,
+.vending-load-more:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  transform: none;
+}
+
+.vending-result-heading span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.vending-result-content {
+  display: grid;
+  grid-template-columns: minmax(280px, 400px) minmax(180px, 240px);
+  gap: 48px;
+  align-items: center;
+  justify-content: center;
+  min-height: 520px;
+  padding: 48px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(236, 245, 255, 0.82));
+}
+
+.vending-result-content .revealed-card { width: 100%; }
+.vending-result-content .asset-actions { display: grid; width: 100%; margin: 0; }
+.vending-result-content .asset-actions button { width: 100%; }
+.vending-result-content .asset-actions button:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.vending-recent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.vending-recent-card {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-width: 0;
+  min-height: 108px;
+  padding: 10px 14px 10px 10px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-sm);
+}
+
+.vending-recent-card > img { width: 72px; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 12px; }
+.vending-recent-card > div { display: grid; min-width: 0; gap: 2px; }
+.vending-recent-card > div span { font-size: 10px; font-weight: 750; }
+.vending-recent-card > div strong { overflow: hidden; color: var(--ink); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.vending-recent-card > div small,
+.vending-recent-card > p span { color: var(--muted); font-size: 10px; }
+.vending-recent-card > p { display: grid; gap: 3px; margin: 0; text-align: right; }
+.vending-recent-card > p strong { color: var(--ink); font-size: 12px; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

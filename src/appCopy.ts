@@ -1,6 +1,5 @@
 import type { Locale } from "./appTypes";
 import type { MarketplaceBrowseCategory } from "./marketplaceBrowse";
-import type { PackCopy } from "./vendingTypes";
 
 const marketplaceBrowseLabels = {
   en: {
@@ -69,16 +68,43 @@ export const copy = {
       opening: "Pulling"
     },
     vending: {
-      morePacks: "More packs",
+      allRarities: "All rarities",
+      batch: "Batch",
+      category: "Girl Groups",
+      estimatedValue: "Est. value",
+      giwaReceipt: "GIWA testnet receipt",
+      giwaTestnet: "GIWA testnet",
+      individualOdds: "Individual odds",
+      insidePack: "Inside this pack",
+      loadError: "Cards could not be loaded.",
+      loadMore: "Load more",
+      openPack: "Pull 1 pack",
+      packLabel: "Pack",
       packOdds: "Pack odds",
       physicalRedemption: "Physical redemption",
+      redemptionUnavailable: "Redemption unavailable",
       recentPulls: "Recent pulls",
-      vaultEligible: "Vault eligible",
+      redeemable: "Redeemable",
+      showFeatured: "Show featured",
+      statusLabels: {
+        live: "Live",
+        "low-stock": "Low stock",
+        "sold-out": "Sold out",
+        "coming-soon": "Coming soon"
+      },
+      testPull: "Test pull",
+      viewAllCards: "View all cards",
+      viewTransaction: "View transaction",
+      viewBack: "View back",
+      viewFront: "View front",
+      viewOdds: "View odds & values",
       yourPull: "Your pull"
     },
     feedback: {
       cancelListingBeforeShipping: "Cancel the marketplace listing before shipping.",
       connectWallet: "Log in to pull a pack.",
+      giwaPullConfirmed: "Test pull submitted on GIWA.",
+      giwaPullFailed: "Test pull could not be submitted.",
       listed: "Listed on marketplace.",
       listingCancelled: "Marketplace listing cancelled.",
       listingUpdated: "Listing price updated.",
@@ -238,16 +264,43 @@ export const copy = {
       opening: "뽑는 중"
     },
     vending: {
-      morePacks: "다른 팩",
+      allRarities: "전체 등급",
+      batch: "배치",
+      category: "걸그룹",
+      estimatedValue: "예상 시세",
+      giwaReceipt: "GIWA 테스트넷 영수증",
+      giwaTestnet: "GIWA 테스트넷",
+      individualOdds: "개별 확률",
+      insidePack: "이 팩에 들어 있어요",
+      loadError: "카드를 불러오지 못했어요.",
+      loadMore: "더 보기",
+      openPack: "1팩 뽑기",
+      packLabel: "팩",
       packOdds: "팩 확률",
       physicalRedemption: "실물 배송 가능",
+      redemptionUnavailable: "실물 배송 미지원",
       recentPulls: "최근 뽑은 카드",
-      vaultEligible: "보관 가능",
+      redeemable: "배송 가능",
+      showFeatured: "대표 카드만 보기",
+      statusLabels: {
+        live: "판매 중",
+        "low-stock": "품절 임박",
+        "sold-out": "품절",
+        "coming-soon": "준비 중"
+      },
+      testPull: "테스트 뽑기",
+      viewAllCards: "전체 카드 보기",
+      viewTransaction: "트랜잭션 보기",
+      viewBack: "뒷면 보기",
+      viewFront: "앞면 보기",
+      viewOdds: "확률과 예상 시세 보기",
       yourPull: "뽑은 카드"
     },
     feedback: {
       cancelListingBeforeShipping: "판매 등록을 취소한 뒤 배송을 신청해 주세요.",
       connectWallet: "먼저 로그인해 주세요.",
+      giwaPullConfirmed: "GIWA 테스트넷에 뽑기를 등록했어요.",
+      giwaPullFailed: "테스트넷 뽑기를 등록하지 못했어요.",
       listed: "판매 목록에 올렸어요.",
       listingCancelled: "판매 등록을 취소했어요.",
       listingUpdated: "판매 가격을 수정했어요.",
@@ -369,60 +422,3 @@ export const copy = {
 } as const;
 
 export type AppCopy = (typeof copy)[Locale];
-
-export const packCopy: Record<Locale, Record<string, PackCopy>> = {
-  en: {
-    "girl-grail": {
-      name: "Girl Group Iruka Pack",
-      shortName: "Girl Group",
-      chaseCards: ["Aurora Stage", "Blue Hour", "Signed Event", "Prism Encore"]
-    },
-    "boy-grail": {
-      name: "Boy Group Iruka Pack",
-      shortName: "Boy Group",
-      chaseCards: ["World Tour", "Fan Sign", "Debut Era", "Midnight Unit"]
-    },
-    "ive-drop": {
-      name: "Premium Idol Drop #001",
-      shortName: "Premium Idol",
-      chaseCards: ["Velvet Signal", "Afterglow", "Blue Stage", "Holo Encore"]
-    },
-    "aespa-drop": {
-      name: "Rookie Idol Drop #001",
-      shortName: "Rookie Idol",
-      chaseCards: ["Sync Live", "Drama Unit", "Chrome Stage", "First Light"]
-    },
-    "pokemon-slab": {
-      name: "TCG Slab Pack",
-      shortName: "TCG Slab",
-      chaseCards: ["Holo Starter", "Trainer Rare", "Gem Mint Chase", "Foil Vault"]
-    }
-  },
-  ko: {
-    "girl-grail": {
-      name: "걸그룹 Iruka 팩",
-      shortName: "걸그룹",
-      chaseCards: ["오로라 스테이지", "블루 아워", "사인 이벤트", "프리즘 앙코르"]
-    },
-    "boy-grail": {
-      name: "보이그룹 Iruka 팩",
-      shortName: "보이그룹",
-      chaseCards: ["월드 투어", "팬사인", "데뷔 시절", "미드나잇 유닛"]
-    },
-    "ive-drop": {
-      name: "프리미엄 아이돌 팩 #001",
-      shortName: "프리미엄 아이돌",
-      chaseCards: ["벨벳 시그널", "애프터글로우", "블루 스테이지", "홀로 앙코르"]
-    },
-    "aespa-drop": {
-      name: "루키 아이돌 팩 #001",
-      shortName: "루키 아이돌",
-      chaseCards: ["싱크 라이브", "드라마 유닛", "크롬 스테이지", "퍼스트 라이트"]
-    },
-    "pokemon-slab": {
-      name: "TCG 슬랩 팩",
-      shortName: "TCG 슬랩",
-      chaseCards: ["홀로 스타터", "트레이너 레어", "젬민트 체이스", "포일 볼트"]
-    }
-  }
-};

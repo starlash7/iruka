@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ShieldCheck, X } from "lucide-react";
-import { formatUsd } from "./currency";
+import { formatCardPullValue } from "./cardFlow";
 import { MarketplaceDialog } from "./MarketplaceDialog";
 import type { MarketplaceListing } from "./marketplaceData";
 import type { MarketplaceViewCopy } from "./MarketplaceView";
@@ -60,7 +60,7 @@ export function MarketplaceSellDialog({
               <strong>{card.group}</strong>
               <span>{card.serial}</span>
             </div>
-            <small>{formatUsd(card.estimatedValue)}</small>
+            <small>{formatCardPullValue(card)}</small>
           </div>
 
           <label className="market-price-input">

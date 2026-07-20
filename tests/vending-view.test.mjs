@@ -1,0 +1,382 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { after, before, test } from "node:test";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createServer } from "vite";
+
+let server;
+let createRevealCard;
+let createVendingCardPull;
+let formatCardPullValue;
+let packDetails;
+let VendingPackDetail;
+let VendingPackInventory;
+let VendingPackRail;
+let VendingView;
+
+before(async () => {
+  server = await createServer({ appType: "custom", server: { middlewareMode: true } });
+  ({ createRevealCard, createVendingCardPull, formatCardPullValue } = await server.ssrLoadModule("/src/cardFlow.tsx"));
+  ({ packDetails } = await server.ssrLoadModule("/src/vendingData.ts"));
+  ({ VendingPackDetail } = await server.ssrLoadModule("/src/VendingPackDetail.tsx"));
+  ({ VendingPackInventory } = await server.ssrLoadModule("/src/VendingPackInventory.tsx"));
+  ({ VendingPackRail } = await server.ssrLoadModule("/src/VendingPackRail.tsx"));
+  ({ VendingView } = await server.ssrLoadModule("/src/VendingView.tsx"));
+});
+
+after(async () => {
+  await server?.close();
+});
+
+const packDetailCopy = {
+  batch: "Batch",
+  cards: "cards",
+  category: "Girl Groups",
+  openPack: "Pull 1 pack",
+  opening: "Pulling",
+  packLabel: "Pack",
+  packOdds: "Pack odds",
+  physicalRedemption: "Physical redemption",
+  redemptionUnavailable: "Redemption unavailable",
+  viewOdds: "View odds & values"
+};
+const rarityLabels = {
+  Common: "Common",
+  Rare: "Rare",
+  Epic: "Epic",
+  Legendary: "Legendary",
+  Iruka: "Iruka"
+};
+
+test("Vending reveal cards retain their USDC display value", () => {
+  const card = createRevealCard({
+    estimatedValue: 29,
+    group: "Debut",
+    member: "Collectible 01",
+    rarity: "Rare",
+    serial: "IRK-0001"
+  }, "Rare", "29.00 USDC");
+
+  assert.equal(card.valueLabel, "29.00 USDC");
+  assert.match(decodeURIComponent(card.imageUrl), /29\.00 USDC/);
+});
+
+test("Vending API pulls preserve the selected inventory card and USDC range", () => {
+  const inventoryCard = packDetails[0].featuredInventory[1];
+  const card = createVendingCardPull({
+    card: inventoryCard,
+    id: "debut-pull-1",
+    packId: "debut",
+    pulledAt: "2026-07-16T00:00:00.000Z"
+  }, "Debut");
+
+  assert.equal(card.id, "debut-pull-1");
+  assert.equal(card.member, inventoryCard.title);
+  assert.equal(card.rarity, inventoryCard.tier);
+  assert.equal(card.imageUrl, inventoryCard.media.frontUrl);
+  assert.deepEqual(card.estimatedValueRangeUsdc, inventoryCard.estimatedValueRangeUsdc);
+  assert.equal(formatCardPullValue(card), "21.00 – 57.00 USDC");
+});
+
+test("Vending pull records use the active locale's pack label", () => {
+  const inventoryCard = packDetails[0].featuredInventory[0];
+  const card = createVendingCardPull({
+    card: inventoryCard,
+    id: "debut-pull-ko",
+    packId: "debut",
+    pulledAt: "2026-07-16T00:00:00.000Z"
+  }, "Debut", "팩");
+
+  assert.equal(card.group, "Debut 팩");
+});
+
+test("pack rail exposes four selectable tiers with USDC prices", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackRail, {
+      onSelectPack: () => undefined,
+      packs: packDetails,
+      selectedPackId: "debut"
+    })
+  );
+
+  assert.equal((markup.match(/aria-pressed=/g) ?? []).length, 4);
+  assert.match(markup, /Debut/);
+  assert.match(markup, /Grail/);
+  assert.match(markup, /19\.00 USDC/);
+  assert.doesNotMatch(markup, /left|Low stock|Sold out|Coming soon|data-status/);
+});
+
+test("pack rail uses clean pack product artwork", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackRail, {
+      onSelectPack: () => undefined,
+      packs: packDetails,
+      selectedPackId: "debut"
+    })
+  );
+
+  for (const packId of ["debut", "stage", "encore", "grail"]) {
+    assert.match(markup, new RegExp(`iruka-pack-${packId}\\.webp`));
+  }
+  assert.doesNotMatch(markup, /iruka-vending-pack-/);
+});
+
+test("choosing a pack does not scroll the page to the machine", async () => {
+  const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+
+  assert.doesNotMatch(
+    appSource,
+    /document\.getElementById\("drops"\)\?\.scrollIntoView\(/
+  );
+});
+
+test("tier packs keep the product art clean inside the selected machine", () => {
+  const railMarkup = renderToStaticMarkup(
+    React.createElement(VendingPackRail, {
+      onSelectPack: () => undefined,
+      packs: packDetails,
+      selectedPackId: "debut"
+    })
+  );
+  const detailMarkup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack: packDetails[1],
+      rarityLabels,
+      walletRequired: false
+    })
+  );
+
+  assert.match(railMarkup, /data-tier="debut"/);
+  assert.match(railMarkup, /data-tier="stage"/);
+  assert.match(railMarkup, /data-tier="encore"/);
+  assert.match(railMarkup, /data-tier="grail"/);
+  assert.equal((railMarkup.match(/vending-pack-identity-band/g) ?? []).length, 0);
+  assert.equal((detailMarkup.match(/vending-pack-identity-band/g) ?? []).length, 0);
+  assert.equal((detailMarkup.match(/vending-machine-pack-art/g) ?? []).length, 0);
+  assert.equal((detailMarkup.match(/data-tier="stage"/g) ?? []).length, 1);
+  assert.equal((detailMarkup.match(/class="vending-machine-pack"/g) ?? []).length, 0);
+  assert.doesNotMatch(detailMarkup, /iruka-pack-stage\.webp/);
+});
+
+test("machine art stays unfiltered without a duplicate pack layer", async () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack: packDetails[0],
+      rarityLabels,
+      walletRequired: false
+    })
+  );
+  const stylesheet = await readFile(new URL("../src/vending-layout.css", import.meta.url), "utf8");
+
+  assert.doesNotMatch(markup, /vending-machine-stock|vending-machine-pack|iruka-pack-debut\.webp/);
+  assert.doesNotMatch(markup, /iruka-wordmark\.png/);
+  assert.doesNotMatch(stylesheet, /\.vending-detail-media::before|\.vending-detail-media::after/);
+  assert.doesNotMatch(stylesheet, /vendingPackSwap|vending-machine-stock|vending-machine-pack/);
+});
+
+test("odds use bright Iruka rarity colors", async () => {
+  const stylesheet = await readFile(new URL("../src/vending-odds.css", import.meta.url), "utf8");
+
+  assert.match(stylesheet, /\.vending-odds-row\.rarity-rare\s*\{\s*--odds-accent: #12b76a;/);
+  assert.match(stylesheet, /\.vending-odds-row\.rarity-epic\s*\{\s*--odds-accent: #f04438;/);
+  assert.match(stylesheet, /\.vending-odds-row\.rarity-legendary\s*\{\s*--odds-accent: #f79009;/);
+  assert.match(stylesheet, /\.vending-odds-row\.rarity-iruka\s*\{\s*--odds-accent: #1677ff;/);
+});
+
+test("each tier renders its matching vending machine base", () => {
+  const expectedMachineImages = [
+    [packDetails[0], "iruka-vending-machine-debut.png"],
+    [packDetails[1], "iruka-vending-machine-stage.png"],
+    [packDetails[2], "iruka-vending-machine-encore.png"],
+    [packDetails[3], "iruka-vending-machine-grail.png"]
+  ];
+
+  for (const [pack, imageName] of expectedMachineImages) {
+    const markup = renderToStaticMarkup(React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack,
+      rarityLabels,
+      walletRequired: false
+    }));
+
+    assert.match(markup, new RegExp(imageName.replace(".", "\\.")));
+    assert.doesNotMatch(markup, /vending-machine-stock|iruka-pack-(debut|stage|encore|grail)\.webp/);
+  }
+});
+
+test("pack detail keeps direct odds and values in color-coded rows", () => {
+  const pack = packDetails[0];
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack,
+      rarityLabels,
+      walletRequired: false
+    })
+  );
+
+  assert.equal((markup.match(/class="vending-machine-pack"/g) ?? []).length, 0);
+  assert.match(markup, /IRK-GG-2026-001/);
+  assert.match(markup, /Pull 1 pack · 19\.00 USDC/);
+  assert.match(markup, /Redemption unavailable/);
+  assert.doesNotMatch(markup, />Physical redemption</);
+  assert.doesNotMatch(markup, /Live|Low stock|Sold out|Coming soon|Remaining|Pack supply sold/);
+  assert.doesNotMatch(markup, /vending-supply-meter/);
+  assert.equal((markup.match(/class="vending-odds-tile/g) ?? []).length, 0);
+  assert.doesNotMatch(markup, /class="vending-odds-grid"/);
+  assert.equal((markup.match(/class="vending-odds-meta/g) ?? []).length, 0);
+  assert.doesNotMatch(markup, /vending-odds-disclosure|View odds &amp; values/);
+  assert.equal((markup.match(/class="vending-odds-row rarity-/g) ?? []).length, 5);
+  assert.equal((markup.match(/class="vending-odds-card/g) ?? []).length, 0);
+  assert.match(markup, /72 cards/);
+  assert.match(markup, /6\.00 – 18\.00 USDC/);
+  assert.match(markup, /rarity-common/);
+  assert.match(markup, /rarity-iruka/);
+  assert.doesNotMatch(markup, /vending-odds-bar|vending-odds-legend/);
+  assert.doesNotMatch(markup, /Buyback|Turbo|expected return/i);
+});
+
+test("preview tiers keep the pull CTA available without virtual inventory states", () => {
+  for (const pack of [packDetails[2], packDetails[3]]) {
+    const markup = renderToStaticMarkup(React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack,
+      rarityLabels,
+      walletRequired: false
+    }));
+
+    assert.doesNotMatch(markup, /class="vending-primary-action" disabled=""/);
+    assert.match(markup, new RegExp(`Pull 1 pack · ${pack.priceUsdc} USDC`));
+    assert.doesNotMatch(markup, /Sold out|Coming soon/);
+  }
+});
+
+test("testnet pack pulls do not present the product USDC price as the transaction price", () => {
+  const pack = packDetails[0];
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: {
+        ...packDetailCopy,
+        giwaTestnet: "GIWA testnet",
+        testPull: "Test pull"
+      },
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack,
+      rarityLabels,
+      testnetEnabled: true,
+      walletRequired: false
+    })
+  );
+
+  assert.match(markup, /GIWA testnet/);
+  assert.match(markup, />Test pull</);
+  assert.doesNotMatch(markup, /Pull 1 pack · 19\.00 USDC/);
+});
+
+test("pack detail localizes the pack suffix and rarity labels", () => {
+  const markup = renderToStaticMarkup(React.createElement(VendingPackDetail, {
+    copy: { ...packDetailCopy, packLabel: "팩" },
+    isOpening: false,
+    onOpenPack: () => undefined,
+    pack: packDetails[0],
+    rarityLabels: { ...rarityLabels, Common: "일반", Rare: "레어" },
+    walletRequired: false
+  }));
+
+  assert.match(markup, /Debut 팩/);
+  assert.match(markup, /일반/);
+  assert.match(markup, /레어/);
+});
+
+test("inventory starts with eight featured cards and an explicit full-list action", () => {
+  const pack = packDetails[0];
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackInventory, {
+      copy: {
+        allRarities: "All rarities",
+        estimatedValue: "Est. value",
+        individualOdds: "Individual odds",
+        insidePack: "Inside this pack",
+        loadMore: "Load more",
+        redeemable: "Redeemable",
+        showFeatured: "Show featured",
+        viewAllCards: "View all cards",
+        viewBack: "View back",
+        viewFront: "View front"
+      },
+      pack,
+      rarityLabels: {
+        Common: "Common",
+        Rare: "Rare",
+        Epic: "Epic",
+        Legendary: "Legendary",
+        Iruka: "Iruka"
+      }
+    })
+  );
+
+  assert.match(markup, /Inside this pack/);
+  assert.match(markup, /View all cards/);
+  assert.match(markup, /0\.84%/);
+  assert.doesNotMatch(markup, /vending-card-flip/);
+  assert.equal((markup.match(/class="vending-inventory-card/g) ?? []).length, 8);
+});
+
+test("recent pulls render only from the explicit Vending session list", () => {
+  const pack = packDetails[0];
+  const props = {
+    copy: {
+      category: "Girl Groups",
+      hero: { openPack: "Pull 1 pack", opening: "Pulling", packLabel: "Pack" },
+      inventory: {
+        allRarities: "All rarities", estimatedValue: "Est. value", individualOdds: "Individual odds",
+        insidePack: "Inside this pack", loadError: "Load error", loadMore: "Load more", redeemable: "Redeemable",
+        showFeatured: "Show featured", viewAllCards: "View all cards", viewBack: "View back", viewFront: "View front"
+      },
+      labels: {
+        batch: "Batch", cards: "cards", packOdds: "Pack odds",
+        physicalRedemption: "Physical redemption", recentPulls: "Recent pulls",
+        redemptionUnavailable: "Redemption unavailable",
+        viewOdds: "View odds & values", yourPull: "Your pull"
+      },
+      rarities: { Common: "Common", Rare: "Rare", Epic: "Epic", Legendary: "Legendary", Iruka: "Iruka" }
+    },
+    getCardImageUrl: () => "card.webp",
+    isOpening: false,
+    onOpenPack: () => undefined,
+    onSelectPack: () => undefined,
+    packs: packDetails,
+    pullActions: null,
+    pullCard: null,
+    recentPulls: [],
+    resultRef: { current: null },
+    selectedPack: pack,
+    walletRequired: false
+  };
+  const emptyMarkup = renderToStaticMarkup(React.createElement(VendingView, props));
+  const pullMarkup = renderToStaticMarkup(React.createElement(VendingView, {
+    ...props,
+    recentPulls: [{
+      estimatedValue: 29, group: "Debut", id: "session-pull", member: "Collectible 01",
+      packId: "debut", pulledAt: "12:00", rarity: "Rare", serial: "IRK-0001"
+    }]
+  }));
+
+  assert.doesNotMatch(emptyMarkup, /Recent pulls/);
+  assert.match(pullMarkup, /Recent pulls/);
+  assert.match(pullMarkup, /Collectible 01/);
+});

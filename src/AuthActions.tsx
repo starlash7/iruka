@@ -1,7 +1,8 @@
-import { usePrivy, useWallets } from "@privy-io/react-auth";
+import { type ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import { LogIn, LogOut, UserPlus, Wallet } from "lucide-react";
 import { useEffect } from "react";
 import type { WalletAuthMode } from "./appTypes";
+import type { GiwaWallet } from "./giwaPull.ts";
 import { IrukaBeam } from "./IrukaBeam";
 
 type AuthLabels = {
@@ -19,10 +20,21 @@ type AuthActionsProps = {
   mode: WalletAuthMode;
   onConnectedChange: (connected: boolean) => void;
   onOpenVault: () => void;
+  onWalletChange: (wallet: GiwaWallet | undefined) => void;
 };
 
 function formatAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+export function getAuthenticatedGiwaWallet(
+  authenticated: boolean,
+  walletsReady: boolean,
+  wallets: readonly ConnectedWallet[]
+) {
+  if (!authenticated || !walletsReady) return undefined;
+
+  return wallets.find((wallet) => wallet.type === "ethereum" && wallet.linked);
 }
 
 export function AuthActions({
@@ -30,7 +42,8 @@ export function AuthActions({
   labels,
   mode,
   onConnectedChange,
-  onOpenVault
+  onOpenVault,
+  onWalletChange
 }: AuthActionsProps) {
   if (mode !== "privy") {
     return (
@@ -53,6 +66,7 @@ export function AuthActions({
       labels={labels}
       onConnectedChange={onConnectedChange}
       onOpenVault={onOpenVault}
+      onWalletChange={onWalletChange}
     />
   );
 }
@@ -61,16 +75,19 @@ function PrivyAuthActions({
   connectSignal,
   labels,
   onConnectedChange,
-  onOpenVault
+  onOpenVault,
+  onWalletChange
 }: Omit<AuthActionsProps, "mode">) {
   const { authenticated, login, logout, ready, user } = usePrivy();
-  const { wallets } = useWallets();
-  const connectedAddress = user?.wallet?.address ?? wallets[0]?.address;
+  const { wallets, ready: walletsReady } = useWallets();
+  const connectedWallet = getAuthenticatedGiwaWallet(authenticated, walletsReady, wallets);
+  const connectedAddress = connectedWallet?.address ?? user?.wallet?.address;
   const connectedLabel = connectedAddress ? formatAddress(connectedAddress) : labels.connected;
 
   useEffect(() => {
     onConnectedChange(authenticated);
-  }, [authenticated, onConnectedChange]);
+    if (!authenticated || walletsReady) onWalletChange(connectedWallet);
+  }, [authenticated, connectedWallet, onConnectedChange, onWalletChange, walletsReady]);
 
   useEffect(() => {
     if (connectSignal > 0 && ready && !authenticated) {

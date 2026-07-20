@@ -1,0 +1,117 @@
+@media (max-width: 1280px) {
+  .vending-title-block h1 { font-size: 50px; }
+  .vending-price-row > strong { font-size: 34px; }
+  .vending-inventory-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1100px) {
+  .vending-detail { grid-template-columns: 1fr; }
+  .vending-detail-media { width: 100%; max-height: 760px; aspect-ratio: 1 / 1; }
+  .vending-title-block h1 { max-width: none; }
+  .vending-recent-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 820px) {
+  .vending-tier-rail {
+    display: flex;
+    padding: 2px 2px 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+
+  .vending-pack-beam {
+    width: 240px;
+    flex: 0 0 240px;
+    scroll-snap-align: start;
+  }
+
+  .vending-inventory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vending-section-heading h2 { font-size: 40px; }
+  html[lang="ko"] .vending-section-heading h2 { font-size: 34px; }
+}
+
+@media (max-width: 600px) {
+  .vending-page {
+    --vending-gutter: 12px;
+    padding-top: 14px;
+  }
+
+  .vending-pack-beam { width: 220px; flex-basis: 220px; }
+  .vending-tier-option { grid-template-columns: 58px minmax(0, 1fr); min-height: 86px; }
+  .vending-tier-media { width: 58px; height: 66px; }
+  .vending-tier-media img { width: 50px; height: 60px; }
+  .vending-tier-copy strong { font-size: 14px; }
+  .vending-tier-copy b { font-size: 11px; }
+
+  .vending-detail { gap: 12px; }
+  .vending-detail-media { aspect-ratio: 1 / 1; border-radius: 18px; }
+  .vending-purchase-panel { padding: 20px 18px; border-radius: 18px; }
+  .vending-trust-row > span { min-height: 29px; padding: 3px 8px; font-size: 10px; }
+  .vending-trust-icon { width: 20px; height: 20px; }
+
+  .vending-title-block { margin-top: 20px; }
+  .vending-title-block h1,
+  html[lang="ko"] .vending-title-block h1 { font-size: 42px; }
+  .vending-title-block > span { overflow-wrap: anywhere; }
+
+  .vending-price-row { align-items: start; margin-top: 24px; }
+  .vending-price-row > strong { max-width: 70%; font-size: 29px; overflow-wrap: anywhere; }
+  .vending-primary-beam { position: sticky; bottom: 12px; z-index: 4; }
+  .vending-primary-action { min-height: 52px; padding: 0 14px; font-size: 13px; }
+
+  .vending-odds-row { grid-template-columns: 64px 50px minmax(0, 1fr) 42px; gap: 6px; }
+  .vending-odds-row > span { font-size: 12px; }
+  .vending-odds-row > b { font-size: 11px; }
+  .vending-odds-row small { font-size: 12px; }
+  .vending-odds-row strong { font-size: 15px; }
+
+  .vending-result-section,
+  .vending-inventory-section,
+  .vending-recent-section { margin-top: 48px; }
+
+  .vending-section-heading { align-items: center; }
+  .vending-section-heading h2,
+  html[lang="ko"] .vending-section-heading h2 { font-size: 32px; }
+  .vending-text-action { min-height: 38px; padding: 0 12px; font-size: 11px; }
+
+  .vending-inventory-section:not([data-expanded="true"]) .vending-inventory-grid {
+    grid-auto-columns: minmax(218px, 72vw);
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    padding: 2px 2px 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+  }
+
+  .vending-inventory-section:not([data-expanded="true"]) .vending-inventory-card {
+    scroll-snap-align: start;
+  }
+
+  .vending-inventory-section[data-expanded="true"] .vending-inventory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .vending-inventory-copy { padding: 12px; }
+  .vending-inventory-copy > div { align-items: start; flex-direction: column; gap: 2px; }
+  .vending-inventory-copy > strong { font-size: 13px; }
+  .vending-inventory-copy > b { font-size: 14px; }
+
+  .vending-result-content { grid-template-columns: 1fr; min-height: 0; gap: 24px; padding: 20px 16px; }
+  .vending-result-content .asset-actions { grid-template-columns: 1fr; width: min(100%, 340px); }
+
+  .vending-recent-card { grid-template-columns: 64px minmax(0, 1fr); gap: 10px; }
+  .vending-recent-card > img { width: 64px; }
+  .vending-recent-card > p { grid-column: 2; grid-template-columns: auto auto; justify-content: space-between; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vending-machine-stock { animation: none; }
+  .vending-tier-option,
+  .vending-primary-action,
+  .vending-inventory-card,
+  .vending-inventory-media > img { transition: none; }
+}

@@ -1,52 +1,42 @@
 import type { MarketplaceItem } from "./marketplaceData";
-import { formatUsd } from "./currency";
+import { formatUsdcRange, formatUsd } from "./currency";
 import type { IrukaRarity, RevealCard } from "./features/pack-reveal/revealConfig";
-import type { CardPull, Pack, Rarity, RarityConfig } from "./vendingTypes";
+import type { CardPull, Rarity, VendingPull } from "./vendingTypes";
 
-const kpopGroups = ["Aurora", "Velvet", "Nova", "Lime", "Prism", "Signal"];
-const kpopMembers = ["Mina", "Yuri", "Hana", "Sera", "Jin", "Theo", "Rin"];
-const tcgGroups = ["Kanto Vault", "Sky League", "Mint Lab", "Blue Trainer"];
-const tcgMembers = ["Holo Starter", "Foil Trainer", "Gem Slab", "Vault Rare"];
-
-function chooseRarity(odds: RarityConfig[]) {
-  const roll = Math.random() * 100;
-  let cursor = 0;
-
-  for (const item of odds) {
-    cursor += item.odds;
-    if (roll <= cursor) return item;
-  }
-
-  return odds[0];
-}
-
-function randomInt(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-export function createPull(pack: Pack): CardPull {
-  const rarity = chooseRarity(pack.odds);
-  const estimatedValue = randomInt(rarity.valueRange[0], rarity.valueRange[1]);
-  const isKpop = pack.category === "K-pop";
-  const groups = isKpop ? kpopGroups : tcgGroups;
-  const members = isKpop ? kpopMembers : tcgMembers;
+export function createVendingCardPull(
+  pull: VendingPull,
+  packName: string,
+  packLabel = "Pack"
+): CardPull {
+  const { card } = pull;
 
   return {
-    id: `${pack.id}-${Date.now()}-${Math.round(Math.random() * 10000)}`,
-    packId: pack.id,
-    category: pack.category,
-    group: groups[randomInt(0, groups.length - 1)],
-    member: members[randomInt(0, members.length - 1)],
-    rarity: rarity.rarity,
-    estimatedValue,
+    id: pull.id,
+    packId: pull.packId,
+    category: "K-pop",
+    group: `${packName} ${packLabel}`,
+    member: card.title,
+    rarity: card.tier,
+    estimatedValue: Number(card.estimatedValueRangeUsdc[0]),
+    estimatedValueRangeUsdc: card.estimatedValueRangeUsdc,
     vaultStatus: "Vaulted",
-    imageStyle: `card-style-${randomInt(1, 5)}`,
-    serial: `IRK-${randomInt(1000, 9999)}-${randomInt(10, 99)}`,
-    pulledAt: new Date().toLocaleTimeString([], {
+    imageStyle: "card-style-1",
+    imageUrl: card.media.frontUrl,
+    inventoryCardId: card.id,
+    redemption: card.redemption,
+    serial: card.serial,
+    pulledAt: new Date(pull.pulledAt).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit"
-    })
+    }),
+    verificationId: card.verificationId
   };
+}
+
+export function formatCardPullValue(card: CardPull) {
+  return card.estimatedValueRangeUsdc
+    ? formatUsdcRange(card.estimatedValueRangeUsdc)
+    : formatUsd(card.estimatedValue);
 }
 
 export function createMarketplacePurchase(item: MarketplaceItem): CardPull {
@@ -92,12 +82,16 @@ function toRevealRarity(rarity: Rarity): IrukaRarity {
   return rarity.toLowerCase() as IrukaRarity;
 }
 
-export function createRevealImageUrl(card: CardPull, rarityLabel: string) {
+export function createRevealImageUrl(
+  card: CardPull,
+  rarityLabel: string,
+  valueLabel = formatUsd(card.estimatedValue)
+) {
   const title = escapeSvgText(card.member);
   const subtitle = escapeSvgText(card.group);
   const serial = escapeSvgText(card.serial);
   const rarity = escapeSvgText(rarityLabel);
-  const value = escapeSvgText(formatUsd(card.estimatedValue));
+  const value = escapeSvgText(valueLabel);
   const accent = {
     Common: "#98A2B3",
     Rare: "#12B76A",
@@ -138,13 +132,18 @@ export function createRevealImageUrl(card: CardPull, rarityLabel: string) {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
-export function createRevealCard(card: CardPull, rarityLabel: string): RevealCard {
+export function createRevealCard(
+  card: CardPull,
+  rarityLabel: string,
+  valueLabel?: string
+): RevealCard {
   return {
     estimatedValue: card.estimatedValue,
-    imageUrl: createRevealImageUrl(card, rarityLabel),
+    imageUrl: createRevealImageUrl(card, rarityLabel, valueLabel),
     name: card.member,
     rarity: toRevealRarity(card.rarity),
-    serial: card.serial
+    serial: card.serial,
+    valueLabel
   };
 }
 
@@ -153,13 +152,15 @@ type RevealedCardProps = {
   categoryLabel: string;
   rarityClassName: string;
   rarityLabel: string;
+  valueLabel?: string;
 };
 
 export function RevealedCard({
   card,
   categoryLabel,
   rarityClassName,
-  rarityLabel
+  rarityLabel,
+  valueLabel
 }: RevealedCardProps) {
   return (
     <article className={`revealed-card ${rarityClassName} ${card.imageStyle}`}>
@@ -171,7 +172,7 @@ export function RevealedCard({
         <img
           alt=""
           className="revealed-card-art"
-          src={card.imageUrl ?? createRevealImageUrl(card, rarityLabel)}
+          src={card.imageUrl ?? createRevealImageUrl(card, rarityLabel, valueLabel)}
         />
       </div>
       <div className="revealed-copy">

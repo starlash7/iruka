@@ -1,0 +1,99 @@
+---
+title: "GIWA Testnet Evidence"
+description: "Deploy and verify the Iruka pack-batch contract on GIWA Sepolia."
+icon: "blocks"
+---
+
+> **Status: Deployment ready** - The contract and browser transaction path are implemented. No GIWA Sepolia contract address is published until deployment and source verification complete.
+
+This page records the evidence needed to verify an Iruka test pull. Testnet ETH and all testnet records have no monetary value and do not represent a commercial pack, custody record, or USDC settlement.
+
+## Contract Registry
+
+| Network | Chain ID | Contract | Address | Source |
+| --- | --- | --- | --- | --- |
+| GIWA Sepolia | `91342` | `IrukaPackBatch` | Pending deployment | Pending verification |
+
+After broadcast, replace both pending fields with the Explorer contract URL and source-verification URL. The website enables its GIWA transaction path only when the verified address is set as `VITE_GIWA_PACK_BATCH_ADDRESS`.
+
+## What The Contract Proves
+
+- A `BatchCommitted` event fixes the inventory Merkle root, odds commitment, test price, and server-seed commitment before a pull.
+- `PullRequested` records the collector and batch after the test-ETH transaction confirms.
+- `ClientSeedRevealed` records the collector seed commitment reveal.
+- `PullFulfilled` records the assigned inventory ID and remaining supply.
+- The selected inventory position is removed from the batch mapping, so it cannot be assigned twice.
+
+The first testnet slice handles one pending request per batch. That keeps the batch state and proof trail directly reviewable while the production queue and indexer are not yet built.
+
+## Deploy And Verify
+
+1. Claim GIWA Sepolia test ETH and export a dedicated deployer key locally. Do not use a wallet with production assets.
+2. Generate and retain a private server seed. Its hash is committed onchain; the seed itself is only used by the fulfillment operator.
+
+```bash
+export GIWA_TESTNET_RPC_URL=https://sepolia-rpc.giwa.io
+export GIWA_DEPLOYER_PRIVATE_KEY=0x...
+export GIWA_SERVER_SEED=$(node -e "console.log('0x' + require('node:crypto').randomBytes(32).toString('hex'))")
+
+forge test
+forge script contracts/script/DeployIrukaPackBatch.s.sol:DeployIrukaPackBatch \
+  --rpc-url "$GIWA_TESTNET_RPC_URL" \
+  --private-key "$GIWA_DEPLOYER_PRIVATE_KEY" \
+  --broadcast \
+  --verify \
+  --verifier blockscout \
+  --verifier-url https://sepolia-explorer.giwa.io/api
+```
+
+Copy the verified contract address into the local environment. Only the `VITE_` address is public; the deployer key and server seed remain local.
+
+```bash
+export GIWA_PACK_BATCH_ADDRESS=0x...
+export VITE_GIWA_PACK_BATCH_ADDRESS=$GIWA_PACK_BATCH_ADDRESS
+```
+
+## Commit A Test Batch
+
+The batch tool uses the same deterministic inventory IDs as the Vending fixture. It creates the inventory root and a Merkle proof for every item.
+
+```bash
+node scripts/giwa/prepare-batch.mjs \
+  IRK-GG-2026-001 \
+  120 \
+  1000000000000000 \
+  scripts/giwa/debut-odds.json \
+  .context/giwa-debut-batch.json
+
+node scripts/giwa/commit-batch.mjs .context/giwa-debut-batch.json
+```
+
+The test price above is `0.001` test ETH. It is intentionally separate from the product's displayed USDC pricing and must never be described as canonical USDC settlement.
+
+## Verify A Pull
+
+1. Connect an EVM wallet in Iruka and switch to GIWA Sepolia.
+2. Select the committed `Debut` batch and choose `Test pull`.
+3. Confirm `requestPull` and `revealClientSeed` in the wallet.
+4. Open the GIWA receipt link shown in Vending. It exposes the request ID and reveal transaction.
+5. The operator fulfills it from the committed manifest:
+
+```bash
+node scripts/giwa/fulfill-pull.mjs \
+  .context/giwa-debut-batch.json \
+  <request-id> \
+  <reveal-transaction-hash>
+```
+
+The operator script reads the revealed client seed from the cited transaction, calculates the committed selection, and submits the matching Merkle proof. In the Explorer, verify the `PullFulfilled` event, assigned inventory ID, remaining supply, and contract source.
+
+## Evidence Checklist
+
+- Verified `IrukaPackBatch` Explorer contract URL
+- Deployment transaction URL
+- `BatchCommitted` transaction URL and generated batch manifest hash
+- One wallet `requestPull` and `revealClientSeed` transaction URL
+- One operator `PullFulfilled` transaction URL
+- Screenshot or recording showing the same request ID in Iruka and the Explorer
+
+This is a technical testnet demonstration. Production requirements remain verified physical inventory, custody records, canonical payment-asset approval, audited contract review, persistent indexing, and fulfillment operations.

@@ -1,4 +1,5 @@
 import { ShieldCheck } from "lucide-react";
+import { formatCardPullValue } from "./cardFlow";
 import { formatUsd } from "./currency";
 import type { MarketplaceListing } from "./marketplaceData";
 import type { CardPull } from "./vendingTypes";
@@ -39,7 +40,9 @@ export function MarketplaceOwnedCards({
                   <span className="owned-card-icon"><ShieldCheck size={16} /></span>
                 )}
                 <span><strong>{card.member}</strong><small>{card.group} · {card.serial}</small></span>
-                <b>{formatUsd(listed && listing ? listing.fixedPrice : card.estimatedValue)}</b>
+                <b>{listed && listing
+                  ? formatUsd(listing.fixedPrice)
+                  : formatCardPullValue(card)}</b>
                 <em>{listed ? editPriceLabel : listForSaleLabel}</em>
               </button>
             );

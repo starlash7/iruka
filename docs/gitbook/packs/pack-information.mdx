@@ -1,31 +1,50 @@
 ---
-title: "Pack Information"
-description: "Review Iruka pack types, neutral naming rules, and the pack inventory lifecycle."
-icon: "package"
+title: "Packs and Odds"
+description: "Learn how Iruka pack inventory, rarity, valuation, and verifiable draws are published."
+icon: "percent"
 ---
 
-Iruka packs are themed collectible drops with visible supply, price, odds, and estimated value ranges.
+> **Status: Planned** - The current app uses preview pack data. Commercial pack details will be published only after physical inventory is certified and secured.
 
-## Example Pack Types
+Iruka launches with authenticated K-pop photocards sourced and owned by Iruka. Albums, apparel, and other merchandise are not part of the first production pack scope.
 
-| Pack | Category | Purpose |
+## What Every Pack Publishes
+
+- Batch ID and inventory snapshot time
+- USDC price, total supply, and remaining supply
+- Front and back images for every eligible card
+- Iruka inventory ID, BRG certificate, and grade for each card
+- Individual card odds and rarity-tier odds
+- Estimated value evidence and snapshot time
+- Physical redemption eligibility
+- GIWA commitment transaction
+
+Cards are drawn without replacement. Displayed odds are calculated from the eligible cards remaining at the published snapshot. A material pool change requires a new batch version rather than a silent edit.
+
+## Rarities and Odds
+
+| Tier | Color | Meaning |
 | --- | --- | --- |
-| Girl Group Iruka Pack | K-pop | Neutral idol collectible pack |
-| Boy Group Iruka Pack | K-pop | Neutral idol collectible pack |
-| Premium Idol Drop | K-pop | Higher-value curated inventory |
-| Rookie Idol Drop | K-pop | Emerging collection inventory |
-| TCG Slab Pack | TCG | Graded card or slab inventory |
+| Common | Gray | Baseline allocation tier |
+| Rare | Green | Scarcer or higher-value tier |
+| Epic | Red | High-value chase tier |
+| Legendary | Yellow | Very limited premium tier |
+| Iruka | Holographic blue | Highest chase tier |
 
-## Pack Naming Rule
+Pack rarity describes allocation within a specific batch. It is separate from the physical grade assigned by BRG.
 
-Pack names should not use third-party artist, agency, label, game, or brand names as Iruka-owned product branding unless Iruka has the appropriate rights or partnership.
+## Estimated Value
 
-Use specific item names only inside actual marketplace listing details, vault item details, or inventory records where they identify a genuine physical product.
+Iruka's planned estimate uses verified completed sales from the previous 90 days for the same card and a comparable grade. It uses up to 10 recent sales and publishes the median, range, sample count, and snapshot time.
 
-## Pack Lifecycle
+At least three comparable sales are required to show a median. With fewer records, the card is marked `Limited data` instead of receiving a guaranteed value.
 
-1. Inventory is sourced and verified.
-2. Items are grouped into a pack pool.
-3. Pack price, odds, and value bands are published.
-4. Users pull packs until supply is exhausted.
-5. Revealed items move into vault, marketplace, or shipping flows.
+## Verifiable Draws
+
+1. Verified ERC-721 inventory is deposited into a batch contract.
+2. The inventory root and server-seed commitment are recorded on GIWA before sales.
+3. A purchase creates a draw request tied to the current batch state.
+4. Iruka reveals the committed seed and selected inventory ID.
+5. The collector receives a receipt linking the batch, card, token, and GIWA transaction.
+
+The current browser-based random result is an interface preview and is not the production allocation method.

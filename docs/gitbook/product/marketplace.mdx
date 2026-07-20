@@ -1,38 +1,38 @@
 ---
 title: "Marketplace"
-description: "Learn how Iruka marketplace listings connect verified inventory, resale, and shipment."
+description: "Learn how fixed-price USDC trading works for vaulted Iruka photocards."
 icon: "store"
 ---
 
-The marketplace is where users buy, sell, and discover verified collectible inventory.
+> **Status: Planned** - Current listings demonstrate the interface and do not settle real payments or ownership transfers.
 
-## Marketplace Goals
+The Iruka Marketplace is for fixed-price sales of authenticated cards that remain in the Vault. Auctions, offers, item swaps, and user consignment are not part of the initial release.
 
-- Let users sell vaulted pulls.
-- Let buyers discover verified inventory.
-- Preserve item provenance from pack pull to vault to resale.
-- Support shipment when users want the physical item.
+## Listing Eligibility
 
-## Listing Information
+A card can be listed only when:
 
-Marketplace listings should include:
+- Its physical custody and BRG records are valid.
+- The connected wallet owns its ERC-721.
+- The card is not already listed, sold, or locked for redemption.
+- The seller has completed the required account and age checks.
 
-- Item title
-- Item photos
-- Category
-- Rarity or grade
-- Condition
-- Vault custody status
-- Price
-- Seller or platform listing status
-- Shipping eligibility
+Listings show actual inventory photos, the identifying group or member name, BRG grade and certificate, inventory ID, USDC price, valuation evidence, custody status, and redemption eligibility.
 
-## Listing Control
+## Settlement
 
-Users should be able to list vaulted items, adjust listings, and cancel listings when the item has not been sold or queued for shipment.
+1. The seller sets a fixed USDC price and the card is locked for sale.
+2. The buyer confirms payment from a GIWA wallet.
+3. Marketplace settlement transfers USDC and the ERC-721 together.
+4. Iruka updates the custody ledger without moving the physical card.
+5. The seller receives USDC in the connected wallet.
 
-## Naming Policy
+If settlement fails, neither payment nor ownership should move partially.
 
-Marketplace listings may use third-party names only as descriptive identifiers for genuine physical products.
+## Fees and Gas
 
-Avoid language that implies official affiliation, sponsorship, endorsement, or licensing unless such a relationship exists.
+The initial platform fee is 0% for buyers and sellers. Iruka plans to sponsor gas for Marketplace actions. External wallet transfers remain subject to the network fee shown before confirmation.
+
+Marketplace payments activate only after canonical USDC support on GIWA is verified. Contract addresses will be published before trading opens.
+
+Sellers may edit or cancel an unsold listing. A listed card must be delisted before physical redemption can be requested.

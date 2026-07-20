@@ -96,7 +96,7 @@ function createCardTexture(card: RevealCard, config: RevealConfig) {
   context.textAlign = "right";
   context.fillStyle = "#101828";
   context.font = "900 28px Inter, Arial, sans-serif";
-  context.fillText(formatUsd(card.estimatedValue), 554, 820);
+  context.fillText(card.valueLabel ?? formatUsd(card.estimatedValue), 554, 820);
 
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;

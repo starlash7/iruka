@@ -114,7 +114,7 @@ function RevealFallback({
       </div>
       <div className="pack-reveal-value">
         <span>{labels.estimatedValue}</span>
-        <strong>{formatUsd(card.estimatedValue)}</strong>
+        <strong>{card.valueLabel ?? formatUsd(card.estimatedValue)}</strong>
       </div>
     </div>
   );

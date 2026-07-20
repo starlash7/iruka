@@ -1,43 +1,41 @@
 ---
 title: "Redemption and Shipping"
-description: "Follow the physical redemption workflow from eligibility checks to delivery tracking."
+description: "Follow the planned South Korea redemption flow from ownership checks to token retirement."
 icon: "truck"
 ---
 
-Redemption lets a user request delivery of a vaulted physical item.
+> **Status: Planned** - Physical fulfillment is not yet available. South Korea is the first intended service region.
+
+Redemption converts a vaulted digital ownership record into delivery of its exact physical photocard.
 
 ## Redemption Flow
 
-1. User selects a vaulted item.
-2. User requests shipment.
-3. Iruka validates custody and shipping eligibility.
-4. User confirms shipping details and fees.
-5. Item moves to `Redeem queued`.
-6. Operations team packs and ships the item.
-7. Tracking information is attached to the item record.
+1. The owner delists the card if it is for sale.
+2. Iruka verifies the connected wallet, age, custody record, and shipping eligibility.
+3. The owner confirms the Korean address and pays the displayed shipping and packaging cost.
+4. The ERC-721 is locked so it cannot be sold or transferred.
+5. Iruka prepares the exact inventory item for shipment.
+6. At carrier handoff, the token is burned and tracking is attached to the record.
 
-## Shipping Requirements
+The request can be cancelled before packing begins. If fulfillment fails before carrier handoff, the token is unlocked and any refundable shipping charge is returned.
 
-Production shipping should track:
+## Cost and Timing
 
-- Recipient name
-- Shipping address
-- Phone or contact email
-- Shipping fee
-- Carrier
-- Tracking number
-- Fulfillment status
+- Vault storage is free.
+- The owner pays the displayed domestic shipping and secure packaging cost.
+- Iruka dispatches within five business days after identity, ownership, address, and payment checks are complete.
+- Carrier delivery time begins after dispatch and is shown separately.
 
 ## Status Model
 
 | Status | Meaning |
 | --- | --- |
-| Redeem queued | User requested shipment |
+| Redemption locked | Ownership and inventory are reserved for shipment |
 | Preparing | Item is being packed |
-| Shipped | Carrier has the item |
+| Shipped | Carrier has the item and the token is retired |
 | Delivered | Delivery confirmed |
-| Failed | Address, payment, or carrier problem |
+| Exception | Address, payment, inventory, or carrier review is required |
 
-## Important Rule
+International shipping remains planned with no published launch date. Iruka will not advertise shipment insurance or coverage limits until a carrier and insurance policy are active.
 
-Items listed for sale should be delisted before shipment can be requested.
+After carrier handoff, delivery exceptions follow the shipping terms and carrier claim process published at launch.

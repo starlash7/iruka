@@ -3,6 +3,7 @@ import type { AppCopy } from "./appCopy";
 import type { AppView, Locale, WalletAuthMode } from "./appTypes";
 import { AuthActions } from "./AuthActions";
 import irukaWordmark from "./assets/iruka-wordmark.png";
+import type { GiwaWallet } from "./giwaPull.ts";
 
 export const MINTLIFY_DOCS_URL = "https://docs.playiruka.space/overview";
 
@@ -16,6 +17,7 @@ type AppHeaderProps = {
   onConnectedChange: Dispatch<SetStateAction<boolean>>;
   onLocaleChange: Dispatch<SetStateAction<Locale>>;
   onShowView: ShowView;
+  onWalletChange: Dispatch<SetStateAction<GiwaWallet | undefined>>;
   walletAuth: WalletAuthMode;
 };
 
@@ -27,6 +29,7 @@ export function AppHeader({
   onConnectedChange,
   onLocaleChange,
   onShowView,
+  onWalletChange,
   walletAuth
 }: AppHeaderProps) {
   return (
@@ -97,6 +100,7 @@ export function AppHeader({
           mode={walletAuth}
           onConnectedChange={onConnectedChange}
           onOpenVault={() => onShowView("vault")}
+          onWalletChange={onWalletChange}
         />
       </div>
     </header>

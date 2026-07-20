@@ -1,35 +1,35 @@
 ---
 title: "How Iruka Works"
-description: "Follow the Iruka flow from pack selection and reveal to vault, marketplace, or shipment."
+description: "Follow the planned Iruka flow from sign-in and pack purchase to vault, resale, or shipping."
 icon: "route"
 ---
 
-Iruka has four core flows.
+> **Status: MVP Preview** - The interface can be explored today. The payment, custody, and GIWA settlement steps below are the launch specification.
 
-## 1. Vending
+## 1. Sign In
 
-Users choose a pack from the Iruka vending machine. Each pack should show price, supply, odds, rarity tiers, and value ranges before purchase.
+Collectors will be able to sign in with email or Google through a Privy embedded EVM wallet. MetaMask and OKX Wallet are the initial external wallet targets.
 
-## 2. Reveal
+## 2. Choose a Pack
 
-After the pull, the result is shown with item metadata:
+Before purchase, a pack must show its USDC price, total and remaining supply, complete card pool, individual odds, value methodology, and redemption eligibility.
 
-- Rarity
-- Serial or item ID
-- Category
-- Estimated value
-- Vault status
+## 3. Pull and Reveal
 
-## 3. Vault
+The collector confirms a USDC purchase. The production draw will use a commit-reveal process recorded on GIWA so the selected inventory item can be independently checked after reveal.
 
-Eligible physical items can remain in custody. Vaulted items can later be listed, sold, or shipped.
+The result shows the card image, pack rarity, BRG grade, inventory ID, estimated value evidence, and ownership transaction.
 
-## 4. Exit
+## 4. Keep It Vaulted
 
-Users can choose the next action:
+The physical card stays with Iruka while its 1:1 ERC-721 represents ownership. Vaulted cards can be transferred to another EVM wallet or listed for a fixed USDC price.
 
-- Keep vaulted
-- List or sell
-- Request shipment
+## 5. Sell or Ship
 
-Production flows should connect these actions to inventory records, custody status, settlement, and shipping operations.
+The owner can sell the vaulted card through the Marketplace or request delivery in South Korea. A listed card must be delisted before shipping can begin.
+
+## Wallet and Gas
+
+Iruka plans to sponsor gas for in-product actions such as pack purchases and Marketplace settlement. Users pay the network fee when transferring assets to an external wallet.
+
+USDC transactions will be enabled only after a canonical GIWA deployment and contract address are verified. No unofficial bridged token is presented as the launch settlement asset.

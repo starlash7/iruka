@@ -1,47 +1,40 @@
 ---
 title: "Vault"
-description: "Understand private vault access, custody records, item statuses, and available actions."
+description: "Understand Iruka's planned custody records and 1:1 GIWA ownership model."
 icon: "warehouse"
 ---
 
-The Iruka vault is the custody layer for verified physical inventory.
+> **Status: Planned** - The current Vault is session-based UI. It does not yet prove physical custody or persistent onchain ownership.
 
-The Vault is private to the authenticated account and is opened from the connected account control. Signing out removes access to the Vault and its current session data.
+The Iruka Vault is the custody record for authenticated physical photocards. Iruka plans to store launch inventory directly and charge no storage fee while a card remains vaulted.
 
-## What the Vault Does
+## Intake and Authentication
 
-Vaulted items can be:
+Only inventory purchased by Iruka is accepted at launch. User submissions and consignment are outside the initial scope.
 
-- Held in storage
-- Listed on the marketplace
-- Sold
-- Queued for redemption and shipping
+Each card must complete professional authentication and grading before it can circulate. The planned BRG record includes a certificate ID, grade, front and back images, and a unique Iruka inventory ID. This plan does not imply an active BRG partnership.
 
-## Vault Item Fields
+## One Physical Card, One Token
 
-A production vault item should include:
+1. Iruka receives, grades, photographs, and stores the card.
+2. Card metadata and custody evidence create a unique inventory fingerprint.
+3. The fingerprint is linked to one ERC-721 minted on GIWA.
+4. The physical card remains stored while the token records its current owner.
 
-- Item ID
-- Pack ID
-- Category
-- Rarity
-- Serial
-- Item name
-- Set, group, or collection name when needed for identification
-- Estimated value
-- Custody status
-- Redemption eligibility
-- Shipping status
+The internal inventory ledger remains the source of truth for physical location and custody. GIWA records ownership, transfers, pack commitments, sales, and redemption burns. Personal shipping data and full-resolution images stay offchain.
 
 ## Vault Statuses
 
 | Status | Meaning |
 | --- | --- |
-| Vaulted | Stored and available for future actions |
-| Listed | Listed on the marketplace |
-| Sold | Sold through a marketplace or exit flow |
-| Redeem queued | User requested shipment |
+| Intake review | Authentication or custody checks are incomplete |
+| Vaulted | Verified, stored, and available for action |
+| Listed | Locked for a Marketplace listing |
+| Redemption locked | Shipment has been requested |
+| Redeemed | Physical card shipped and token retired |
 
-## Custody Principle
+## Ownership Transfers
 
-Iruka should only show an item as vaulted when internal records prove custody, verification, and redemption eligibility.
+The ERC-721 can be transferred to another EVM wallet. A new holder must connect the current owner address and complete Iruka's account checks before listing or redeeming the physical card.
+
+An item is shown as `Vaulted` only when custody, authentication, ownership, and redemption eligibility records agree. Insurance is not described as active until a policy and coverage terms are in force.

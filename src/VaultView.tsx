@@ -14,7 +14,7 @@ type VaultViewProps = {
     title: string;
     vaultEmpty: string;
   };
-  formatValue: (value: number) => string;
+  formatValue: (card: CardPull) => string;
   getCardImageUrl: (card: CardPull) => string;
   locale: Locale;
   onSelectCard: (card: CardPull) => void;
@@ -59,7 +59,7 @@ export function VaultView({
               </span>
               <strong>{card.member}</strong>
               <span>{card.group}</span>
-              <span>{formatValue(card.estimatedValue)}</span>
+              <span>{formatValue(card)}</span>
               <span>{statusLabels[card.vaultStatus]}</span>
             </button>
           ))}

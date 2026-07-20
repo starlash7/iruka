@@ -1,0 +1,87 @@
+.vending-odds-summary {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(220, 232, 255, 0.82);
+}
+
+.vending-odds-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vending-odds-heading h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.vending-odds-list {
+  display: grid;
+  margin-top: 12px;
+}
+
+.vending-odds-row {
+  display: grid;
+  grid-template-columns: 84px 64px minmax(0, 1fr) 50px;
+  gap: 8px;
+  align-items: center;
+  min-height: 52px;
+  border-bottom: 1px solid rgba(220, 232, 255, 0.74);
+}
+
+.vending-odds-row:last-child { border-bottom: 0; }
+
+.vending-odds-row > span {
+  min-width: 0;
+  color: var(--odds-accent);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.15;
+}
+
+.vending-odds-row > b {
+  color: #475467;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.vending-odds-row small {
+  color: #344054;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+.vending-odds-row strong {
+  color: var(--odds-accent);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: right;
+}
+
+.vending-odds-row.rarity-common {
+  --odds-accent: #586579;
+}
+
+.vending-odds-row.rarity-rare {
+  --odds-accent: #12b76a;
+}
+
+.vending-odds-row.rarity-epic {
+  --odds-accent: #f04438;
+}
+
+.vending-odds-row.rarity-legendary {
+  --odds-accent: #f79009;
+}
+
+.vending-odds-row.rarity-iruka {
+  --odds-accent: #1677ff;
+}
