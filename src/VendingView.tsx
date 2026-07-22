@@ -34,7 +34,6 @@ type VendingViewCopy = {
   };
   labels: {
     batch: string;
-    cards: string;
     giwaReceipt: string;
     giwaTestnet: string;
     packOdds: string;
@@ -101,7 +100,6 @@ export function VendingView({
       <VendingPackDetail
         copy={{
           batch: copy.labels.batch,
-          cards: copy.labels.cards,
           category: copy.category,
           giwaReceipt: copy.labels.giwaReceipt,
           giwaTestnet: copy.labels.giwaTestnet,

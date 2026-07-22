@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 
 type HomeImageCarouselProps = {
   images: readonly string[];
@@ -8,6 +8,7 @@ type HomeImageCarouselProps = {
 export function HomeImageCarousel({ images, label }: HomeImageCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const slides = [...new Set(images)];
 
   function handleScroll() {
     const track = trackRef.current;
@@ -17,7 +18,7 @@ export function HomeImageCarousel({ images, label }: HomeImageCarouselProps) {
     }
 
     const nextIndex = Math.min(
-      images.length - 1,
+      slides.length - 1,
       Math.max(0, Math.round(track.scrollLeft / track.clientWidth))
     );
 
@@ -38,29 +39,63 @@ export function HomeImageCarousel({ images, label }: HomeImageCarouselProps) {
     setActiveIndex(index);
   }
 
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const motion = event.currentTarget.querySelector<HTMLElement>(".home-character-motion");
+
+    if (!motion || bounds.width === 0 || bounds.height === 0) {
+      return;
+    }
+
+    const horizontal = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
+    const vertical = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
+
+    motion.style.setProperty("--character-motion-x", `${horizontal * 14}px`);
+    motion.style.setProperty("--character-motion-y", `${vertical * 10}px`);
+    motion.style.setProperty("--character-tilt-x", `${horizontal * 3.5}deg`);
+    motion.style.setProperty("--character-tilt-y", `${vertical * -2.5}deg`);
+  }
+
+  function handlePointerLeave(event: PointerEvent<HTMLDivElement>) {
+    const motion = event.currentTarget.querySelector<HTMLElement>(".home-character-motion");
+
+    motion?.style.removeProperty("--character-motion-x");
+    motion?.style.removeProperty("--character-motion-y");
+    motion?.style.removeProperty("--character-tilt-x");
+    motion?.style.removeProperty("--character-tilt-y");
+  }
+
   return (
     <>
       <div aria-label={label} aria-roledescription="carousel" className="home-character" role="region">
         <div className="home-character-track" onScroll={handleScroll} ref={trackRef}>
-          {images.map((image, index) => (
+          {slides.map((image, index) => (
             <div
-              aria-label={`${index + 1} / ${images.length}`}
+              aria-label={`${index + 1} / ${slides.length}`}
               aria-roledescription="slide"
               className="home-character-slide"
               key={`${image}-${index}`}
+              onPointerLeave={handlePointerLeave}
+              onPointerMove={handlePointerMove}
               role="group"
             >
-              <span className="home-character-card">
-                <img alt="" decoding="async" draggable="false" src={image} />
+              <span className="home-character-motion">
+                <span className="home-character-card">
+                  <img alt="" decoding="async" draggable="false" src={image} />
+                </span>
               </span>
             </div>
           ))}
         </div>
       </div>
 
-      {images.length > 1 ? (
+      {slides.length > 1 ? (
         <div aria-label={label} className="home-carousel-dots">
-          {images.map((image, index) => (
+          {slides.map((image, index) => (
             <button
               aria-label={`${label} ${index + 1}`}
               aria-current={activeIndex === index ? "true" : undefined}

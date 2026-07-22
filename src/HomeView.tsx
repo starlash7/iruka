@@ -1,4 +1,4 @@
-import { ArrowRight, PackageOpen, ShieldCheck, Sparkles } from "lucide-react";
+import { PackageOpen, ShieldCheck, Sparkles } from "lucide-react";
 import homeIdolStage from "./assets/home-idol-stage-cutout.png";
 import vendingMachineImage from "./assets/iruka-vending-machine.jpg";
 import { HomeDiscovery, type HomeDiscoveryCopy } from "./HomeDiscovery";
@@ -8,7 +8,7 @@ import type { MarketplaceBrowseCategory } from "./marketplaceBrowse";
 import type { MarketplaceItem } from "./marketplaceData";
 import type { MarketplaceLocale } from "./marketplaceFilters";
 
-const homeImages = [homeIdolStage, homeIdolStage, homeIdolStage] as const;
+const homeImages = [homeIdolStage] as const;
 
 type HomeViewCopy = {
   action: string;
@@ -76,10 +76,9 @@ export function HomeView({
             <span>{copy.eyebrow}</span>
             <h2>{copy.rightTitle}</h2>
             <p>{copy.leftBody}</p>
-            <IrukaBeam className="home-action-beam">
-              <button onClick={onEnterVending} type="button">
+            <IrukaBeam className="home-primary-beam" variant="action">
+              <button className="iruka-action-button home-primary-action" onClick={onEnterVending} type="button">
                 {copy.action}
-                <ArrowRight size={17} />
               </button>
             </IrukaBeam>
             <div className="home-proof">

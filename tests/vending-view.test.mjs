@@ -31,7 +31,6 @@ after(async () => {
 
 const packDetailCopy = {
   batch: "Batch",
-  cards: "cards",
   category: "Girl Groups",
   openPack: "Pull 1 pack",
   opening: "Pulling",
@@ -107,6 +106,22 @@ test("pack rail exposes four selectable tiers with USDC prices", () => {
   assert.doesNotMatch(markup, /left|Low stock|Sold out|Coming soon|data-status/);
 });
 
+test("pack pull CTA does not repeat the price shown in the purchase panel", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack: packDetails[0],
+      rarityLabels,
+      walletRequired: false
+    })
+  );
+
+  assert.match(markup, />Pull 1 pack</);
+  assert.doesNotMatch(markup, /Pull 1 pack · 19\.00 USDC/);
+});
+
 test("pack rail uses clean pack product artwork", () => {
   const markup = renderToStaticMarkup(
     React.createElement(VendingPackRail, {
@@ -122,13 +137,48 @@ test("pack rail uses clean pack product artwork", () => {
   assert.doesNotMatch(markup, /iruka-vending-pack-/);
 });
 
-test("choosing a pack does not scroll the page to the machine", async () => {
-  const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+test("entering Vending does not scroll to the machine detail", async () => {
+  const [appSource, chromeSource] = await Promise.all([
+    readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/AppChrome.tsx", import.meta.url), "utf8")
+  ]);
 
   assert.doesNotMatch(
     appSource,
     /document\.getElementById\("drops"\)\?\.scrollIntoView\(/
   );
+  assert.doesNotMatch(appSource, /showView\("pull", "drops"\)/);
+  assert.doesNotMatch(chromeSource, /onShowView\("pull", "drops"\)/);
+});
+
+test("home CTA uses a subtle action beam over the primary button surface", async () => {
+  const [homeSource, stylesheet] = await Promise.all([
+    readFile(new URL("../src/HomeView.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/styles.css", import.meta.url), "utf8")
+  ]);
+
+  assert.match(homeSource, /<IrukaBeam className="home-primary-beam" variant="action">/);
+  assert.doesNotMatch(homeSource, /ArrowRight/);
+  assert.match(homeSource, /className="iruka-action-button home-primary-action"/);
+  assert.match(stylesheet, /\.home-primary-action/);
+});
+
+test("Vending keeps a subtle beam aligned to the purchase CTA and tier selection", async () => {
+  const [detailSource, railSource, stylesheet, purchaseStylesheet, responsiveStylesheet] = await Promise.all([
+    readFile(new URL("../src/VendingPackDetail.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/VendingPackRail.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/styles.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/vending-purchase.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/vending-responsive.css", import.meta.url), "utf8")
+  ]);
+
+  assert.match(detailSource, /<IrukaBeam active=\{!isOpening\} className="vending-primary-beam" variant="action">/);
+  assert.match(detailSource, /className="iruka-action-button vending-primary-action"/);
+  assert.match(railSource, /<IrukaBeam/);
+  assert.match(stylesheet, /\.vending-primary-beam \{[\s\S]*?margin-top: 20px;/);
+  assert.doesNotMatch(purchaseStylesheet, /\.vending-primary-action \{[\s\S]*?margin-top: 20px;/);
+  assert.doesNotMatch(stylesheet, /\.vending-pack-beam\[data-active\]/);
+  assert.doesNotMatch(responsiveStylesheet, /\.vending-primary-action\s*\{[^}]*position:\s*sticky/);
 });
 
 test("tier packs keep the product art clean inside the selected machine", () => {
@@ -213,6 +263,16 @@ test("each tier renders its matching vending machine base", () => {
   }
 });
 
+test("machine bases use one normalized square frame", async () => {
+  const stylesheet = await readFile(new URL("../src/vending-layout.css", import.meta.url), "utf8");
+
+  assert.match(
+    stylesheet,
+    /\.vending-machine-base\s*\{[\s\S]*?width: 100%;[\s\S]*?height: 100%;[\s\S]*?object-fit: fill;/
+  );
+  assert.doesNotMatch(stylesheet, /\.vending-detail-media\[data-tier=/);
+});
+
 test("pack detail keeps direct odds and values in color-coded rows", () => {
   const pack = packDetails[0];
   const markup = renderToStaticMarkup(
@@ -228,7 +288,7 @@ test("pack detail keeps direct odds and values in color-coded rows", () => {
 
   assert.equal((markup.match(/class="vending-machine-pack"/g) ?? []).length, 0);
   assert.match(markup, /IRK-GG-2026-001/);
-  assert.match(markup, /Pull 1 pack · 19\.00 USDC/);
+  assert.match(markup, />Pull 1 pack</);
   assert.match(markup, /Redemption unavailable/);
   assert.doesNotMatch(markup, />Physical redemption</);
   assert.doesNotMatch(markup, /Live|Low stock|Sold out|Coming soon|Remaining|Pack supply sold/);
@@ -239,7 +299,7 @@ test("pack detail keeps direct odds and values in color-coded rows", () => {
   assert.doesNotMatch(markup, /vending-odds-disclosure|View odds &amp; values/);
   assert.equal((markup.match(/class="vending-odds-row rarity-/g) ?? []).length, 5);
   assert.equal((markup.match(/class="vending-odds-card/g) ?? []).length, 0);
-  assert.match(markup, /72 cards/);
+  assert.doesNotMatch(markup, /72 cards/);
   assert.match(markup, /6\.00 – 18\.00 USDC/);
   assert.match(markup, /rarity-common/);
   assert.match(markup, /rarity-iruka/);
@@ -259,7 +319,7 @@ test("preview tiers keep the pull CTA available without virtual inventory states
     }));
 
     assert.doesNotMatch(markup, /class="vending-primary-action" disabled=""/);
-    assert.match(markup, new RegExp(`Pull 1 pack · ${pack.priceUsdc} USDC`));
+    assert.match(markup, />Pull 1 pack</);
     assert.doesNotMatch(markup, /Sold out|Coming soon/);
   }
 });

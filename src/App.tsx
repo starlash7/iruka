@@ -12,6 +12,7 @@ import {
   RevealedCard
 } from "./cardFlow";
 import { EventsView } from "./EventsView";
+import { HomeEntry } from "./HomeEntry";
 import { HomeView } from "./HomeView";
 import { MarketplaceSellDialog } from "./MarketplaceSellDialog";
 import { MarketplaceView } from "./MarketplaceView";
@@ -62,6 +63,11 @@ function getInitialView(): AppView {
     : "home";
 }
 
+function shouldShowHomeEntry() {
+  if (typeof window === "undefined") return false;
+  return window.location.hash.length === 0;
+}
+
 function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const [locale, setLocale] = useState<Locale>(getStoredLocale);
   const [selectedPackId, setSelectedPackId] = useState(packDetails[0].id);
@@ -77,16 +83,17 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const [marketplaceTargetListingId, setMarketplaceTargetListingId] = useState<string>();
   const [sellCardId, setSellCardId] = useState<string>();
   const [isOpening, setIsOpening] = useState(false);
-  const [isWalletConnected, setIsWalletConnected] = useState(walletAuth === "disabled");
+  const [isSignedIn, setIsSignedIn] = useState(walletAuth === "disabled");
   const [giwaWallet, setGiwaWallet] = useState<GiwaWallet>();
   const [onchainPull, setOnchainPull] = useState<OnchainPull>();
   const [walletPromptSignal, setWalletPromptSignal] = useState(0);
   const [notice, setNotice] = useState<string | undefined>();
   const [activeView, setActiveView] = useState<AppView>(getInitialView);
+  const [showHomeEntry, setShowHomeEntry] = useState(shouldShowHomeEntry);
   const noticeTimerRef = useRef<number | undefined>(undefined);
   const revealCompleteRef = useRef(false);
   const revealSectionRef = useRef<HTMLElement | null>(null);
-  const wasWalletConnectedRef = useRef(isWalletConnected);
+  const wasSignedInRef = useRef(isSignedIn);
   const t = copy[locale];
 
   const vendingPacks = packDetails;
@@ -118,7 +125,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       )
     : undefined;
 
-  const walletRequired = walletAuth === "privy" && !isWalletConnected;
+  const walletRequired = walletAuth === "privy" && !isSignedIn;
   const hasGiwaPullContract = Boolean(getGiwaPackBatchAddress());
   const isPrimaryView = activeView === "pull";
 
@@ -132,10 +139,10 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   }, []);
 
   useEffect(() => {
-    const wasConnected = wasWalletConnectedRef.current;
-    wasWalletConnectedRef.current = isWalletConnected;
+    const wasSignedIn = wasSignedInRef.current;
+    wasSignedInRef.current = isSignedIn;
 
-    if (walletAuth !== "privy" || !wasConnected || isWalletConnected) return;
+    if (walletAuth !== "privy" || !wasSignedIn || isSignedIn) return;
 
     setCollection([]);
     setSessionPulls([]);
@@ -150,7 +157,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     setSellCardId(undefined);
     setActiveView("home");
     window.scrollTo({ top: 0, behavior: "auto" });
-  }, [isWalletConnected, walletAuth]);
+  }, [isSignedIn, walletAuth]);
 
   function showNotice(message: string) {
     window.clearTimeout(noticeTimerRef.current);
@@ -425,6 +432,16 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     showNotice(t.feedback.listingCancelled);
   }
 
+  function enterHome() {
+    setShowHomeEntry(false);
+    setActiveView("home");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+  }
+
+  if (showHomeEntry) {
+    return <HomeEntry onEnter={enterHome} />;
+  }
+
   return (
     <main className="product-shell">
       <AppHeader
@@ -432,7 +449,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         connectSignal={walletPromptSignal}
         copy={t.nav}
         locale={locale}
-        onConnectedChange={setIsWalletConnected}
+        onAuthenticatedChange={setIsSignedIn}
         onLocaleChange={setLocale}
         onShowView={showNavigationView}
         onWalletChange={setGiwaWallet}
@@ -445,7 +462,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           items={marketplaceItems}
           locale={locale}
           onBrowseCategory={browseMarketplace}
-          onEnterVending={() => showView("pull", "drops")}
+          onEnterVending={() => showView("pull")}
           onOpenItem={(listingId) => browseMarketplace("photocards", listingId)}
         />
       ) : null}
@@ -476,7 +493,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             },
             labels: {
               batch: t.vending.batch,
-              cards: t.sections.cards,
               packOdds: t.vending.packOdds,
               physicalRedemption: t.vending.physicalRedemption,
               redemptionUnavailable: t.vending.redemptionUnavailable,
@@ -539,7 +555,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
       {activeView === "events" ? <EventsView copy={t.eventsPage} /> : null}
 
-      {activeView === "vault" && isWalletConnected ? (
+      {activeView === "vault" && isSignedIn ? (
         <VaultView
           cards={collection}
           copy={{

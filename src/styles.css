@@ -105,7 +105,7 @@ a:focus-visible {
 .product-shell {
   display: flex;
   flex-direction: column;
-  width: min(1320px, 100%);
+  width: min(1440px, 100%);
   min-height: 100dvh;
   margin: 0 auto;
   padding: 0;
@@ -120,11 +120,13 @@ a:focus-visible {
   position: relative;
   z-index: 20;
   display: grid;
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 12px;
   align-items: center;
   min-height: 68px;
-  padding: 10px 12px 10px 14px;
+  padding: 10px clamp(16px, 3vw, 64px);
   border: 0;
   border-radius: 0;
   background: rgba(255, 255, 255, 0.92);
@@ -229,29 +231,18 @@ a:focus-visible {
   z-index: 0;
 }
 
-.iruka-beam-action[data-active],
-.vending-pack-beam[data-active] {
-  padding: 2px;
-  background: linear-gradient(
-    100deg,
-    #3ee8ff,
-    #4d75ff,
-    #9d5cff,
-    #ff56b3,
-    #ffb84f,
-    #3ee8ff
-  );
-  background-size: 220% 100%;
-  box-shadow:
-    0 0 18px rgba(86, 124, 255, 0.3),
-    0 0 30px rgba(232, 86, 255, 0.16);
-  animation: irukaBeamSpectrum 3s linear infinite;
+.iruka-beam-action[data-active] {
+  --beam-stroke-opacity: 1.55;
+  --beam-bloom-opacity: 0.78;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
-@keyframes irukaBeamSpectrum {
-  to {
-    background-position: 220% 0;
-  }
+.vending-primary-beam {
+  display: flex;
+  width: 100%;
+  margin-top: 20px;
 }
 
 
@@ -773,7 +764,7 @@ a:focus-visible {
   background: linear-gradient(132deg, #7a1f73 0%, #ff73b7 42%, #ffc0df 72%, #e8c8ff 100%);
   background-clip: text;
   filter: drop-shadow(0 22px 46px rgba(255, 115, 183, 0.16));
-  transform: translate(184px, 76px) skew(-6deg);
+  transform: translate(184px, 44px) skew(-6deg);
   transform-origin: left center;
   -webkit-background-clip: text;
   animation: homeBrandEnter 1250ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both;
@@ -898,7 +889,7 @@ html[lang="ko"] .home-copy h2 {
   margin: 0;
   color: rgba(255, 255, 255, 0.92);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.55;
 }
 
@@ -925,22 +916,6 @@ html[lang="ko"] .home-copy h2 {
   transition:
     background 160ms ease,
     transform 160ms ease;
-}
-
-.home-copy .home-action-beam {
-  margin-top: 4px;
-}
-
-.home-copy .home-action-beam button {
-  margin-top: 0;
-}
-
-.home-copy button svg {
-  width: 34px;
-  height: 34px;
-  padding: 8px;
-  border-radius: 50%;
-  background: rgba(111, 141, 255, 0.14);
 }
 
 .home-copy button:hover {
@@ -1004,6 +979,25 @@ html[lang="ko"] .home-copy h2 {
   padding-inline: 2.7%;
   scroll-snap-align: center;
   scroll-snap-stop: always;
+}
+
+.home-character-motion {
+  --character-motion-x: 0px;
+  --character-motion-y: 0px;
+  --character-tilt-x: 0deg;
+  --character-tilt-y: 0deg;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  transform: translate3d(var(--character-motion-x), var(--character-motion-y), 0) rotateX(var(--character-tilt-y)) rotateY(var(--character-tilt-x));
+  transform-origin: center bottom;
+  transform-style: preserve-3d;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.home-character-slide:hover .home-character-motion {
+  transition-duration: 90ms;
 }
 
 .home-character-card {
@@ -1670,7 +1664,7 @@ html[lang="ko"] .home-copy h2 {
   margin: 0;
   color: var(--muted);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.55;
 }
 
@@ -2006,7 +2000,8 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   position: relative;
   z-index: 1;
   width: 100%;
-  margin-top: clamp(24px, 3vw, 42px);
+  max-width: 1600px;
+  margin: clamp(24px, 3vw, 42px) auto 0;
   padding: 18px clamp(14px, 2.2vw, 30px) 0;
 }
 
@@ -2264,31 +2259,15 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 
 .marketplace-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
 }
 
-.market-card-cell,
-.market-card-beam {
+.market-card-cell {
   display: grid;
   width: 100%;
   min-width: 0;
   height: 100%;
-}
-
-.market-card-beam[data-active] {
-  padding: 2px;
-  border-radius: 18px;
-  background: linear-gradient(120deg, #36dcff, #7187ff, #cf7cff, #ff78ad, #36dcff);
-  background-size: 260% 100%;
-  box-shadow: 0 0 24px rgba(111, 141, 255, 0.2);
-  animation: market-beam-shift 3.2s linear infinite;
-}
-
-@keyframes market-beam-shift {
-  to {
-    background-position: 260% 0;
-  }
 }
 
 .market-card {
@@ -4070,6 +4049,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 
   .home-brandline > span,
   .home-brandline-line,
+  .home-character-motion,
   .home-character-card img,
   .home-panel,
   .home-copy-left,
@@ -4087,7 +4067,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 
 @media (min-width: 1121px) and (max-width: 1365px) {
   .marketplace-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -4214,8 +4194,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
     gap: 8px;
   }
 
-  .market-card,
-  .market-card-beam[data-active] {
+  .market-card {
     border-radius: 15px;
   }
 
@@ -4335,12 +4314,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 
   .market-card-price > button {
     width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .market-card-beam[data-active] {
-    animation: none;
   }
 }
 
@@ -4812,6 +4785,316 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   .home-category-tile > span,
   .home-market-card,
   .home-market-card-image img {
+    transition: none;
+  }
+}
+
+@media (min-width: 1441px) {
+  .home-character {
+    width: clamp(390px, 39vw, 570px);
+  }
+
+  .home-panel {
+    grid-template-columns: minmax(280px, 400px) minmax(0, 1fr) minmax(240px, 300px);
+    gap: clamp(20px, 3vw, 44px);
+    padding-inline: clamp(26px, 3.4vw, 46px);
+  }
+
+  .home-featured-card {
+    width: min(100%, 270px);
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1120px) {
+  .home-showcase {
+    align-items: stretch;
+    grid-template-rows: auto auto auto;
+    min-height: auto;
+  }
+
+  .home-brandline {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    gap: 14px;
+    padding: clamp(18px, 3vw, 32px) clamp(22px, 4vw, 36px) 0;
+  }
+
+  .home-brandline > span {
+    font-size: clamp(66px, 11vw, 116px);
+    transform: translate(24px, 12px) skew(-6deg);
+  }
+
+  .home-brandline strong,
+  html[lang="ko"] .home-brandline strong {
+    font-size: clamp(28px, 4vw, 42px);
+    transform: translate(0, 12px) skew(-6deg);
+  }
+
+  .home-brandline-line {
+    flex-wrap: wrap;
+    line-height: 0.94;
+    white-space: normal;
+  }
+
+  .home-brandline-line-1 {
+    transform: translateX(0);
+  }
+
+  .home-brandline-line-2 {
+    transform: translateX(18px);
+  }
+
+  .home-character {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    justify-self: center;
+    width: min(460px, 74vw);
+    height: auto;
+    margin-top: calc(-1 * clamp(72px, 9vw, 112px));
+    margin-bottom: calc(-1 * clamp(150px, 23vw, 236px));
+    transform: none;
+  }
+
+  .home-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+    min-height: auto;
+    padding-top: clamp(150px, 25vw, 250px);
+  }
+
+  .home-panel-right {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-nav {
+    width: 100%;
+    margin-inline: 0;
+    padding-inline: 10px;
+  }
+}
+
+.iruka-entry {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 100dvh;
+  padding: clamp(32px, 7dvh, 76px) 20px clamp(46px, 10dvh, 104px);
+  place-items: center;
+  align-content: center;
+  gap: clamp(22px, 3.5dvh, 36px);
+  overflow: hidden;
+  background: #a9ddf4;
+}
+
+.iruka-entry-pixel-unfold {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.iruka-entry-wordmark {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: clamp(116px, 15vw, 172px);
+  height: auto;
+  filter: drop-shadow(0 5px 12px rgba(20, 85, 156, 0.18));
+}
+
+.iruka-entry-stage {
+  position: relative;
+  z-index: 1;
+  width: clamp(192px, 20vw, 252px);
+  height: clamp(192px, 20vw, 252px);
+  min-height: 0;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  background: #d9f7ff;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.84),
+    0 5px 0 rgba(42, 128, 192, 0.3),
+    0 12px 22px rgba(16, 104, 173, 0.2);
+}
+
+.iruka-entry-stage img {
+  position: absolute;
+  bottom: -95%;
+  left: 50%;
+  width: 164%;
+  max-width: none;
+  height: auto;
+  transform: translateX(-50%);
+}
+
+.iruka-entry-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(100%, 360px);
+  justify-items: center;
+  gap: 10px;
+}
+
+.iruka-entry-prompt {
+  width: 100%;
+  min-height: 1.5em;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-family: Geist, Pretendard, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(18px, 1.55vw, 22px);
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  text-shadow: 0 1px 10px rgba(19, 86, 147, 0.32);
+}
+
+.iruka-entry-prompt > span {
+  display: inline-block;
+  width: 23ch;
+  text-align: center;
+  white-space: pre;
+}
+
+.iruka-action-button,
+.auth-button-primary,
+.home-copy button,
+.vending-primary-action,
+.market-card-price > button,
+.market-detail-buy,
+.market-save-listing,
+.marketplace-title-row > button {
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  border: 1px solid rgba(125, 196, 242, 0.66);
+  border-top-color: rgba(255, 255, 255, 0.82);
+  border-bottom-color: rgba(10, 91, 184, 0.48);
+  background: linear-gradient(
+    180deg,
+    rgba(145, 202, 244, 0.92) 0%,
+    rgba(51, 159, 244, 0.96) 26%,
+    rgba(23, 111, 216, 0.96) 62%,
+    rgba(52, 143, 215, 0.92) 100%
+  );
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.42),
+    inset 0 -2px 0 rgba(13, 82, 165, 0.24),
+    0 8px 16px rgba(42, 117, 183, 0.22);
+  backdrop-filter: blur(12px) saturate(1.25);
+  text-shadow: 0 1px 2px rgba(0, 49, 123, 0.42);
+  transition:
+    box-shadow 170ms ease,
+    filter 170ms ease,
+    transform 170ms ease;
+}
+
+.home-primary-action {
+  justify-content: center;
+  min-width: 178px;
+  padding: 0 24px;
+}
+
+.iruka-action-button:hover,
+.auth-button-primary:hover,
+.home-copy button:hover,
+.vending-primary-action:hover,
+.market-card-price > button:hover,
+.market-detail-buy:hover,
+.market-save-listing:hover,
+.marketplace-title-row > button:hover {
+  color: #ffffff;
+  background: linear-gradient(
+    180deg,
+    rgba(169, 214, 248, 0.94) 0%,
+    rgba(72, 171, 248, 0.97) 26%,
+    rgba(29, 122, 224, 0.97) 62%,
+    rgba(57, 151, 221, 0.93) 100%
+  );
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.48),
+    inset 0 -2px 0 rgba(13, 82, 165, 0.22),
+    0 10px 20px rgba(42, 117, 183, 0.24);
+  transform: translateY(-1px);
+}
+
+.iruka-action-button:active,
+.auth-button-primary:active,
+.home-copy button:active,
+.vending-primary-action:active,
+.market-card-price > button:active,
+.market-detail-buy:active,
+.market-save-listing:active,
+.marketplace-title-row > button:active {
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 63, 148, 0.28),
+    0 3px 7px rgba(0, 70, 145, 0.22);
+  transform: translateY(1px);
+}
+
+.iruka-action-button:disabled,
+.auth-button-primary:disabled,
+.vending-primary-action:disabled,
+.market-card-price > button:disabled,
+.market-detail-buy:disabled,
+.market-save-listing:disabled,
+.marketplace-title-row > button:disabled {
+  color: rgba(255, 255, 255, 0.72);
+  border-color: rgba(255, 255, 255, 0.52);
+  background: #8bbbe8;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: none;
+}
+
+.iruka-entry-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: min(214px, 76vw);
+  min-height: 58px;
+  padding: 0 30px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(21px, 2vw, 25px);
+  font-weight: 450;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.iruka-entry-beam {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 600px) {
+  .iruka-entry {
+    padding-top: 42px;
+    padding-bottom: 60px;
+  }
+
+  .iruka-entry-stage {
+    width: 208px;
+    height: 208px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iruka-action-button,
+  .auth-button-primary,
+  .home-copy button,
+  .vending-primary-action,
+  .market-card-price > button,
+  .market-detail-buy,
+  .market-save-listing,
+  .marketplace-title-row > button {
     transition: none;
   }
 }

@@ -89,11 +89,6 @@ html[lang="ko"] .vending-title-block h1 {
   line-height: 1;
 }
 
-.vending-primary-beam {
-  width: 100%;
-  margin-top: 20px;
-}
-
 .vending-primary-action {
   display: inline-flex;
   align-items: center;
@@ -103,18 +98,12 @@ html[lang="ko"] .vending-title-block h1 {
   min-height: 56px;
   padding: 0 20px;
   color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
-  font-weight: 720;
+  font-weight: 700;
   border-radius: var(--radius-pill);
-  background: var(--iruka-gradient);
-  box-shadow: 0 16px 34px rgba(111, 141, 255, 0.18);
   cursor: pointer;
   transition: box-shadow 160ms ease, transform 160ms ease;
-}
-
-.vending-primary-action:hover:not(:disabled) {
-  box-shadow: 0 20px 42px rgba(111, 141, 255, 0.24);
-  transform: translateY(-1px);
 }
 
 .vending-primary-action:disabled {

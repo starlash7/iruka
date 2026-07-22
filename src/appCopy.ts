@@ -38,7 +38,7 @@ export const copy = {
       wallet: "Connect wallet",
       walletConnected: "Connected",
       walletConnecting: "Connecting",
-      walletDisconnect: "Disconnect wallet",
+      walletDisconnect: "Sign out",
       language: "Language"
     },
     home: {
@@ -234,7 +234,7 @@ export const copy = {
       wallet: "지갑 연결",
       walletConnected: "연결됨",
       walletConnecting: "연결 중",
-      walletDisconnect: "연결 해제",
+      walletDisconnect: "로그아웃",
       language: "언어"
     },
     home: {

@@ -1,16 +1,15 @@
 import { ExternalLink, PackageOpen, Truck, Wallet } from "lucide-react";
-import { IrukaBeam } from "./IrukaBeam";
 import { formatUsdc, formatUsdcRange } from "./currency";
 import type { GiwaPullReceipt } from "./giwaPull.ts";
 import debutVendingMachineImage from "./assets/iruka-vending-machine-debut.png";
 import encoreVendingMachineImage from "./assets/iruka-vending-machine-encore.png";
 import grailVendingMachineImage from "./assets/iruka-vending-machine-grail.png";
 import stageVendingMachineImage from "./assets/iruka-vending-machine-stage.png";
+import { IrukaBeam } from "./IrukaBeam";
 import type { PackDetail, PackTier, RarityTier } from "./vendingTypes";
 
 type VendingPackDetailCopy = {
   batch: string;
-  cards: string;
   category: string;
   giwaReceipt: string;
   giwaTestnet?: string;
@@ -63,7 +62,7 @@ export function VendingPackDetail({
     ? copy.opening
     : testnetEnabled
       ? (copy.testPull ?? copy.openPack)
-      : `${copy.openPack} · ${formatUsdc(pack.priceUsdc)}`;
+      : copy.openPack;
 
   return (
     <section className="vending-detail" id="drops">
@@ -97,9 +96,9 @@ export function VendingPackDetail({
           <strong>{formatUsdc(pack.priceUsdc)}</strong>
         </div>
 
-        <IrukaBeam active={!isOpening} className="vending-primary-beam">
+        <IrukaBeam active={!isOpening} className="vending-primary-beam" variant="action">
           <button
-            className="vending-primary-action"
+            className="iruka-action-button vending-primary-action"
             disabled={isOpening}
             onClick={onOpenPack}
             type="button"
@@ -131,7 +130,6 @@ export function VendingPackDetail({
             {pack.rarityOdds.map((odds) => (
               <div className={`vending-odds-row rarity-${odds.tier.toLowerCase()}`} key={odds.tier}>
                 <span>{rarityLabels[odds.tier]}</span>
-                <b>{odds.eligibleCount} {copy.cards}</b>
                 <small>{formatUsdcRange(odds.estimatedValueRangeUsdc)}</small>
                 <strong>{formatOdds(odds.basisPoints)}</strong>
               </div>

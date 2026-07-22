@@ -14,7 +14,7 @@ type AppHeaderProps = {
   connectSignal: number;
   copy: AppCopy["nav"];
   locale: Locale;
-  onConnectedChange: Dispatch<SetStateAction<boolean>>;
+  onAuthenticatedChange: Dispatch<SetStateAction<boolean>>;
   onLocaleChange: Dispatch<SetStateAction<Locale>>;
   onShowView: ShowView;
   onWalletChange: Dispatch<SetStateAction<GiwaWallet | undefined>>;
@@ -26,7 +26,7 @@ export function AppHeader({
   connectSignal,
   copy,
   locale,
-  onConnectedChange,
+  onAuthenticatedChange,
   onLocaleChange,
   onShowView,
   onWalletChange,
@@ -46,7 +46,7 @@ export function AppHeader({
         <button
           aria-pressed={activeView === "pull"}
           className={activeView === "pull" ? "selected" : ""}
-          onClick={() => onShowView("pull", "drops")}
+          onClick={() => onShowView("pull")}
           type="button"
         >
           {copy.pull}
@@ -98,7 +98,7 @@ export function AppHeader({
             unavailable: copy.wallet
           }}
           mode={walletAuth}
-          onConnectedChange={onConnectedChange}
+          onAuthenticatedChange={onAuthenticatedChange}
           onOpenVault={() => onShowView("vault")}
           onWalletChange={onWalletChange}
         />

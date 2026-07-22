@@ -1,16 +1,13 @@
 import { ShieldCheck } from "lucide-react";
 import { formatUsd } from "./currency";
-import { IrukaBeam } from "./IrukaBeam";
 import { getMarketplaceSaleRange, type MarketplaceItem } from "./marketplaceData";
 import {
   getMarketplaceCardTypeLabel,
-  getMarketplaceConditionLabel,
   type MarketplaceLocale
 } from "./marketplaceFilters";
 
 type MarketplaceCardTileProps = {
   buyLabel: string;
-  featured: boolean;
   item: MarketplaceItem;
   locale: MarketplaceLocale;
   onBuy: (item: MarketplaceItem) => void;
@@ -20,7 +17,7 @@ type MarketplaceCardTileProps = {
   vaultLabel: string;
 };
 
-function MarketCard(props: Omit<MarketplaceCardTileProps, "featured">) {
+function MarketCard(props: MarketplaceCardTileProps) {
   const { buyLabel, item, locale, onBuy, onOpen, recentLabel, statusLabel, vaultLabel } = props;
   const available = item.listing.status === "Available";
   const saleRange = getMarketplaceSaleRange(item.sales);
@@ -44,7 +41,6 @@ function MarketCard(props: Omit<MarketplaceCardTileProps, "featured">) {
         <div className="market-card-copy">
           <span>{item.card.group} · {getMarketplaceCardTypeLabel(item.card.cardType, locale)}</span>
           <strong>{item.card.title}</strong>
-          <small>{item.card.release} · {getMarketplaceConditionLabel(item.inventory.condition, locale)}</small>
         </div>
       </button>
 
@@ -62,10 +58,5 @@ function MarketCard(props: Omit<MarketplaceCardTileProps, "featured">) {
 }
 
 export function MarketplaceCardTile(props: MarketplaceCardTileProps) {
-  const card = <MarketCard {...props} />;
-  return props.featured ? (
-    <IrukaBeam borderRadius={18} className="market-card-beam" variant="selection">{card}</IrukaBeam>
-  ) : (
-    <div className="market-card-cell">{card}</div>
-  );
+  return <div className="market-card-cell"><MarketCard {...props} /></div>;
 }

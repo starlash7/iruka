@@ -1,13 +1,14 @@
 @media (max-width: 1280px) {
   .vending-title-block h1 { font-size: 50px; }
   .vending-price-row > strong { font-size: 34px; }
-  .vending-inventory-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .vending-inventory-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1100px) {
   .vending-detail { grid-template-columns: 1fr; }
-  .vending-detail-media { width: 100%; max-height: 760px; aspect-ratio: 1 / 1; }
+  .vending-detail-media { width: min(100%, 640px); aspect-ratio: 1 / 1; }
   .vending-title-block h1 { max-width: none; }
+  .vending-inventory-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .vending-recent-grid { grid-template-columns: 1fr; }
 }
 
@@ -58,12 +59,10 @@
 
   .vending-price-row { align-items: start; margin-top: 24px; }
   .vending-price-row > strong { max-width: 70%; font-size: 29px; overflow-wrap: anywhere; }
-  .vending-primary-beam { position: sticky; bottom: 12px; z-index: 4; }
   .vending-primary-action { min-height: 52px; padding: 0 14px; font-size: 13px; }
 
-  .vending-odds-row { grid-template-columns: 64px 50px minmax(0, 1fr) 42px; gap: 6px; }
+  .vending-odds-row { grid-template-columns: 64px minmax(0, 1fr) 42px; gap: 6px; }
   .vending-odds-row > span { font-size: 12px; }
-  .vending-odds-row > b { font-size: 11px; }
   .vending-odds-row small { font-size: 12px; }
   .vending-odds-row strong { font-size: 15px; }
 

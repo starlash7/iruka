@@ -102,10 +102,6 @@ export function MarketplaceView({
   );
   const selectedItem = items.find((item) => item.listing.id === selectedListingId);
   const showPhotocards = browseCategory === "all" || browseCategory === "photocards";
-  const featuredId = visibleItems.find(
-    (item) => item.card.rarity === "Iruka" && item.listing.status === "Available"
-  )?.listing.id;
-
   useEffect(() => {
     if (!targetListingId) return;
     if (items.some((item) => item.listing.id === targetListingId)) {
@@ -209,7 +205,6 @@ export function MarketplaceView({
                 {visibleItems.map((item) => (
                   <MarketplaceCardTile
                     buyLabel={copy.buyNow}
-                    featured={item.listing.id === featuredId}
                     item={item}
                     key={item.listing.id}
                     locale={locale}

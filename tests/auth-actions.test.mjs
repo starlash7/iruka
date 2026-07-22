@@ -1,13 +1,17 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { after, before, test } from "node:test";
 import { createServer } from "vite";
 
 let server;
 let getAuthenticatedGiwaWallet;
+let getTransactionGiwaWallet;
 
 before(async () => {
   server = await createServer({ appType: "custom", server: { middlewareMode: true } });
-  ({ getAuthenticatedGiwaWallet } = await server.ssrLoadModule("/src/AuthActions.tsx"));
+  ({ getAuthenticatedGiwaWallet, getTransactionGiwaWallet } = await server.ssrLoadModule(
+    "/src/walletConnection.ts"
+  ));
 });
 
 after(async () => {
@@ -30,4 +34,42 @@ test("uses only a linked EVM wallet for GIWA transactions", () => {
     getAuthenticatedGiwaWallet(true, true, [solanaWallet, unlinkedEvmWallet, linkedEvmWallet]),
     linkedEvmWallet
   );
+});
+
+test("requires the current browser session before using an external wallet", () => {
+  const externalWallet = {
+    address: "0xexternal",
+    linked: true,
+    type: "ethereum",
+    walletClientType: "metamask"
+  };
+
+  assert.equal(
+    getTransactionGiwaWallet(true, true, [externalWallet]),
+    undefined
+  );
+  assert.equal(
+    getTransactionGiwaWallet(true, true, [externalWallet], "0xexternal"),
+    externalWallet
+  );
+});
+
+test("keeps the embedded wallet available for a signed-in email or Google user", () => {
+  const embeddedWallet = {
+    address: "0xembedded",
+    linked: true,
+    type: "ethereum",
+    walletClientType: "privy"
+  };
+
+  assert.equal(
+    getTransactionGiwaWallet(true, true, [embeddedWallet]),
+    embeddedWallet
+  );
+});
+
+test("primary authentication buttons use the subtle action beam", async () => {
+  const source = await readFile(new URL("../src/AuthActions.tsx", import.meta.url), "utf8");
+
+  assert.match(source, /<IrukaBeam className="auth-primary-beam" variant="action">/);
 });

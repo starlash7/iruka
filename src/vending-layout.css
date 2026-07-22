@@ -1,9 +1,10 @@
 .vending-page {
   --vending-gutter: clamp(18px, 3vw, 52px);
-  width: min(1760px, 100vw);
-  margin-left: 50%;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
   padding: 26px var(--vending-gutter) 0;
-  transform: translateX(-50%);
+  transform: none;
 }
 
 .vending-tier-rail {
@@ -123,12 +124,14 @@
   display: grid;
   grid-template-columns: minmax(0, 1.38fr) minmax(390px, 1fr);
   gap: clamp(20px, 2vw, 34px);
-  align-items: stretch;
+  align-items: start;
   scroll-margin-top: 18px;
 }
 
 .vending-detail-media {
   position: relative;
+  justify-self: center;
+  width: min(100%, 640px);
   min-width: 0;
   overflow: hidden;
   aspect-ratio: 1 / 1;
@@ -142,6 +145,6 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   z-index: 0;
 }
