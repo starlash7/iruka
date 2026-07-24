@@ -1,10 +1,11 @@
-import { ArrowUpDown, PackageOpen, Search, SlidersHorizontal, Store, X } from "lucide-react";
+import { PackageOpen, Search, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { MarketplaceCardTile } from "./MarketplaceCardTile";
 import { MarketplaceDetailDialog } from "./MarketplaceDetailDialog";
 import { MarketplaceDialog } from "./MarketplaceDialog";
 import { MarketplaceFilterPanel } from "./MarketplaceFilterPanel";
 import { MarketplaceOwnedCards } from "./MarketplaceOwnedCards";
+import { MarketplaceSortMenu } from "./MarketplaceSortMenu";
 import {
   marketplaceBrowseCategories,
   type MarketplaceBrowseCategory
@@ -24,8 +25,8 @@ export type MarketplaceViewCopy = {
   browseCategories: Record<MarketplaceBrowseCategory, string>;
   browseCategoriesLabel: string;
   browsePhotocards: string;
-  buyNow: string;
   cancelListing: string;
+  cardType: string;
   clear: string;
   close: string;
   comingSoon: string;
@@ -35,28 +36,23 @@ export type MarketplaceViewCopy = {
   editPrice: string;
   filterLabels: readonly string[];
   filters: string;
-  fixedPrice: string;
+  fmv: string;
   listForSale: string;
   listingPrice: string;
   noResults: string;
   ownedEmpty: string;
   ownedTitle: string;
-  priceHistory: string;
-  recentSale: string;
-  recentSales: string;
-  results: string;
+  rarity: string;
+  release: string;
   search: string;
-  sell: string;
   sellFromVault: string;
   serial: string;
   sort: string;
   sortOptions: Record<MarketplaceSort, string>;
   statusLabels: Record<MarketplaceListingStatus, string>;
-  thirtyDayRange: string;
   title: string;
   updateListing: string;
   vaultVerified: string;
-  version: string;
 };
 
 type MarketplaceViewProps = {
@@ -66,7 +62,6 @@ type MarketplaceViewProps = {
   listings: MarketplaceListing[];
   locale: MarketplaceLocale;
   onBrowseCategoryChange: (category: MarketplaceBrowseCategory) => void;
-  onBuy: (item: MarketplaceItem) => void;
   onOpenSell: (card: CardPull) => void;
   onTargetListingHandled: () => void;
   ownedCards: CardPull[];
@@ -80,7 +75,6 @@ export function MarketplaceView({
   listings,
   locale,
   onBrowseCategoryChange,
-  onBuy,
   onOpenSell,
   onTargetListingHandled,
   ownedCards,
@@ -119,19 +113,6 @@ export function MarketplaceView({
     });
   }
 
-  function scrollToOwned() {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!showPhotocards) onBrowseCategoryChange("photocards");
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        document.getElementById("owned-cards")?.scrollIntoView({
-          behavior: reduced ? "auto" : "smooth",
-          block: "start"
-        });
-      });
-    });
-  }
-
   function selectBrowseCategory(category: MarketplaceBrowseCategory) {
     setFilterDialogOpen(false);
     setSelectedListingId(undefined);
@@ -153,11 +134,7 @@ export function MarketplaceView({
   return (
     <section className="marketplace-page" id="marketplace">
       <div className="marketplace-title-row">
-        <div>
-          <h1>{copy.title}</h1>
-          <span>{showPhotocards ? visibleItems.length : 0} {copy.results}</span>
-        </div>
-        <button onClick={scrollToOwned} type="button"><Store size={16} />{copy.sell}</button>
+        <h1>{copy.title}</h1>
       </div>
 
       <nav className="marketplace-browse-categories" aria-label={copy.browseCategoriesLabel}>
@@ -189,28 +166,22 @@ export function MarketplaceView({
                 {copy.filters}
                 {selectedKeys.size > 0 ? <b>{selectedKeys.size}</b> : null}
               </button>
-              <label className="marketplace-sort">
-                <ArrowUpDown size={16} />
-                <span>{copy.sort}</span>
-                <select onChange={(event) => setSort(event.target.value as MarketplaceSort)} value={sort}>
-                  <option value="recent">{copy.sortOptions.recent}</option>
-                  <option value="price-asc">{copy.sortOptions["price-asc"]}</option>
-                  <option value="price-desc">{copy.sortOptions["price-desc"]}</option>
-                </select>
-              </label>
+              <MarketplaceSortMenu
+                label={copy.sort}
+                onChange={setSort}
+                options={copy.sortOptions}
+                value={sort}
+              />
             </div>
 
             {visibleItems.length > 0 ? (
               <div className="marketplace-grid">
                 {visibleItems.map((item) => (
                   <MarketplaceCardTile
-                    buyLabel={copy.buyNow}
+                    fmvLabel={copy.fmv}
                     item={item}
                     key={item.listing.id}
-                    locale={locale}
-                    onBuy={onBuy}
                     onOpen={(selected) => setSelectedListingId(selected.listing.id)}
-                    recentLabel={copy.recentSale}
                     statusLabel={copy.statusLabels[item.listing.status]}
                     vaultLabel={copy.vaultVerified}
                   />
@@ -249,7 +220,7 @@ export function MarketplaceView({
         </div>
       </MarketplaceDialog>
 
-      <MarketplaceDetailDialog copy={copy} item={selectedItem} locale={locale} onBuy={onBuy} onClose={() => setSelectedListingId(undefined)} />
+      <MarketplaceDetailDialog copy={copy} item={selectedItem} locale={locale} onClose={() => setSelectedListingId(undefined)} />
     </section>
   );
 }

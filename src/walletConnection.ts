@@ -2,6 +2,14 @@ import type { ConnectedWallet } from "@privy-io/react-auth";
 
 const externalWalletSessionKey = "iruka-external-wallet-session";
 
+export function shouldHandleWalletPrompt(
+  connectSignal: number,
+  handledConnectSignal: number,
+  ready: boolean
+) {
+  return ready && connectSignal > handledConnectSignal;
+}
+
 export function getAuthenticatedGiwaWallet(
   authenticated: boolean,
   walletsReady: boolean,

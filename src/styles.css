@@ -2005,21 +2005,12 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   padding: 18px clamp(14px, 2.2vw, 30px) 0;
 }
 
-.marketplace-title-row,
-.marketplace-title-row > div {
+.marketplace-title-row {
   display: flex;
   align-items: center;
-}
-
-.marketplace-title-row {
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
   margin-bottom: 18px;
-}
-
-.marketplace-title-row > div {
-  gap: 12px;
-  min-width: 0;
 }
 
 .marketplace-title-row h1 {
@@ -2028,28 +2019,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   font-size: clamp(30px, 3vw, 40px);
   font-weight: 800;
   line-height: 1.05;
-}
-
-.marketplace-title-row span {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.marketplace-title-row > button {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  min-height: 42px;
-  padding: 0 17px;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 800;
-  border-radius: var(--radius-pill);
-  background: var(--iruka-gradient);
-  box-shadow: 0 12px 26px rgba(111, 141, 255, 0.16);
-  cursor: pointer;
 }
 
 .marketplace-shell {
@@ -2197,12 +2166,13 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 }
 
 .marketplace-search,
-.marketplace-sort,
+.marketplace-sort-menu > button,
 .marketplace-mobile-filter {
   min-height: 44px;
   border: 1px solid rgba(214, 228, 255, 0.82);
-  border-radius: 14px;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 28px rgba(111, 141, 255, 0.05);
 }
 
 .marketplace-search {
@@ -2224,33 +2194,93 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   background: transparent;
 }
 
-.marketplace-sort {
+.marketplace-sort-menu {
   position: relative;
+  z-index: 4;
+  min-width: 238px;
+}
+
+.marketplace-sort-menu > button {
   display: grid;
-  grid-template-columns: auto auto minmax(136px, auto);
-  gap: 7px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 9px;
   align-items: center;
-  padding: 0 8px 0 12px;
+  width: 100%;
+  padding: 0 13px;
   color: var(--ink);
+  text-align: left;
+  cursor: pointer;
 }
 
-.marketplace-sort span {
-  font-size: 12px;
-  font-weight: 800;
+.marketplace-sort-menu > button > svg:first-child {
+  color: var(--blue);
 }
 
-.marketplace-sort select {
+.marketplace-sort-menu > button > svg:last-child {
+  color: var(--subtle);
+  pointer-events: none;
+  transition: transform 160ms ease;
+}
+
+.marketplace-sort-menu > button > svg.open {
+  transform: rotate(180deg);
+}
+
+.marketplace-sort-menu > button strong {
   min-width: 0;
-  height: 34px;
-  padding: 0 24px 0 9px;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.marketplace-sort-menu > button[aria-expanded="true"] {
+  border-color: rgba(111, 141, 255, 0.34);
+  box-shadow: 0 12px 30px rgba(111, 141, 255, 0.12);
+}
+
+.marketplace-sort-options {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 5;
+  display: grid;
+  width: 100%;
+  min-width: 238px;
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid rgba(198, 218, 255, 0.9);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 20px 48px rgba(74, 116, 190, 0.18);
+  backdrop-filter: blur(18px) saturate(1.2);
+}
+
+.marketplace-sort-options > button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 11px;
   color: var(--muted);
   font: inherit;
   font-size: 12px;
   font-weight: 700;
-  border: 0;
-  outline: 0;
-  background: transparent;
+  text-align: left;
+  border-radius: 12px;
   cursor: pointer;
+}
+
+.marketplace-sort-options > button:hover,
+.marketplace-sort-options > button.selected {
+  color: var(--blue-hover);
+  background: rgba(237, 245, 255, 0.96);
+}
+
+.marketplace-sort-options > button svg {
+  color: var(--blue);
 }
 
 .marketplace-mobile-filter {
@@ -2272,7 +2302,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 
 .market-card {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -2373,7 +2402,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 .market-card-copy {
   display: grid;
   gap: 4px;
-  padding: 11px 11px 9px;
+  padding: 11px 11px 13px;
 }
 
 .market-card-copy > span,
@@ -2391,68 +2420,42 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   text-transform: uppercase;
 }
 
+.market-card-copy > .market-card-group {
+  color: #c54884;
+}
+
 .market-card-copy strong {
   min-height: 38px;
   color: var(--ink);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.28;
+}
+
+.market-card-fmv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  margin-top: 4px;
+}
+
+.market-card-copy .market-card-fmv small {
+  color: var(--subtle);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.market-card-fmv b {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .market-card-copy small {
   font-size: 10px;
   font-weight: 650;
-}
-
-.market-card-price {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: end;
-  padding: 0 11px 11px;
-}
-
-.market-card-price > div {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.market-card-price b {
-  color: var(--ink);
-  font-size: 17px;
-  font-weight: 850;
-  line-height: 1;
-}
-
-.market-card-price small {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.market-card-price > button {
-  min-width: 68px;
-  min-height: 36px;
-  padding: 0 11px;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 800;
-  border-radius: var(--radius-pill);
-  background: var(--iruka-gradient);
-  box-shadow: 0 8px 20px rgba(111, 141, 255, 0.16);
-  cursor: pointer;
-}
-
-.market-card-price > button:disabled {
-  color: var(--muted);
-  background: #edf2f8;
-  box-shadow: none;
-  cursor: default;
 }
 
 .marketplace-no-results,
@@ -2683,8 +2686,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   gap: 8px;
 }
 
-.market-detail-meta > div,
-.market-detail-pricing > div {
+.market-detail-meta > div {
   display: grid;
   gap: 4px;
   min-width: 0;
@@ -2693,8 +2695,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   background: var(--soft);
 }
 
-.market-detail-meta span,
-.market-detail-pricing span {
+.market-detail-meta span {
   color: var(--muted);
   font-size: 10px;
   font-weight: 700;
@@ -2711,61 +2712,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   white-space: nowrap;
 }
 
-.market-detail-pricing {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 8px;
-}
-
-.market-detail-pricing .market-detail-price-primary {
-  grid-column: 1 / -1;
-  padding: 14px;
-  color: #ffffff;
-  background: linear-gradient(130deg, #5ecce8, #6f8dff 55%, #a98af4);
-}
-
-.market-detail-price-primary span {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.market-detail-price-primary strong {
-  font-size: 25px;
-}
-
-.market-detail-pricing strong {
-  min-width: 0;
-  font-size: 12px;
-  line-height: 1.3;
-}
-
-.market-sales-history {
-  display: grid;
-  gap: 8px;
-}
-
-.market-sales-history h3 {
-  margin: 0;
-  font-size: 13px;
-}
-
-.market-sales-history > div {
-  border-top: 1px solid var(--line);
-}
-
-.market-sales-history p {
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  padding: 8px 2px;
-  font-size: 11px;
-  border-bottom: 1px solid var(--line);
-}
-
-.market-sales-history p span {
-  color: var(--muted);
-}
-
-.market-detail-buy,
 .market-save-listing {
   min-height: 48px;
   color: #ffffff;
@@ -2777,7 +2723,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   cursor: pointer;
 }
 
-.market-detail-buy:disabled,
 .market-save-listing:disabled {
   color: var(--muted);
   background: #e9eff7;
@@ -4122,19 +4067,8 @@ html[lang="ko"] .roadmap-phase-copy h3 {
     margin-bottom: 14px;
   }
 
-  .marketplace-title-row > div {
-    display: grid;
-    gap: 2px;
-  }
-
   .marketplace-title-row h1 {
     font-size: 28px;
-  }
-
-  .marketplace-title-row > button {
-    min-height: 38px;
-    padding: 0 12px;
-    font-size: 11px;
   }
 
   .marketplace-shell {
@@ -4177,16 +4111,13 @@ html[lang="ko"] .roadmap-phase-copy h3 {
     background: var(--blue);
   }
 
-  .marketplace-sort {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .marketplace-sort > span {
-    display: none;
-  }
-
-  .marketplace-sort select {
+  .marketplace-sort-menu {
+    min-width: 0;
     width: 100%;
+  }
+
+  .marketplace-sort-options {
+    min-width: 210px;
   }
 
   .marketplace-grid {
@@ -4199,7 +4130,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   }
 
   .market-card-copy {
-    padding: 9px 9px 7px;
+    padding: 9px 9px 11px;
   }
 
   .market-card-art {
@@ -4216,20 +4147,8 @@ html[lang="ko"] .roadmap-phase-copy h3 {
     font-size: 13px;
   }
 
-  .market-card-price {
-    gap: 4px;
-    padding: 0 9px 9px;
-  }
-
-  .market-card-price b {
-    font-size: 15px;
-  }
-
-  .market-card-price > button {
-    min-width: 56px;
-    min-height: 34px;
-    padding: 0 8px;
-    font-size: 10px;
+  .market-card-fmv b {
+    font-size: 14px;
   }
 
   .market-vault-badge {
@@ -4277,13 +4196,8 @@ html[lang="ko"] .roadmap-phase-copy h3 {
     border-radius: 16px;
   }
 
-  .market-detail-meta,
-  .market-detail-pricing {
+  .market-detail-meta {
     gap: 7px;
-  }
-
-  .market-detail-price-primary strong {
-    font-size: 22px;
   }
 
   .market-filter-dialog {
@@ -4304,16 +4218,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
     max-width: none;
     margin: auto 0 0;
     border-radius: 22px 22px 0 0;
-  }
-}
-
-@media (max-width: 360px) {
-  .market-card-price {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .market-card-price > button {
-    width: 100%;
   }
 }
 
@@ -4587,13 +4491,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   font-weight: 800;
 }
 
-.home-market-card-copy b {
-  margin-top: 5px;
-  color: var(--ink);
-  font-size: 16px;
-  font-variant-numeric: tabular-nums;
-}
-
 .marketplace-browse-categories {
   display: flex;
   gap: 8px;
@@ -4757,10 +4654,6 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 
   .home-market-card-copy strong {
     font-size: 13px;
-  }
-
-  .home-market-card-copy b {
-    font-size: 15px;
   }
 
   .marketplace-browse-categories {
@@ -4970,10 +4863,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 .auth-button-primary,
 .home-copy button,
 .vending-primary-action,
-.market-card-price > button,
-.market-detail-buy,
-.market-save-listing,
-.marketplace-title-row > button {
+.market-save-listing {
   color: #ffffff;
   font-family: Arial, Helvetica, sans-serif;
   border: 1px solid rgba(125, 196, 242, 0.66);
@@ -5008,10 +4898,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 .auth-button-primary:hover,
 .home-copy button:hover,
 .vending-primary-action:hover,
-.market-card-price > button:hover,
-.market-detail-buy:hover,
-.market-save-listing:hover,
-.marketplace-title-row > button:hover {
+.market-save-listing:hover {
   color: #ffffff;
   background: linear-gradient(
     180deg,
@@ -5031,10 +4918,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 .auth-button-primary:active,
 .home-copy button:active,
 .vending-primary-action:active,
-.market-card-price > button:active,
-.market-detail-buy:active,
-.market-save-listing:active,
-.marketplace-title-row > button:active {
+.market-save-listing:active {
   box-shadow:
     inset 0 -1px 0 rgba(0, 63, 148, 0.28),
     0 3px 7px rgba(0, 70, 145, 0.22);
@@ -5044,10 +4928,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 .iruka-action-button:disabled,
 .auth-button-primary:disabled,
 .vending-primary-action:disabled,
-.market-card-price > button:disabled,
-.market-detail-buy:disabled,
-.market-save-listing:disabled,
-.marketplace-title-row > button:disabled {
+.market-save-listing:disabled {
   color: rgba(255, 255, 255, 0.72);
   border-color: rgba(255, 255, 255, 0.52);
   background: #8bbbe8;
@@ -5091,10 +4972,7 @@ html[lang="ko"] .roadmap-phase-copy h3 {
   .auth-button-primary,
   .home-copy button,
   .vending-primary-action,
-  .market-card-price > button,
-  .market-detail-buy,
-  .market-save-listing,
-  .marketplace-title-row > button {
+  .market-save-listing {
     transition: none;
   }
 }

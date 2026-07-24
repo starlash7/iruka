@@ -1,4 +1,3 @@
-import type { MarketplaceItem } from "./marketplaceData";
 import { formatUsdcRange, formatUsd } from "./currency";
 import type { IrukaRarity, RevealCard } from "./features/pack-reveal/revealConfig";
 import type { CardPull, Rarity, VendingPull } from "./vendingTypes";
@@ -37,27 +36,6 @@ export function formatCardPullValue(card: CardPull) {
   return card.estimatedValueRangeUsdc
     ? formatUsdcRange(card.estimatedValueRangeUsdc)
     : formatUsd(card.estimatedValue);
-}
-
-export function createMarketplacePurchase(item: MarketplaceItem): CardPull {
-  return {
-    id: `owned-${item.inventory.id}`,
-    packId: item.card.id,
-    category: item.card.category,
-    group: item.card.group,
-    member: item.card.member,
-    rarity: item.card.rarity,
-    estimatedValue: item.listing.fixedPrice,
-    vaultStatus: "Vaulted",
-    imageStyle: "card-style-1",
-    imageUrl: item.card.imageUrl,
-    marketplaceInventoryId: item.inventory.id,
-    serial: item.inventory.serial,
-    pulledAt: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    })
-  };
 }
 
 export function getSupplyProgress(remaining: number, total: number) {

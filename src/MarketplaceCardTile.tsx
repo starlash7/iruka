@@ -1,26 +1,17 @@
 import { ShieldCheck } from "lucide-react";
-import { formatUsd } from "./currency";
-import { getMarketplaceSaleRange, type MarketplaceItem } from "./marketplaceData";
-import {
-  getMarketplaceCardTypeLabel,
-  type MarketplaceLocale
-} from "./marketplaceFilters";
+import type { MarketplaceItem } from "./marketplaceData";
 
 type MarketplaceCardTileProps = {
-  buyLabel: string;
+  fmvLabel: string;
   item: MarketplaceItem;
-  locale: MarketplaceLocale;
-  onBuy: (item: MarketplaceItem) => void;
   onOpen: (item: MarketplaceItem) => void;
-  recentLabel: string;
   statusLabel: string;
   vaultLabel: string;
 };
 
 function MarketCard(props: MarketplaceCardTileProps) {
-  const { buyLabel, item, locale, onBuy, onOpen, recentLabel, statusLabel, vaultLabel } = props;
+  const { fmvLabel, item, onOpen, statusLabel, vaultLabel } = props;
   const available = item.listing.status === "Available";
-  const saleRange = getMarketplaceSaleRange(item.sales);
 
   return (
     <article className={`market-card rarity-${item.card.rarity.toLowerCase()}`}>
@@ -32,27 +23,23 @@ function MarketCard(props: MarketplaceCardTileProps) {
       >
         <div className="market-card-art">
           <img alt="" loading="lazy" src={item.card.imageUrl} />
-          <span className="market-vault-badge">
-            <ShieldCheck size={12} />
-            {vaultLabel}
-          </span>
+          {item.inventory.custodyVerified ? (
+            <span className="market-vault-badge">
+              <ShieldCheck size={12} />
+              {vaultLabel}
+            </span>
+          ) : null}
           {!available ? <span className={`market-status-badge status-${item.listing.status.toLowerCase()}`}>{statusLabel}</span> : null}
         </div>
         <div className="market-card-copy">
-          <span>{item.card.group} · {getMarketplaceCardTypeLabel(item.card.cardType, locale)}</span>
+          <span className="market-card-group">{item.card.group}</span>
           <strong>{item.card.title}</strong>
+          <div className="market-card-fmv">
+            <small>{fmvLabel}</small>
+            <b>{`$${item.card.fmv}`}</b>
+          </div>
         </div>
       </button>
-
-      <div className="market-card-price">
-        <div>
-          <b>{formatUsd(item.listing.fixedPrice)}</b>
-          <small>{recentLabel} {formatUsd(saleRange.recent)}</small>
-        </div>
-        <button disabled={!available} onClick={() => onBuy(item)} type="button">
-          {available ? buyLabel : statusLabel}
-        </button>
-      </div>
     </article>
   );
 }

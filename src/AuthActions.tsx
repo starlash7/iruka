@@ -9,7 +9,8 @@ import {
   getAuthenticatedGiwaWallet,
   getExternalWalletSessionAddress,
   getTransactionGiwaWallet,
-  saveExternalWalletSession
+  saveExternalWalletSession,
+  shouldHandleWalletPrompt
 } from "./walletConnection";
 
 type AuthLabels = {
@@ -87,6 +88,7 @@ function PrivyAuthActions({
   const [externalWalletSessionAddress, setExternalWalletSessionAddress] = useState(
     getExternalWalletSessionAddress
   );
+  const handledConnectSignalRef = useRef(0);
   const initialAuthenticationRef = useRef<boolean>();
   const linkedWallet = getAuthenticatedGiwaWallet(authenticated, walletsReady, wallets);
   const transactionWallet = getTransactionGiwaWallet(
@@ -139,7 +141,13 @@ function PrivyAuthActions({
   }, [authenticated, linkedWallet, walletsReady]);
 
   useEffect(() => {
-    if (connectSignal === 0 || !ready) return;
+    if (!shouldHandleWalletPrompt(
+      connectSignal,
+      handledConnectSignalRef.current,
+      ready
+    )) return;
+
+    handledConnectSignalRef.current = connectSignal;
 
     if (!authenticated) {
       login();

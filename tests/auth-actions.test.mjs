@@ -6,12 +6,15 @@ import { createServer } from "vite";
 let server;
 let getAuthenticatedGiwaWallet;
 let getTransactionGiwaWallet;
+let shouldHandleWalletPrompt;
 
 before(async () => {
   server = await createServer({ appType: "custom", server: { middlewareMode: true } });
-  ({ getAuthenticatedGiwaWallet, getTransactionGiwaWallet } = await server.ssrLoadModule(
-    "/src/walletConnection.ts"
-  ));
+  ({
+    getAuthenticatedGiwaWallet,
+    getTransactionGiwaWallet,
+    shouldHandleWalletPrompt
+  } = await server.ssrLoadModule("/src/walletConnection.ts"));
 });
 
 after(async () => {
@@ -66,6 +69,13 @@ test("keeps the embedded wallet available for a signed-in email or Google user",
     getTransactionGiwaWallet(true, true, [embeddedWallet]),
     embeddedWallet
   );
+});
+
+test("handles each wallet prompt signal only once", () => {
+  assert.equal(shouldHandleWalletPrompt(1, 0, true), true);
+  assert.equal(shouldHandleWalletPrompt(1, 1, true), false);
+  assert.equal(shouldHandleWalletPrompt(2, 1, true), true);
+  assert.equal(shouldHandleWalletPrompt(2, 1, false), false);
 });
 
 test("primary authentication buttons use the subtle action beam", async () => {

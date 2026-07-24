@@ -2,12 +2,12 @@ import type { Locale } from "./appTypes";
 import type {
   MarketplaceCardType,
   MarketplaceCondition,
-  MarketplaceItem,
-  MarketplaceListingStatus
+  MarketplaceItem
 } from "./marketplaceData";
+import type { Rarity } from "./vendingTypes";
 
 export type MarketplaceLocale = Locale;
-export type MarketplaceSort = "recent" | "price-asc" | "price-desc";
+export type MarketplaceSort = "price-asc" | "price-desc" | "fmv" | "recent" | "name";
 
 export type MarketplaceFilterOption = {
   key: string;
@@ -23,27 +23,20 @@ export type MarketplaceFilterGroup = {
 
 const localizedValues = {
   en: {
-    status: { Available: "Available", Reserved: "Reserved", Sold: "Sold" },
     type: { Album: "Album", POB: "POB", "Lucky Draw": "Lucky Draw", Event: "Event", Limited: "Limited" },
-    condition: { Mint: "Mint", "Near Mint": "Near Mint", Excellent: "Excellent" }
+    condition: { Mint: "Mint", "Near Mint": "Near Mint", Excellent: "Excellent", Ungraded: "Ungraded" },
+    rarity: { Common: "Common", Rare: "Rare", Epic: "Epic", Legendary: "Legendary", Iruka: "Iruka" }
   },
   ko: {
-    status: { Available: "판매 중", Reserved: "예약 중", Sold: "판매 완료" },
     type: { Album: "앨범", POB: "예약 특전", "Lucky Draw": "럭키드로우", Event: "이벤트", Limited: "한정" },
-    condition: { Mint: "민트", "Near Mint": "최상", Excellent: "양호" }
+    condition: { Mint: "민트", "Near Mint": "최상", Excellent: "양호", Ungraded: "미등급" },
+    rarity: { Common: "일반", Rare: "레어", Epic: "에픽", Legendary: "레전더리", Iruka: "이루카" }
   }
 } satisfies Record<Locale, {
   condition: Record<MarketplaceCondition, string>;
-  status: Record<Exclude<MarketplaceListingStatus, "Cancelled">, string>;
+  rarity: Record<Rarity, string>;
   type: Record<MarketplaceCardType, string>;
 }>;
-
-export function formatMarketplaceDate(value: string, locale: MarketplaceLocale) {
-  return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
-    month: "short",
-    day: "numeric"
-  }).format(new Date(value));
-}
 
 export function getMarketplaceCardTypeLabel(
   value: MarketplaceCardType,
@@ -57,6 +50,10 @@ export function getMarketplaceConditionLabel(
   locale: MarketplaceLocale
 ) {
   return localizedValues[locale].condition[value];
+}
+
+export function getMarketplaceRarityLabel(value: Rarity, locale: MarketplaceLocale) {
+  return localizedValues[locale].rarity[value];
 }
 
 export function filterOptionKey(groupKey: string, optionKey: string) {
@@ -83,16 +80,16 @@ export function buildMarketplaceFilterGroups(
   const values = localizedValues[locale];
 
   return [
+    { key: "group", label: labels[0], options: uniqueOptions(items, (item) => item.card.group) },
     {
-      key: "status",
-      label: labels[0],
+      key: "rarity",
+      label: labels[1],
       options: uniqueOptions(
         items,
-        (item) => item.listing.status,
-        (value) => values.status[value as keyof typeof values.status]
+        (item) => item.card.rarity,
+        (value) => values.rarity[value as Rarity]
       )
     },
-    { key: "group", label: labels[1], options: uniqueOptions(items, (item) => item.card.group) },
     { key: "member", label: labels[2], options: uniqueOptions(items, (item) => item.card.member) },
     {
       key: "type",
@@ -103,24 +100,14 @@ export function buildMarketplaceFilterGroups(
         (value) => values.type[value as MarketplaceCardType]
       )
     },
-    { key: "rarity", label: labels[4], options: uniqueOptions(items, (item) => item.card.rarity) },
     {
       key: "condition",
-      label: labels[5],
+      label: labels[4],
       options: uniqueOptions(
         items,
         (item) => item.inventory.condition,
         (value) => values.condition[value as MarketplaceCondition]
       )
-    },
-    {
-      key: "price",
-      label: labels[6],
-      options: [
-        { key: "under-25", label: locale === "ko" ? "$25 미만" : "Under $25", matches: (item) => item.listing.fixedPrice < 25 },
-        { key: "25-74", label: "$25-$74", matches: (item) => item.listing.fixedPrice >= 25 && item.listing.fixedPrice < 75 },
-        { key: "75-plus", label: locale === "ko" ? "$75 이상" : "$75+", matches: (item) => item.listing.fixedPrice >= 75 }
-      ]
     }
   ];
 }
@@ -155,10 +142,18 @@ export function filterMarketplaceCards(
   });
 }
 
-export function sortMarketplaceCards(items: MarketplaceItem[], sort: MarketplaceSort) {
+export function sortMarketplaceCards(
+  items: MarketplaceItem[],
+  sort: MarketplaceSort
+) {
   return [...items].sort((a, b) => {
-    if (sort === "recent") return b.listing.listedAt.localeCompare(a.listing.listedAt);
-    const direction = sort === "price-asc" ? 1 : -1;
-    return direction * (a.listing.fixedPrice - b.listing.fixedPrice);
+    const nameDifference = `${a.card.group} ${a.card.title}`.localeCompare(
+      `${b.card.group} ${b.card.title}`
+    );
+    if (sort === "price-asc") return a.listing.fixedPrice - b.listing.fixedPrice || nameDifference;
+    if (sort === "price-desc") return b.listing.fixedPrice - a.listing.fixedPrice || nameDifference;
+    if (sort === "fmv") return b.card.fmv - a.card.fmv || nameDifference;
+    if (sort === "recent") return b.listing.listedAt.localeCompare(a.listing.listedAt) || nameDifference;
+    return nameDifference;
   });
 }

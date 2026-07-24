@@ -4,7 +4,6 @@ import { AppFooter, AppHeader, MINTLIFY_DOCS_URL } from "./AppChrome";
 import { copy } from "./appCopy";
 import type { AppView, Locale, WalletAuthMode } from "./appTypes";
 import {
-  createMarketplacePurchase,
   createRevealCard,
   createRevealImageUrl,
   createVendingCardPull,
@@ -20,7 +19,6 @@ import type { MarketplaceBrowseCategory } from "./marketplaceBrowse";
 import {
   getMarketplaceItems,
   initialMarketplaceListings,
-  type MarketplaceItem,
   type MarketplaceListing
 } from "./marketplaceData";
 import { rarityClassNames } from "./packData";
@@ -340,34 +338,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     );
   }
 
-  function buyMarketplaceCard(item: MarketplaceItem) {
-    if (walletRequired) {
-      setWalletPromptSignal((value) => value + 1);
-      showNotice(t.feedback.connectWallet);
-      return;
-    }
-
-    if (item.listing.status !== "Available") return;
-    if (
-      collection.some(
-        (card) => card.marketplaceInventoryId === item.inventory.id
-      )
-    ) {
-      showNotice(t.feedback.purchaseAlreadyOwned);
-      return;
-    }
-
-    const purchase = createMarketplacePurchase(item);
-    setMarketplaceListings((listings) =>
-      listings.map((listing) =>
-        listing.id === item.listing.id ? { ...listing, status: "Sold" } : listing
-      )
-    );
-    setCollection((items) => [purchase, ...items]);
-    setActivePull(purchase);
-    showNotice(t.feedback.purchaseQueued);
-  }
-
   function openSellDialog(card: CardPull) {
     if (walletRequired) {
       setWalletPromptSignal((value) => value + 1);
@@ -545,7 +515,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           listings={marketplaceListings}
           locale={locale}
           onBrowseCategoryChange={setMarketplaceBrowseCategory}
-          onBuy={buyMarketplaceCard}
           onOpenSell={openSellDialog}
           onTargetListingHandled={() => setMarketplaceTargetListingId(undefined)}
           ownedCards={collection.filter((card) => card.vaultStatus !== "Sold")}

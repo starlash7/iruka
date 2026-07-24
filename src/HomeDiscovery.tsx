@@ -7,7 +7,6 @@ import keyringsImage from "./assets/home-discovery/keyrings.webp";
 import lightsticksImage from "./assets/home-discovery/lightsticks.webp";
 import photocardsImage from "./assets/home-discovery/photocards.webp";
 import plushCharmsImage from "./assets/home-discovery/plush-charms.webp";
-import { formatUsd } from "./currency";
 import { homeBrowseCategories, type MarketplaceBrowseCategory } from "./marketplaceBrowse";
 import type { MarketplaceItem } from "./marketplaceData";
 import {
@@ -42,37 +41,16 @@ const categoryImages: Record<Exclude<MarketplaceBrowseCategory, "all">, string> 
   "plush-charms": plushCharmsImage
 };
 
-const hotCardOrder = [
-  "lumina-ari-signal",
-  "museon-yuna-encore",
-  "northstar-ren-signal",
-  "zeroseven-tae-encore",
-  "lumina-nari-signal",
-  "northstar-ido-encore"
-] as const;
-
 function getAvailableItems(items: MarketplaceItem[]) {
   return items.filter((item) => item.listing.status === "Available");
 }
 
 function getHotItems(items: MarketplaceItem[]) {
-  const available = getAvailableItems(items);
-  const ranked = hotCardOrder.flatMap((cardId) => {
-    const item = available.find((candidate) => candidate.card.id === cardId);
-    return item ? [item] : [];
-  });
-  const rankedIds = new Set(ranked.map((item) => item.card.id));
-  const backfill = available
-    .filter((item) => !rankedIds.has(item.card.id))
-    .sort((a, b) => (b.sales[0]?.soldAt ?? "").localeCompare(a.sales[0]?.soldAt ?? ""));
-
-  return [...ranked, ...backfill].slice(0, 6);
+  return getAvailableItems(items).slice(0, 6);
 }
 
 function getNewItems(items: MarketplaceItem[]) {
-  return getAvailableItems(items)
-    .sort((a, b) => b.listing.listedAt.localeCompare(a.listing.listedAt))
-    .slice(0, 6);
+  return getAvailableItems(items).slice(6, 12);
 }
 
 function HomePhotocard({
@@ -97,7 +75,6 @@ function HomePhotocard({
       <span className="home-market-card-copy">
         <small>{item.card.group} · {getMarketplaceCardTypeLabel(item.card.cardType, locale)}</small>
         <strong>{item.card.title}</strong>
-        <b>{formatUsd(item.listing.fixedPrice)}</b>
       </span>
     </button>
   );
