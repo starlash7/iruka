@@ -82,11 +82,21 @@ The browser:
 4. submits one `requestPull` transaction
 5. reads `requestId` and `drawIndex` from `PullRequested`
 6. exposes only the real request transaction in the Explorer
+7. polls `getPull(requestId)` until the operator fulfills the reserved draw
+8. reads the matching `PullFulfilled` event and its transaction hash
+9. verifies that the returned inventory commitment matches the selected
+   Vending inventory index
+10. reveals that exact card and links the fulfillment transaction
 
 The current operator script fulfills the request from the generated batch
-manifest. The frontend ABI and receipt types follow the updated contract.
-Until an operator API exists, the testnet path must not fabricate an assigned
-card or immediately run a local reveal.
+manifest. Until an operator API exists, the browser keeps the request pending
+and lets the collector check the same request again. It never submits a second
+request while the first is unresolved and never substitutes a local random
+card for the onchain assignment.
+
+The review Debut batch uses 100 inventory positions so uniform
+without-replacement selection matches the published rarity counts exactly:
+60 Common, 28 Rare, 9 Epic, 2 Legendary, and 1 Iruka.
 
 ## Reveal Architecture
 
@@ -125,6 +135,9 @@ otherwise completes through the CSS fallback.
 - `PackRevealOverlay.tsx`: dialog composition, sound control, and summary
 - `giwaPackBatch.ts`: ABI and commitment helpers
 - `giwaPull.ts`: wallet transaction and Explorer receipt parsing
+- `giwaFulfillment.ts`: fulfillment polling and canonical event lookup
+- `giwaInventory.ts`: committed inventory ID verification and Vending result
+  mapping
 - `scripts/giwa/prepare-batch.mjs`: inventory and per-draw seed commitments
 - `scripts/giwa/fulfill-pull.mjs`: proof selection and fulfillment transaction
 
@@ -135,6 +148,10 @@ The existing Vending, Vault, Sell, and Ship state remains owned by `App`.
 - Missing contract address keeps the existing local fixture flow.
 - Wrong chain or rejected wallet transactions return the existing failure
   notice and do not open a reveal.
+- A fulfillment timeout preserves the request receipt and changes the primary
+  action to check that request again.
+- An inventory commitment mismatch blocks the reveal and reports a result
+  verification failure.
 - Missing or failed reveal media switches to CSS without blocking the result.
 - A testnet request that is not yet fulfilled shows only its request receipt.
 - Invalid Merkle proofs, out-of-order fulfillment, incorrect payment, and
@@ -161,8 +178,10 @@ Frontend tests must prove:
 - reduced-motion uses the short fallback
 - missing media leaves the CSS tear visible
 - the GIWA browser request uses one wallet transaction
+- the browser polls one reserved request without creating another transaction
+- only a fulfilled pull with a matching inventory commitment opens Reveal
+- the fulfillment Explorer link comes from `PullFulfilled`
 - only real transaction hashes produce Explorer URLs
 
 Focused contract and frontend tests run during development. A full production
 build is reserved for release verification under `CLAUDE.md`.
-
