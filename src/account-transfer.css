@@ -1,0 +1,167 @@
+.account-crypto-deposit,
+.account-withdraw-form {
+  display: grid;
+  gap: 15px;
+}
+
+.account-input-field > span,
+.account-transfer-form label > span {
+  color: #48556b;
+  font-size: 12px;
+  font-weight: 560;
+}
+
+.account-connected-transfer {
+  display: grid;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.account-connected-transfer h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.account-transfer-form {
+  display: grid;
+  gap: 11px;
+}
+
+.account-transfer-form label,
+.account-input-field {
+  display: grid;
+  gap: 7px;
+}
+
+.account-transfer-form code,
+.account-input-field > input,
+.account-amount-control {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  color: var(--ink);
+  border: 1px solid #dfe8f5;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.account-transfer-form code {
+  display: flex;
+  padding: 0 13px;
+  overflow: hidden;
+  align-items: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-input-field > input {
+  padding: 0 14px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  outline: none;
+}
+
+.account-amount-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.account-amount-control input {
+  min-width: 0;
+  height: 46px;
+  padding: 0 0 0 14px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  border: 0;
+  outline: none;
+  background: transparent;
+}
+
+.account-amount-control > span {
+  padding: 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.account-input-field > input:focus,
+.account-amount-control:focus-within {
+  border-color: rgba(22, 119, 255, 0.7);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+.account-transfer-form > button,
+.account-withdraw-submit {
+  min-height: 48px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 620;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.account-transfer-form > button:disabled,
+.account-withdraw-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.account-withdraw-balance,
+.account-transfer-summary > div {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.account-withdraw-balance {
+  margin-top: -6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.account-withdraw-balance strong { font-weight: 560; }
+
+.account-transfer-summary {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 13px 0 2px;
+  border-top: 1px solid #e6edf7;
+}
+
+.account-transfer-summary dt,
+.account-transfer-summary dd {
+  margin: 0;
+  font-size: 12px;
+}
+
+.account-transfer-summary dt { color: var(--muted); }
+.account-transfer-summary dd {
+  color: #344158;
+  font-weight: 560;
+  text-align: right;
+}
+
+.account-transfer-status {
+  display: inline-flex;
+  gap: 6px;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.account-transfer-error { color: var(--danger); }
+
+.account-transfer-complete {
+  color: var(--account-action);
+  text-decoration: none;
+}

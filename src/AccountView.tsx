@@ -10,6 +10,8 @@ import {
   formatGiwaNativeBalance,
   getGiwaNativeBalance
 } from "./giwaBalance.ts";
+import type { GiwaWallet } from "./giwaPull.ts";
+import { sendGiwaNativeTransfer } from "./giwaTransfer.ts";
 import type { CardPull } from "./vendingTypes";
 
 export { AccountPage };
@@ -17,8 +19,9 @@ export { AccountPage };
 type AccountViewProps = {
   cards: readonly CardPull[];
   copy: AccountCopy;
+  externalWallet?: GiwaWallet;
   inventoryContent: ReactNode;
-  walletAddress: string;
+  wallet: GiwaWallet;
 };
 
 export function getAccountInventorySummary(
@@ -73,12 +76,14 @@ export function createAccountBalanceLoader(
 export function AccountView({
   cards,
   copy,
+  externalWallet,
   inventoryContent,
-  walletAddress
+  wallet
 }: AccountViewProps) {
+  const walletAddress = wallet.address;
   const [balance, setBalance] = useState<AccountBalance>({ status: "loading" });
   const [copied, setCopied] = useState(false);
-  const [depositOpen, setDepositOpen] = useState(false);
+  const [fundsDialog, setFundsDialog] = useState<"add" | "withdraw">();
   const walletAddressRef = useRef(walletAddress);
   walletAddressRef.current = walletAddress;
   const inventory = useMemo(() => getAccountInventorySummary(cards), [cards]);
@@ -116,19 +121,30 @@ export function AccountView({
   return (
     <AccountPage
       address={walletAddress}
+      addFundsOpen={fundsDialog === "add"}
       balance={balance}
       copied={copied}
       copy={copy}
-      depositOpen={depositOpen}
+      externalWalletAddress={externalWallet?.address}
       inventory={inventory}
       inventoryContent={inventoryContent}
-      onCloseDeposit={() => {
-        setCopied(false);
-        setDepositOpen(false);
+      onAddFunds={() => setFundsDialog("add")}
+      onAddFundsTransfer={(amount) => {
+        if (!externalWallet) return Promise.reject(new Error("No connected wallet"));
+        return sendGiwaNativeTransfer(externalWallet, walletAddress, amount);
       }}
+      onCloseAddFunds={() => {
+        setCopied(false);
+        setFundsDialog(undefined);
+      }}
+      onCloseWithdraw={() => setFundsDialog(undefined)}
       onCopyAddress={() => void copyAddress()}
-      onDeposit={() => setDepositOpen(true)}
       onRetryBalance={() => void loadBalance()}
+      onTransferComplete={() => void loadBalance()}
+      onWithdraw={() => setFundsDialog("withdraw")}
+      onWithdrawTransfer={(destination, amount) =>
+        sendGiwaNativeTransfer(wallet, destination, amount)}
+      withdrawOpen={fundsDialog === "withdraw"}
     />
   );
 }

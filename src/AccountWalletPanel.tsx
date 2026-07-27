@@ -1,4 +1,4 @@
-import { Copy, RefreshCw, WalletCards } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Copy, RefreshCw, WalletCards } from "lucide-react";
 import type { AccountBalance, AccountCopy } from "./AccountPage";
 
 type AccountWalletPanelProps = {
@@ -7,8 +7,9 @@ type AccountWalletPanelProps = {
   copied: boolean;
   copy: AccountCopy;
   onCopyAddress: () => void;
-  onDeposit: () => void;
+  onAddFunds: () => void;
   onRetryBalance: () => void;
+  onWithdraw: () => void;
 };
 
 export function AccountWalletPanel({
@@ -17,8 +18,9 @@ export function AccountWalletPanel({
   copied,
   copy,
   onCopyAddress,
-  onDeposit,
-  onRetryBalance
+  onAddFunds,
+  onRetryBalance,
+  onWithdraw
 }: AccountWalletPanelProps) {
   return (
     <article className="account-wallet-panel">
@@ -70,13 +72,24 @@ export function AccountWalletPanel({
         </button>
       </div>
 
-      <button
-        className="account-deposit-button iruka-action-button"
-        onClick={onDeposit}
-        type="button"
-      >
-        {copy.deposit}
-      </button>
+      <div className="account-wallet-actions">
+        <button
+          className="account-add-funds-button iruka-action-button"
+          onClick={onAddFunds}
+          type="button"
+        >
+          <ArrowDownToLine size={16} />
+          {copy.addFunds}
+        </button>
+        <button
+          className="account-withdraw-button iruka-secondary-button"
+          onClick={onWithdraw}
+          type="button"
+        >
+          <ArrowUpFromLine size={16} />
+          {copy.withdraw}
+        </button>
+      </div>
     </article>
   );
 }

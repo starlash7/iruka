@@ -1,36 +1,62 @@
 import { PackageOpen } from "lucide-react";
 import type { ReactNode } from "react";
-import { AccountDepositDialog } from "./AccountDepositDialog";
+import { AccountAddFundsDialog } from "./AccountAddFundsDialog";
 import { AccountProfileHero } from "./AccountProfileHero";
 import { AccountStats } from "./AccountStats";
 import { AccountWalletPanel } from "./AccountWalletPanel";
+import { AccountWithdrawDialog } from "./AccountWithdrawDialog";
+import type { GiwaTransferReceipt } from "./giwaTransfer";
 
 export type AccountCopy = {
   account: string;
+  addFunds: string;
   address: string;
+  amount: string;
+  back: string;
   balance: string;
   balanceError: string;
   cards: string;
   cardsCollected: string;
+  chain: string;
   close: string;
   collectionSummary: string;
+  comingSoon: string;
+  connectExchange: string;
   copied: string;
   copyAddress: string;
-  deposit: string;
+  destination: string;
+  enterAmount: string;
+  enterRecipient: string;
   empty: string;
+  ethereum: string;
   faucet: string;
+  fromConnectedWallet: string;
+  giwaSepolia: string;
   inventory: string;
   inventoryValue: string;
   listed: string;
   loadingBalance: string;
   network: string;
+  networkFee: string;
   overview: string;
+  receiveChain: string;
+  receiveToken: string;
   retry: string;
+  shownInWallet: string;
   shipping: string;
   signOut: string;
   testEth: string;
+  token: string;
+  transfer: string;
+  transferCrypto: string;
+  transferFailed: string;
+  transferring: string;
+  upbit: string;
+  viewTransaction: string;
   wallet: string;
   walletDetails: string;
+  withdraw: string;
+  youWillReceive: string;
 };
 
 export type AccountBalance =
@@ -48,29 +74,46 @@ export type AccountInventorySummary = {
 type AccountPageProps = {
   address: string;
   balance: AccountBalance;
+  addFundsOpen: boolean;
   copied?: boolean;
   copy: AccountCopy;
-  depositOpen: boolean;
+  externalWalletAddress?: string;
   inventory: AccountInventorySummary;
   inventoryContent: ReactNode;
-  onCloseDeposit: () => void;
+  onAddFunds: () => void;
+  onAddFundsTransfer: (amount: string) => Promise<GiwaTransferReceipt>;
+  onCloseAddFunds: () => void;
+  onCloseWithdraw: () => void;
   onCopyAddress: () => void;
-  onDeposit: () => void;
   onRetryBalance: () => void;
+  onTransferComplete: () => void;
+  onWithdraw: () => void;
+  onWithdrawTransfer: (
+    destination: string,
+    amount: string
+  ) => Promise<GiwaTransferReceipt>;
+  withdrawOpen: boolean;
 };
 
 export function AccountPage({
   address,
+  addFundsOpen,
   balance,
   copied = false,
   copy,
-  depositOpen,
+  externalWalletAddress,
   inventory,
   inventoryContent,
-  onCloseDeposit,
+  onAddFunds,
+  onAddFundsTransfer,
+  onCloseAddFunds,
+  onCloseWithdraw,
   onCopyAddress,
-  onDeposit,
-  onRetryBalance
+  onRetryBalance,
+  onTransferComplete,
+  onWithdraw,
+  onWithdrawTransfer,
+  withdrawOpen
 }: AccountPageProps) {
   return (
     <section className="account-section" id="account">
@@ -92,9 +135,10 @@ export function AccountPage({
               balance={balance}
               copied={copied}
               copy={copy}
+              onAddFunds={onAddFunds}
               onCopyAddress={onCopyAddress}
-              onDeposit={onDeposit}
               onRetryBalance={onRetryBalance}
+              onWithdraw={onWithdraw}
             />
           </section>
         </div>
@@ -111,13 +155,25 @@ export function AccountPage({
         </article>
       </div>
 
-      <AccountDepositDialog
+      <AccountAddFundsDialog
         address={address}
+        balance={balance}
         copied={copied}
         copy={copy}
-        onClose={onCloseDeposit}
+        externalWalletAddress={externalWalletAddress}
+        onClose={onCloseAddFunds}
         onCopyAddress={onCopyAddress}
-        open={depositOpen}
+        onTransfer={onAddFundsTransfer}
+        onTransferComplete={onTransferComplete}
+        open={addFundsOpen}
+      />
+      <AccountWithdrawDialog
+        balance={balance}
+        copy={copy}
+        onClose={onCloseWithdraw}
+        onTransfer={onWithdrawTransfer}
+        onTransferComplete={onTransferComplete}
+        open={withdrawOpen}
       />
     </section>
   );

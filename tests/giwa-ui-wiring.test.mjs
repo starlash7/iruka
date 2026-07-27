@@ -43,8 +43,8 @@ test("a submitted pull does not interrupt opening with a technical confirmation 
 
 test("Privy passes an EVM wallet to the GIWA pull flow", () => {
   assert.match(authSource, /onWalletChange/);
-  assert.match(privyAuthSource, /getTransactionGiwaWallet/);
-  assert.match(walletSource, /wallet\.type === "ethereum" && wallet\.linked/);
+  assert.match(privyAuthSource, /getIrukaAccountWallet/);
+  assert.match(walletSource, /wallet\.walletClientType\?\.startsWith\("privy"\)/);
 });
 
 test("GIWA pull asks the wallet for one request transaction", () => {

@@ -12,6 +12,7 @@ export type AuthLabels = {
   login: string;
   network: string;
   settings: string;
+  setupWallet: string;
   signUp: string;
   unavailable: string;
 };
@@ -24,6 +25,7 @@ export type AuthActionsProps = {
   onAuthenticatedChange: (authenticated: boolean) => void;
   onLocaleChange: (locale: Locale) => void;
   onOpenAccount: () => void;
+  onExternalWalletChange: (wallet: GiwaWallet | undefined) => void;
   onWalletChange: (wallet: GiwaWallet | undefined) => void;
 };
 
@@ -33,6 +35,7 @@ export function AuthActions({
   locale,
   mode,
   onAuthenticatedChange,
+  onExternalWalletChange,
   onLocaleChange,
   onOpenAccount,
   onWalletChange
@@ -58,6 +61,7 @@ export function AuthActions({
       labels={labels}
       locale={locale}
       onAuthenticatedChange={onAuthenticatedChange}
+      onExternalWalletChange={onExternalWalletChange}
       onLocaleChange={onLocaleChange}
       onOpenAccount={onOpenAccount}
       onWalletChange={onWalletChange}

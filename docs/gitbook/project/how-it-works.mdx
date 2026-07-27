@@ -10,12 +10,19 @@ icon: "route"
 
 ## 1. Sign In
 
-Collectors can browse without a wallet. Email and Google sign-in create an
-Iruka account through Privy. A supported EVM wallet is required only when the
-collector submits a GIWA Sepolia test transaction.
+Collectors can browse without signing in. Email, Google, and supported EVM
+wallet login methods create an Iruka account through Privy. Each account is
+assigned a user-controlled Iruka Wallet on EVM, including accounts that use
+MetaMask or another external wallet to sign in.
 
-Testnet ETH has no monetary value. Iruka does not currently accept commercial
-USDC payments.
+The Iruka Wallet submits the GIWA Sepolia pull. A connected external wallet is
+optional and remains separate: it can fund the Iruka Wallet or receive a
+same-chain withdrawal.
+
+Current Add funds and Withdraw actions transfer GIWA Sepolia test ETH only.
+They are not fiat funding, cross-chain routing, or a GIWA-to-Ethereum bridge.
+Testnet ETH has no monetary value, and Iruka does not currently accept
+commercial USDC payments.
 
 ## 2. Select A Pack
 

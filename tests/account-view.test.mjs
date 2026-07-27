@@ -7,33 +7,58 @@ import { createServer } from "vite";
 
 const accountCopy = {
   account: "Account",
-  address: "Wallet address",
+  addFunds: "Add funds",
+  address: "Iruka Wallet address",
+  amount: "Amount",
+  back: "Back",
   balance: "Balance",
   balanceError: "Balance unavailable",
   cards: "cards",
   cardsCollected: "Cards collected",
+  chain: "Chain",
   close: "Close",
   collectionSummary: "Collection summary",
+  comingSoon: "Coming soon",
+  connectExchange: "Connect exchange",
   copied: "Copied",
   copyAddress: "Copy address",
-  deposit: "Deposit",
+  destination: "Destination",
+  enterAmount: "Enter amount",
+  enterRecipient: "Enter recipient address",
   empty: "Empty",
+  ethereum: "Ethereum",
   faucet: "Open GIWA Faucet",
+  fromConnectedWallet: "Transfer from connected wallet",
+  giwaSepolia: "GIWA Sepolia",
   inventory: "Inventory",
   inventoryValue: "Inventory FMV",
   listed: "Listed",
   loadingBalance: "Loading balance",
   network: "GIWA Sepolia",
+  networkFee: "Network fee",
   overview: "Overview",
+  receiveChain: "Receive chain",
+  receiveToken: "Receive token",
   retry: "Retry",
+  shownInWallet: "Shown in wallet",
   shipping: "Shipping",
   signOut: "Sign out",
-  testEth: "Test ETH",
-  wallet: "Wallet",
-  walletDetails: "Wallet details"
+  testEth: "ETH",
+  token: "Token",
+  transfer: "Transfer",
+  transferCrypto: "Transfer crypto",
+  transferFailed: "Transaction failed",
+  transferring: "Confirming",
+  upbit: "Upbit",
+  viewTransaction: "View transaction",
+  wallet: "Iruka Wallet",
+  walletDetails: "Wallet details",
+  withdraw: "Withdraw",
+  youWillReceive: "You will receive"
 };
 
 let AccountPage;
+let AccountCryptoDepositPanel;
 let createAccountBalanceLoader;
 let getAccountIdentity;
 let getAccountInventorySummary;
@@ -54,6 +79,9 @@ before(async () => {
     getAccountIdentity,
     getAccountInventorySummary
   } = accountModule);
+  ({ AccountCryptoDepositPanel } = await server.ssrLoadModule(
+    "/src/AccountCryptoDepositPanel.tsx"
+  ));
   ({ copy: localizedCopy } = await server.ssrLoadModule("/src/appCopy.ts"));
 });
 
@@ -65,9 +93,10 @@ function renderAccountPage(overrides = {}) {
   return renderToStaticMarkup(
     React.createElement(AccountPage, {
       address: "0x0000000000000000000000000000000000000001",
+      addFundsOpen: false,
       balance: { label: "0.0012 ETH", status: "ready" },
       copy: accountCopy,
-      depositOpen: false,
+      externalWalletAddress: "0x0000000000000000000000000000000000000002",
       identity: "collector@example.com",
       inventory: { estimatedValue: 184, listed: 1, shipping: 1, total: 3 },
       inventoryContent: React.createElement(
@@ -75,10 +104,22 @@ function renderAccountPage(overrides = {}) {
         { className: "account-inventory-list-content" },
         "Woni: Pluschat"
       ),
-      onCloseDeposit: () => undefined,
+      onAddFunds: () => undefined,
+      onAddFundsTransfer: async () => ({
+        explorerUrl: "https://sepolia-explorer.giwa.io/tx/0x1",
+        transactionHash: "0x1"
+      }),
+      onCloseAddFunds: () => undefined,
+      onCloseWithdraw: () => undefined,
       onCopyAddress: () => undefined,
-      onDeposit: () => undefined,
       onRetryBalance: () => undefined,
+      onTransferComplete: () => undefined,
+      onWithdraw: () => undefined,
+      onWithdrawTransfer: async () => ({
+        explorerUrl: "https://sepolia-explorer.giwa.io/tx/0x1",
+        transactionHash: "0x1"
+      }),
+      withdrawOpen: false,
       ...overrides
     })
   );
@@ -112,7 +153,8 @@ test("Account page presents an Iruka IP profile with real account essentials", (
   assert.doesNotMatch(markup, /account-profile-card|account-balance-card|account-avatar/);
   assert.match(markup, />Account</);
   assert.match(markup, />Overview</);
-  assert.match(markup, />Deposit</);
+  assert.match(markup, />Add funds</);
+  assert.match(markup, />Withdraw</);
   assert.match(markup, />Inventory FMV</);
   assert.match(markup, />\$184</);
   assert.match(markup, />Cards collected</);
@@ -124,7 +166,7 @@ test("Account page presents an Iruka IP profile with real account essentials", (
   assert.match(markup, /0\.0012 ETH/);
   assert.doesNotMatch(markup, /class="account-heading"/);
   assert.doesNotMatch(markup, /class="account-overview"/);
-  assert.doesNotMatch(markup, /Offers|Lending|Messages|Withdraw|Level|XP|Other/);
+  assert.doesNotMatch(markup, /Offers|Lending|Messages|Level|XP|Other/);
 });
 
 test("Wallet keeps only essential account actions and values", () => {
@@ -134,12 +176,13 @@ test("Wallet keeps only essential account actions and values", () => {
   )?.[1];
 
   assert.ok(wallet);
-  assert.match(wallet, />Wallet</);
+  assert.match(wallet, />Iruka Wallet</);
   assert.match(wallet, /0\.0012 ETH/);
-  assert.match(wallet, />Deposit</);
+  assert.match(wallet, />Add funds</);
+  assert.match(wallet, />Withdraw</);
   assert.match(
     wallet,
-    /class="account-wallet-heading"><h2>Wallet<\/h2><span aria-hidden="true">/
+    /class="account-wallet-heading"><h2>Iruka Wallet<\/h2><span aria-hidden="true">/
   );
   assert.doesNotMatch(wallet, /Sign out|account-wallet-sign-out/);
   assert.doesNotMatch(
@@ -149,23 +192,19 @@ test("Wallet keeps only essential account actions and values", () => {
 });
 
 test("Account primary actions reuse the Iruka action treatment", () => {
-  const markup = renderAccountPage({ depositOpen: true });
+  const markup = renderAccountPage({ addFundsOpen: true });
 
   assert.match(
     markup,
-    /class="account-deposit-button iruka-action-button"/
+    /class="account-add-funds-button iruka-action-button"/
   );
   assert.match(
     markup,
-    /class="account-faucet-action iruka-action-button"/
+    /class="account-withdraw-button iruka-secondary-button"/
   );
   assert.match(
     markup,
     /class="account-address-button iruka-secondary-button"/
-  );
-  assert.match(
-    markup,
-    /class="account-copy-action iruka-secondary-button"/
   );
 });
 
@@ -317,31 +356,110 @@ test("Account hides zero status rows while keeping Inventory visible", () => {
   assert.equal(markup.match(/class="account-stat /g)?.length, 2);
 });
 
-test("Deposit dialog exposes the connected address and official GIWA Faucet", () => {
+test("Add funds starts with real crypto transfer and disabled exchange methods", () => {
   assert.equal(typeof AccountPage, "function");
 
-  const markup = renderAccountPage({ depositOpen: true });
+  const markup = renderAccountPage({ addFundsOpen: true });
 
-  assert.match(markup, />Wallet address</);
+  assert.match(markup, /id="account-add-funds-title">Add funds</);
+  assert.match(markup, />Transfer crypto</);
+  assert.match(markup, />GIWA Sepolia · ETH</);
+  assert.match(markup, />Connect exchange</);
+  assert.match(markup, />Upbit · Coming soon</);
+  assert.match(markup, /src="\/assets\/wallet-upbit\.png"/);
+  assert.match(markup, /src="\/assets\/wallet-ethereum\.png"/);
+  assert.match(markup, /src="\/assets\/wallet-giwa\.png"/);
+  assert.match(markup, /class="account-funding-method account-funding-method-disabled" disabled=""/);
+  assert.doesNotMatch(markup, />Iruka Wallet address</);
+});
+
+test("Crypto deposit exposes the Iruka address and only enables GIWA test ETH", () => {
+  assert.equal(typeof AccountCryptoDepositPanel, "function");
+
+  const markup = renderToStaticMarkup(
+    React.createElement(AccountCryptoDepositPanel, {
+      address: "0x0000000000000000000000000000000000000001",
+      copied: false,
+      copy: accountCopy,
+      externalWalletAddress: "0x0000000000000000000000000000000000000002",
+      onCopyAddress: () => undefined,
+      onTransfer: async () => ({
+        explorerUrl: "https://sepolia-explorer.giwa.io/tx/0x1",
+        transactionHash: "0x1"
+      }),
+      onTransferComplete: () => undefined
+    })
+  );
+
+  assert.match(markup, />Iruka Wallet address</);
   assert.match(markup, /0x0000000000000000000000000000000000000001/);
+  assert.match(markup, /data-funds-menu="token"/);
+  assert.match(markup, /src="\/assets\/wallet-ethereum\.png"/);
+  assert.match(markup, /src="\/assets\/wallet-usdc\.png"/);
+  assert.match(markup, /src="\/assets\/wallet-usdt\.png"/);
+  assert.match(markup, /data-funds-menu="chain"/);
+  assert.match(markup, /src="\/assets\/wallet-giwa\.png"/);
+  assert.match(markup, />ETH</);
+  assert.match(markup, />USDC</);
+  assert.match(markup, />USDT</);
+  assert.match(markup, />GIWA Sepolia</);
+  assert.match(markup, />Ethereum</);
+  assert.doesNotMatch(markup, />Connected wallet</);
+  assert.doesNotMatch(markup, /0x0000000000000000000000000000000000000002/);
+  assert.match(markup, />Transfer from connected wallet</);
+  assert.match(markup, />Transfer</);
   assert.match(markup, />Copy address</);
   assert.match(markup, />Open GIWA Faucet</);
   assert.match(markup, /href="https:\/\/faucet\.giwa\.io"/);
   assert.match(markup, /target="_blank"/);
-  assert.doesNotMatch(markup, /Withdraw/);
+});
+
+test("Withdraw requires an explicit destination address", () => {
+  const markup = renderAccountPage({ withdrawOpen: true });
+
+  assert.match(markup, /id="account-withdraw-title">Withdraw</);
+  assert.match(markup, />Destination</);
+  assert.match(markup, /placeholder="0x\.\.\."/);
+  assert.doesNotMatch(
+    markup,
+    /0x0000000000000000000000000000000000000002/
+  );
+  assert.match(markup, />Amount</);
+  assert.match(markup, />Receive token</);
+  assert.match(markup, />Receive chain</);
+  assert.match(markup, />You will receive</);
+  assert.match(markup, />Network fee</);
+  assert.match(markup, />Shown in wallet</);
+  assert.match(markup, /data-funds-menu="token"/);
+  assert.match(markup, /src="\/assets\/wallet-usdc\.png"/);
+  assert.match(markup, /src="\/assets\/wallet-usdt\.png"/);
+  assert.match(markup, /data-funds-menu="chain"/);
+  assert.match(markup, /src="\/assets\/wallet-giwa\.png"/);
+  assert.match(markup, />Enter recipient address</);
 });
 
 test("Account copy is available in English and Korean", () => {
   assert.equal(localizedCopy.en.account.account, "Account");
-  assert.equal(localizedCopy.en.account.deposit, "Deposit");
+  assert.equal(localizedCopy.en.account.addFunds, "Add funds");
+  assert.equal(localizedCopy.en.account.withdraw, "Withdraw");
   assert.equal(localizedCopy.en.account.inventoryValue, "Inventory FMV");
   assert.equal(localizedCopy.en.account.overview, "Overview");
-  assert.equal(localizedCopy.en.account.wallet, "Wallet");
+  assert.equal(localizedCopy.en.account.wallet, "Iruka Wallet");
   assert.equal(localizedCopy.en.account.walletDetails, "Wallet details");
+  assert.equal(localizedCopy.en.account.transferCrypto, "Transfer crypto");
+  assert.equal(localizedCopy.en.account.connectExchange, "Connect exchange");
+  assert.equal(localizedCopy.en.account.receiveToken, "Receive token");
+  assert.equal(localizedCopy.en.account.testEth, "ETH");
   assert.equal(localizedCopy.ko.account.account, "계정");
   assert.equal(localizedCopy.ko.account.inventory, "인벤토리");
   assert.equal(localizedCopy.ko.account.cardsCollected, "보유 카드");
   assert.equal(localizedCopy.ko.account.overview, "개요");
-  assert.equal(localizedCopy.ko.account.wallet, "지갑");
+  assert.equal(localizedCopy.ko.account.wallet, "Iruka Wallet");
+  assert.equal(localizedCopy.ko.account.addFunds, "충전");
+  assert.equal(localizedCopy.ko.account.withdraw, "출금");
   assert.equal(localizedCopy.ko.account.walletDetails, "지갑 정보");
+  assert.equal(localizedCopy.ko.account.transferCrypto, "코인 보내기");
+  assert.equal(localizedCopy.ko.account.connectExchange, "거래소 연결");
+  assert.equal(localizedCopy.ko.account.receiveChain, "받을 체인");
+  assert.equal(localizedCopy.ko.account.testEth, "ETH");
 });

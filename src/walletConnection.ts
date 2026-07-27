@@ -42,33 +42,36 @@ export function getExternalLoginWalletAddress(
   return loginAccount.address;
 }
 
-export function getAuthenticatedGiwaWallet(
+export function getIrukaAccountWallet(
   authenticated: boolean,
   walletsReady: boolean,
   wallets: readonly ConnectedWallet[]
 ) {
   if (!authenticated || !walletsReady) return undefined;
 
-  return wallets.find((wallet) => wallet.type === "ethereum" && wallet.linked);
+  return wallets.find(
+    (wallet) =>
+      wallet.type === "ethereum" &&
+      wallet.linked &&
+      wallet.walletClientType?.startsWith("privy")
+  );
 }
 
-export function getTransactionGiwaWallet(
+export function getExternalGiwaWallet(
   authenticated: boolean,
   walletsReady: boolean,
   wallets: readonly ConnectedWallet[],
   externalWalletAddress?: string
 ) {
-  if (!authenticated || !walletsReady) return undefined;
+  if (!authenticated || !walletsReady || !externalWalletAddress) return undefined;
 
-  const evmWallets = wallets.filter((wallet) => wallet.type === "ethereum");
-  const normalizedExternalAddress = externalWalletAddress?.toLowerCase();
+  const normalizedExternalAddress = externalWalletAddress.toLowerCase();
 
-  return evmWallets.find(
+  return wallets.find(
     (wallet) =>
+      wallet.type === "ethereum" &&
       !wallet.walletClientType?.startsWith("privy") &&
       wallet.address.toLowerCase() === normalizedExternalAddress
-  ) ?? evmWallets.find(
-    (wallet) => wallet.linked && wallet.walletClientType?.startsWith("privy")
   );
 }
 

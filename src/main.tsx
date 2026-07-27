@@ -7,7 +7,10 @@ import "./account.css";
 import "./account-profile.css";
 import "./account-balance.css";
 import "./account-inventory.css";
+import "./account-funds.css";
+import "./account-assets.css";
 import "./account-deposit.css";
+import "./account-transfer.css";
 import "./account-stats.css";
 import "./styles.css";
 import "./pack-reveal.css";
@@ -36,7 +39,7 @@ const privyConfig: PrivyClientConfig = {
   },
   embeddedWallets: {
     ethereum: {
-      createOnLogin: "users-without-wallets"
+      createOnLogin: "all-users"
     }
   },
   supportedChains: [giwaSepolia]

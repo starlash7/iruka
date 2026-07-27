@@ -1,0 +1,146 @@
+.account-asset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.account-asset-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.account-asset-field > span {
+  color: #48556b;
+  font-size: 12px;
+  font-weight: 560;
+}
+
+.account-asset-menu {
+  position: relative;
+  min-width: 0;
+}
+
+.account-asset-menu summary {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 16px;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 10px;
+  align-items: center;
+  border: 1px solid #dfe8f5;
+  border-radius: var(--radius-md);
+  background: #fff;
+  cursor: pointer;
+  list-style: none;
+}
+
+.account-asset-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.account-asset-menu summary strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 560;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-asset-menu summary > svg {
+  color: #77849a;
+  transition: transform 160ms ease;
+}
+
+.account-asset-menu[open] summary > svg {
+  transform: rotate(180deg);
+}
+
+.account-asset-menu summary:focus-visible {
+  outline: none;
+  border-color: rgba(22, 119, 255, 0.7);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+.account-asset-options {
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  width: 100%;
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid #dfe8f5;
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: 0 14px 32px rgba(47, 77, 139, 0.14);
+}
+
+.account-asset-option {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 16px;
+  gap: 9px;
+  min-height: 44px;
+  padding: 6px 8px;
+  align-items: center;
+  color: #7d899d;
+  border-radius: 12px;
+}
+
+.account-asset-option-active {
+  color: var(--ink);
+  background: #f3f8ff;
+}
+
+.account-asset-option > span {
+  display: grid;
+  min-width: 0;
+}
+
+.account-asset-option strong {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 560;
+}
+
+.account-asset-option small {
+  color: #8c98aa;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.account-asset-option > svg {
+  color: var(--account-action);
+}
+
+.account-asset-mark {
+  position: relative;
+  z-index: 1;
+  display: block;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  overflow: hidden;
+  background: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 3px 8px rgba(47, 77, 139, 0.14);
+}
+
+.account-asset-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 480px) {
+  .account-asset-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-asset-menu summary > svg { transition: none; }
+}

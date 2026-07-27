@@ -16,6 +16,7 @@ type AppHeaderProps = {
   copy: AppCopy["nav"];
   locale: Locale;
   onAuthenticatedChange: Dispatch<SetStateAction<boolean>>;
+  onExternalWalletChange: Dispatch<SetStateAction<GiwaWallet | undefined>>;
   onLocaleChange: Dispatch<SetStateAction<Locale>>;
   onShowView: ShowView;
   onWalletChange: Dispatch<SetStateAction<GiwaWallet | undefined>>;
@@ -29,6 +30,7 @@ export function AppHeader({
   copy,
   locale,
   onAuthenticatedChange,
+  onExternalWalletChange,
   onLocaleChange,
   onShowView,
   onWalletChange,
@@ -110,12 +112,14 @@ export function AppHeader({
             login: copy.login,
             network: copy.profileNetwork,
             settings: copy.settings,
+            setupWallet: copy.setupWallet,
             signUp: copy.signUp,
             unavailable: copy.wallet
           }}
           locale={locale}
           mode={walletAuth}
           onAuthenticatedChange={onAuthenticatedChange}
+          onExternalWalletChange={onExternalWalletChange}
           onLocaleChange={onLocaleChange}
           onOpenAccount={() => onShowView("account")}
           onWalletChange={onWalletChange}

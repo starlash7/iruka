@@ -4,7 +4,7 @@
   grid-template-areas:
     "heading heading"
     "balance balance"
-    "address deposit";
+    "address actions";
   gap: 12px;
   min-width: 0;
   min-height: 172px;
@@ -130,17 +130,39 @@
   white-space: nowrap;
 }
 
-.account-deposit-button {
-  grid-area: deposit;
-  min-width: 92px;
+.account-wallet-actions {
+  display: grid;
+  grid-area: actions;
+  grid-template-columns: repeat(2, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.account-add-funds-button,
+.account-withdraw-button {
   min-height: 44px;
   align-self: end;
-  padding: 0 16px;
-  color: #fff;
+  padding: 0 14px;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   border-radius: var(--radius-pill);
   cursor: pointer;
+}
+
+.account-add-funds-button,
+.account-withdraw-button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-add-funds-button { color: #fff; }
+
+.account-withdraw-button {
+  color: var(--account-action);
+  border: 1px solid rgba(190, 215, 255, 0.9);
+  background: #f4f8ff;
 }
 
 @keyframes accountSkeleton { to { background-position: -200% 0; } }
@@ -149,12 +171,12 @@
   .account-wallet-panel {
     grid-column: auto;
     grid-template-columns: 1fr;
-    grid-template-areas: "heading" "balance" "address" "deposit";
+    grid-template-areas: "heading" "balance" "address" "actions";
     min-height: 0;
     padding: 18px;
   }
 
-  .account-deposit-button { width: 100%; }
+  .account-wallet-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

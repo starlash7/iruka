@@ -34,6 +34,26 @@ commitments.
 Private storage details, personal data, and delivery addresses must never be
 published onchain.
 
+## Wallet Roles
+
+Iruka separates account authentication from the address used inside the
+product:
+
+| Role | Current responsibility |
+| --- | --- |
+| Privy account | Authenticate with email, Google, or a supported EVM wallet |
+| Iruka Wallet | User-controlled embedded EVM wallet for GIWA pulls, test ETH balance, and same-chain transfers |
+| Connected wallet | Optional external signer used as an Add funds source or default Withdraw destination |
+
+MetaMask login does not make the MetaMask address the Iruka balance address.
+Privy provisions a distinct Iruka Wallet for the account. Iruka does not store
+the user's private key.
+
+The current testnet interface does not provide a cross-chain deposit address,
+fiat on-ramp, custodial balance, or GIWA-to-Ethereum withdrawal route. `Add
+funds` and `Withdraw` mean direct GIWA Sepolia test ETH transfers between EVM
+addresses on the same chain.
+
 ## Current Testnet Contracts
 
 | Contract | Network | Purpose |

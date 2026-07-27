@@ -93,6 +93,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const [isOpening, setIsOpening] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(walletAuth === "disabled");
   const [giwaWallet, setGiwaWallet] = useState<GiwaWallet>();
+  const [externalWallet, setExternalWallet] = useState<GiwaWallet>();
   const [onchainPull, setOnchainPull] = useState<OnchainPull>();
   const [walletPromptSignal, setWalletPromptSignal] = useState(0);
   const [notice, setNotice] = useState<string | undefined>();
@@ -161,6 +162,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     setActivePull(undefined);
     setPendingReveal(undefined);
     setGiwaWallet(undefined);
+    setExternalWallet(undefined);
     setOnchainPull(undefined);
     setIsOpening(false);
     setMarketplaceListings(initialMarketplaceListings);
@@ -489,6 +491,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         copy={t.nav}
         locale={locale}
         onAuthenticatedChange={setIsSignedIn}
+        onExternalWalletChange={setExternalWallet}
         onLocaleChange={setLocale}
         onShowView={showNavigationView}
         onWalletChange={setGiwaWallet}
@@ -597,6 +600,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         <AccountView
           cards={collection}
           copy={t.account}
+          externalWallet={externalWallet}
           inventoryContent={(
             <>
               <VaultCardList
@@ -613,7 +617,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
                 : null}
             </>
           )}
-          walletAddress={giwaWallet.address}
+          wallet={giwaWallet}
         />
       ) : null}
 

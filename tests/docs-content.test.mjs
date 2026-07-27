@@ -153,6 +153,23 @@ test("onchain architecture states current boundaries", async () => {
   assert.match(architecture, /does not mint ERC-721/i);
   assert.match(architecture, /does not settle USDC/i);
   assert.match(architecture, /Offchain/i);
+  assert.match(architecture, /Iruka Wallet/i);
+  assert.match(architecture, /Connected wallet/i);
+  assert.match(architecture, /same-chain transfers/i);
+  assert.match(architecture, /does not store[\s\S]{0,30}private key/i);
+});
+
+test("account docs separate the Iruka Wallet from optional external wallets", async () => {
+  const [howItWorks, faq] = await Promise.all([
+    readDoc("project/how-it-works"),
+    readDoc("faq")
+  ]);
+
+  for (const doc of [howItWorks, faq]) {
+    assert.match(doc, /user-controlled Iruka Wallet/i);
+    assert.match(doc, /external wallet is\s+optional/i);
+    assert.match(doc, /GIWA Sepolia test ETH/i);
+  }
 });
 
 test("GIWA Contracts documents deployment and successful pull transactions", async () => {

@@ -45,7 +45,10 @@ test("Account layout is responsive and keeps touch targets usable", async () => 
     "account-profile.css",
     "account-balance.css",
     "account-inventory.css",
+    "account-funds.css",
+    "account-assets.css",
     "account-deposit.css",
+    "account-transfer.css",
     "account-stats.css",
     "profile-menu.css"
   ].map((name) => readFile(new URL(`../src/${name}`, import.meta.url), "utf8"))))
@@ -139,11 +142,27 @@ test("Account layout is responsive and keeps touch targets usable", async () => 
   assert.doesNotMatch(stylesheet, /\.account-profile-card|\.account-balance-card/);
   assert.match(
     stylesheet,
-    /\.account-deposit-button[\s\S]*?min-height:\s*44px;/i
+    /\.account-add-funds-button,[\s\S]*?min-height:\s*44px;/i
   );
   assert.match(
     stylesheet,
-    /\.account-deposit-dialog::backdrop\s*\{[^}]*background:/is
+    /\.account-funds-dialog::backdrop\s*\{[^}]*background:/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-funds-dialog\s*\{[^}]*width:\s*min\(460px,\s*calc\(100vw - 24px\)\);[^}]*max-height:\s*min\(760px,\s*calc\(100dvh - 24px\)\);/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-asset-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-asset-logo\s*\{[^}]*width:\s*100%;[^}]*height:\s*100%;[^}]*object-fit:\s*cover;/is
+  );
+  assert.match(
+    stylesheet,
+    /@media \(max-width:\s*480px\)[\s\S]*?\.account-asset-grid\s*\{[^}]*grid-template-columns:\s*1fr;/i
   );
   assert.doesNotMatch(stylesheet, /font-weight:\s*800/);
 });

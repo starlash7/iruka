@@ -4,18 +4,18 @@ import { after, before, test } from "node:test";
 import { createServer } from "vite";
 
 let server;
-let getAuthenticatedGiwaWallet;
 let getExternalLoginWalletAddress;
-let getTransactionGiwaWallet;
+let getExternalGiwaWallet;
+let getIrukaAccountWallet;
 let getWalletPromptAction;
 let shouldHandleWalletPrompt;
 
 before(async () => {
   server = await createServer({ appType: "custom", server: { middlewareMode: true } });
   ({
-    getAuthenticatedGiwaWallet,
     getExternalLoginWalletAddress,
-    getTransactionGiwaWallet,
+    getExternalGiwaWallet,
+    getIrukaAccountWallet,
     getWalletPromptAction,
     shouldHandleWalletPrompt
   } = await server.ssrLoadModule("/src/walletConnection.ts"));
@@ -27,55 +27,18 @@ after(async () => {
 
 test("keeps the authenticated session while Privy wallets are still loading", () => {
   assert.equal(
-    getAuthenticatedGiwaWallet(true, false, []),
+    getIrukaAccountWallet(true, false, []),
     undefined
   );
 });
 
-test("uses only a linked EVM wallet for GIWA transactions", () => {
-  const solanaWallet = { linked: true, type: "solana" };
-  const unlinkedEvmWallet = { linked: false, type: "ethereum" };
-  const linkedEvmWallet = { linked: true, type: "ethereum" };
-
-  assert.equal(
-    getAuthenticatedGiwaWallet(true, true, [solanaWallet, unlinkedEvmWallet, linkedEvmWallet]),
-    linkedEvmWallet
-  );
-});
-
-test("requires the current browser session before using an external wallet", () => {
+test("uses the Privy embedded wallet as the Iruka account wallet", () => {
   const externalWallet = {
     address: "0xexternal",
     linked: true,
     type: "ethereum",
     walletClientType: "metamask"
   };
-
-  assert.equal(
-    getTransactionGiwaWallet(true, true, [externalWallet]),
-    undefined
-  );
-  assert.equal(
-    getTransactionGiwaWallet(true, true, [externalWallet], "0xexternal"),
-    externalWallet
-  );
-});
-
-test("uses an external EVM wallet explicitly connected in the current session", () => {
-  const connectedWallet = {
-    address: "0xAbCdEf",
-    linked: false,
-    type: "ethereum",
-    walletClientType: "metamask"
-  };
-
-  assert.equal(
-    getTransactionGiwaWallet(true, true, [connectedWallet], "0xabcdef"),
-    connectedWallet
-  );
-});
-
-test("keeps the embedded wallet available for a signed-in email or Google user", () => {
   const embeddedWallet = {
     address: "0xembedded",
     linked: true,
@@ -84,8 +47,41 @@ test("keeps the embedded wallet available for a signed-in email or Google user",
   };
 
   assert.equal(
-    getTransactionGiwaWallet(true, true, [embeddedWallet]),
+    getIrukaAccountWallet(true, true, [externalWallet, embeddedWallet]),
     embeddedWallet
+  );
+  assert.equal(
+    getIrukaAccountWallet(true, true, [externalWallet]),
+    undefined
+  );
+});
+
+test("keeps the current external wallet only as a funding source", () => {
+  const connectedWallet = {
+    address: "0xAbCdEf",
+    linked: false,
+    type: "ethereum",
+    walletClientType: "metamask"
+  };
+
+  assert.equal(
+    getExternalGiwaWallet(true, true, [connectedWallet], "0xabcdef"),
+    connectedWallet
+  );
+  assert.equal(getExternalGiwaWallet(true, true, [connectedWallet]), undefined);
+});
+
+test("never treats the Privy embedded wallet as an external funding wallet", () => {
+  const embeddedWallet = {
+    address: "0xembedded",
+    linked: true,
+    type: "ethereum",
+    walletClientType: "privy"
+  };
+
+  assert.equal(
+    getExternalGiwaWallet(true, true, [embeddedWallet], "0xembedded"),
+    undefined
   );
 });
 
@@ -144,6 +140,18 @@ test("wallet authentication uses Privy's completed login flow", async () => {
   assert.match(source, /useLogin\(\{/);
   assert.match(source, /onComplete:/);
   assert.doesNotMatch(source, /const \{ authenticated, login,/);
+});
+
+test("all login methods receive an Iruka embedded wallet", async () => {
+  const [mainSource, authSource] = await Promise.all([
+    readFile(new URL("../src/main.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/PrivyAuthActions.tsx", import.meta.url), "utf8")
+  ]);
+
+  assert.match(mainSource, /createOnLogin:\s*"all-users"/);
+  assert.match(authSource, /useCreateWallet/);
+  assert.match(authSource, /getIrukaAccountWallet/);
+  assert.match(authSource, /getExternalGiwaWallet/);
 });
 
 test("authenticated users get a profile menu instead of a wallet-address button", async () => {

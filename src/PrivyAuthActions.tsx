@@ -1,5 +1,5 @@
 import {
-  useConnectWallet,
+  useCreateWallet,
   useLogin,
   usePrivy,
   useWallets,
@@ -11,9 +11,10 @@ import { IrukaBeam } from "./IrukaBeam";
 import { ProfileMenu } from "./ProfileMenu";
 import {
   clearExternalWalletSession,
+  getExternalGiwaWallet,
   getExternalWalletSessionAddress,
   getExternalLoginWalletAddress,
-  getTransactionGiwaWallet,
+  getIrukaAccountWallet,
   getWalletPromptAction,
   saveExternalWalletSession,
 } from "./walletConnection";
@@ -23,6 +24,7 @@ export function PrivyAuthActions({
   labels,
   locale,
   onAuthenticatedChange,
+  onExternalWalletChange,
   onLocaleChange,
   onOpenAccount,
   onWalletChange
@@ -32,6 +34,8 @@ export function PrivyAuthActions({
   );
   const { authenticated, logout, ready, user } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
+  const { createWallet } = useCreateWallet();
+  const walletSetupAttemptRef = useRef<string>();
   const { login } = useLogin({
     onComplete: ({ loginAccount, wasAlreadyAuthenticated }) => {
       const address = getExternalLoginWalletAddress(
@@ -44,15 +48,13 @@ export function PrivyAuthActions({
       setExternalWalletSessionAddress(address);
     }
   });
-  const { connectWallet } = useConnectWallet({
-    onSuccess: ({ wallet }) => {
-      if (wallet.type !== "ethereum" || wallet.walletClientType === "privy") return;
-      saveExternalWalletSession(wallet.address);
-      setExternalWalletSessionAddress(wallet.address);
-    }
-  });
   const handledConnectSignalRef = useRef(0);
-  const transactionWallet = getTransactionGiwaWallet(
+  const accountWallet = getIrukaAccountWallet(
+    authenticated,
+    walletsReady,
+    wallets
+  );
+  const externalWallet = getExternalGiwaWallet(
     authenticated,
     walletsReady,
     wallets,
@@ -68,8 +70,12 @@ export function PrivyAuthActions({
     login({ walletChainType: "ethereum-only" });
   }
 
-  function connectExternalWallet() {
-    connectWallet({ walletChainType: "ethereum-only" });
+  function setupAccountWallet() {
+    if (!user?.id) return;
+    walletSetupAttemptRef.current = user.id;
+    void createWallet().catch(() => {
+      walletSetupAttemptRef.current = undefined;
+    });
   }
 
   async function signOutUser() {
@@ -82,11 +88,37 @@ export function PrivyAuthActions({
     onAuthenticatedChange(authenticated);
     if (!authenticated) {
       onWalletChange(undefined);
+      onExternalWalletChange(undefined);
       return;
     }
 
-    if (walletsReady) onWalletChange(transactionWallet);
-  }, [authenticated, onAuthenticatedChange, onWalletChange, transactionWallet, walletsReady]);
+    if (walletsReady) {
+      onWalletChange(accountWallet);
+      onExternalWalletChange(externalWallet);
+    }
+  }, [
+    accountWallet,
+    authenticated,
+    externalWallet,
+    onAuthenticatedChange,
+    onExternalWalletChange,
+    onWalletChange,
+    walletsReady
+  ]);
+
+  useEffect(() => {
+    if (
+      !authenticated ||
+      !walletsReady ||
+      accountWallet ||
+      !user?.id ||
+      walletSetupAttemptRef.current === user.id
+    ) {
+      return;
+    }
+
+    setupAccountWallet();
+  }, [accountWallet, authenticated, createWallet, user?.id, walletsReady]);
 
   useEffect(() => {
     const promptAction = getWalletPromptAction(
@@ -118,7 +150,7 @@ export function PrivyAuthActions({
     );
   }
 
-  if (!transactionWallet) {
+  if (!accountWallet) {
     return (
       <div className="auth-actions">
         <button className="auth-button auth-button-secondary" onClick={() => void signOutUser()} type="button">
@@ -126,9 +158,9 @@ export function PrivyAuthActions({
           {labels.disconnect}
         </button>
         <IrukaBeam className="auth-primary-beam" variant="action">
-          <button className="auth-button auth-button-primary iruka-action-button" onClick={connectExternalWallet} type="button">
+          <button className="auth-button auth-button-primary iruka-action-button" onClick={setupAccountWallet} type="button">
             <Wallet size={15} />
-            {labels.unavailable}
+            {labels.setupWallet}
           </button>
         </IrukaBeam>
       </div>
