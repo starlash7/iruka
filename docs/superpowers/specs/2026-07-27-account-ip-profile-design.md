@@ -24,8 +24,8 @@ lending surfaces.
 - Use `roadmap-iruka-universe.jpg` as the full-width Iruka cover.
 - Keep the hero bright enough to read as Iruka while adding a restrained
   right-side blue overlay for text contrast.
-- Place the profile cluster at the lower right: circular Iruka avatar,
-  authenticated identity, and `GIWA Sepolia` status.
+- Place only the circular Iruka avatar and authenticated identity at the lower
+  right.
 - Place `Overview` and `Inventory` anchor controls at the lower left.
 - Keep Sign out out of the hero so profile identity remains visually clean.
 - Keep a screen-reader Account heading without rendering a second large title.
