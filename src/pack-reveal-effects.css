@@ -1,0 +1,151 @@
+.pack-reveal-effects {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pack-reveal-atmosphere,
+.pack-reveal-burst,
+.pack-reveal-rays,
+.pack-reveal-rings,
+.pack-reveal-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+}
+
+.pack-reveal-atmosphere {
+  width: min(82vw, 920px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--reveal-foil) 32%, white) 0 10%, transparent 52%),
+    radial-gradient(circle, color-mix(in srgb, var(--reveal-accent) 20%, transparent), transparent 68%);
+  opacity: 0;
+  filter: blur(3px);
+  transform: translate(-50%, -48%) scale(0.72);
+  transition: opacity 320ms ease, transform 720ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pack-reveal-rays {
+  width: min(74vw, 760px);
+  aspect-ratio: 1;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-8deg);
+}
+
+.pack-reveal-rays i {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 48%;
+  border-radius: 999px;
+  background: linear-gradient(to top, color-mix(in srgb, var(--reveal-accent) 68%, white), transparent 84%);
+  opacity: 0;
+  transform: rotate(var(--ray-angle)) scaleY(0);
+  transform-origin: 50% 0;
+}
+
+.pack-reveal-rings {
+  width: min(56vw, 570px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+}
+
+.pack-reveal-rings i {
+  position: absolute;
+  inset: calc(var(--ring-index) * 14%);
+  border: 1px solid color-mix(in srgb, var(--reveal-accent) 45%, transparent);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.54);
+}
+
+.pack-reveal-particles {
+  width: 1px;
+  height: 1px;
+}
+
+.pack-reveal-particle {
+  position: absolute;
+  width: var(--particle-size);
+  height: calc(var(--particle-size) * 1.8);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--reveal-foil) 66%, white);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--reveal-accent) 72%, transparent);
+  opacity: 0;
+  transform: rotate(var(--particle-angle)) translateY(-18px) scale(0.2);
+}
+
+.pack-reveal-burst {
+  width: min(44vw, 460px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, white 0 4%, var(--reveal-foil) 12%, color-mix(in srgb, var(--reveal-accent) 38%, transparent) 30%, transparent 66%);
+  opacity: 0;
+  filter: blur(1px);
+  transform: translate(-50%, -50%) scale(0.08);
+}
+
+.pack-reveal-overlay[data-phase="charging"] .pack-reveal-atmosphere,
+.pack-reveal-overlay[data-phase="tear"] .pack-reveal-atmosphere {
+  opacity: 0.9;
+  transform: translate(-50%, -48%) scale(0.94);
+}
+
+.pack-reveal-overlay[data-phase="tear"] .pack-reveal-rings i {
+  animation: revealRingOut 760ms calc(var(--ring-index) * 70ms) ease-out both;
+}
+
+.pack-reveal-overlay[data-phase="reveal"] .pack-reveal-atmosphere,
+.pack-reveal-overlay[data-phase="summary"] .pack-reveal-atmosphere {
+  opacity: 0.64;
+  transform: translate(-50%, -48%) scale(1);
+}
+
+.pack-reveal-overlay[data-phase="reveal"] .pack-reveal-burst {
+  animation: revealStageBurst 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.pack-reveal-overlay[data-phase="reveal"] .pack-reveal-particle {
+  animation: revealParticleOut 920ms var(--particle-delay) cubic-bezier(0.15, 0.7, 0.2, 1) both;
+}
+
+.pack-reveal-overlay[data-rarity="common"] .pack-reveal-particle:nth-child(n + 6),
+.pack-reveal-overlay[data-rarity="rare"] .pack-reveal-particle:nth-child(n + 13),
+.pack-reveal-overlay[data-rarity="epic"] .pack-reveal-particle:nth-child(n + 15) {
+  display: none;
+}
+
+.pack-reveal-overlay[data-rarity="common"] .pack-reveal-rings i:nth-child(n + 2) {
+  display: none;
+}
+
+.pack-reveal-overlay[data-rarity="rare"] .pack-reveal-atmosphere {
+  filter: blur(2px) saturate(1.08);
+}
+
+.pack-reveal-overlay[data-rarity="epic"] .pack-reveal-burst {
+  border-radius: 28%;
+  transform: translate(-50%, -50%) rotate(18deg) scale(0.08);
+}
+
+.pack-reveal-overlay[data-rarity="legendary"] .pack-reveal-rays,
+.pack-reveal-overlay[data-rarity="iruka"] .pack-reveal-rays {
+  opacity: 1;
+}
+
+.pack-reveal-overlay[data-rarity="legendary"][data-phase="reveal"] .pack-reveal-rays i,
+.pack-reveal-overlay[data-rarity="iruka"][data-phase="reveal"] .pack-reveal-rays i {
+  animation: revealRayGrow 980ms var(--ray-delay) ease-out both;
+}
+
+.pack-reveal-overlay[data-rarity="iruka"] .pack-reveal-atmosphere {
+  background:
+    conic-gradient(from 120deg, transparent, rgba(126, 231, 255, 0.22), rgba(111, 141, 255, 0.2), rgba(234, 167, 255, 0.16), transparent),
+    radial-gradient(circle, rgba(255, 255, 255, 0.92), color-mix(in srgb, var(--reveal-accent) 24%, transparent) 38%, transparent 68%);
+}

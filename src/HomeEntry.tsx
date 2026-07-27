@@ -1,6 +1,5 @@
 import homeIdolStage from "./assets/home-idol-stage-cutout.png";
 import irukaWordmark from "./assets/iruka-wordmark.png";
-import { IrukaBeam } from "./IrukaBeam";
 import { HomePixelUnfold } from "./HomePixelUnfold";
 import { HomeScrambleText } from "./HomeScrambleText";
 
@@ -19,11 +18,9 @@ export function HomeEntry({ onEnter }: HomeEntryProps) {
       </div>
       <div className="iruka-entry-actions">
         <HomeScrambleText className="iruka-entry-prompt" text="Find your next favorite" />
-        <IrukaBeam className="iruka-entry-beam" variant="action">
-          <button className="iruka-action-button iruka-entry-action" onClick={onEnter} type="button">
-            <span>Play Iruka!</span>
-          </button>
-        </IrukaBeam>
+        <button className="iruka-action-button iruka-entry-action" onClick={onEnter} type="button">
+          <span>Play Iruka!</span>
+        </button>
       </div>
     </main>
   );

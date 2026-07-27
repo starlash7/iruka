@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/giwa/fulfill.mjs": {
+      "includeFiles": "server/giwa/manifests/**"
+    }
+  }
+}

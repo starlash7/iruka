@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import {
@@ -7,12 +8,21 @@ import {
   stringToHex
 } from "viem";
 
-const [batchLabel, totalSupplyInput, priceWei, oddsPath, outputPath] = process.argv.slice(2);
+const [batchLabel, totalSupplyInput, priceWei, oddsPath, outputPath, packId] =
+  process.argv.slice(2);
 const totalSupply = Number(totalSupplyInput);
 
-if (!batchLabel || !Number.isSafeInteger(totalSupply) || totalSupply < 2 || !priceWei || !oddsPath || !outputPath) {
+if (
+  !batchLabel
+  || !Number.isSafeInteger(totalSupply)
+  || totalSupply < 2
+  || !priceWei
+  || !oddsPath
+  || !outputPath
+  || !packId
+) {
   throw new Error(
-    "Usage: node scripts/giwa/prepare-batch.mjs <batch-label> <total-supply> <price-wei> <odds-json> <output-json>"
+    "Usage: node scripts/giwa/prepare-batch.mjs <batch-label> <total-supply> <price-wei> <odds-json> <output-json> <pack-id>"
   );
 }
 
@@ -20,22 +30,39 @@ BigInt(priceWei);
 const odds = JSON.parse(await readFile(oddsPath, "utf8"));
 const batchId = keccak256(stringToHex(batchLabel));
 const inventory = Array.from({ length: totalSupply }, (_, index) => {
-  const id = `debut-inventory-${String(index + 1).padStart(3, "0")}`;
+  const id = `${packId}-inventory-${String(index + 1).padStart(3, "0")}`;
   return { id, index, inventoryId: keccak256(stringToHex(id)) };
 });
 const leaves = inventory.map(({ index, inventoryId }) => createLeaf(batchId, index, inventoryId));
 const levels = createMerkleLevels(leaves);
 const root = levels.at(-1)?.[0];
+const drawSeeds = Array.from({ length: totalSupply }, (_, drawIndex) => ({
+  drawIndex,
+  seed: `0x${randomBytes(32).toString("hex")}`
+}));
+const drawSeedLeaves = drawSeeds.map(({ drawIndex, seed }) =>
+  createDrawSeedLeaf(batchId, drawIndex, seed)
+);
+const drawSeedLevels = createMerkleLevels(drawSeedLeaves);
+const drawSeedRoot = drawSeedLevels.at(-1)?.[0];
 
-if (!root) throw new Error("Could not create inventory root");
+if (!root || !drawSeedRoot) throw new Error("Could not create batch commitments");
 
 const manifest = {
+  packId,
   batchLabel,
   batchId,
   totalSupply,
   priceWei,
+  odds,
   inventoryRoot: root,
   oddsCommitment: keccak256(stringToHex(JSON.stringify(odds))),
+  drawSeedRoot,
+  drawSeeds: drawSeeds.map((item) => ({
+    ...item,
+    leaf: drawSeedLeaves[item.drawIndex],
+    proof: createProof(drawSeedLevels, item.drawIndex)
+  })),
   inventory: inventory.map((item) => ({
     ...item,
     leaf: leaves[item.index],
@@ -55,6 +82,17 @@ function createLeaf(batchId, inventoryIndex, inventoryId) {
       { type: "bytes32" }
     ],
     [batchId, inventoryIndex, inventoryId]
+  ));
+}
+
+function createDrawSeedLeaf(batchId, drawIndex, seed) {
+  return keccak256(encodeAbiParameters(
+    [
+      { type: "bytes32" },
+      { type: "uint32" },
+      { type: "bytes32" }
+    ],
+    [batchId, drawIndex, seed]
   ));
 }
 

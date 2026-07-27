@@ -1,4 +1,4 @@
-import type { RevealPhase } from "./revealConfig";
+import type { RevealPhase } from "./revealMachine";
 
 let audioContext: AudioContext | undefined;
 
@@ -54,7 +54,7 @@ export function playRevealCue(phase: RevealPhase, muted: boolean) {
   const context = getAudioContext();
   void context.resume();
 
-  if (phase === "shake") {
+  if (phase === "charging") {
     playTone(132, 0.12, 0.045);
     return;
   }
@@ -64,18 +64,13 @@ export function playRevealCue(phase: RevealPhase, muted: boolean) {
     return;
   }
 
-  if (phase === "teaser") {
+  if (phase === "reveal") {
     playTone(440, 0.16, 0.035);
     playTone(660, 0.18, 0.026);
     return;
   }
 
-  if (phase === "crowd") {
-    playNoise(0.48, 0.018);
-    return;
-  }
-
-  if (phase === "stamp") {
+  if (phase === "summary") {
     playTone(880, 0.2, 0.042);
   }
 }

@@ -1,4 +1,4 @@
-import { ExternalLink, PackageOpen, Truck, Wallet } from "lucide-react";
+import { ExternalLink, PackageOpen, RefreshCw, Truck, Wallet } from "lucide-react";
 import { formatUsdc, formatUsdcRange } from "./currency";
 import type { GiwaPullReceipt } from "./giwaPull.ts";
 import debutVendingMachineImage from "./assets/iruka-vending-machine-debut.png";
@@ -19,13 +19,14 @@ type VendingPackDetailCopy = {
   packOdds: string;
   physicalRedemption: string;
   redemptionUnavailable: string;
-  testPull?: string;
+  resumeOpening: string;
   viewTransaction: string;
   viewOdds: string;
 };
 
 type VendingPackDetailProps = {
   copy: VendingPackDetailCopy;
+  isAwaitingFulfillment?: boolean;
   isOpening: boolean;
   onOpenPack: () => void;
   onchainReceipt?: GiwaPullReceipt;
@@ -48,6 +49,7 @@ const vendingMachineImages: Record<PackTier, string> = {
 
 export function VendingPackDetail({
   copy,
+  isAwaitingFulfillment = false,
   isOpening,
   onOpenPack,
   onchainReceipt,
@@ -60,8 +62,8 @@ export function VendingPackDetail({
   const machineImage = vendingMachineImages[pack.tier];
   const actionLabel = isOpening
     ? copy.opening
-    : testnetEnabled
-      ? (copy.testPull ?? copy.openPack)
+    : isAwaitingFulfillment
+      ? copy.resumeOpening
       : copy.openPack;
 
   return (
@@ -103,7 +105,11 @@ export function VendingPackDetail({
             onClick={onOpenPack}
             type="button"
           >
-            {walletRequired ? <Wallet size={19} /> : <PackageOpen size={19} />}
+            {walletRequired
+              ? <Wallet size={19} />
+              : isAwaitingFulfillment && !isOpening
+                ? <RefreshCw size={19} />
+                : <PackageOpen size={19} />}
             {actionLabel}
           </button>
         </IrukaBeam>

@@ -4,7 +4,6 @@ import { MarketplaceCardTile } from "./MarketplaceCardTile";
 import { MarketplaceDetailDialog } from "./MarketplaceDetailDialog";
 import { MarketplaceDialog } from "./MarketplaceDialog";
 import { MarketplaceFilterPanel } from "./MarketplaceFilterPanel";
-import { MarketplaceOwnedCards } from "./MarketplaceOwnedCards";
 import { MarketplaceSortMenu } from "./MarketplaceSortMenu";
 import {
   marketplaceBrowseCategories,
@@ -30,6 +29,7 @@ export type MarketplaceViewCopy = {
   clear: string;
   close: string;
   comingSoon: string;
+  certificateId: string;
   condition: string;
   delivery: string;
   deliveryEligible: string;
@@ -44,6 +44,7 @@ export type MarketplaceViewCopy = {
   ownedTitle: string;
   rarity: string;
   release: string;
+  releaseYear: string;
   search: string;
   sellFromVault: string;
   serial: string;
@@ -72,12 +73,9 @@ export function MarketplaceView({
   browseCategory,
   copy,
   items,
-  listings,
   locale,
   onBrowseCategoryChange,
-  onOpenSell,
   onTargetListingHandled,
-  ownedCards,
   targetListingId
 }: MarketplaceViewProps) {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -191,15 +189,6 @@ export function MarketplaceView({
               <div className="marketplace-no-results">{copy.noResults}</div>
             )}
 
-            <MarketplaceOwnedCards
-              cards={ownedCards}
-              editPriceLabel={copy.editPrice}
-              emptyLabel={copy.ownedEmpty}
-              listForSaleLabel={copy.listForSale}
-              listings={listings}
-              onOpenSell={onOpenSell}
-              title={copy.ownedTitle}
-            />
           </div>
         </div>
       ) : (

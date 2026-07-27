@@ -1,12 +1,13 @@
 # AGENTS.md - Iruka Working Rules
 
 These instructions apply to the whole repository. Keep `CLAUDE.md`, `design.md`,
-and `docs/gitbook/` as the source rules for future agent work.
+`docs/gitbook/`, and `sprint.md` as the source rules for future agent work.
 
 ## Required Context
 
 - Use `karpathy-guidelines` as the base working style: small scoped changes,
   clear assumptions, and verification tied to the changed surface.
+- Read `sprint.md` before planning work in the current GIWA review sprint.
 - Read `design.md` before UI or UX changes.
 - Read the relevant `docs/gitbook/` page before changing product behavior,
   copy, packs, odds, reveal, vault, marketplace, shipping, or policy surfaces.

@@ -1,0 +1,86 @@
+---
+title: "Grading and Verification"
+description: "Understand Iruka's two verification tracks, grading evidence, and vaulted-record requirements."
+icon: "badge-check"
+---
+
+> **Status: In validation** - Inventory acceptance and grader workflows are
+> being evaluated. BRG and CGC are not announced Iruka partners.
+
+Iruka separates **pack rarity**, **physical condition**, **authentication**,
+and **custody**. No single certificate or label proves all four.
+
+## Two Verification Tracks
+
+| Pack tier | Intended track | Required evidence |
+| --- | --- | --- |
+| **Debut / Stage** | Iruka intake and authentication record | Item identity, front and back photography, condition notes, intake timestamp, tamper-evident seal, and storage record |
+| **Encore / Grail** | Eligible third-party graded slab | Matching physical slab, official certificate lookup, grade, front and back photography, intake timestamp, seal review, and storage record |
+
+The final acceptance policy will be published before commercial inventory is
+listed. A low-value item is not automatically lower quality; it may use a
+different verification track because third-party grading can exceed the value
+of the card.
+
+## Graders Under Evaluation
+
+- [BRG](https://break.co.kr/) publishes its grading process and certificate
+  database. Iruka is evaluating its 12-step inspection model and record
+  availability for eligible Korean photocards.
+- [CGC Cards verification](https://www.cgcgrading.com/en-US/verify) provides an
+  official certificate lookup. Iruka is evaluating CGC's 10-point grading
+  records for eligible slab inventory.
+
+Reference to an official grading service does not establish a partnership,
+endorsement, or acceptance guarantee. Iruka must verify the specific
+certificate in the grader's official database and match it to the physical
+item received.
+
+## Public Inventory Record
+
+An eligible public card record uses the following fields:
+
+| Field | Purpose |
+| --- | --- |
+| `inventoryId` | Iruka's unique physical-item identifier |
+| `grader` | Third-party grader or Iruka verification track |
+| `certificateNumber` | Certificate identifier when applicable |
+| `grade` | Published third-party grade or documented condition status |
+| `verificationUrl` | Official verification record when available |
+| `verificationStatus` | Current evidence review state |
+| `frontImage` | Photograph of the received item's front |
+| `backImage` | Photograph of the received item's back |
+| `verifiedAt` | Time the evidence and physical item were matched |
+| `custodyStatus` | Physical intake and storage lifecycle state |
+| `redemptionEligible` | Whether the item can enter redemption |
+
+Records without a third-party certificate use `grader: Iruka verification`,
+leave `certificateNumber` empty, and publish the applicable condition and
+intake evidence instead of inventing a grade.
+
+## Verification States
+
+| State | Meaning |
+| --- | --- |
+| `Pending intake` | Record created; physical item not yet received |
+| `Evidence review` | Images, identity, and certificate are being checked |
+| `Physical match` | Received item matches the reviewed record |
+| `Verified` | Authentication and condition evidence passed |
+| `Rejected` | Identity, authenticity, condition, or evidence failed |
+
+`Verified` is not the same as `Vaulted`. Vault status also requires custody,
+storage location, ownership, and redemption records to agree.
+
+## Vault Eligibility Gate
+
+A card can be marked `Vaulted` only when:
+
+1. The exact physical item has arrived.
+2. Front, back, and identifying marks match the record.
+3. Any certificate is valid in the official database.
+4. The seal and condition are recorded.
+5. The storage location is assigned.
+6. The ownership record references the same `inventoryId`.
+7. Redemption eligibility has been determined.
+
+A valid certificate number without the matching physical item is insufficient.

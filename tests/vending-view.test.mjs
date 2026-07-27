@@ -9,6 +9,7 @@ let server;
 let createRevealCard;
 let createVendingCardPull;
 let formatCardPullValue;
+let appCopy;
 let packDetails;
 let VendingPackDetail;
 let VendingPackInventory;
@@ -18,6 +19,7 @@ let VendingView;
 before(async () => {
   server = await createServer({ appType: "custom", server: { middlewareMode: true } });
   ({ createRevealCard, createVendingCardPull, formatCardPullValue } = await server.ssrLoadModule("/src/cardFlow.tsx"));
+  ({ copy: appCopy } = await server.ssrLoadModule("/src/appCopy.ts"));
   ({ packDetails } = await server.ssrLoadModule("/src/vendingData.ts"));
   ({ VendingPackDetail } = await server.ssrLoadModule("/src/VendingPackDetail.tsx"));
   ({ VendingPackInventory } = await server.ssrLoadModule("/src/VendingPackInventory.tsx"));
@@ -33,11 +35,12 @@ const packDetailCopy = {
   batch: "Batch",
   category: "Girl Groups",
   openPack: "Pull 1 pack",
-  opening: "Pulling",
+  opening: "Opening pack",
   packLabel: "Pack",
   packOdds: "Pack odds",
   physicalRedemption: "Physical redemption",
   redemptionUnavailable: "Redemption unavailable",
+  resumeOpening: "Resume opening",
   viewOdds: "View odds & values"
 };
 const rarityLabels = {
@@ -163,6 +166,37 @@ test("home CTA uses a subtle action beam over the primary button surface", async
   assert.match(stylesheet, /\.home-primary-action/);
 });
 
+test("post-pull actions use one primary and two secondary Iruka roles", async () => {
+  const [source, stylesheet] = await Promise.all([
+    readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/styles.css", import.meta.url), "utf8")
+  ]);
+
+  assert.match(
+    source,
+    /className="iruka-action-button asset-action-primary"[\s\S]*?t\.actions\.vault/
+  );
+  assert.equal(
+    (source.match(/className="asset-action-secondary iruka-secondary-button"/g) ?? []).length,
+    2
+  );
+  assert.match(
+    source,
+    /className="asset-action-secondary iruka-secondary-button"[\s\S]*?t\.actions\.sellNow/
+  );
+  assert.match(
+    source,
+    /className="asset-action-secondary iruka-secondary-button"[\s\S]*?t\.actions\.ship/
+  );
+  assert.match(
+    stylesheet,
+    /\.asset-actions button \{[^}]*min-height:\s*48px;[^}]*border-radius:\s*var\(--radius-pill\);/is
+  );
+  assert.match(stylesheet, /\.asset-actions \.asset-action-primary\s*\{/);
+  assert.match(stylesheet, /\.asset-actions \.asset-action-secondary\s*\{/);
+  assert.match(stylesheet, /\.asset-actions \.asset-action-secondary:disabled\s*\{/);
+});
+
 test("Vending keeps a subtle beam aligned to the purchase CTA and tier selection", async () => {
   const [detailSource, railSource, stylesheet, purchaseStylesheet, responsiveStylesheet] = await Promise.all([
     readFile(new URL("../src/VendingPackDetail.tsx", import.meta.url), "utf8"),
@@ -176,6 +210,11 @@ test("Vending keeps a subtle beam aligned to the purchase CTA and tier selection
   assert.match(detailSource, /className="iruka-action-button vending-primary-action"/);
   assert.match(railSource, /<IrukaBeam/);
   assert.match(stylesheet, /\.vending-primary-beam \{[\s\S]*?margin-top: 20px;/);
+  assert.match(
+    purchaseStylesheet,
+    /\.vending-primary-action\s*\{[^}]*font-family:\s*var\(--font-sans\);/is
+  );
+  assert.doesNotMatch(purchaseStylesheet, /font-family:\s*Arial/);
   assert.doesNotMatch(purchaseStylesheet, /\.vending-primary-action \{[\s\S]*?margin-top: 20px;/);
   assert.doesNotMatch(stylesheet, /\.vending-pack-beam\[data-active\]/);
   assert.doesNotMatch(responsiveStylesheet, /\.vending-primary-action\s*\{[^}]*position:\s*sticky/);
@@ -324,13 +363,13 @@ test("preview tiers keep the pull CTA available without virtual inventory states
   }
 });
 
-test("testnet pack pulls do not present the product USDC price as the transaction price", () => {
+test("configured onchain packs keep the production pull label", () => {
   const pack = packDetails[0];
   const markup = renderToStaticMarkup(
     React.createElement(VendingPackDetail, {
       copy: {
         ...packDetailCopy,
-        giwaTestnet: "GIWA testnet",
+        giwaTestnet: "GIWA Sepolia",
         testPull: "Test pull"
       },
       isOpening: false,
@@ -342,9 +381,60 @@ test("testnet pack pulls do not present the product USDC price as the transactio
     })
   );
 
-  assert.match(markup, /GIWA testnet/);
-  assert.match(markup, />Test pull</);
+  assert.match(markup, /GIWA Sepolia/);
+  assert.match(markup, />Pull 1 pack</);
+  assert.doesNotMatch(markup, /Test pull/);
   assert.doesNotMatch(markup, /Pull 1 pack · 19\.00 USDC/);
+});
+
+test("a pending onchain pull stays in the product opening flow", () => {
+  const waitingMarkup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: { ...packDetailCopy, checkResult: "Check result", waitingResult: "Waiting for result" },
+      isAwaitingFulfillment: true,
+      isOpening: true,
+      onOpenPack: () => undefined,
+      pack: packDetails[0],
+      rarityLabels,
+      testnetEnabled: true,
+      walletRequired: false
+    })
+  );
+  const retryMarkup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: { ...packDetailCopy, checkResult: "Check result", waitingResult: "Waiting for result" },
+      isAwaitingFulfillment: true,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack: packDetails[0],
+      rarityLabels,
+      testnetEnabled: true,
+      walletRequired: false
+    })
+  );
+
+  assert.match(waitingMarkup, />Opening pack</);
+  assert.match(retryMarkup, />Resume opening</);
+  assert.doesNotMatch(`${waitingMarkup}${retryMarkup}`, /Check result|Waiting for result/);
+});
+
+test("Vending copy avoids test and verification language in the pull flow", () => {
+  assert.equal(appCopy.en.vending.openPack, "Pull a pack");
+  assert.equal(appCopy.en.vending.resumeOpening, "Resume opening");
+  assert.equal(appCopy.en.vending.giwaTestnet, "GIWA Sepolia");
+  assert.equal(appCopy.en.vending.giwaReceipt, "Pull receipt");
+  assert.equal(appCopy.en.feedback.giwaPullPending, "Opening is taking longer than usual.");
+  assert.doesNotMatch(
+    JSON.stringify({
+      vending: appCopy.en.vending,
+      feedback: {
+        giwaPullFailed: appCopy.en.feedback.giwaPullFailed,
+        giwaPullPending: appCopy.en.feedback.giwaPullPending,
+        giwaResultFailed: appCopy.en.feedback.giwaResultFailed
+      }
+    }),
+    /Test pull|Check result|Waiting for result|could not be verified/
+  );
 });
 
 test("pack detail localizes the pack suffix and rarity labels", () => {
@@ -391,7 +481,7 @@ test("inventory starts with eight featured cards and an explicit full-list actio
 
   assert.match(markup, /Inside this pack/);
   assert.match(markup, /View all cards/);
-  assert.match(markup, /0\.84%/);
+  assert.match(markup, /1\.00%/);
   assert.doesNotMatch(markup, /vending-card-flip/);
   assert.equal((markup.match(/class="vending-inventory-card/g) ?? []).length, 8);
 });
@@ -401,7 +491,10 @@ test("recent pulls render only from the explicit Vending session list", () => {
   const props = {
     copy: {
       category: "Girl Groups",
-      hero: { openPack: "Pull 1 pack", opening: "Pulling", packLabel: "Pack" },
+      hero: {
+        openPack: "Pull a pack", opening: "Opening pack",
+        packLabel: "Pack", resumeOpening: "Resume opening"
+      },
       inventory: {
         allRarities: "All rarities", estimatedValue: "Est. value", individualOdds: "Individual odds",
         insidePack: "Inside this pack", loadError: "Load error", loadMore: "Load more", redeemable: "Redeemable",

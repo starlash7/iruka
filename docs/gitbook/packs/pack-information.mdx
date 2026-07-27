@@ -1,50 +1,94 @@
 ---
 title: "Packs and Odds"
-description: "Learn how Iruka pack inventory, rarity, valuation, and verifiable draws are published."
+description: "Review Iruka batch inventory, rarity, odds, valuation evidence, and redemption eligibility."
 icon: "percent"
 ---
 
-> **Status: Planned** - The current app uses preview pack data. Commercial pack details will be published only after physical inventory is certified and secured.
+> **Status: In validation** - The Debut commitment and test pulls are live on
+> GIWA Sepolia. Commercial inventory, pricing, valuation, and redemption
+> eligibility are not live.
 
-Iruka launches with authenticated K-pop photocards sourced and owned by Iruka. Albums, apparel, and other merchandise are not part of the first production pack scope.
+## Pack Publication Standard
 
-## What Every Pack Publishes
+Every commercial pack must publish the following before sales open:
 
-- Batch ID and inventory snapshot time
-- USDC price, total supply, and remaining supply
-- Front and back images for every eligible card
-- Iruka inventory ID, BRG certificate, and grade for each card
-- Individual card odds and rarity-tier odds
-- Estimated value evidence and snapshot time
-- Physical redemption eligibility
-- GIWA commitment transaction
+| Field | Required disclosure |
+| --- | --- |
+| Batch | Batch ID, version, status, and inventory snapshot time |
+| Supply | Original supply, eligible supply, and remaining supply |
+| Inventory | Complete card pool with one unique inventory ID per physical item |
+| Odds | Individual card probability and aggregate rarity probability |
+| Value | Evidence source, comparable set, range, and snapshot time |
+| Redemption | Eligibility and any item-specific restriction |
+| GIWA | Contract, batch commitment, and transaction link |
 
-Cards are drawn without replacement. Displayed odds are calculated from the eligible cards remaining at the published snapshot. A material pool change requires a new batch version rather than a silent edit.
+Cards are assigned without replacement. Displayed odds must be recalculated
+from the eligible inventory remaining at the published snapshot. Removing,
+adding, or replacing inventory requires a new batch version and commitment.
+
+## Debut Test Batch
+
+The current Debut batch demonstrates the testnet data and draw flow.
+
+| Field | Value |
+| --- | --- |
+| Batch ID | `IRK-GG-2026-001` |
+| Network | GIWA Sepolia, chain ID `91342` |
+| Contract | [`0x0C2F...d180`](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180) |
+| Supply | 100 test inventory positions |
+| Test price | `0.001` test ETH |
+| Commitment | [BatchCommitted transaction](https://sepolia-explorer.giwa.io/tx/0x5c2ca90c0fc07faa9b185355e2a7d1040fe64834f7c96f73040f989e7459c79a) |
+| Physical redemption | Not eligible |
+
+Test ETH has no monetary value. The displayed app price and the testnet
+transaction are not canonical USDC settlement.
 
 ## Rarities and Odds
 
-| Tier | Color | Meaning |
-| --- | --- | --- |
-| Common | Gray | Baseline allocation tier |
-| Rare | Green | Scarcer or higher-value tier |
-| Epic | Red | High-value chase tier |
-| Legendary | Yellow | Very limited premium tier |
-| Iruka | Holographic blue | Highest chase tier |
+| Rarity | Test positions | Initial probability | Meaning |
+| --- | ---: | ---: | --- |
+| Common | 60 | 60% | Baseline allocation tier |
+| Rare | 28 | 28% | Scarcer allocation tier |
+| Epic | 9 | 9% | High-value chase allocation |
+| Legendary | 2 | 2% | Very limited allocation |
+| Iruka | 1 | 1% | Highest chase allocation |
 
-Pack rarity describes allocation within a specific batch. It is separate from the physical grade assigned by BRG.
+These values total 100% at the initial snapshot. Probabilities change as
+positions are fulfilled because the batch draws without replacement.
+
+Pack rarity is not a physical grade. Rarity describes allocation inside one
+batch. Grade describes the condition and verification outcome of a physical
+card.
+
+## Individual Card Odds
+
+Each eligible physical item receives one inventory position. For an initial
+batch of 100 equally weighted positions, one position has a 1% individual
+probability. A production inventory page will publish each position, its
+current eligibility, and its individual probability.
+
+Iruka does not use a hidden replacement pool. A material correction pauses the
+affected batch and requires a new public snapshot.
 
 ## Estimated Value
 
-Iruka's planned estimate uses verified completed sales from the previous 90 days for the same card and a comparable grade. It uses up to 10 recent sales and publishes the median, range, sample count, and snapshot time.
+Estimated value is **In validation**. Before values appear on a commercial
+pack, Iruka will publish:
 
-At least three comparable sales are required to show a median. With fewer records, the card is marked `Limited data` instead of receiving a guaranteed value.
+- Exact card identity and comparable condition or grade
+- Completed-sale sources and observation window
+- Currency and conversion timestamp
+- Sample count, median, and observed range
+- Snapshot time and limited-data handling
 
-## Verifiable Draws
+Listings and asking prices are not completed sales. An estimate is reference
+data and never guarantees a sale price, return, or future liquidity.
 
-1. Verified ERC-721 inventory is deposited into a batch contract.
-2. The inventory root and server-seed commitment are recorded on GIWA before sales.
-3. A purchase creates a draw request tied to the current batch state.
-4. Iruka reveals the committed seed and selected inventory ID.
-5. The collector receives a receipt linking the batch, card, token, and GIWA transaction.
+## GIWA Commitment
 
-The current browser-based random result is an interface preview and is not the production allocation method.
+Before a test pull, Iruka records the inventory root, odds commitment, and
+draw-seed root on GIWA Sepolia. A collector request reserves a draw index. The
+Keeper later proves the committed draw seed and selected inventory membership.
+
+See [Onchain Architecture](/technical/onchain-architecture) for what this
+contract proves and what remains offchain.

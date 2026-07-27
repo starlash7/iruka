@@ -98,7 +98,7 @@ html[lang="ko"] .vending-title-block h1 {
   min-height: 56px;
   padding: 0 20px;
   color: #fff;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 700;
   border-radius: var(--radius-pill);

@@ -1,0 +1,82 @@
+.pack-reveal-summary {
+  position: absolute;
+  top: 50%;
+  right: clamp(28px, 7vw, 120px);
+  z-index: 4;
+  display: grid;
+  width: min(34vw, 390px);
+  max-height: calc(100dvh - 96px);
+  gap: 10px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 30px 80px rgba(72, 101, 214, 0.14);
+  transform: translateY(-50%);
+  backdrop-filter: blur(24px);
+  animation: revealSummaryEnter 460ms ease both;
+  overflow-y: auto;
+}
+
+.pack-reveal-rarity {
+  width: fit-content;
+  color: var(--reveal-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pack-reveal-summary h1,
+.pack-reveal-summary p {
+  margin: 0;
+}
+
+.pack-reveal-summary h1 {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 4vw, 58px);
+  font-weight: 600;
+  line-height: 0.96;
+}
+
+.pack-reveal-summary p,
+.pack-reveal-summary-value span {
+  color: #65758c;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.pack-reveal-summary-value {
+  display: grid;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.pack-reveal-summary-value strong {
+  font-size: 24px;
+  font-weight: 650;
+}
+
+.pack-reveal-summary a,
+.pack-reveal-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+}
+
+.pack-reveal-summary a {
+  color: #5572ef;
+  background: rgba(111, 141, 255, 0.1);
+}
+
+.pack-reveal-continue {
+  color: #fff;
+  background: var(--iruka-gradient);
+  box-shadow: 0 14px 30px rgba(111, 141, 255, 0.2);
+  cursor: pointer;
+}

@@ -25,7 +25,7 @@ test("home entry presents Play Iruka before the product home", () => {
   assert.match(markup, /Play Iruka!/);
   assert.match(markup, /iruka-entry-stage/);
   assert.match(markup, /iruka-entry-action/);
-  assert.match(markup, /iruka-beam-action/);
+  assert.doesNotMatch(markup, /iruka-beam-action|iruka-entry-beam/);
   assert.doesNotMatch(markup, /<svg/);
 });
 
@@ -39,6 +39,22 @@ test("home entry keeps the sky background free of a kinetic grid", async () => {
 
   assert.doesNotMatch(markup, /iruka-entry-grid/);
   assert.doesNotMatch(stylesheet, /\.iruka-entry-grid/);
+});
+
+test("home entry action keeps the shared Iruka glass treatment", async () => {
+  const stylesheet = await readFile(
+    new URL("../src/styles.css", import.meta.url),
+    "utf8"
+  );
+
+  assert.doesNotMatch(
+    stylesheet,
+    /\.iruka-entry-action,\s*\.account-deposit-button\.iruka-action-button,\s*\.account-faucet-action\.iruka-action-button\s*\{[^}]*background:\s*#1677ff;/is
+  );
+  assert.doesNotMatch(
+    stylesheet,
+    /\.account-deposit-button\.iruka-action-button,\s*\.account-faucet-action\.iruka-action-button\s*\{[^}]*background:\s*#1677ff;/is
+  );
 });
 
 test("home entry unfolds its sky background behind the controls", async () => {
@@ -116,8 +132,15 @@ test("primary action styles use the Iruka blue glass treatment", async () => {
   assert.doesNotMatch(stylesheet, /\.iruka-entry::before/);
   assert.doesNotMatch(stylesheet, /\.iruka-entry::after/);
   assert.match(stylesheet, /\.iruka-entry-action \{[\s\S]*?min-width: min\(214px, 76vw\);/);
-  assert.match(stylesheet, /\.iruka-entry-action \{[\s\S]*?font-family: Arial, Helvetica, sans-serif;/);
-  assert.match(stylesheet, /\.iruka-entry-action \{[\s\S]*?font-weight: 450;/);
+  assert.match(
+    stylesheet,
+    /\.iruka-action-button,[\s\S]*?font-family:\s*var\(--font-sans\);/
+  );
+  assert.match(
+    stylesheet,
+    /\.iruka-entry-action \{[\s\S]*?font-weight:\s*600;/
+  );
+  assert.doesNotMatch(stylesheet, /font-family: Arial, Helvetica, sans-serif;/);
   assert.match(stylesheet, /backdrop-filter: blur\(12px\) saturate\(1\.25\);/);
   assert.match(stylesheet, /inset 0 1px 1px rgba\(255, 255, 255, 0\.42\)/);
   assert.match(stylesheet, /0 8px 16px rgba\(42, 117, 183, 0\.22\)/);

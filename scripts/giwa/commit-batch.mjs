@@ -4,19 +4,17 @@ import {
   createWalletClient,
   http,
   isAddress,
-  isHex,
-  keccak256
+  isHex
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 const [manifestPath] = process.argv.slice(2);
 const contractAddress = process.env.GIWA_PACK_BATCH_ADDRESS;
 const privateKey = process.env.GIWA_DEPLOYER_PRIVATE_KEY;
-const serverSeed = process.env.GIWA_SERVER_SEED;
 
-if (!manifestPath || !isAddress(contractAddress) || !isBytes32(privateKey) || !isBytes32(serverSeed)) {
+if (!manifestPath || !isAddress(contractAddress) || !isBytes32(privateKey)) {
   throw new Error(
-    "Set GIWA_PACK_BATCH_ADDRESS, GIWA_DEPLOYER_PRIVATE_KEY, GIWA_SERVER_SEED and pass <manifest-json>."
+    "Set GIWA_PACK_BATCH_ADDRESS, GIWA_DEPLOYER_PRIVATE_KEY and pass <manifest-json>."
   );
 }
 
@@ -35,11 +33,14 @@ const transactionHash = await walletClient.writeContract({
     BigInt(manifest.priceWei),
     manifest.inventoryRoot,
     manifest.oddsCommitment,
-    keccak256(serverSeed)
+    manifest.drawSeedRoot
   ]
 });
 
-await publicClient.waitForTransactionReceipt({ hash: transactionHash });
+const receipt = await publicClient.waitForTransactionReceipt({ hash: transactionHash });
+if (receipt.status !== "success") {
+  throw new Error(`Batch commit reverted: ${transactionHash}`);
+}
 console.log(`Committed ${manifest.batchLabel} on GIWA Sepolia.`);
 console.log(`https://sepolia-explorer.giwa.io/tx/${transactionHash}`);
 
@@ -67,7 +68,7 @@ const packBatchAbi = [
       { name: "priceWei", type: "uint256" },
       { name: "inventoryRoot", type: "bytes32" },
       { name: "oddsCommitment", type: "bytes32" },
-      { name: "serverSeedCommitment", type: "bytes32" }
+      { name: "drawSeedRoot", type: "bytes32" }
     ],
     outputs: []
   }

@@ -1,0 +1,115 @@
+.account-deposit-dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-width: none;
+  padding: 0;
+  color: var(--ink);
+  border: 1px solid rgba(214, 228, 255, 0.92);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.account-deposit-dialog::backdrop {
+  background: rgba(7, 17, 31, 0.38);
+  backdrop-filter: blur(3px);
+}
+
+.account-deposit-panel {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+
+.account-deposit-panel > header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.account-deposit-panel header span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.account-deposit-panel h2 {
+  margin: 3px 0 0;
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.account-deposit-panel header button {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: var(--muted);
+  border-radius: var(--radius-md);
+  background: var(--sky);
+  cursor: pointer;
+}
+
+.account-deposit-panel header button:hover {
+  color: var(--account-action);
+  background: #ffffff;
+}
+
+.account-deposit-address {
+  padding: 16px;
+  border: 1px solid rgba(214, 228, 255, 0.82);
+  border-radius: var(--radius-lg);
+  background: var(--soft);
+}
+
+.account-deposit-address span,
+.account-deposit-address code {
+  display: block;
+}
+
+.account-deposit-address span {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.account-deposit-address code {
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.account-copy-action,
+.account-faucet-action {
+  display: inline-flex;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 650;
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.account-copy-action {
+  color: var(--account-action);
+  background: var(--sky);
+}
+
+.account-faucet-action {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.account-copy-action:hover {
+  background: #ffffff;
+}

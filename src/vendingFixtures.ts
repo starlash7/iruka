@@ -46,11 +46,11 @@ export const packMedia: Record<PackTier, PackMedia> = {
 export const packFixtures: readonly PackFixture[] = [
   {
     id: "debut", tier: "Debut", batchId: "IRK-GG-2026-001", priceUsdc: "19.00",
-    remaining: 84, total: 120,
+    remaining: 100, total: 100,
     rarityOdds: [
-      { tier: "Common", basisPoints: 6000, eligibleCount: 72, estimatedValueRangeUsdc: ["6.00", "18.00"] },
-      { tier: "Rare", basisPoints: 2800, eligibleCount: 34, estimatedValueRangeUsdc: ["21.00", "57.00"] },
-      { tier: "Epic", basisPoints: 900, eligibleCount: 11, estimatedValueRangeUsdc: ["71.00", "214.00"] },
+      { tier: "Common", basisPoints: 6000, eligibleCount: 60, estimatedValueRangeUsdc: ["6.00", "18.00"] },
+      { tier: "Rare", basisPoints: 2800, eligibleCount: 28, estimatedValueRangeUsdc: ["21.00", "57.00"] },
+      { tier: "Epic", basisPoints: 900, eligibleCount: 9, estimatedValueRangeUsdc: ["71.00", "214.00"] },
       { tier: "Legendary", basisPoints: 200, eligibleCount: 2, estimatedValueRangeUsdc: ["357.00", "857.00"] },
       { tier: "Iruka", basisPoints: 100, eligibleCount: 1, estimatedValueRangeUsdc: ["1071.00", "2143.00"] }
     ]

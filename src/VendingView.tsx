@@ -17,7 +17,7 @@ type VendingViewCopy = {
     openPack: string;
     opening: string;
     packLabel: string;
-    testPull: string;
+    resumeOpening: string;
   };
   inventory: {
     allRarities: string;
@@ -51,6 +51,7 @@ type VendingViewProps = {
   activePull?: CardPull;
   copy: VendingViewCopy;
   getCardImageUrl: (card: CardPull) => string;
+  isAwaitingFulfillment: boolean;
   isOpening: boolean;
   onOpenPack: () => void;
   onchainReceipt?: GiwaPullReceipt;
@@ -73,6 +74,7 @@ export function VendingView({
   activePull,
   copy,
   getCardImageUrl,
+  isAwaitingFulfillment,
   isOpening,
   onOpenPack,
   onchainReceipt,
@@ -109,10 +111,11 @@ export function VendingView({
           packOdds: copy.labels.packOdds,
           physicalRedemption: copy.labels.physicalRedemption,
           redemptionUnavailable: copy.labels.redemptionUnavailable,
-          testPull: copy.hero.testPull,
+          resumeOpening: copy.hero.resumeOpening,
           viewTransaction: copy.labels.viewTransaction,
           viewOdds: copy.labels.viewOdds
         }}
+        isAwaitingFulfillment={isAwaitingFulfillment}
         isOpening={isOpening}
         onOpenPack={onOpenPack}
         onchainReceipt={onchainReceipt}

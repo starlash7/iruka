@@ -1,6 +1,6 @@
-import { Box } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Locale } from "./appTypes";
+import { VaultCardList } from "./VaultCardList";
 import { VaultGuide } from "./VaultGuide";
 import type { CardPull, Rarity, VaultStatus } from "./vendingTypes";
 
@@ -44,32 +44,15 @@ export function VaultView({
         <span>{cards.length > 0 ? `${cards.length} ${copy.cards}` : copy.empty}</span>
       </div>
 
-      {cards.length > 0 ? (
-        <div className="vault-table">
-          {cards.map((card) => (
-            <button
-              className="vault-row"
-              key={card.id}
-              onClick={() => onSelectCard(card)}
-              type="button"
-            >
-              <span className="vault-card-thumb">
-                <img alt="" src={getCardImageUrl(card)} />
-                <i className={`rarity-dot ${rarityClassNames[card.rarity]}`} />
-              </span>
-              <strong>{card.member}</strong>
-              <span>{card.group}</span>
-              <span>{formatValue(card)}</span>
-              <span>{statusLabels[card.vaultStatus]}</span>
-            </button>
-          ))}
-        </div>
-      ) : (
-        <div className="vault-empty">
-          <Box size={28} />
-          <strong>{copy.vaultEmpty}</strong>
-        </div>
-      )}
+      <VaultCardList
+        cards={cards}
+        emptyLabel={copy.vaultEmpty}
+        formatValue={formatValue}
+        getCardImageUrl={getCardImageUrl}
+        onSelectCard={onSelectCard}
+        rarityClassNames={rarityClassNames}
+        statusLabels={statusLabels}
+      />
 
       {pullActions}
 

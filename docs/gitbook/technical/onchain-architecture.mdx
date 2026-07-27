@@ -1,0 +1,103 @@
+---
+title: "Onchain Architecture"
+description: "See what Iruka records on GIWA, what remains offchain, and what production contracts are still planned."
+icon: "network"
+---
+
+> **Status: Live testnet architecture** - `IrukaPackBatch` V2 records committed
+> test batches and fulfilled pulls on GIWA Sepolia. Commercial ownership and
+> settlement contracts are planned.
+
+Iruka uses the chain for commitments, state transitions, and receipts that
+collectors should be able to verify independently. Sensitive or media-heavy
+records remain offchain and are linked by stable inventory identifiers and
+commitments.
+
+## Responsibility Split
+
+| Record | Location | Current state |
+| --- | --- | --- |
+| Batch inventory root | GIWA Sepolia | Live |
+| Odds commitment | GIWA Sepolia | Live |
+| Per-draw seed root | GIWA Sepolia | Live |
+| Pull request and reserved draw index | GIWA Sepolia | Live |
+| Fulfillment proof and assigned inventory commitment | GIWA Sepolia | Live |
+| Initial and remaining batch supply | GIWA Sepolia | Live |
+| Original card images and metadata | Offchain | In validation |
+| Grading and authentication evidence | Offchain | In validation |
+| Physical intake and storage location | Offchain | In validation |
+| Account identity and personal data | Offchain | Live for authentication; commercial controls planned |
+| Delivery name, address, and carrier data | Offchain | Planned |
+| ERC-721 ownership | GIWA production contract | Planned |
+| Canonical USDC settlement | GIWA production contract | Planned |
+
+Private storage details, personal data, and delivery addresses must never be
+published onchain.
+
+## Current Testnet Contracts
+
+| Contract | Network | Purpose |
+| --- | --- | --- |
+| [`IrukaPackBatch` V2](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180?tab=contract) | GIWA Sepolia, chain ID `91342` | Commit a test batch, reserve pulls, verify fulfillment proofs, and reduce available supply |
+
+The current contract is a commit-reveal test contract. It is not a VRF. It
+does not mint ERC-721 ownership, and it does not settle USDC.
+
+## Batch Commitment
+
+Before a batch accepts requests, the owner records:
+
+- `inventoryRoot`: commitment to the eligible inventory positions
+- `oddsCommitment`: commitment to the published rarity distribution
+- `drawSeedRoot`: commitment to one seed per draw position
+- Initial supply and test price
+
+The complete inventory manifest and draw seeds remain offchain. Individual
+proof material is revealed only as required for fulfillment.
+
+## Pull Lifecycle
+
+1. The collector submits `requestPull` with the exact GIWA Sepolia test price.
+2. The contract reserves the next draw index and emits `PullRequested`.
+3. The Keeper reads the request and selects the precommitted proof for that
+   draw index.
+4. The Keeper submits `fulfillPull`.
+5. The contract verifies the draw seed and inventory membership, records the
+   assigned inventory commitment, removes that position, and emits
+   `PullFulfilled`.
+6. Iruka reads the confirmed event before opening Reveal.
+
+Concurrent requests reserve unique draw indices. Fulfillment follows the
+contract's deterministic without-replacement state so one position cannot be
+assigned twice.
+
+## Trust Boundaries
+
+The current design proves that a fulfilled result belongs to commitments
+published before the request. It does not independently prove:
+
+- That a physical card exists
+- That grading or authentication evidence is correct
+- That Iruka holds the physical item
+- That the operator cannot delay fulfillment
+- That a commercial payment settled
+- That the collector owns an ERC-721
+
+Those claims require separate custody records, operating controls, and
+production contracts.
+
+## Production Contract Direction
+
+Before commercial launch, Iruka plans to separate responsibilities into
+reviewable modules:
+
+- Batch commitments and production randomness
+- One-to-one ERC-721 ownership for eligible vaulted inventory
+- Canonical USDC pack payment
+- Fixed-price marketplace settlement
+- Redemption locks and ownership retirement or transfer
+
+Each production contract will require source verification, tests, access
+control review, external audit, event indexing, key-management procedures,
+pause and recovery rules, and documented incident response before it is marked
+`Live`.

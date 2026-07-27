@@ -24,8 +24,8 @@ lending surfaces.
 - Use `roadmap-iruka-universe.jpg` as the full-width Iruka cover.
 - Keep the hero bright enough to read as Iruka while adding a restrained
   right-side blue overlay for text contrast.
-- Place only the circular Iruka avatar and authenticated identity at the lower
-  right.
+- Keep the hero free of profile avatars, wallet addresses, network status, and
+  session actions.
 - Place `Overview` and `Inventory` anchor controls at the lower left.
 - Keep Sign out out of the hero so profile identity remains visually clean.
 - Keep a screen-reader Account heading without rendering a second large title.

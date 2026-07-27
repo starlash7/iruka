@@ -28,16 +28,24 @@
         "pages": [
           "overview",
           "project/how-it-works",
-          "technical/giwa-testnet"
+          "faq"
         ]
       },
       {
-        "group": "Product",
+        "group": "Collecting",
         "pages": [
           "packs/pack-information",
+          "product/grading-and-verification",
           "product/vault",
           "product/marketplace",
           "product/redemption-and-shipping"
+        ]
+      },
+      {
+        "group": "Technology",
+        "pages": [
+          "technical/onchain-architecture",
+          "technical/giwa-testnet"
         ]
       },
       {

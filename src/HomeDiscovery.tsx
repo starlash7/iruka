@@ -9,10 +9,6 @@ import photocardsImage from "./assets/home-discovery/photocards.webp";
 import plushCharmsImage from "./assets/home-discovery/plush-charms.webp";
 import { homeBrowseCategories, type MarketplaceBrowseCategory } from "./marketplaceBrowse";
 import type { MarketplaceItem } from "./marketplaceData";
-import {
-  getMarketplaceCardTypeLabel,
-  type MarketplaceLocale
-} from "./marketplaceFilters";
 
 export type HomeDiscoveryCopy = {
   categoryLabels: Record<MarketplaceBrowseCategory, string>;
@@ -25,7 +21,6 @@ export type HomeDiscoveryCopy = {
 type HomeDiscoveryProps = {
   copy: HomeDiscoveryCopy;
   items: MarketplaceItem[];
-  locale: MarketplaceLocale;
   onBrowseCategory: (category: MarketplaceBrowseCategory) => void;
   onOpenItem: (listingId: string) => void;
 };
@@ -55,11 +50,9 @@ function getNewItems(items: MarketplaceItem[]) {
 
 function HomePhotocard({
   item,
-  locale,
   onOpen
 }: {
   item: MarketplaceItem;
-  locale: MarketplaceLocale;
   onOpen: (listingId: string) => void;
 }) {
   return (
@@ -73,8 +66,8 @@ function HomePhotocard({
         <img alt="" decoding="async" loading="lazy" src={item.card.imageUrl} />
       </span>
       <span className="home-market-card-copy">
-        <small>{item.card.group} · {getMarketplaceCardTypeLabel(item.card.cardType, locale)}</small>
-        <strong>{item.card.title}</strong>
+        <small className="home-market-card-group">{item.card.group}</small>
+        <strong className="home-market-card-name">{item.card.member} · {item.card.release}</strong>
       </span>
     </button>
   );
@@ -82,14 +75,12 @@ function HomePhotocard({
 
 function PhotocardSection({
   items,
-  locale,
   onOpenItem,
   onViewAll,
   title,
   viewAll
 }: {
   items: MarketplaceItem[];
-  locale: MarketplaceLocale;
   onOpenItem: (listingId: string) => void;
   onViewAll: () => void;
   title: string;
@@ -106,7 +97,7 @@ function PhotocardSection({
       </header>
       <div className="home-market-grid">
         {items.map((item) => (
-          <HomePhotocard item={item} key={item.listing.id} locale={locale} onOpen={onOpenItem} />
+          <HomePhotocard item={item} key={item.listing.id} onOpen={onOpenItem} />
         ))}
       </div>
     </section>
@@ -116,7 +107,6 @@ function PhotocardSection({
 export function HomeDiscovery({
   copy,
   items,
-  locale,
   onBrowseCategory,
   onOpenItem
 }: HomeDiscoveryProps) {
@@ -144,7 +134,6 @@ export function HomeDiscovery({
 
       <PhotocardSection
         items={hotItems}
-        locale={locale}
         onOpenItem={onOpenItem}
         onViewAll={() => onBrowseCategory("photocards")}
         title={copy.hotPhotocards}
@@ -152,7 +141,6 @@ export function HomeDiscovery({
       />
       <PhotocardSection
         items={newItems}
-        locale={locale}
         onOpenItem={onOpenItem}
         onViewAll={() => onBrowseCategory("photocards")}
         title={copy.newArrivals}

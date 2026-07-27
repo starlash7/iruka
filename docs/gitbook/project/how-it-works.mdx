@@ -1,35 +1,75 @@
 ---
 title: "How Iruka Works"
-description: "Follow the planned Iruka flow from sign-in and pack purchase to vault, resale, or shipping."
+description: "Follow the Iruka pack, reveal, vault, marketplace, and redemption flow."
 icon: "route"
 ---
 
-> **Status: MVP Preview** - The interface can be explored today. The payment, custody, and GIWA settlement steps below are the launch specification.
+> **Status: Live testnet flow** - Sign-in, pack selection, GIWA Sepolia pull
+> requests, Keeper fulfillment, and reveal receipts are available. Physical
+> custody and commercial settlement are not live.
 
 ## 1. Sign In
 
-Collectors will be able to sign in with email or Google through a Privy embedded EVM wallet. MetaMask and OKX Wallet are the initial external wallet targets.
+Collectors can browse without a wallet. Email and Google sign-in create an
+Iruka account through Privy. A supported EVM wallet is required only when the
+collector submits a GIWA Sepolia test transaction.
 
-## 2. Choose a Pack
+Testnet ETH has no monetary value. Iruka does not currently accept commercial
+USDC payments.
 
-Before purchase, a pack must show its USDC price, total and remaining supply, complete card pool, individual odds, value methodology, and redemption eligibility.
+## 2. Select A Pack
 
-## 3. Pull and Reveal
+Before a commercial pack opens, its page must publish:
 
-The collector confirms a USDC purchase. The production draw will use a commit-reveal process recorded on GIWA so the selected inventory item can be independently checked after reveal.
+- Batch ID and inventory snapshot time
+- Price, total supply, and remaining supply
+- Complete eligible card pool
+- Individual card and rarity-tier odds
+- Estimated value evidence and snapshot time
+- Physical redemption eligibility
+- GIWA batch commitment
 
-The result shows the card image, pack rarity, BRG grade, inventory ID, estimated value evidence, and ownership transaction.
+The current Debut batch is a testnet fixture. It proves the commitment and draw
+flow; it does not represent sellable physical inventory.
 
-## 4. Keep It Vaulted
+## 3. Review Odds
 
-The physical card stays with Iruka while its 1:1 ERC-721 represents ownership. Vaulted cards can be transferred to another EVM wallet or listed for a fixed USDC price.
+Odds come from the eligible inventory remaining in a batch. Each card occupies
+one inventory position, and a fulfilled position cannot be assigned again.
+Material inventory changes require a new batch version and commitment.
 
-## 5. Sell or Ship
+See [Packs and Odds](/packs/pack-information) for the current Debut test batch.
 
-The owner can sell the vaulted card through the Marketplace or request delivery in South Korea. A listed card must be delisted before shipping can begin.
+## 4. Pull
 
-## Wallet and Gas
+The collector confirms one `requestPull` transaction. The contract reserves a
+draw index and emits `PullRequested`. The Iruka Keeper then submits the
+precommitted draw proof in a separate `fulfillPull` transaction.
 
-Iruka plans to sponsor gas for in-product actions such as pack purchases and Marketplace settlement. Users pay the network fee when transferring assets to an external wallet.
+If fulfillment is delayed, Iruka checks the same request again. It does not
+create a second paid request.
 
-USDC transactions will be enabled only after a canonical GIWA deployment and contract address are verified. No unofficial bridged token is presented as the launch settlement asset.
+## 5. Reveal
+
+Reveal opens only after Iruka reads a confirmed `PullFulfilled` result and
+matches the returned inventory commitment to the selected card record. The
+receipt links the request, fulfillment, batch, and assigned inventory ID.
+
+The current contract is a testnet commit-reveal implementation. It is not VRF,
+commercial settlement, or proof of physical custody.
+
+## 6. Vault
+
+A production card can become `Vaulted` only when its inventory record,
+authentication evidence, physical intake, sealed storage record, and ownership
+record agree. The interface must not infer custody from a certificate number or
+testnet pull alone.
+
+## 7. Sell Or Redeem
+
+Eligible vaulted cards will support either a fixed-price listing or a physical
+redemption request. A listed card must be delisted before redemption can lock
+the item for shipment.
+
+Fees, payment assets, supported regions, shipping methods, timelines, and loss
+or damage procedures will be published before these actions become live.

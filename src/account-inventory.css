@@ -1,0 +1,134 @@
+.account-inventory-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  scroll-margin-top: 24px;
+}
+
+.account-inventory-panel > header {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.account-inventory-panel h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(22px, 1.7vw, 26px);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.account-inventory-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: var(--blue);
+  border: 1px solid rgba(111, 141, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.account-inventory-list {
+  min-width: 0;
+  padding-top: 4px;
+  border-top: 0;
+}
+
+.account-inventory-list .vault-table {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.account-inventory-list .vault-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto repeat(4, max-content);
+  gap: 5px;
+  align-content: start;
+  min-height: 0;
+  padding: 10px;
+  border: 1px solid rgba(214, 228, 255, 0.82);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 26px rgba(69, 103, 192, 0.06);
+}
+
+.account-inventory-list .vault-row:hover {
+  border-color: rgba(111, 141, 255, 0.3); box-shadow: 0 14px 32px rgba(69, 103, 192, 0.1);
+}
+
+.account-inventory-list .vault-row .vault-card-thumb {
+  display: grid;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5 / 7;
+  margin-bottom: 3px;
+  border-radius: 14px;
+}
+
+.account-inventory-list .vault-row > strong {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.account-inventory-list .vault-row > span:not(.vault-card-thumb) {
+  display: block;
+  font-size: 11px;
+  font-weight: 550;
+}
+
+.account-inventory-list .vault-row > span:last-child {
+  width: fit-content;
+  margin-top: 2px;
+  padding: 5px 8px;
+  color: var(--account-action);
+  font-size: 10px;
+  font-weight: 650;
+  border-radius: var(--radius-pill);
+  background: #edf5ff;
+}
+
+.account-inventory-list .vault-empty {
+  min-height: 140px;
+  gap: 8px;
+  background: #f8fbff;
+  box-shadow: none;
+}
+
+.account-inventory-list .vault-empty svg {
+  width: 24px;
+  height: 24px;
+}
+
+.account-inventory-list .vault-empty strong {
+  font-size: 15px;
+  font-weight: 550;
+}
+
+@media (max-width: 1180px) {
+  .account-inventory-list .vault-table {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .account-inventory-panel {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+
+  .account-inventory-list .vault-table {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}

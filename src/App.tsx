@@ -1,5 +1,6 @@
 import { Send, ShieldCheck, Store } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { AccountView } from "./AccountView";
 import { AppFooter, AppHeader, MINTLIFY_DOCS_URL } from "./AppChrome";
 import { copy } from "./appCopy";
 import type { AppView, Locale, WalletAuthMode } from "./appTypes";
@@ -23,6 +24,7 @@ import {
 } from "./marketplaceData";
 import { rarityClassNames } from "./packData";
 import { RoadmapView } from "./RoadmapView";
+import { VaultCardList } from "./VaultCardList";
 import { VaultView } from "./VaultView";
 import { VendingView } from "./VendingView";
 import {
@@ -31,10 +33,18 @@ import {
   type GiwaPullReceipt,
   type GiwaWallet
 } from "./giwaPull.ts";
+import {
+  waitForGiwaPullFulfillment,
+  type GiwaPullFulfillment
+} from "./giwaFulfillment.ts";
+import { createGiwaVendingPull } from "./giwaInventory.ts";
 import { packDetails, pullPack } from "./vendingData";
 import type { CardPull, VaultStatus } from "./vendingTypes";
 
-type OnchainPull = GiwaPullReceipt & { packId: string };
+type OnchainPull = GiwaPullReceipt & {
+  fulfillment?: GiwaPullFulfillment;
+  packId: string;
+};
 
 const PackRevealOverlay = lazy(() =>
   import("./features/pack-reveal/PackRevealOverlay").then((module) => ({
@@ -114,6 +124,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     () => getMarketplaceItems(marketplaceListings),
     [marketplaceListings]
   );
+  const accountCards = collection.filter((card) => card.vaultStatus !== "Sold");
   const sellCard = collection.find((card) => card.id === sellCardId)
     ?? (activePull?.id === sellCardId ? activePull : undefined);
   const sellListing = sellCard
@@ -125,6 +136,9 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
   const walletRequired = walletAuth === "privy" && !isSignedIn;
   const hasGiwaPullContract = Boolean(getGiwaPackBatchAddress());
+  const isAwaitingOnchainFulfillment = Boolean(
+    onchainPull?.packId === selectedPackDetail.id && !onchainPull.fulfillment
+  );
   const isPrimaryView = activeView === "pull";
 
   useEffect(() => {
@@ -173,7 +187,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   }
 
   function choosePack(packId: string) {
-    if (isOpening) return;
+    if (isOpening || isAwaitingOnchainFulfillment) return;
 
     setActivePull(undefined);
     setOnchainPull(undefined);
@@ -181,7 +195,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   }
 
   function showView(view: AppView, targetId?: string) {
-    if (view === "vault" && walletRequired) {
+    if ((view === "vault" || view === "account") && walletRequired) {
       setWalletPromptSignal((value) => value + 1);
       showNotice(t.feedback.connectWallet);
       return;
@@ -235,22 +249,59 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     }
 
     if (hasGiwaPullContract) {
-      if (!giwaWallet) {
+      const existingOnchainPull = onchainPull?.packId === selectedPackDetail.id
+        && !onchainPull.fulfillment
+        ? onchainPull
+        : undefined;
+
+      if (!existingOnchainPull && !giwaWallet) {
         setWalletPromptSignal((value) => value + 1);
         showNotice(t.feedback.connectWallet);
         return;
       }
 
       setIsOpening(true);
-      try {
-        const receipt = await requestGiwaPull(giwaWallet, selectedPackDetail);
+      let currentPull = existingOnchainPull;
+      let revealStarted = false;
 
-        setOnchainPull({ ...receipt, packId: selectedPackDetail.id });
-        showNotice(t.feedback.giwaPullConfirmed);
+      try {
+        const pullReceipt = existingOnchainPull
+          ?? await requestGiwaPull(giwaWallet!, selectedPackDetail);
+        currentPull = existingOnchainPull
+          ?? { ...pullReceipt, packId: selectedPackDetail.id };
+
+        if (!existingOnchainPull) {
+          setOnchainPull(currentPull);
+        }
+
+        const fulfillment = await waitForGiwaPullFulfillment(currentPull);
+        if (!fulfillment) {
+          showNotice(t.feedback.giwaPullPending);
+          return;
+        }
+
+        const pull = await createGiwaVendingPull(
+          selectedPackDetail.id,
+          fulfillment
+        );
+        const cardPull = createVendingCardPull(
+          pull,
+          selectedPackDetail.name,
+          t.vending.packLabel
+        );
+
+        revealCompleteRef.current = false;
+        revealStarted = true;
+        setOnchainPull({ ...currentPull, fulfillment });
+        setPendingReveal(cardPull);
       } catch {
-        showNotice(t.feedback.giwaPullFailed);
+        showNotice(
+          currentPull
+            ? t.feedback.giwaResultFailed
+            : t.feedback.giwaPullFailed
+        );
       } finally {
-        setIsOpening(false);
+        if (!revealStarted) setIsOpening(false);
       }
       return;
     }
@@ -315,15 +366,24 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
     return (
       <div className="asset-actions">
-        <button onClick={() => updateCardStatus(activePull.id, "Vaulted")} type="button">
+        <button
+          className="iruka-action-button asset-action-primary"
+          onClick={() => updateCardStatus(activePull.id, "Vaulted")}
+          type="button"
+        >
           <ShieldCheck size={16} />
           {t.actions.vault}
         </button>
-        <button onClick={() => openSellDialog(activePull)} type="button">
+        <button
+          className="asset-action-secondary iruka-secondary-button"
+          onClick={() => openSellDialog(activePull)}
+          type="button"
+        >
           <Store size={16} />
           {t.actions.sellNow}
         </button>
         <button
+          className="asset-action-secondary iruka-secondary-button"
           disabled={activePull.redemption?.shipmentAvailable === false}
           onClick={() => updateCardStatus(activePull.id, "Redeem queued")}
           title={activePull.redemption?.shipmentAvailable === false
@@ -335,6 +395,14 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           {t.actions.ship}
         </button>
       </div>
+    );
+  }
+
+  function getVaultCardImageUrl(card: CardPull) {
+    return card.imageUrl ?? createRevealImageUrl(
+      card,
+      t.rarities[card.rarity],
+      formatCardPullValue(card)
     );
   }
 
@@ -416,6 +484,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     <main className="product-shell">
       <AppHeader
         activeView={activeView}
+        authenticated={isSignedIn}
         connectSignal={walletPromptSignal}
         copy={t.nav}
         locale={locale}
@@ -430,7 +499,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         <HomeView
           copy={t.home}
           items={marketplaceItems}
-          locale={locale}
           onBrowseCategory={browseMarketplace}
           onEnterVending={() => showView("pull")}
           onOpenItem={(listingId) => browseMarketplace("photocards", listingId)}
@@ -446,7 +514,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
               openPack: t.vending.openPack,
               opening: t.hero.opening,
               packLabel: t.vending.packLabel,
-              testPull: t.vending.testPull
+              resumeOpening: t.vending.resumeOpening
             },
             inventory: {
               allRarities: t.vending.allRarities,
@@ -483,6 +551,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             )
           }
           isOpening={isOpening}
+          isAwaitingFulfillment={isAwaitingOnchainFulfillment}
           onchainReceipt={onchainPull?.packId === selectedPackDetail.id ? onchainPull : undefined}
           onOpenPack={openPack}
           onSelectPack={choosePack}
@@ -524,6 +593,30 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
       {activeView === "events" ? <EventsView copy={t.eventsPage} /> : null}
 
+      {activeView === "account" && walletAuth === "privy" && isSignedIn && giwaWallet ? (
+        <AccountView
+          cards={collection}
+          copy={t.account}
+          inventoryContent={(
+            <>
+              <VaultCardList
+                cards={accountCards}
+                emptyLabel={t.sections.vaultEmpty}
+                formatValue={formatCardPullValue}
+                getCardImageUrl={getVaultCardImageUrl}
+                onSelectCard={setActivePull}
+                rarityClassNames={rarityClassNames}
+                statusLabels={t.statuses}
+              />
+              {activePull && accountCards.some((card) => card.id === activePull.id)
+                ? renderActivePullActions()
+                : null}
+            </>
+          )}
+          walletAddress={giwaWallet.address}
+        />
+      ) : null}
+
       {activeView === "vault" && isSignedIn ? (
         <VaultView
           cards={collection}
@@ -536,13 +629,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             vaultEmpty: t.sections.vaultEmpty
           }}
           formatValue={formatCardPullValue}
-          getCardImageUrl={(card) =>
-            card.imageUrl ?? createRevealImageUrl(
-              card,
-              t.rarities[card.rarity],
-              formatCardPullValue(card)
-            )
-          }
+          getCardImageUrl={getVaultCardImageUrl}
           locale={locale}
           onSelectCard={setActivePull}
           pullActions={activePull && collection.some((card) => card.id === activePull.id)
@@ -564,7 +651,17 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           <PackRevealOverlay
             cards={[pendingRevealCard]}
             labels={t.revealOverlay}
+            media={{ posterUrl: selectedPackDetail.media.packFrontUrl }}
             onComplete={completePendingReveal}
+            receipt={
+              onchainPull?.packId === selectedPackDetail.id
+              && onchainPull.fulfillment
+                ? {
+                    explorerUrl: onchainPull.fulfillment.explorerUrl,
+                    requestId: onchainPull.requestId
+                  }
+                : undefined
+            }
           />
         </Suspense>
       ) : null}

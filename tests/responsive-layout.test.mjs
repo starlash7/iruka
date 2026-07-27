@@ -2,6 +2,152 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
+function getRelativeLuminance(hex) {
+  const channels = [1, 3, 5]
+    .map((index) => Number.parseInt(hex.slice(index, index + 2), 16) / 255)
+    .map((channel) => (
+      channel <= 0.04045
+        ? channel / 12.92
+        : ((channel + 0.055) / 1.055) ** 2.4
+    ));
+
+  return (0.2126 * channels[0]) + (0.7152 * channels[1]) + (0.0722 * channels[2]);
+}
+
+function getContrastRatio(firstHex, secondHex) {
+  const first = getRelativeLuminance(firstHex);
+  const second = getRelativeLuminance(secondHex);
+
+  return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+}
+
+test("Account action colors keep normal-sized text at AA contrast", async () => {
+  const stylesheet = await readFile(new URL("../src/account.css", import.meta.url), "utf8");
+  const getColor = (name) => (
+    stylesheet.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`, "i"))?.[1]
+  );
+  const action = getColor("account-action");
+  const actionHover = getColor("account-action-hover");
+  const danger = getColor("account-danger");
+
+  assert.ok(action);
+  assert.ok(actionHover);
+  assert.ok(danger);
+  assert.ok(getContrastRatio(action, "#edf5ff") >= 4.5);
+  assert.ok(getContrastRatio("#ffffff", action) >= 4.5);
+  assert.ok(getContrastRatio("#ffffff", actionHover) >= 4.5);
+  assert.ok(getContrastRatio(danger, "#f3f7ff") >= 4.5);
+});
+
+test("Account layout is responsive and keeps touch targets usable", async () => {
+  const stylesheet = (await Promise.all([
+    "account.css",
+    "account-profile.css",
+    "account-balance.css",
+    "account-inventory.css",
+    "account-deposit.css",
+    "account-stats.css",
+    "profile-menu.css"
+  ].map((name) => readFile(new URL(`../src/${name}`, import.meta.url), "utf8"))))
+    .join("\n");
+
+  assert.match(
+    stylesheet,
+    /\.account-section\s*\{[^}]*max-width:\s*1600px;[^}]*padding-inline:\s*clamp\(14px,\s*2\.2vw,\s*30px\);/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-profile-hero\s*\{[^}]*min-height:\s*clamp\(300px,\s*24vw,\s*360px\);[^}]*border-radius:\s*var\(--radius-xl\);/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-profile-cover\s*\{[^}]*object-fit:\s*cover;[^}]*object-position:\s*center bottom;/is
+  );
+  assert.doesNotMatch(
+    stylesheet,
+    /\.account-profile-cluster|\.account-profile-mark|\.account-identity/
+  );
+  assert.match(
+    stylesheet,
+    /\.account-profile-nav\s*\{[^}]*left:\s*clamp\(24px,\s*3vw,\s*44px\);[^}]*bottom:\s*clamp\(26px,\s*3vw,\s*42px\);/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-balance-value\s*\{[^}]*overflow-wrap:\s*anywhere;[^}]*white-space:\s*normal;/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-summary-grid\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-stat-label\s*\{[^}]*position:\s*absolute;[^}]*top:\s*20px;[^}]*left:\s*20px;[^}]*font-size:\s*13px;/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-inventory-panel\s*\{[^}]*border:\s*0;[^}]*background:\s*transparent;[^}]*box-shadow:\s*none;/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-wallet-heading\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s*38px;/is
+  );
+  assert.doesNotMatch(stylesheet, /\.account-wallet-sign-out/);
+  assert.match(
+    stylesheet,
+    /\.profile-menu-trigger\s*\{[^}]*width:\s*42px;[^}]*height:\s*42px;[^}]*border-radius:\s*50%;/is
+  );
+  assert.match(
+    stylesheet,
+    /\.profile-menu-popover\s*\{[^}]*right:\s*0;[^}]*width:\s*min\(280px,\s*calc\(100vw - 24px\)\);/is
+  );
+  assert.match(
+    stylesheet,
+    /\.nav-actions\.nav-actions-profile\s*\{[^}]*justify-content:\s*flex-end;/is
+  );
+  assert.match(
+    stylesheet,
+    /\.app-nav\.app-nav-profile\s*\{[^}]*overflow:\s*visible;/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-inventory-list \.vault-table\s*\{[^}]*grid-template-columns:\s*repeat\(6,\s*minmax\(0,\s*1fr\)\);/is
+  );
+  assert.match(
+    stylesheet,
+    /@media \(max-width:\s*1180px\)[\s\S]*?\.account-inventory-list \.vault-table\s*\{[^}]*grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\);/i
+  );
+  assert.match(
+    stylesheet,
+    /@media \(max-width:\s*760px\)[\s\S]*?\.account-inventory-list \.vault-table\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/i
+  );
+  assert.match(
+    stylesheet,
+    /\.account-inventory-list \.vault-row \.vault-card-thumb\s*\{[^}]*display:\s*grid;[^}]*width:\s*100%;[^}]*height:\s*auto;/is
+  );
+  assert.match(
+    stylesheet,
+    /\.account-inventory-list \.vault-row > span:not\(\.vault-card-thumb\)\s*\{[^}]*display:\s*block;/is
+  );
+  assert.match(
+    stylesheet,
+    /@media \(max-width:\s*760px\)[\s\S]*?\.account-profile-hero\s*\{[^}]*min-height:\s*430px;/i
+  );
+  assert.match(
+    stylesheet,
+    /@media \(max-width:\s*760px\)[\s\S]*?\.account-summary-grid\s*\{[^}]*grid-template-columns:\s*1fr;/i
+  );
+  assert.doesNotMatch(stylesheet, /\.account-profile-card|\.account-balance-card/);
+  assert.match(
+    stylesheet,
+    /\.account-deposit-button[\s\S]*?min-height:\s*44px;/i
+  );
+  assert.match(
+    stylesheet,
+    /\.account-deposit-dialog::backdrop\s*\{[^}]*background:/is
+  );
+  assert.doesNotMatch(stylesheet, /font-weight:\s*800/);
+});
+
 test("desktop surfaces share a stable product canvas", async () => {
   const [stylesheet, vendingLayout] = await Promise.all([
     readFile(new URL("../src/styles.css", import.meta.url), "utf8"),
@@ -43,4 +189,15 @@ test("desktop home wordmark stays above the character composition", async () => 
   const stylesheet = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
 
   assert.match(stylesheet, /\.home-brandline > span\s*\{[\s\S]*?transform: translate\(184px, 44px\) skew\(-6deg\);/);
+});
+
+test("compact UI metadata never drops below ten pixels", async () => {
+  const stylesheets = await Promise.all([
+    "styles.css",
+    "vending-inventory.css"
+  ].map((name) => readFile(new URL(`../src/${name}`, import.meta.url), "utf8")));
+
+  for (const stylesheet of stylesheets) {
+    assert.doesNotMatch(stylesheet, /font-size:\s*[89]px;/);
+  }
 });

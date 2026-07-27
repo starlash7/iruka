@@ -1,0 +1,101 @@
+.account-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.account-stat {
+  --account-stat-accent: #5572ef;
+  --account-stat-soft: #edf2ff;
+  position: relative;
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+  min-height: 172px;
+  padding: 20px;
+  align-content: end;
+  overflow: hidden;
+  border: 1px solid rgba(207, 224, 255, 0.78);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(244, 249, 255, 0.88));
+  box-shadow: 0 12px 28px rgba(63, 99, 184, 0.06);
+}
+
+.account-stat-icon {
+  position: absolute;
+  top: 17px;
+  right: 17px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--account-stat-accent);
+  border-radius: 13px;
+  background: var(--account-stat-soft);
+}
+
+.account-stat-label {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  max-width: calc(100% - 82px);
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 550;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-stat strong {
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-size: clamp(27px, 2vw, 32px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.account-stat-cards {
+  --account-stat-accent: #16a6c5;
+  --account-stat-soft: #eafcff;
+}
+
+@media (max-width: 980px) {
+  .account-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .account-wallet-panel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .account-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .account-stat {
+    min-height: 120px;
+    padding: 17px;
+  }
+
+  .account-stat-icon {
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .account-stat-label {
+    top: 17px;
+    left: 17px;
+    font-size: 13px;
+  }
+
+  .account-stat strong {
+    font-size: clamp(26px, 8vw, 30px);
+  }
+}

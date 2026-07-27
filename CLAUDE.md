@@ -25,3 +25,9 @@
 ## 4. Tooling Preference
 
 - Do not use Ponytail mode or Ponytail skills for this project unless the user explicitly asks.
+
+## 5. Current Sprint
+
+- Read `sprint.md` before planning or implementing current GIWA review work.
+- Higher-priority repository rules and the relevant `docs/gitbook/` page
+  override `sprint.md` when instructions conflict.

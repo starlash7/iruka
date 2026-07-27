@@ -15,12 +15,14 @@ export type CatalogCard = {
   member: string;
   rarity: Rarity;
   release: string;
+  releaseYear?: number;
   title: string;
   version: string;
 };
 
 export type VaultInventoryItem = {
   catalogCardId: string;
+  certificateId?: string;
   condition: MarketplaceCondition;
   custodyVerified: boolean;
   id: string;
@@ -63,6 +65,7 @@ export const catalogCards: CatalogCard[] = marketplaceCardSeeds.map((card) => ({
   category: "K-pop",
   fmv: 0,
   release: card.release,
+  releaseYear: card.releaseYear,
   version: "Photocard",
   cardType: card.cardType,
   rarity: card.rarity,

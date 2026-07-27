@@ -40,6 +40,9 @@ export function MarketplaceDetailDialog({ copy, item, locale, onClose }: Marketp
 
           <div className="market-detail-meta">
             <div><span>{copy.release}</span><strong>{item.card.release}</strong></div>
+            {item.card.releaseYear ? (
+              <div><span>{copy.releaseYear}</span><strong>{item.card.releaseYear}</strong></div>
+            ) : null}
             <div><span>{copy.cardType}</span><strong>{getMarketplaceCardTypeLabel(item.card.cardType, locale)}</strong></div>
             <div>
               <span>{copy.rarity}</span>
@@ -49,6 +52,9 @@ export function MarketplaceDetailDialog({ copy, item, locale, onClose }: Marketp
             </div>
             <div><span>{copy.condition}</span><strong>{getMarketplaceConditionLabel(item.inventory.condition, locale)}</strong></div>
             <div><span>{copy.serial}</span><strong>{item.inventory.serial}</strong></div>
+            {item.inventory.certificateId ? (
+              <div><span>{copy.certificateId}</span><strong>{item.inventory.certificateId}</strong></div>
+            ) : null}
             {item.inventory.redemptionEligible ? (
               <div><span>{copy.delivery}</span><strong><PackageCheck size={14} />{copy.deliveryEligible}</strong></div>
             ) : null}

@@ -11,6 +11,7 @@ type ShowView = (view: AppView, targetId?: string) => void;
 
 type AppHeaderProps = {
   activeView: AppView;
+  authenticated: boolean;
   connectSignal: number;
   copy: AppCopy["nav"];
   locale: Locale;
@@ -23,6 +24,7 @@ type AppHeaderProps = {
 
 export function AppHeader({
   activeView,
+  authenticated,
   connectSignal,
   copy,
   locale,
@@ -33,7 +35,11 @@ export function AppHeader({
   walletAuth
 }: AppHeaderProps) {
   return (
-    <header className="app-nav">
+    <header
+      className={`app-nav${
+        walletAuth === "privy" && authenticated ? " app-nav-profile" : ""
+      }`}
+    >
       <nav className="nav-links" aria-label="Primary navigation">
         <button
           aria-pressed={activeView === "home"}
@@ -73,33 +79,45 @@ export function AppHeader({
         <img src={irukaWordmark} alt="Iruka" />
       </a>
 
-      <div className="nav-actions">
-        <div className="language-toggle" aria-label={copy.language}>
-          {(["en", "ko"] as const).map((item) => (
-            <button
-              aria-pressed={locale === item}
-              className={locale === item ? "selected" : ""}
-              key={item}
-              onClick={() => onLocaleChange(item)}
-              type="button"
-            >
-              {item === "en" ? "EN" : "KO"}
-            </button>
-          ))}
-        </div>
+      <div
+        className={`nav-actions${
+          walletAuth === "privy" && authenticated ? " nav-actions-profile" : ""
+        }`}
+      >
+        {(walletAuth !== "privy" || !authenticated) ? (
+          <div className="language-toggle" aria-label={copy.language}>
+            {(["en", "ko"] as const).map((item) => (
+              <button
+                aria-pressed={locale === item}
+                className={locale === item ? "selected" : ""}
+                key={item}
+                onClick={() => onLocaleChange(item)}
+                type="button"
+              >
+                {item === "en" ? "EN" : "KO"}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <AuthActions
           connectSignal={connectSignal}
           labels={{
+            account: copy.account,
             connected: copy.walletConnected,
             connecting: copy.walletConnecting,
             disconnect: copy.walletDisconnect,
+            language: copy.language,
             login: copy.login,
+            network: copy.profileNetwork,
+            settings: copy.settings,
             signUp: copy.signUp,
             unavailable: copy.wallet
           }}
+          locale={locale}
           mode={walletAuth}
           onAuthenticatedChange={onAuthenticatedChange}
-          onOpenVault={() => onShowView("vault")}
+          onLocaleChange={onLocaleChange}
+          onOpenAccount={() => onShowView("account")}
           onWalletChange={onWalletChange}
         />
       </div>

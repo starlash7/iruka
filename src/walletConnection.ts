@@ -1,4 +1,7 @@
-import type { ConnectedWallet } from "@privy-io/react-auth";
+import type {
+  ConnectedWallet,
+  LinkedAccountWithMetadata,
+} from "@privy-io/react-auth";
 
 const externalWalletSessionKey = "iruka-external-wallet-session";
 
@@ -8,6 +11,35 @@ export function shouldHandleWalletPrompt(
   ready: boolean
 ) {
   return ready && connectSignal > handledConnectSignal;
+}
+
+export function getWalletPromptAction(
+  connectSignal: number,
+  handledConnectSignal: number,
+  ready: boolean,
+  authenticated: boolean
+) {
+  if (!shouldHandleWalletPrompt(connectSignal, handledConnectSignal, ready)) {
+    return undefined;
+  }
+
+  return authenticated ? "none" : "login";
+}
+
+export function getExternalLoginWalletAddress(
+  wasAlreadyAuthenticated: boolean,
+  loginAccount: LinkedAccountWithMetadata | null
+) {
+  if (
+    wasAlreadyAuthenticated ||
+    loginAccount?.type !== "wallet" ||
+    loginAccount.chainType !== "ethereum" ||
+    loginAccount.walletClientType?.startsWith("privy")
+  ) {
+    return undefined;
+  }
+
+  return loginAccount.address;
 }
 
 export function getAuthenticatedGiwaWallet(
@@ -28,13 +60,16 @@ export function getTransactionGiwaWallet(
 ) {
   if (!authenticated || !walletsReady) return undefined;
 
-  const linkedEvmWallets = wallets.filter(
-    (wallet) => wallet.type === "ethereum" && wallet.linked
-  );
+  const evmWallets = wallets.filter((wallet) => wallet.type === "ethereum");
+  const normalizedExternalAddress = externalWalletAddress?.toLowerCase();
 
-  return linkedEvmWallets.find(
-    (wallet) => wallet.walletClientType !== "privy" && wallet.address === externalWalletAddress
-  ) ?? linkedEvmWallets.find((wallet) => wallet.walletClientType === "privy");
+  return evmWallets.find(
+    (wallet) =>
+      !wallet.walletClientType?.startsWith("privy") &&
+      wallet.address.toLowerCase() === normalizedExternalAddress
+  ) ?? evmWallets.find(
+    (wallet) => wallet.linked && wallet.walletClientType?.startsWith("privy")
+  );
 }
 
 export function getExternalWalletSessionAddress() {

@@ -1,0 +1,197 @@
+.pack-reveal-dom-card {
+  --card-tilt-x: 0deg;
+  --card-tilt-y: 0deg;
+  --card-glare-x: 50%;
+  --card-glare-y: 50%;
+  position: relative;
+  z-index: 2;
+  width: min(25vw, 332px);
+  aspect-ratio: 5 / 7;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+  outline-offset: 6px;
+  transform: translate3d(0, 104px, 0) rotateX(14deg) scale(0.78);
+  transform-style: preserve-3d;
+  transition:
+    opacity 320ms ease,
+    transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.pack-reveal-dom-card[data-revealed="true"] {
+  opacity: 1;
+  transform:
+    translate3d(0, 0, 0)
+    rotateX(var(--card-tilt-x))
+    rotateY(var(--card-tilt-y))
+    scale(1);
+}
+
+.pack-reveal-card-aura {
+  position: absolute;
+  inset: -18%;
+  z-index: -1;
+  border-radius: 28%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--card-accent) 44%, white), color-mix(in srgb, var(--card-accent) 22%, transparent) 42%, transparent 70%);
+  opacity: 0;
+  filter: blur(18px);
+  transform: scale(0.68);
+  pointer-events: none;
+}
+
+.pack-reveal-dom-card[data-revealed="true"] .pack-reveal-card-aura {
+  animation: revealCardAura 900ms ease-out both;
+}
+
+.pack-reveal-card-inner {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  box-shadow:
+    0 38px 82px color-mix(in srgb, var(--card-accent) 28%, transparent),
+    0 0 0 1px rgba(255, 255, 255, 0.88),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  transform-style: preserve-3d;
+  transition: transform 620ms cubic-bezier(0.2, 0.72, 0.2, 1);
+}
+
+.pack-reveal-dom-card[data-back="true"] .pack-reveal-card-inner {
+  transform: rotateY(180deg);
+}
+
+.pack-reveal-card-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.84);
+  border-radius: inherit;
+  background: #fff;
+  backface-visibility: hidden;
+}
+
+.pack-reveal-card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pack-reveal-card-edge,
+.pack-reveal-card-foil,
+.pack-reveal-card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pack-reveal-card-edge {
+  z-index: 2;
+  border: 2px solid color-mix(in srgb, var(--card-accent) 58%, white);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 16px rgba(255, 255, 255, 0.46),
+    inset 0 0 2px var(--card-foil);
+  opacity: 0.62;
+}
+
+.pack-reveal-card-foil {
+  z-index: 1;
+  background:
+    linear-gradient(112deg, transparent 22%, color-mix(in srgb, var(--card-foil) 48%, transparent) 42%, rgba(255, 255, 255, 0.84) 50%, color-mix(in srgb, var(--card-accent) 38%, transparent) 58%, transparent 78%),
+    radial-gradient(circle at var(--card-glare-x) var(--card-glare-y), rgba(255, 255, 255, 0.5), transparent 30%);
+  background-size: 210% 100%, 100% 100%;
+  background-position: 140% 0, center;
+  mix-blend-mode: screen;
+  opacity: 0.36;
+}
+
+.pack-reveal-card-glare {
+  z-index: 3;
+  background: radial-gradient(circle at var(--card-glare-x) var(--card-glare-y), rgba(255, 255, 255, 0.88), transparent 25%);
+  mix-blend-mode: screen;
+  opacity: 0.34;
+}
+
+.pack-reveal-card-back {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(42px, 6vw, 70px);
+  font-weight: 600;
+  place-items: center;
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 18px),
+    linear-gradient(145deg, #7ee7ff, #6f8dff 54%, #c8a7ff);
+  transform: rotateY(180deg);
+}
+
+.pack-reveal-overlay[data-phase="reveal"] .pack-reveal-dom-card[data-revealed="true"] {
+  animation: revealCardSettle 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.pack-reveal-overlay[data-phase="reveal"] .pack-reveal-card-foil {
+  animation: revealCardFoil 920ms 180ms ease-out both;
+}
+
+.pack-reveal-overlay[data-rarity="common"][data-phase="reveal"] .pack-reveal-dom-card {
+  animation-duration: 520ms;
+}
+
+.pack-reveal-overlay[data-rarity="common"][data-phase="reveal"] .pack-reveal-card-foil {
+  animation-duration: 420ms;
+  animation-delay: 60ms;
+}
+
+.pack-reveal-overlay[data-rarity="common"] .pack-reveal-card-aura {
+  opacity: 0.34;
+}
+
+.pack-reveal-overlay[data-rarity="rare"] .pack-reveal-card-foil {
+  opacity: 0.44;
+}
+
+.pack-reveal-overlay[data-rarity="epic"] .pack-reveal-card-edge {
+  opacity: 0.78;
+}
+
+.pack-reveal-overlay[data-rarity="legendary"] .pack-reveal-card-foil,
+.pack-reveal-overlay[data-rarity="iruka"] .pack-reveal-card-foil {
+  opacity: 0.68;
+}
+
+.pack-reveal-overlay[data-rarity="legendary"][data-phase="reveal"] .pack-reveal-dom-card,
+.pack-reveal-overlay[data-rarity="iruka"][data-phase="reveal"] .pack-reveal-dom-card {
+  animation: revealPremiumCardSettle 1040ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.pack-reveal-overlay[data-quick="true"][data-phase="reveal"] .pack-reveal-dom-card {
+  animation-duration: 320ms;
+}
+
+.pack-reveal-overlay[data-quick="true"][data-phase="reveal"][data-rarity="legendary"] .pack-reveal-dom-card,
+.pack-reveal-overlay[data-quick="true"][data-phase="reveal"][data-rarity="iruka"] .pack-reveal-dom-card {
+  animation-duration: 520ms;
+}
+
+.pack-reveal-overlay[data-quick="true"][data-phase="reveal"] .pack-reveal-card-foil {
+  animation-duration: 320ms;
+  animation-delay: 40ms;
+}
+
+.pack-reveal-overlay[data-rarity="iruka"] .pack-reveal-card-foil {
+  background:
+    linear-gradient(112deg, transparent 20%, rgba(126, 231, 255, 0.46) 34%, rgba(255, 255, 255, 0.84) 47%, rgba(200, 167, 255, 0.46) 60%, transparent 80%),
+    radial-gradient(circle at var(--card-glare-x) var(--card-glare-y), rgba(255, 255, 255, 0.62), transparent 30%);
+  background-size: 220% 100%, 100% 100%;
+}
+
+.pack-reveal-overlay[data-phase="summary"] .pack-reveal-dom-card {
+  transform:
+    translate3d(clamp(-220px, -16vw, -120px), 0, 0)
+    rotateX(var(--card-tilt-x))
+    rotateY(var(--card-tilt-y));
+}

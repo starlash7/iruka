@@ -149,6 +149,17 @@ test("pack odds publish eligible counts matching each batch supply", async () =>
   }
 });
 
+test("Debut review inventory matches uniform onchain rarity odds exactly", async () => {
+  const detail = await getPackDetail("debut");
+
+  assert.ok(detail);
+  assert.equal(detail.supply.total, 100);
+  assert.deepEqual(
+    detail.rarityOdds.map((odds) => odds.eligibleCount),
+    [60, 28, 9, 2, 1]
+  );
+});
+
 test("inventory card odds reconcile with each published rarity distribution", async () => {
   const packs = await listPacks();
 

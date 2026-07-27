@@ -7,19 +7,9 @@ export const giwaPackBatchAbi = [
     stateMutability: "payable",
     inputs: [
       { name: "batchId", type: "bytes32" },
-      { name: "clientSeedCommitment", type: "bytes32" }
-    ],
-    outputs: [{ name: "requestId", type: "uint64" }]
-  },
-  {
-    type: "function",
-    name: "revealClientSeed",
-    stateMutability: "nonpayable",
-    inputs: [
-      { name: "requestId", type: "uint64" },
       { name: "clientSeed", type: "bytes32" }
     ],
-    outputs: []
+    outputs: [{ name: "requestId", type: "uint64" }]
   },
   {
     type: "function",
@@ -28,12 +18,14 @@ export const giwaPackBatchAbi = [
     inputs: [{ name: "batchId", type: "bytes32" }],
     outputs: [
       { name: "totalSupply", type: "uint32" },
+      { name: "available", type: "uint32" },
       { name: "remaining", type: "uint32" },
       { name: "priceWei", type: "uint256" },
       { name: "inventoryRoot", type: "bytes32" },
       { name: "oddsCommitment", type: "bytes32" },
-      { name: "serverSeedCommitment", type: "bytes32" },
-      { name: "pendingRequestId", type: "uint64" }
+      { name: "drawSeedRoot", type: "bytes32" },
+      { name: "nextDrawIndex", type: "uint32" },
+      { name: "nextFulfillIndex", type: "uint32" }
     ]
   },
   {
@@ -44,6 +36,8 @@ export const giwaPackBatchAbi = [
     outputs: [
       { name: "collector", type: "address" },
       { name: "batchId", type: "bytes32" },
+      { name: "clientSeed", type: "bytes32" },
+      { name: "drawIndex", type: "uint32" },
       { name: "inventoryId", type: "bytes32" },
       { name: "inventoryIndex", type: "uint32" },
       { name: "fulfilled", type: "bool" }
@@ -56,7 +50,21 @@ export const giwaPackBatchAbi = [
     inputs: [
       { indexed: true, name: "requestId", type: "uint64" },
       { indexed: true, name: "batchId", type: "bytes32" },
-      { indexed: true, name: "collector", type: "address" }
+      { indexed: true, name: "collector", type: "address" },
+      { indexed: false, name: "drawIndex", type: "uint32" }
+    ]
+  },
+  {
+    type: "event",
+    name: "PullFulfilled",
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: "requestId", type: "uint64" },
+      { indexed: true, name: "batchId", type: "bytes32" },
+      { indexed: true, name: "collector", type: "address" },
+      { indexed: false, name: "inventoryId", type: "bytes32" },
+      { indexed: false, name: "inventoryIndex", type: "uint32" },
+      { indexed: false, name: "remaining", type: "uint32" }
     ]
   }
 ] as const;

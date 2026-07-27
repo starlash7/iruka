@@ -1,38 +1,71 @@
 ---
 title: "Marketplace"
-description: "Learn how fixed-price USDC trading works for vaulted Iruka photocards."
+description: "Understand Iruka listing eligibility, fixed-price settlement, value references, and item locks."
 icon: "store"
 ---
 
-> **Status: Planned** - Current listings demonstrate the interface and do not settle real payments or ownership transfers.
+> **Status: Planned** - The catalog interface is available for product
+> validation. Commercial listings, payments, transfers, and settlement are not
+> live.
 
-The Iruka Marketplace is for fixed-price sales of authenticated cards that remain in the Vault. Auctions, offers, item swaps, and user consignment are not part of the initial release.
+The Iruka Marketplace is designed for fixed-price trading of verified physical
+cards already held in the Vault. It is not an open listing board for
+unverified seller images.
 
 ## Listing Eligibility
 
 A card can be listed only when:
 
-- Its physical custody and BRG records are valid.
-- The connected wallet owns its ERC-721.
-- The card is not already listed, sold, or locked for redemption.
-- The seller has completed the required account and age checks.
+- Its `custodyStatus` is `Vaulted`.
+- Authentication and item photographs are complete.
+- The ownership record references the same `inventoryId`.
+- Redemption is allowed and no redemption request is active.
+- The item is not already listed or transfer-locked.
+- Required seller and regional checks are complete.
 
-Listings show actual inventory photos, the identifying group or member name, BRG grade and certificate, inventory ID, USDC price, valuation evidence, custody status, and redemption eligibility.
+Creating a listing locks the item against redemption. Cancelling or completing
+the listing releases or transfers that lock through one recorded state change.
 
-## Settlement
+## Listing Record
 
-1. The seller sets a fixed USDC price and the card is locked for sale.
-2. The buyer confirms payment from a GIWA wallet.
-3. Marketplace settlement transfers USDC and the ERC-721 together.
-4. Iruka updates the custody ledger without moving the physical card.
-5. The seller receives USDC in the connected wallet.
+Each listing is intended to show:
 
-If settlement fails, neither payment nor ownership should move partially.
+- Exact card identity and inventory ID
+- Front and back item photographs
+- Grader, grade, and certificate verification when applicable
+- Vault and redemption eligibility
+- Seller's fixed price and payment currency
+- Dated estimated-value evidence, when available
+- Listing and update timestamps
 
-## Fees and Gas
+Estimated value is not a recommended price or guarantee. Collectors choose
+whether to list, buy, or wait.
 
-The initial platform fee is 0% for buyers and sellers. Iruka plans to sponsor gas for Marketplace actions. External wallet transfers remain subject to the network fee shown before confirmation.
+## Planned Settlement
 
-Marketplace payments activate only after canonical USDC support on GIWA is verified. Contract addresses will be published before trading opens.
+The production target is an atomic flow:
 
-Sellers may edit or cancel an unsold listing. A listed card must be delisted before physical redemption can be requested.
+1. Buyer approves the supported payment asset.
+2. Marketplace contract validates listing and ownership.
+3. Payment settles according to published fee rules.
+4. Ownership transfers to the buyer.
+5. The same physical item remains in custody under its existing `inventoryId`.
+6. Listing status closes and the Vault record updates.
+
+The current GIWA test contract does not perform this settlement and does not
+mint ownership tokens.
+
+## Launch Disclosures
+
+Before trading becomes live, Iruka will publish:
+
+- Supported GIWA network and canonical payment asset
+- Contract addresses and verified source
+- Platform, creator, payment, and withdrawal fees
+- Gas responsibility and transaction-failure handling
+- Listing cancellation and dispute rules
+- Identity, age, and regional restrictions
+- Indexing, outage, and recovery procedures
+
+No fee percentage or settlement guarantee applies until these terms and
+contracts are public.

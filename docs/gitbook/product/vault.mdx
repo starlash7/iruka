@@ -1,40 +1,66 @@
 ---
-title: "Vault"
-description: "Understand Iruka's planned custody records and 1:1 GIWA ownership model."
-icon: "warehouse"
+title: "Vault and Custody"
+description: "Review the physical intake, verification, storage, listing, and redemption lifecycle."
+icon: "vault"
 ---
 
-> **Status: Planned** - The current Vault is session-based UI. It does not yet prove physical custody or persistent onchain ownership.
+> **Status: In validation** - The account inventory interface is live, but
+> commercial intake, storage, and redemption operations are not live.
 
-The Iruka Vault is the custody record for authenticated physical photocards. Iruka plans to store launch inventory directly and charge no storage fee while a card remains vaulted.
+The Iruka Vault is intended to connect one digital inventory record to one
+verified physical card. A UI record, testnet pull, image, or certificate alone
+does not prove custody.
 
-## Intake and Authentication
+## Custody State Model
 
-Only inventory purchased by Iruka is accepted at launch. User submissions and consignment are outside the initial scope.
-
-Each card must complete professional authentication and grading before it can circulate. The planned BRG record includes a certificate ID, grade, front and back images, and a unique Iruka inventory ID. This plan does not imply an active BRG partnership.
-
-## One Physical Card, One Token
-
-1. Iruka receives, grades, photographs, and stores the card.
-2. Card metadata and custody evidence create a unique inventory fingerprint.
-3. The fingerprint is linked to one ERC-721 minted on GIWA.
-4. The physical card remains stored while the token records its current owner.
-
-The internal inventory ledger remains the source of truth for physical location and custody. GIWA records ownership, transfers, pack commitments, sales, and redemption burns. Personal shipping data and full-resolution images stay offchain.
-
-## Vault Statuses
-
-| Status | Meaning |
+| State | Required condition |
 | --- | --- |
-| Intake review | Authentication or custody checks are incomplete |
-| Vaulted | Verified, stored, and available for action |
-| Listed | Locked for a Marketplace listing |
-| Redemption locked | Shipment has been requested |
-| Redeemed | Physical card shipped and token retired |
+| `Intake` | Physical item received and assigned an `inventoryId` |
+| `Authentication` | Identity, images, condition, and certificate evidence under review |
+| `Verified` | Physical item and evidence match the acceptance policy |
+| `Vaulted` | Storage location, custody, ownership, and redemption records agree |
+| `Listed` | Vaulted item locked for an active marketplace listing |
+| `Redemption locked` | Listing removed and item reserved for physical fulfillment |
+| `Redeemed` | Custody released through the documented shipment or collection process |
 
-## Ownership Transfers
+Failed authentication, damaged intake, unresolved ownership, or missing storage
+records prevent the transition to `Vaulted`.
 
-The ERC-721 can be transferred to another EVM wallet. A new holder must connect the current owner address and complete Iruka's account checks before listing or redeeming the physical card.
+## Required Custody Record
 
-An item is shown as `Vaulted` only when custody, authentication, ownership, and redemption eligibility records agree. Insurance is not described as active until a policy and coverage terms are in force.
+Each vaulted item must connect:
+
+- Unique `inventoryId`
+- Exact front and back photographs
+- Authentication or grading evidence
+- Intake and verification timestamps
+- Tamper-evident seal or slab identifiers
+- Controlled storage location reference
+- Current owner reference
+- Listing lock, if any
+- Redemption eligibility and status
+- Audit history for every state change
+
+Sensitive storage locations and operator notes remain private. The public record
+shows only the evidence needed to understand status and eligibility.
+
+## Ownership And Custody
+
+Physical custody and digital ownership are separate responsibilities. Iruka's
+custody ledger records where the item is and whether it can move. Planned
+ERC-721 ownership will record who controls the eligible vaulted item.
+
+Production actions must fail closed:
+
+- An unverified item cannot become `Vaulted`.
+- A non-vaulted item cannot be listed.
+- A listed item cannot enter shipping.
+- A redemption-locked item cannot be sold.
+- A redeemed item cannot return to inventory without a new intake.
+
+## Operations To Publish Before Launch
+
+Before commercial custody opens, Iruka will publish the legal custodian,
+storage controls, access policy, incident handling, inventory reconciliation,
+fees, supported items, and customer support process. No coverage, storage fee,
+or custody service level should be inferred until those terms are published.

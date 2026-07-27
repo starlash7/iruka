@@ -1,40 +1,70 @@
 ---
-title: "GIWA Testnet Evidence"
-description: "Deploy and verify the Iruka pack-batch contract on GIWA Sepolia."
+title: "GIWA Contracts"
+description: "Review Iruka's deployed GIWA contract, batch configuration, pull lifecycle, and Explorer transactions."
 icon: "blocks"
 ---
 
-> **Status: Deployment ready** - The contract and browser transaction path are implemented. No GIWA Sepolia contract address is published until deployment and source verification complete.
+> **Status: Live on GIWA Sepolia** - The pack-batch contract is deployed,
+> source verified, configured with a dedicated fulfillment operator, and
+> producing successful request and fulfillment receipts.
 
-This page records the evidence needed to verify an Iruka test pull. Testnet ETH and all testnet records have no monetary value and do not represent a commercial pack, custody record, or USDC settlement.
+GIWA Sepolia test ETH and test records have no monetary value. They do not
+represent commercial payment, physical custody, ERC-721 ownership, or
+redemption eligibility.
 
-## Contract Registry
+## Deployed Contract
 
-| Network | Chain ID | Contract | Address | Source |
+| Network | Chain ID | Contract | Address | Explorer |
 | --- | --- | --- | --- | --- |
-| GIWA Sepolia | `91342` | `IrukaPackBatch` | Pending deployment | Pending verification |
+| GIWA Sepolia | `91342` | `IrukaPackBatch` V2 | [`0x0C2F...d180`](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180) | [Verified source](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180?tab=contract) |
 
-After broadcast, replace both pending fields with the Explorer contract URL and source-verification URL. The website enables its GIWA transaction path only when the verified address is set as `VITE_GIWA_PACK_BATCH_ADDRESS`.
+The web application enables its GIWA transaction path when this verified
+address is configured as `VITE_GIWA_PACK_BATCH_ADDRESS`.
 
-## What The Contract Proves
+## Deployment Configuration
 
-- A `BatchCommitted` event fixes the inventory Merkle root, odds commitment, test price, and server-seed commitment before a pull.
-- `PullRequested` records the collector and batch after the test-ETH transaction confirms.
-- `ClientSeedRevealed` records the collector seed commitment reveal.
-- `PullFulfilled` records the assigned inventory ID and remaining supply.
-- The selected inventory position is removed from the batch mapping, so it cannot be assigned twice.
+| Component | Status | Explorer transaction |
+| --- | --- | --- |
+| Contract deployment and source | Live | [Contract](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180) · [Deployment transaction](https://sepolia-explorer.giwa.io/tx/0xecda2fe67290fbeecca83cc8a745c05d5838f3b78371da4ebfe3f0bdf0a53ce3) |
+| Dedicated Keeper operator | Live | [Operator transaction](https://sepolia-explorer.giwa.io/tx/0x0d2b5bc4da25a3137cd19d9a1e18d37553e0f4ea85125117c856ed9159170de2) |
+| Debut batch commitment | Live | [BatchCommitted transaction](https://sepolia-explorer.giwa.io/tx/0x5c2ca90c0fc07faa9b185355e2a7d1040fe64834f7c96f73040f989e7459c79a) |
 
-The first testnet slice handles one pending request per batch. That keeps the batch state and proof trail directly reviewable while the production queue and indexer are not yet built.
+## Pull Transactions
 
-## Deploy And Verify
+Each pull begins with a collector request and finishes when the Keeper fulfills
+the same request on the deployed contract.
 
-1. Claim GIWA Sepolia test ETH and export a dedicated deployer key locally. Do not use a wallet with production assets.
-2. Generate and retain a private server seed. Its hash is committed onchain; the seed itself is only used by the fulfillment operator.
+| Pull | Request | Fulfillment |
+| --- | --- | --- |
+| 1 | [`0x411801...176d`](https://sepolia-explorer.giwa.io/tx/0x4118014dc390ab03e0843c90ffdae3c0bd029472b6aa7407d0e9c085fe74176d) | [`0xbbab1f...c4de`](https://sepolia-explorer.giwa.io/tx/0xbbab1fc046f01a7f82eb7ce99f61daba88decf63d0766ae3d42af06f5367c4de) |
+| 2 | [`0xde7e40...7b0b`](https://sepolia-explorer.giwa.io/tx/0xde7e40e97cd6c1631f2f490a5707457308ea5d56bbe8114f21646912c1bf7b0b) | [`0x8a0da6...f79c`](https://sepolia-explorer.giwa.io/tx/0x8a0da6b397518ec64bbe4e16cb053fe6f9af6e8e9d92220f78f646e28791f79c) |
+
+For each pair, the Explorer shows the contract address, successful status,
+`PullRequested`, `PullFulfilled`, request identifier, assigned inventory
+commitment, and remaining supply.
+
+## Contract Behavior
+
+`IrukaPackBatch` currently enforces the following flow:
+
+- Commit batch roots, odds, price, and supply before sales begin.
+- Reserve one draw index when a collector requests a pull.
+- Accept fulfillment only from the configured operator.
+- Validate committed seed and inventory proofs before assignment.
+- Remove fulfilled inventory positions from the available mapping.
+
+The contract does not represent physical card intake, grading, custody,
+ERC-721 ownership, USDC settlement, or shipping.
+
+## Deployment
+
+Use dedicated GIWA Sepolia deployer and Keeper accounts. Never use a wallet
+that holds production assets.
 
 ```bash
 export GIWA_TESTNET_RPC_URL=https://sepolia-rpc.giwa.io
 export GIWA_DEPLOYER_PRIVATE_KEY=0x...
-export GIWA_SERVER_SEED=$(node -e "console.log('0x' + require('node:crypto').randomBytes(32).toString('hex'))")
+export IRUKA_KEEPER_ADDRESS=0x...
 
 forge test
 forge script contracts/script/DeployIrukaPackBatch.s.sol:DeployIrukaPackBatch \
@@ -46,54 +76,60 @@ forge script contracts/script/DeployIrukaPackBatch.s.sol:DeployIrukaPackBatch \
   --verifier-url https://sepolia-explorer.giwa.io/api
 ```
 
-Copy the verified contract address into the local environment. Only the `VITE_` address is public; the deployer key and server seed remain local.
-
-```bash
-export GIWA_PACK_BATCH_ADDRESS=0x...
-export VITE_GIWA_PACK_BATCH_ADDRESS=$GIWA_PACK_BATCH_ADDRESS
-```
-
-## Commit A Test Batch
-
-The batch tool uses the same deterministic inventory IDs as the Vending fixture. It creates the inventory root and a Merkle proof for every item.
+Prepare and commit the 100-position Debut manifest:
 
 ```bash
 node scripts/giwa/prepare-batch.mjs \
   IRK-GG-2026-001 \
-  120 \
+  100 \
   1000000000000000 \
   scripts/giwa/debut-odds.json \
-  .context/giwa-debut-batch.json
+  .context/giwa-debut-batch.json \
+  debut
 
 node scripts/giwa/commit-batch.mjs .context/giwa-debut-batch.json
 ```
 
-The test price above is `0.001` test ETH. It is intentionally separate from the product's displayed USDC pricing and must never be described as canonical USDC settlement.
+The public rarity distribution is Common 60, Rare 28, Epic 9, Legendary 2,
+and Iruka 1. The private manifest contains committed draw seeds and remains
+outside source control under `.context/`.
 
-## Verify A Pull
+The test price is `0.001` test ETH. It is separate from displayed product
+pricing and is not canonical USDC settlement.
 
-1. Connect an EVM wallet in Iruka and switch to GIWA Sepolia.
-2. Select the committed `Debut` batch and choose `Test pull`.
-3. Confirm `requestPull` and `revealClientSeed` in the wallet.
-4. Open the GIWA receipt link shown in Vending. It exposes the request ID and reveal transaction.
-5. The operator fulfills it from the committed manifest:
+## Keeper Fulfillment
+
+The browser calls the same-origin Keeper after a request confirms and polls the
+same request until `PullFulfilled` is available. A delayed result is retried
+without submitting another pull.
+
+The Keeper uses a dedicated GIWA Sepolia account with fulfillment authority and
+minimal test ETH. Its private key and encrypted seed-manifest key are deployment
+secrets.
+
+The operator can use the manual recovery script for an existing request:
 
 ```bash
 node scripts/giwa/fulfill-pull.mjs \
   .context/giwa-debut-batch.json \
-  <request-id> \
-  <reveal-transaction-hash>
+  <request-id>
 ```
 
-The operator script reads the revealed client seed from the cited transaction, calculates the committed selection, and submits the matching Merkle proof. In the Explorer, verify the `PullFulfilled` event, assigned inventory ID, remaining supply, and contract source.
+This testnet setup is not a production key-management or availability
+guarantee.
 
-## Evidence Checklist
+## Planned Contract Modules
 
-- Verified `IrukaPackBatch` Explorer contract URL
-- Deployment transaction URL
-- `BatchCommitted` transaction URL and generated batch manifest hash
-- One wallet `requestPull` and `revealClientSeed` transaction URL
-- One operator `PullFulfilled` transaction URL
-- Screenshot or recording showing the same request ID in Iruka and the Explorer
+The following items remain **Planned**:
 
-This is a technical testnet demonstration. Production requirements remain verified physical inventory, custody records, canonical payment-asset approval, audited contract review, persistent indexing, and fulfillment operations.
+- External contract audit and production randomness review
+- Canonical GIWA USDC asset confirmation
+- One-to-one ERC-721 ownership for eligible vaulted inventory
+- Pack payment and marketplace settlement contracts
+- Permanent event indexer and reconciliation jobs
+- Hardware-backed or managed operator-key controls
+- Monitoring, pause, recovery, and incident-response procedures
+- Physical inventory, custody, redemption, and shipping operations
+
+Their status changes to `Live` only after the relevant contract address,
+verified source, and operating terms are published.

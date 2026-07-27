@@ -2,7 +2,6 @@ import {
   createPublicClient,
   encodeFunctionData,
   http,
-  keccak256,
   parseEventLogs,
   toHex,
   type Address,
@@ -34,14 +33,16 @@ export type GiwaWallet = {
 export type GiwaPullReceipt = {
   batchId: Hex;
   contractAddress: Address;
+  drawIndex: number;
   explorerUrl: string;
+  requestBlockNumber: bigint;
   requestId: bigint;
   requestTransactionHash: Hex;
-  revealTransactionHash: Hex;
 };
 
 const publicClient = createPublicClient({
   chain: giwaSepolia,
+  pollingInterval: 500,
   transport: http(giwaSepolia.rpcUrls.default.http[0])
 });
 
@@ -74,8 +75,8 @@ export async function requestGiwaPull(
     functionName: "getBatch",
     args: [batchId]
   });
-  const [, remaining, priceWei] = batch;
-  if (remaining === 0) throw new Error("This test batch is sold out");
+  const [, available, , priceWei] = batch;
+  if (available === 0) throw new Error("This test batch is sold out");
 
   const clientSeed = createClientSeed();
   const provider = await wallet.getEthereumProvider();
@@ -84,32 +85,23 @@ export async function requestGiwaPull(
     data: encodeFunctionData({
       abi: giwaPackBatchAbi,
       functionName: "requestPull",
-      args: [batchId, keccak256(clientSeed)]
+      args: [batchId, clientSeed]
     }),
     value: toHex(priceWei)
   });
   const requestReceipt = await publicClient.waitForTransactionReceipt({
     hash: requestTransactionHash
   });
-  const requestId = getPullRequestId(requestReceipt.logs);
-
-  const revealTransactionHash = await sendContractTransaction(provider, wallet.address, {
-    to: contractAddress,
-    data: encodeFunctionData({
-      abi: giwaPackBatchAbi,
-      functionName: "revealClientSeed",
-      args: [requestId, clientSeed]
-    })
-  });
-  await publicClient.waitForTransactionReceipt({ hash: revealTransactionHash });
+  const { drawIndex, requestId } = getPullRequest(requestReceipt.logs);
 
   return {
     batchId,
     contractAddress,
-    explorerUrl: getGiwaExplorerTransactionUrl(revealTransactionHash),
+    drawIndex,
+    explorerUrl: getGiwaExplorerTransactionUrl(requestTransactionHash),
+    requestBlockNumber: requestReceipt.blockNumber,
     requestId,
-    requestTransactionHash,
-    revealTransactionHash
+    requestTransactionHash
   };
 }
 
@@ -129,13 +121,18 @@ async function sendContractTransaction(
   return result as Hex;
 }
 
-function getPullRequestId(logs: readonly Log[]): bigint {
+function getPullRequest(logs: readonly Log[]) {
   const event = parseEventLogs({
     abi: giwaPackBatchAbi,
     eventName: "PullRequested",
     logs: [...logs],
     strict: false
   })[0];
-  if (!event?.args.requestId) throw new Error("GIWA pull request was not recorded");
-  return event.args.requestId;
+  if (event?.args.requestId === undefined || event.args.drawIndex === undefined) {
+    throw new Error("GIWA pull request was not recorded");
+  }
+  return {
+    drawIndex: event.args.drawIndex,
+    requestId: event.args.requestId
+  };
 }

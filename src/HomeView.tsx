@@ -6,7 +6,6 @@ import { HomeImageCarousel } from "./HomeImageCarousel";
 import { IrukaBeam } from "./IrukaBeam";
 import type { MarketplaceBrowseCategory } from "./marketplaceBrowse";
 import type { MarketplaceItem } from "./marketplaceData";
-import type { MarketplaceLocale } from "./marketplaceFilters";
 
 const homeImages = [homeIdolStage] as const;
 
@@ -29,7 +28,6 @@ type HomeViewCopy = {
 type HomeViewProps = {
   copy: HomeViewCopy;
   items: MarketplaceItem[];
-  locale: MarketplaceLocale;
   onBrowseCategory: (category: MarketplaceBrowseCategory) => void;
   onEnterVending: () => void;
   onOpenItem: (listingId: string) => void;
@@ -50,7 +48,6 @@ function renderSloganLine(line: string) {
 export function HomeView({
   copy,
   items,
-  locale,
   onBrowseCategory,
   onEnterVending,
   onOpenItem
@@ -112,7 +109,6 @@ export function HomeView({
       <HomeDiscovery
         copy={copy.discovery}
         items={items}
-        locale={locale}
         onBrowseCategory={onBrowseCategory}
         onOpenItem={onOpenItem}
       />

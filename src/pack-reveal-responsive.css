@@ -1,0 +1,105 @@
+@media (max-width: 760px) {
+  .pack-reveal-hud {
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    left: 12px;
+    justify-content: space-between;
+  }
+
+  .pack-reveal-atmosphere { width: 128vw; }
+  .pack-reveal-rays { width: 112vw; }
+  .pack-reveal-rings { width: 88vw; }
+  .pack-reveal-particle:nth-child(n + 11) { display: none; }
+  .pack-reveal-tear-fallback { width: min(60vw, 252px); }
+  .pack-reveal-dom-card { width: min(58vw, 248px); }
+
+  .pack-reveal-overlay[data-phase="summary"] .pack-reveal-dom-card {
+    transform:
+      translate3d(0, -17vh, 0)
+      rotateX(var(--card-tilt-x))
+      rotateY(var(--card-tilt-y))
+      scale(0.7);
+  }
+
+  .pack-reveal-summary {
+    top: auto;
+    right: 12px;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 12px;
+    width: auto;
+    gap: 7px;
+    padding: 18px;
+    transform: none;
+  }
+
+  .pack-reveal-summary h1 { font-size: 34px; }
+
+  @keyframes revealSummaryEnter {
+    from { opacity: 0; transform: translateY(18px); }
+  }
+}
+
+@media (max-width: 390px) {
+  .pack-reveal-hud {
+    top: max(8px, env(safe-area-inset-top));
+    right: 8px;
+    left: 8px;
+  }
+
+  .pack-reveal-sound,
+  .pack-reveal-skip {
+    min-height: 40px;
+    padding: 0 11px;
+  }
+
+  .pack-reveal-summary {
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 8px;
+    max-height: min(48dvh, 340px);
+    padding: 14px;
+  }
+
+  .pack-reveal-summary h1 { font-size: 29px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pack-reveal-rays,
+  .pack-reveal-rings,
+  .pack-reveal-particles,
+  .pack-reveal-burst,
+  .pack-reveal-fragments,
+  .pack-reveal-pack-foil,
+  .pack-reveal-tear-line,
+  .pack-reveal-card-aura,
+  .pack-reveal-card-foil,
+  .pack-reveal-card-glare {
+    display: none;
+  }
+
+  .pack-reveal-atmosphere {
+    opacity: 0.48 !important;
+    transform: translate(-50%, -48%) scale(1) !important;
+    transition: none;
+  }
+
+  .pack-reveal-pack-piece,
+  .pack-reveal-pack-shell,
+  .pack-reveal-tear,
+  .pack-reveal-dom-card,
+  .pack-reveal-card-inner {
+    animation: none !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .pack-reveal-overlay { background: #edf6ff; }
+
+  .pack-reveal-sound,
+  .pack-reveal-skip,
+  .pack-reveal-summary {
+    background: #fff;
+    backdrop-filter: none;
+  }
+}

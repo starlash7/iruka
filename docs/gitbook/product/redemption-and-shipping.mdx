@@ -1,41 +1,55 @@
 ---
 title: "Redemption and Shipping"
-description: "Follow the planned South Korea redemption flow from ownership checks to token retirement."
-icon: "truck"
+description: "Review the planned delisting, redemption lock, address, handling, and shipment flow."
+icon: "package-check"
 ---
 
-> **Status: Planned** - Physical fulfillment is not yet available. South Korea is the first intended service region.
+> **Status: Planned** - Physical redemption and shipping are not currently
+> available.
 
-Redemption converts a vaulted digital ownership record into delivery of its exact physical photocard.
+Redemption converts an eligible vaulted ownership record into a request for the
+matching physical card. The physical item must remain uniquely identified
+throughout the process.
+
+## Eligibility
+
+A redemption request can begin only when:
+
+- The card is `Vaulted` and `redemptionEligible` is true.
+- The requester controls the matching ownership record.
+- Authentication and custody records remain valid.
+- No listing, transfer, investigation, or previous redemption lock exists.
+- The destination is in a supported region.
+- Required identity, address, and payment checks are complete.
 
 ## Redemption Flow
 
-1. The owner delists the card if it is for sale.
-2. Iruka verifies the connected wallet, age, custody record, and shipping eligibility.
-3. The owner confirms the Korean address and pays the displayed shipping and packaging cost.
-4. The ERC-721 is locked so it cannot be sold or transferred.
-5. Iruka prepares the exact inventory item for shipment.
-6. At carrier handoff, the token is burned and tracking is attached to the record.
+1. **Delist** - Any active marketplace listing is cancelled first.
+2. **Review** - Iruka displays the exact card, destination, available service,
+   fee, and handling target.
+3. **Confirm** - The collector confirms the request and applicable payment.
+4. **Lock** - The item moves from `Vaulted` to `Redemption locked`.
+5. **Pick and verify** - Operations match the physical item to `inventoryId`
+   and complete a final condition check.
+6. **Ship** - Tracking is attached to the redemption record.
+7. **Complete** - Custody changes to `Redeemed` after the documented completion
+   condition.
 
-The request can be cancelled before packing begins. If fulfillment fails before carrier handoff, the token is unlocked and any refundable shipping charge is returned.
+An item must never be listed and redemption-locked at the same time.
 
-## Cost and Timing
+## Information Kept Offchain
 
-- Vault storage is free.
-- The owner pays the displayed domestic shipping and secure packaging cost.
-- Iruka dispatches within five business days after identity, ownership, address, and payment checks are complete.
-- Carrier delivery time begins after dispatch and is shown separately.
+Names, phone numbers, delivery addresses, customs data, and carrier details
+remain offchain. Public records may show a request reference, state transition,
+and non-sensitive proof of completion.
 
-## Status Model
+## Terms Required Before Launch
 
-| Status | Meaning |
-| --- | --- |
-| Redemption locked | Ownership and inventory are reserved for shipment |
-| Preparing | Item is being packed |
-| Shipped | Carrier has the item and the token is retired |
-| Delivered | Delivery confirmed |
-| Exception | Address, payment, inventory, or carrier review is required |
+Iruka will publish supported regions, carriers, handling targets, fees, taxes
+and duties, packaging standard, tracking, failed-delivery handling, loss or
+damage procedures, cancellation rules, and customer support contacts before
+redemption becomes live.
 
-International shipping remains planned with no published launch date. Iruka will not advertise shipment insurance or coverage limits until a carrier and insurance policy are active.
-
-After carrier handoff, delivery exceptions follow the shipping terms and carrier claim process published at launch.
+The initial operating target is domestic South Korea. International delivery
+is outside the current scope unless it is added to the published shipping
+terms.

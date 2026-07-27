@@ -33,7 +33,7 @@ function MarketCard(props: MarketplaceCardTileProps) {
         </div>
         <div className="market-card-copy">
           <span className="market-card-group">{item.card.group}</span>
-          <strong>{item.card.title}</strong>
+          <strong className="market-card-name">{item.card.member} · {item.card.release}</strong>
           <div className="market-card-fmv">
             <small>{fmvLabel}</small>
             <b>{`$${item.card.fmv}`}</b>

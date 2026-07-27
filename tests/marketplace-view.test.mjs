@@ -14,27 +14,63 @@ test("Marketplace cards do not keep a fixed animated featured beam", async () =>
   assert.doesNotMatch(stylesheet, /market-card-beam|market-beam-shift/);
 });
 
-test("Marketplace cards omit secondary release and condition metadata", async () => {
+test("Marketplace cards omit secondary condition metadata", async () => {
   const tileSource = await readFile(
     new URL("../src/MarketplaceCardTile.tsx", import.meta.url),
     "utf8"
   );
 
-  assert.doesNotMatch(tileSource, /item\.card\.release/);
   assert.doesNotMatch(tileSource, /getMarketplaceConditionLabel/);
 });
 
-test("Marketplace card tiles show only the pink artist name while card names stay lighter", async () => {
+test("Marketplace does not render the sell from vault section", async () => {
+  const viewSource = await readFile(
+    new URL("../src/MarketplaceView.tsx", import.meta.url),
+    "utf8"
+  );
+
+  assert.doesNotMatch(viewSource, /MarketplaceOwnedCards/);
+});
+
+test("Marketplace card tiles keep the pink group above a black member and release line", async () => {
   const [tileSource, stylesheet] = await Promise.all([
     readFile(new URL("../src/MarketplaceCardTile.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/styles.css", import.meta.url), "utf8")
   ]);
 
-  assert.match(tileSource, /market-card-group/);
-  assert.doesNotMatch(tileSource, /getMarketplaceCardTypeLabel|market-card-separator|market-card-type/);
-  assert.match(stylesheet, /\.market-card-copy > \.market-card-group\s*\{[^}]*color:\s*#c54884;/is);
-  assert.doesNotMatch(stylesheet, /\.market-card-separator|\.market-card-type/);
-  assert.match(stylesheet, /\.market-card-copy strong\s*\{[^}]*font-weight:\s*700;/is);
+  assert.match(tileSource, /className="market-card-group">\{item\.card\.group\}/);
+  assert.match(
+    tileSource,
+    /className="market-card-name">\{item\.card\.member\}\s*·\s*\{item\.card\.release\}/
+  );
+  assert.doesNotMatch(tileSource, /getMarketplaceCardTypeLabel|market-card-type/);
+  assert.match(
+    stylesheet,
+    /\.market-card-copy > \.market-card-group\s*\{[^}]*color:\s*#c54884;/is
+  );
+  assert.match(
+    stylesheet,
+    /\.market-card-copy > \.market-card-name\s*\{[^}]*color:\s*var\(--ink\);[^}]*white-space:\s*nowrap;/is
+  );
+});
+
+test("Home photocards match the Marketplace group and name treatment", async () => {
+  const [homeSource, stylesheet] = await Promise.all([
+    readFile(new URL("../src/HomeDiscovery.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/styles.css", import.meta.url), "utf8")
+  ]);
+
+  assert.match(homeSource, /className="home-market-card-group">\{item\.card\.group\}/);
+  assert.match(
+    homeSource,
+    /className="home-market-card-name">\{item\.card\.member\}\s*·\s*\{item\.card\.release\}/
+  );
+  assert.doesNotMatch(homeSource, /getMarketplaceCardTypeLabel|item\.card\.cardType/);
+  assert.match(stylesheet, /\.home-market-card-copy > \.home-market-card-group\s*\{[^}]*color:\s*#c54884;/is);
+  assert.match(
+    stylesheet,
+    /\.home-market-card-copy > \.home-market-card-name\s*\{[^}]*color:\s*var\(--ink\);[^}]*font-weight:\s*700;[^}]*white-space:\s*nowrap;/is
+  );
 });
 
 test("Marketplace catalog does not present preview prices or mock sale history", async () => {
@@ -215,16 +251,26 @@ test("Marketplace sorting supports price, FMV, recency, and name", async () => {
 });
 
 test("Marketplace details show known inventory metadata without invented grading data", async () => {
-  const detailSource = await readFile(
-    new URL("../src/MarketplaceDetailDialog.tsx", import.meta.url),
-    "utf8"
-  );
+  const [detailSource, dataSource, catalogSource] = await Promise.all([
+    readFile(new URL("../src/MarketplaceDetailDialog.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/marketplaceData.ts", import.meta.url), "utf8"),
+    readFile(new URL("../src/marketplaceCatalog.ts", import.meta.url), "utf8")
+  ]);
 
   assert.match(detailSource, /copy\.release/);
+  assert.match(detailSource, /item\.card\.releaseYear\s*\?/);
+  assert.match(detailSource, /copy\.releaseYear/);
   assert.match(detailSource, /copy\.cardType/);
   assert.match(detailSource, /copy\.rarity/);
   assert.match(detailSource, /copy\.condition/);
   assert.match(detailSource, /copy\.serial/);
+  assert.match(detailSource, /item\.inventory\.certificateId\s*\?/);
+  assert.match(detailSource, /copy\.certificateId/);
+  assert.match(
+    catalogSource,
+    /id: "ive-rei-accendio"[^}\n]*releaseYear: 2024/
+  );
+  assert.doesNotMatch(dataSource, /certificateId:\s*["'][^"']+["']/);
   assert.doesNotMatch(detailSource, /FMV|vaultedAt|grade/i);
 });
 

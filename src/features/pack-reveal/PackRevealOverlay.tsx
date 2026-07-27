@@ -1,173 +1,109 @@
 import {
-  Component,
+  ArrowRight,
+  ExternalLink,
+  FastForward,
+  Volume2,
+  VolumeX
+} from "lucide-react";
+import {
   type CSSProperties,
-  type ReactNode,
   useCallback,
   useEffect,
   useRef,
   useState
 } from "react";
 import { formatUsd } from "../../currency";
-import { RevealScene } from "./RevealScene";
-import { getRevealConfig, type RevealCard } from "./revealConfig";
+import { RevealCard } from "./RevealCard";
+import { RevealEffects } from "./RevealEffects";
+import { RevealTear, type RevealMedia } from "./RevealTear";
+import { getRevealConfig, type RevealCard as RevealCardData } from "./revealConfig";
+import { useRevealDialog } from "./useRevealDialog";
+import {
+  markRevealSeen,
+  usePrefersReducedMotion
+} from "./useRevealPreferences";
 import { useRevealTimeline } from "./useRevealTimeline";
 
 type PackRevealLabels = {
+  continue: string;
   estimatedValue: string;
   skip: string;
   soundOff: string;
   soundOn: string;
+  viewReceipt: string;
+};
+
+type RevealReceipt = {
+  explorerUrl: string;
+  requestId: bigint;
 };
 
 type PackRevealOverlayProps = {
-  cards: RevealCard[];
+  cards: RevealCardData[];
   labels: PackRevealLabels;
+  media?: RevealMedia;
   onComplete: () => void;
   onSkip?: () => void;
+  receipt?: RevealReceipt;
 };
-
-type RevealErrorBoundaryProps = {
-  children: ReactNode;
-  onError: () => void;
-};
-
-class RevealErrorBoundary extends Component<RevealErrorBoundaryProps, { hasError: boolean }> {
-  state = { hasError: false };
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch() {
-    this.props.onError();
-  }
-
-  render() {
-    if (this.state.hasError) return null;
-    return this.props.children;
-  }
-}
-
-function canUseWebGL() {
-  if (typeof document === "undefined") return false;
-
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
-  } catch {
-    return false;
-  }
-}
-
-function usePrefersReducedMotion() {
-  const [reducedMotion, setReducedMotion] = useState(() =>
-    typeof window === "undefined" ? false : window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(query.matches);
-
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-
-  return reducedMotion;
-}
-
-function getRevealCount() {
-  try {
-    return Number(window.localStorage.getItem("iruka-reveal-count") ?? "0");
-  } catch {
-    return 0;
-  }
-}
-
-function markRevealSeen() {
-  try {
-    window.localStorage.setItem("iruka-reveal-count", String(getRevealCount() + 1));
-  } catch {
-    // A blocked storage write should not block the pack result.
-  }
-}
-
-function RevealFallback({
-  card,
-  labels,
-  phase
-}: {
-  card: RevealCard;
-  labels: PackRevealLabels;
-  phase: string;
-}) {
-  const config = getRevealConfig(card.rarity);
-
-  return (
-    <div className="pack-reveal-fallback" data-phase={phase}>
-      <div className="pack-reveal-slot" />
-      <article className="pack-reveal-card-fallback" style={{ "--reveal-accent": config.accent } as CSSProperties}>
-        <img alt="" src={card.imageUrl} />
-      </article>
-      <div className="pack-reveal-stamp" style={{ "--reveal-accent": config.accent } as CSSProperties}>
-        {config.name}
-      </div>
-      <div className="pack-reveal-value">
-        <span>{labels.estimatedValue}</span>
-        <strong>{card.valueLabel ?? formatUsd(card.estimatedValue)}</strong>
-      </div>
-    </div>
-  );
-}
 
 export function PackRevealOverlay({
   cards,
   labels,
+  media,
   onComplete,
-  onSkip
+  onSkip,
+  receipt
 }: PackRevealOverlayProps) {
   const [muted, setMuted] = useState(true);
-  const [sceneFailed, setSceneFailed] = useState(false);
-  const [showSkipHint] = useState(() => getRevealCount() > 0);
-  const [webglReady] = useState(canUseWebGL);
-  const completeRef = useRef(false);
-  const skippedRef = useRef(false);
   const reducedMotion = usePrefersReducedMotion();
   const card = cards[0];
   const config = getRevealConfig(card.rarity);
-  const complete = useCallback(() => {
-    if (completeRef.current) return;
-    completeRef.current = true;
-    markRevealSeen();
+  const completedRef = useRef(false);
+  const seenRef = useRef(false);
+  const skippedRef = useRef(false);
+  const { isSummary, phase, skip } = useRevealTimeline({
+    muted,
+    quick: false,
+    rarity: card.rarity,
+    reducedMotion
+  });
+  const { continueButtonRef, overlayRef } = useRevealDialog(isSummary);
 
-    if (skippedRef.current) {
+  const handleSkip = useCallback(() => {
+    if (isSummary) return;
+    if (!skippedRef.current) {
+      skippedRef.current = true;
       onSkip?.();
     }
-
-    onComplete();
-  }, [onComplete, onSkip]);
-  const { phase, progress, skip } = useRevealTimeline({
-    muted,
-    onComplete: complete,
-    rarity: card.rarity,
-    reducedMotion: reducedMotion || sceneFailed || !webglReady
-  });
-  const useFallback = reducedMotion || sceneFailed || !webglReady;
-  const handleSkip = useCallback(() => {
-    skippedRef.current = true;
     skip();
-  }, [skip]);
+  }, [isSummary, onSkip, skip]);
+
+  const complete = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    onComplete();
+  }, [onComplete]);
+
+  useEffect(() => {
+    if (!isSummary || seenRef.current) return;
+    seenRef.current = true;
+    markRevealSeen();
+  }, [isSummary]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key !== "Escape") return;
+      if (isSummary) {
+        complete();
+      } else {
         handleSkip();
       }
     };
 
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [handleSkip]);
+  }, [complete, handleSkip, isSummary]);
 
   return (
     <section
@@ -175,24 +111,26 @@ export function PackRevealOverlay({
       aria-modal="true"
       className="pack-reveal-overlay"
       data-phase={phase}
+      data-quick={false}
       data-rarity={card.rarity}
       onPointerDown={handleSkip}
+      ref={overlayRef}
       role="dialog"
-      style={{ "--reveal-accent": config.accent, "--reveal-foil": config.foil } as CSSProperties}
+      style={{
+        "--reveal-accent": config.accent,
+        "--reveal-foil": config.foil,
+        "--reveal-spotlight": config.spotlight
+      } as CSSProperties}
+      tabIndex={-1}
     >
-      <div className="pack-reveal-scene" aria-hidden="true">
-        {useFallback ? (
-          <RevealFallback card={card} labels={labels} phase={phase} />
-        ) : (
-          <RevealErrorBoundary onError={() => setSceneFailed(true)}>
-            <RevealScene
-              card={card}
-              phase={phase}
-              progress={progress}
-              reducedMotion={reducedMotion}
-            />
-          </RevealErrorBoundary>
-        )}
+      <div className="pack-reveal-stage">
+        <RevealEffects phase={phase} />
+        <RevealTear media={media} phase={phase} />
+        <RevealCard
+          card={card}
+          reducedMotion={reducedMotion}
+          revealed={phase === "reveal" || isSummary}
+        />
       </div>
 
       <div className="pack-reveal-hud" onPointerDown={(event) => event.stopPropagation()}>
@@ -202,16 +140,47 @@ export function PackRevealOverlay({
           onClick={() => setMuted((value) => !value)}
           type="button"
         >
+          {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           {muted ? labels.soundOff : labels.soundOn}
         </button>
-        {showSkipHint ? <button className="pack-reveal-skip" onClick={handleSkip} type="button">{labels.skip}</button> : null}
+        {!isSummary ? (
+          <button className="pack-reveal-skip" onClick={handleSkip} type="button">
+            <FastForward size={16} />
+            {labels.skip}
+          </button>
+        ) : null}
       </div>
 
-      <div className="pack-reveal-result" aria-live="polite" onPointerDown={(event) => event.stopPropagation()}>
-        <span>{config.name}</span>
-        <strong>{card.name}</strong>
-        {card.serial ? <small>{card.serial}</small> : null}
-      </div>
+      {isSummary ? (
+        <aside
+          aria-live="polite"
+          className="pack-reveal-summary"
+          onPointerDown={(event) => event.stopPropagation()}
+        >
+          <span className="pack-reveal-rarity">{config.name}</span>
+          <h1>{card.name}</h1>
+          {card.serial ? <p>{card.serial}</p> : null}
+          <div className="pack-reveal-summary-value">
+            <span>{labels.estimatedValue}</span>
+            <strong>{card.valueLabel ?? formatUsd(card.estimatedValue)}</strong>
+          </div>
+          {receipt ? (
+            <a href={receipt.explorerUrl} rel="noreferrer" target="_blank">
+              {labels.viewReceipt} #{receipt.requestId.toString()}
+              <ExternalLink size={15} />
+            </a>
+          ) : null}
+          <button
+            className="pack-reveal-continue"
+            onClick={complete}
+            ref={continueButtonRef}
+            type="button"
+          >
+            {labels.continue}
+            <ArrowRight size={17} />
+          </button>
+        </aside>
+      ) : null}
     </section>
   );
 }
