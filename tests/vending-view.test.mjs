@@ -39,6 +39,7 @@ after(async () => {
 const packDetailCopy = {
   batch: "Batch",
   category: "Girl Groups",
+  comingSoon: "Coming soon",
   openPack: "Pull 1 pack",
   opening: "Opening pack",
   packLabel: "Pack",
@@ -54,6 +55,12 @@ const rarityLabels = {
   Epic: "Epic",
   Legendary: "Legendary",
   Iruka: "Iruka"
+};
+const statusLabels = {
+  live: "Live",
+  "low-stock": "Low stock",
+  "sold-out": "Sold out",
+  "coming-soon": "Coming soon"
 };
 
 test("Vending reveal cards retain their USDC display value", () => {
@@ -143,7 +150,8 @@ test("pack rail exposes four selectable tiers with USDC prices", () => {
     React.createElement(VendingPackRail, {
       onSelectPack: () => undefined,
       packs: packDetails,
-      selectedPackId: "debut"
+      selectedPackId: "debut",
+      statusLabels
     })
   );
 
@@ -151,7 +159,26 @@ test("pack rail exposes four selectable tiers with USDC prices", () => {
   assert.match(markup, /Debut/);
   assert.match(markup, /Grail/);
   assert.match(markup, /19\.00 USDC/);
-  assert.doesNotMatch(markup, /left|Low stock|Sold out|Coming soon|data-status/);
+  assert.equal((markup.match(/>Live</g) ?? []).length, 1);
+  assert.equal((markup.match(/>Coming soon</g) ?? []).length, 3);
+  assert.doesNotMatch(markup, /left|Low stock|Sold out/);
+});
+
+test("only the Debut pack exposes the live pull action", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack: packDetails[1],
+      pullDisabled: true,
+      rarityLabels,
+      walletRequired: false
+    })
+  );
+
+  assert.match(markup, /<button[^>]*disabled[^>]*>[\s\S]*?Coming soon[\s\S]*?<\/button>/);
+  assert.doesNotMatch(markup, />Pull 1 pack</);
 });
 
 test("pack pull CTA does not repeat the price shown in the purchase panel", () => {
@@ -175,7 +202,8 @@ test("pack rail uses clean pack product artwork", () => {
     React.createElement(VendingPackRail, {
       onSelectPack: () => undefined,
       packs: packDetails,
-      selectedPackId: "debut"
+      selectedPackId: "debut",
+      statusLabels
     })
   );
 
@@ -273,7 +301,8 @@ test("tier packs keep the product art clean inside the selected machine", () => 
     React.createElement(VendingPackRail, {
       onSelectPack: () => undefined,
       packs: packDetails,
-      selectedPackId: "debut"
+      selectedPackId: "debut",
+      statusLabels
     })
   );
   const detailMarkup = renderToStaticMarkup(
@@ -394,20 +423,21 @@ test("pack detail keeps direct odds and values in color-coded rows", () => {
   assert.doesNotMatch(markup, /Buyback|Turbo|expected return/i);
 });
 
-test("preview tiers keep the pull CTA available without virtual inventory states", () => {
-  for (const pack of [packDetails[2], packDetails[3]]) {
+test("future tiers remain browsable without exposing a pull action", () => {
+  for (const pack of packDetails.slice(1)) {
     const markup = renderToStaticMarkup(React.createElement(VendingPackDetail, {
       copy: packDetailCopy,
       isOpening: false,
       onOpenPack: () => undefined,
       pack,
+      pullDisabled: true,
       rarityLabels,
       walletRequired: false
     }));
 
-    assert.doesNotMatch(markup, /class="vending-primary-action" disabled=""/);
-    assert.match(markup, />Pull 1 pack</);
-    assert.doesNotMatch(markup, /Sold out|Coming soon/);
+    assert.match(markup, /class="iruka-action-button vending-primary-action" disabled=""/);
+    assert.match(markup, />Coming soon</);
+    assert.doesNotMatch(markup, />Pull 1 pack</);
   }
 });
 
@@ -554,7 +584,8 @@ test("recent pulls render only from the explicit Vending session list", () => {
         redemptionUnavailable: "Redemption unavailable",
         viewOdds: "View odds & values", yourPull: "Your pull"
       },
-      rarities: { Common: "Common", Rare: "Rare", Epic: "Epic", Legendary: "Legendary", Iruka: "Iruka" }
+      rarities: { Common: "Common", Rare: "Rare", Epic: "Epic", Legendary: "Legendary", Iruka: "Iruka" },
+      statusLabels
     },
     getCardImageUrl: () => "card.webp",
     isOpening: false,

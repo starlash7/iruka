@@ -19,6 +19,7 @@ export type PackFixture = {
 
 export const rarityTiers: readonly RarityTier[] = ["Common", "Rare", "Epic", "Legendary", "Iruka"];
 export const snapshotAt = "2026-07-16T00:00:00.000Z";
+export const activeGiwaPackId = "debut";
 
 export const packMedia: Record<PackTier, PackMedia> = {
   Debut: {
@@ -57,7 +58,7 @@ export const packFixtures: readonly PackFixture[] = [
   },
   {
     id: "stage", tier: "Stage", batchId: "IRK-GG-2026-002", priceUsdc: "29.00",
-    remaining: 10, total: 100,
+    remaining: 10, total: 100, configuredAvailability: "coming-soon",
     rarityOdds: [
       { tier: "Common", basisPoints: 5800, eligibleCount: 58, estimatedValueRangeUsdc: ["6.00", "20.00"] },
       { tier: "Rare", basisPoints: 2900, eligibleCount: 29, estimatedValueRangeUsdc: ["25.00", "64.00"] },
@@ -68,7 +69,7 @@ export const packFixtures: readonly PackFixture[] = [
   },
   {
     id: "encore", tier: "Encore", batchId: "IRK-GG-2026-003", priceUsdc: "39.00",
-    remaining: 0, total: 80,
+    remaining: 0, total: 80, configuredAvailability: "coming-soon",
     rarityOdds: [
       { tier: "Common", basisPoints: 5200, eligibleCount: 42, estimatedValueRangeUsdc: ["9.00", "23.00"] },
       { tier: "Rare", basisPoints: 3300, eligibleCount: 26, estimatedValueRangeUsdc: ["30.00", "79.00"] },

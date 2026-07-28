@@ -98,7 +98,7 @@
 .vending-tier-copy {
   display: grid;
   min-width: 0;
-  gap: 2px;
+  gap: 1px;
 }
 
 .vending-tier-copy strong,
@@ -118,6 +118,19 @@
   color: #344054;
   font-size: 12px;
   font-weight: 650;
+}
+
+.vending-tier-copy small {
+  width: max-content;
+  margin-top: 3px;
+  color: var(--blue-hover);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.vending-tier-copy small[data-status="coming-soon"] {
+  color: var(--muted);
 }
 
 .vending-detail {

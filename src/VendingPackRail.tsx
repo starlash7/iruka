@@ -1,17 +1,19 @@
 import { IrukaBeam } from "./IrukaBeam";
 import { formatUsdc } from "./currency";
-import type { PackDetail } from "./vendingTypes";
+import type { PackAvailability, PackDetail } from "./vendingTypes";
 
 type VendingPackRailProps = {
   onSelectPack: (packId: string) => void;
   packs: readonly PackDetail[];
   selectedPackId: string;
+  statusLabels: Record<PackAvailability, string>;
 };
 
 export function VendingPackRail({
   onSelectPack,
   packs,
-  selectedPackId
+  selectedPackId,
+  statusLabels
 }: VendingPackRailProps) {
   return (
     <nav aria-label="Pack tiers" className="vending-tier-rail">
@@ -39,6 +41,9 @@ export function VendingPackRail({
               <span className="vending-tier-copy">
                 <strong>{pack.tier}</strong>
                 <b>{formatUsdc(pack.priceUsdc)}</b>
+                <small data-status={pack.status}>
+                  {statusLabels[pack.status]}
+                </small>
               </span>
             </button>
           </IrukaBeam>

@@ -35,7 +35,7 @@ const privyConfig: PrivyClientConfig = {
     showWalletLoginFirst: true,
     theme: "light",
     walletChainType: "ethereum-only",
-    walletList: ["phantom", "okx_wallet", "metamask"]
+    walletList: ["metamask", "phantom", "okx_wallet"]
   },
   embeddedWallets: {
     ethereum: {

@@ -198,7 +198,7 @@ test("signed-in users can explicitly connect an external EVM funding wallet", as
   assert.match(authSource, /walletChainType:\s*"ethereum-only"/);
   assert.match(
     authSource,
-    /walletList:\s*\["phantom", "okx_wallet", "metamask"\]/
+    /walletList:\s*\["metamask", "phantom", "okx_wallet"\]/
   );
 });
 

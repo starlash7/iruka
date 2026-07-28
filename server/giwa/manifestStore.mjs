@@ -64,13 +64,20 @@ export async function loadBatchManifest(
   encryptionKey,
   manifestUrl = DEFAULT_MANIFEST_URL
 ) {
-  const encryptedManifest = await readFile(manifestUrl, "utf8");
-  const manifest = decryptBatchManifest(encryptedManifest, encryptionKey);
+  const manifest = await loadDefaultBatchManifest(encryptionKey, manifestUrl);
 
   if (manifest.batchId?.toLowerCase() !== batchId.toLowerCase()) {
     throw new Error("The pull does not match the configured batch manifest");
   }
   return manifest;
+}
+
+export async function loadDefaultBatchManifest(
+  encryptionKey,
+  manifestUrl = DEFAULT_MANIFEST_URL
+) {
+  const encryptedManifest = await readFile(manifestUrl, "utf8");
+  return decryptBatchManifest(encryptedManifest, encryptionKey);
 }
 
 function decodeEncryptionKey(value) {

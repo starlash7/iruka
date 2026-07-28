@@ -59,8 +59,8 @@ function createInventoryCards(fixture: PackFixture): readonly InventoryCard[] {
 }
 
 export function getAvailability({ configured, remaining, total }: AvailabilityInput): PackAvailability {
-  if (remaining === 0) return "sold-out";
   if (configured === "coming-soon") return "coming-soon";
+  if (remaining === 0) return "sold-out";
   if (total > 0 && remaining / total <= 0.1) return "low-stock";
   return "live";
 }

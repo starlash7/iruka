@@ -87,6 +87,11 @@ proof material is revealed only as required for fulfillment.
    `PullFulfilled`.
 6. Iruka reads the confirmed event before opening Reveal.
 
+The browser requests fulfillment immediately. A scheduled Keeper recovery also
+checks the active Debut batch once per minute, so a confirmed request can finish
+after the collector closes the page. Both paths acquire the same request lease
+before the Keeper signs a transaction.
+
 Concurrent requests reserve unique draw indices. Fulfillment follows the
 contract's deterministic without-replacement state so one position cannot be
 assigned twice.

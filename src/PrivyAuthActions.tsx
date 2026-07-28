@@ -162,7 +162,7 @@ export function PrivyAuthActions({
     handledExternalConnectSignalRef.current = externalConnectSignal;
     connectWallet({
       walletChainType: "ethereum-only",
-      walletList: ["phantom", "okx_wallet", "metamask"]
+      walletList: ["metamask", "phantom", "okx_wallet"]
     });
   }, [
     authenticated,

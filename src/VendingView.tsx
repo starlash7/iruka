@@ -3,6 +3,7 @@ import { formatCardPullValue } from "./cardFlow";
 import type { GiwaPullReceipt } from "./giwaPull.ts";
 import type {
   CardPull,
+  PackAvailability,
   PackDetail,
   Rarity,
   RarityTier
@@ -45,6 +46,7 @@ type VendingViewCopy = {
     yourPull: string;
   };
   rarities: Record<RarityTier, string>;
+  statusLabels: Record<PackAvailability, string>;
 };
 
 type VendingViewProps = {
@@ -99,12 +101,14 @@ export function VendingView({
         onSelectPack={onSelectPack}
         packs={packs}
         selectedPackId={selectedPack.id}
+        statusLabels={copy.statusLabels}
       />
 
       <VendingPackDetail
         copy={{
           batch: copy.labels.batch,
           category: copy.category,
+          comingSoon: copy.statusLabels["coming-soon"],
           giwaReceipt: copy.labels.giwaReceipt,
           giwaTestnet: copy.labels.giwaTestnet,
           openPack: copy.hero.openPack,

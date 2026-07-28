@@ -192,6 +192,18 @@ test("GIWA Contracts documents deployment and successful pull transactions", asy
   assert.doesNotMatch(giwaContracts, /Awaiting review pull/i);
 });
 
+test("Docs identify Debut as the only live pack and scheduled Keeper recovery", async () => {
+  const [packInformation, giwaContracts] = await Promise.all([
+    readDoc("packs/pack-information"),
+    readDoc("technical/giwa-testnet")
+  ]);
+
+  assert.match(packInformation, /Debut is the only live testnet pack/i);
+  assert.match(packInformation, /Stage, Encore, and Grail[\s\S]{0,80}Coming soon/i);
+  assert.match(giwaContracts, /scheduled recovery/i);
+  assert.match(giwaContracts, /once per minute/i);
+});
+
 test("roadmap includes gated category expansion", async () => {
   const roadmap = await readDoc("roadmap");
 

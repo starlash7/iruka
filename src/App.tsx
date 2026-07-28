@@ -62,6 +62,7 @@ import {
   PackRevealLoading
 } from "./features/pack-reveal/PackRevealBoundary.tsx";
 import { packDetails, pullPack } from "./vendingData";
+import { activeGiwaPackId } from "./vendingFixtures.ts";
 import type { CardPull, VaultStatus } from "./vendingTypes";
 
 type OnchainPull = GiwaPullReceipt & {
@@ -213,7 +214,10 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   }, [giwaWallet?.address]);
 
   useEffect(() => {
-    if (!hasGiwaPullContract) {
+    if (
+      !hasGiwaPullContract
+      || selectedPackDetail.id !== activeGiwaPackId
+    ) {
       setSelectedGiwaBatchState("unavailable");
       return;
     }
@@ -735,7 +739,8 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
               viewOdds: t.vending.viewOdds,
               yourPull: t.vending.yourPull
             },
-            rarities: t.rarities
+            rarities: t.rarities,
+            statusLabels: t.vending.statusLabels
           }}
           getCardImageUrl={(card) =>
             createRevealImageUrl(
@@ -763,15 +768,19 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             ) : null
           }
           pullDisabled={
-            hasGiwaPullContract
-            && selectedGiwaBatchState !== "live"
-            && !isAwaitingOnchainFulfillment
+            selectedPackDetail.id !== activeGiwaPackId
+            || (
+              hasGiwaPullContract
+              && selectedGiwaBatchState !== "live"
+              && !isAwaitingOnchainFulfillment
+            )
           }
           recentPulls={sessionPulls}
           resultRef={revealSectionRef}
           selectedPack={selectedPackDetail}
           testnetEnabled={
             hasGiwaPullContract
+            && selectedPackDetail.id === activeGiwaPackId
             && (
               selectedGiwaBatchState === "live"
               || isAwaitingOnchainFulfillment

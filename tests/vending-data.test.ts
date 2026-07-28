@@ -39,13 +39,11 @@ test("pack summaries publish explicit tiers in Vending order", async () => {
   );
 });
 
-test("pack summaries expose every supported product status", async () => {
+test("only the Debut pack is live while later tiers are coming soon", async () => {
   const packs = await listPacks();
 
-  assert.deepEqual(
-    packs.map((pack) => pack.status),
-    ["live", "low-stock", "sold-out", "coming-soon"]
-  );
+  assert.equal(packs[0].status, "live");
+  assert.ok(packs.slice(1).every((pack) => pack.status === "coming-soon"));
 });
 
 test("pack summaries use their supplied preview-pack media", async () => {
@@ -212,10 +210,10 @@ test("availability becomes low stock at ten percent remaining", () => {
   assert.equal(getAvailability({ remaining: 11, total: 100 }), "live");
 });
 
-test("sold out takes precedence over an explicitly configured future status", () => {
+test("an unreleased pack remains coming soon without virtual inventory status", () => {
   assert.equal(
     getAvailability({ configured: "coming-soon", remaining: 0, total: 100 }),
-    "sold-out"
+    "coming-soon"
   );
 });
 

@@ -6,66 +6,90 @@ import {
   isHex
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import {
+  acquireFulfillmentLease,
+  createFulfillmentLeaseKey,
+  releaseFulfillmentLease,
+  renewFulfillmentLease
+} from "./fulfillmentLease.mjs";
+import { getGiwaSepoliaChain } from "./giwaSepoliaChain.mjs";
 import { loadBatchManifest } from "./manifestStore.mjs";
 import { packBatchAbi } from "./packBatchAbi.mjs";
 
 export async function fulfillPullRequest({
+  acquireLease = async () => true,
   manifest,
   requestId,
   previewDraw,
   readBatch,
   readPull,
+  releaseLease = async () => undefined,
+  renewLease = async (_requestId, lease) => lease,
   submitFulfillment
 }) {
   const pull = await readPull(requestId);
   assertMatchingBatch(pull.batchId, manifest.batchId);
 
   if (pull.fulfilled) return getFulfilledResult(pull);
+  let lease = await acquireLease(requestId);
+  if (!lease) return { status: "pending" };
 
-  const batch = await readBatch(pull.batchId);
-  if (pull.drawIndex !== batch.nextFulfillIndex) {
-    return {
-      status: "pending",
-      nextFulfillIndex: batch.nextFulfillIndex
-    };
-  }
-
-  const drawSeed = manifest.drawSeeds[pull.drawIndex];
-  if (!drawSeed || drawSeed.drawIndex !== pull.drawIndex) {
-    throw new Error(`Draw seed ${pull.drawIndex} is not in the manifest`);
-  }
-
-  const preview = await previewDraw({
-    batchId: pull.batchId,
-    requestId,
-    seedProof: drawSeed.proof,
-    serverSeed: drawSeed.seed
-  });
-  const inventory = manifest.inventory[preview.inventoryIndex];
-  if (!inventory || inventory.index !== preview.inventoryIndex) {
-    throw new Error(
-      `Inventory index ${preview.inventoryIndex} is not in the manifest`
-    );
-  }
-
+  let keepLease = false;
   try {
-    const transactionHash = await submitFulfillment({
-      inventoryId: inventory.inventoryId,
-      inventoryProof: inventory.proof,
+    const batch = await readBatch(pull.batchId);
+    if (pull.drawIndex !== batch.nextFulfillIndex) {
+      return {
+        status: "pending",
+        nextFulfillIndex: batch.nextFulfillIndex
+      };
+    }
+
+    const drawSeed = manifest.drawSeeds[pull.drawIndex];
+    if (!drawSeed || drawSeed.drawIndex !== pull.drawIndex) {
+      throw new Error(`Draw seed ${pull.drawIndex} is not in the manifest`);
+    }
+
+    const preview = await previewDraw({
+      batchId: pull.batchId,
       requestId,
       seedProof: drawSeed.proof,
       serverSeed: drawSeed.seed
     });
-    return {
-      status: "submitted",
-      transactionHash,
-      inventoryId: inventory.inventoryId,
-      inventoryIndex: inventory.index
-    };
-  } catch (error) {
-    const latestPull = await readPull(requestId);
-    if (latestPull.fulfilled) return getFulfilledResult(latestPull);
-    throw error;
+    const inventory = manifest.inventory[preview.inventoryIndex];
+    if (!inventory || inventory.index !== preview.inventoryIndex) {
+      throw new Error(
+        `Inventory index ${preview.inventoryIndex} is not in the manifest`
+      );
+    }
+
+    const renewedLease = await renewLease(requestId, lease);
+    if (!renewedLease) return { status: "pending" };
+    lease = renewedLease;
+    keepLease = true;
+
+    try {
+      const transactionHash = await submitFulfillment({
+        inventoryId: inventory.inventoryId,
+        inventoryProof: inventory.proof,
+        requestId,
+        seedProof: drawSeed.proof,
+        serverSeed: drawSeed.seed
+      });
+      return {
+        status: "submitted",
+        transactionHash,
+        inventoryId: inventory.inventoryId,
+        inventoryIndex: inventory.index
+      };
+    } catch (error) {
+      const latestPull = await readPull(requestId);
+      if (latestPull.fulfilled) {
+        return getFulfilledResult(latestPull);
+      }
+      throw error;
+    }
+  } finally {
+    if (!keepLease) await releaseLease(requestId, lease);
   }
 }
 
@@ -111,8 +135,10 @@ export async function fulfillGiwaPullFromEnvironment(
     initialPull.batchId,
     encryptionKey
   );
+  const leaseKey = createFulfillmentLeaseKey(contractAddress, requestId);
 
   return fulfillPullRequest({
+    acquireLease: () => acquireFulfillmentLease(leaseKey),
     manifest,
     requestId,
     readPull,
@@ -148,7 +174,9 @@ export async function fulfillGiwaPullFromEnvironment(
         args: [id, serverSeed, seedProof, inventoryId, inventoryProof]
       });
       return transactionHash;
-    }
+    },
+    releaseLease: (_id, lease) => releaseFulfillmentLease(leaseKey, lease),
+    renewLease: (_id, lease) => renewFulfillmentLease(leaseKey, lease)
   });
 }
 
@@ -168,13 +196,4 @@ function assertMatchingBatch(actual, expected) {
 
 function isBytes32(value) {
   return typeof value === "string" && isHex(value) && value.length === 66;
-}
-
-function getGiwaSepoliaChain(rpcUrl) {
-  return {
-    id: 91342,
-    name: "GIWA Sepolia",
-    nativeCurrency: { decimals: 18, name: "Ether", symbol: "ETH" },
-    rpcUrls: { default: { http: [rpcUrl] } }
-  };
 }

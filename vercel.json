@@ -2,6 +2,15 @@
   "functions": {
     "api/giwa/fulfill.mjs": {
       "includeFiles": "server/giwa/manifests/**"
+    },
+    "api/giwa/recover.mjs": {
+      "includeFiles": "server/giwa/manifests/**"
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/giwa/recover",
+      "schedule": "* * * * *"
+    }
+  ]
 }

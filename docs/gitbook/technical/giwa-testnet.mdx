@@ -103,6 +103,21 @@ The browser calls the same-origin Keeper after a request confirms and polls the
 same request until `PullFulfilled` is available. A delayed result is retried
 without submitting another pull.
 
+Scheduled recovery runs once per minute independently of the collector's
+browser. It compares the Debut batch's next requested draw with its next
+fulfilled draw and submits at most one missing fulfillment per run. The
+contract still rejects duplicate or out-of-order assignment.
+
+The browser and scheduled recovery share an atomic, request-specific Keeper
+lease. Only the lease holder can broadcast fulfillment. A stale lease expires
+after two minutes so a dropped transaction or interrupted function can be
+retried without assigning inventory twice.
+
+The recovery route accepts only Vercel Cron requests authenticated with
+`CRON_SECRET`. Debut remains the only committed batch while this direct
+request-order recovery is active. A multi-batch launch requires event indexing
+that resolves request IDs per batch.
+
 The Keeper uses a dedicated GIWA Sepolia account with fulfillment authority and
 minimal test ETH. Its private key and encrypted seed-manifest key are deployment
 secrets.

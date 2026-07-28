@@ -1,4 +1,4 @@
-import { ExternalLink, PackageOpen, RefreshCw, Truck, Wallet } from "lucide-react";
+import { Clock3, ExternalLink, PackageOpen, RefreshCw, Truck, Wallet } from "lucide-react";
 import { formatUsdc, formatUsdcRange } from "./currency";
 import type { GiwaPullReceipt } from "./giwaPull.ts";
 import debutVendingMachineImage from "./assets/iruka-vending-machine-debut.png";
@@ -11,6 +11,7 @@ import type { PackDetail, PackTier, RarityTier } from "./vendingTypes";
 type VendingPackDetailCopy = {
   batch: string;
   category: string;
+  comingSoon: string;
   giwaReceipt: string;
   giwaTestnet?: string;
   openPack: string;
@@ -66,7 +67,9 @@ export function VendingPackDetail({
     ? copy.opening
     : isAwaitingFulfillment
       ? copy.resumeOpening
-      : copy.openPack;
+      : pack.status === "coming-soon"
+        ? copy.comingSoon
+        : copy.openPack;
 
   return (
     <section className="vending-detail" id="drops">
@@ -107,8 +110,10 @@ export function VendingPackDetail({
             onClick={onOpenPack}
             type="button"
           >
-            {walletRequired
-              ? <Wallet size={19} />
+            {pack.status === "coming-soon"
+              ? <Clock3 size={19} />
+              : walletRequired
+                ? <Wallet size={19} />
               : isAwaitingFulfillment && !isOpening
                 ? <RefreshCw size={19} />
                 : <PackageOpen size={19} />}
