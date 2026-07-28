@@ -71,7 +71,11 @@ const manifest = {
 };
 
 await mkdir(dirname(outputPath), { recursive: true });
-await writeFile(outputPath, `${JSON.stringify(manifest, null, 2)}\n`);
+await writeFile(
+  outputPath,
+  `${JSON.stringify(manifest, null, 2)}\n`,
+  { mode: 0o600 }
+);
 console.log(`Prepared ${totalSupply} inventory commitments at ${outputPath}`);
 
 function createLeaf(batchId, inventoryIndex, inventoryId) {

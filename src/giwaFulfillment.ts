@@ -15,6 +15,7 @@ export type GiwaPullFulfillment = {
 
 type WaitForFulfillmentOptions = {
   delay?: (milliseconds: number) => Promise<void>;
+  now?: () => number;
   pollIntervalMs?: number;
   readFulfillment?: (
     receipt: GiwaPullReceipt
@@ -97,6 +98,7 @@ export async function waitForGiwaPullFulfillment(
   receipt: GiwaPullReceipt,
   {
     delay = wait,
+    now = Date.now,
     pollIntervalMs = 750,
     readFulfillment = readGiwaPullFulfillment,
     triggerFulfillment = triggerGiwaPullFulfillment,
@@ -104,8 +106,10 @@ export async function waitForGiwaPullFulfillment(
     timeoutMs = 120_000
   }: WaitForFulfillmentOptions = {}
 ): Promise<GiwaPullFulfillment | undefined> {
+  const startedAt = now();
   let elapsedMs = 0;
   let nextTriggerAt = 0;
+  let nextPollIntervalMs = pollIntervalMs;
 
   while (true) {
     if (elapsedMs >= nextTriggerAt) {
@@ -119,11 +123,22 @@ export async function waitForGiwaPullFulfillment(
 
     const fulfillment = await readFulfillment(receipt);
     if (fulfillment) return fulfillment;
-    if (elapsedMs >= timeoutMs) return undefined;
+    const wallClockElapsedMs = Math.max(0, now() - startedAt);
+    if (elapsedMs >= timeoutMs || wallClockElapsedMs >= timeoutMs) {
+      return undefined;
+    }
 
-    const waitMs = Math.min(pollIntervalMs, timeoutMs - elapsedMs);
+    const waitMs = Math.min(
+      nextPollIntervalMs,
+      timeoutMs - elapsedMs,
+      timeoutMs - wallClockElapsedMs
+    );
     await delay(waitMs);
     elapsedMs += waitMs;
+    nextPollIntervalMs = Math.min(
+      Math.ceil(nextPollIntervalMs * 1.5),
+      5_000
+    );
   }
 }
 

@@ -8,20 +8,24 @@ const [
   privyAuthSource,
   walletSource,
   giwaPullSource,
-  giwaFulfillmentSource
+  giwaFulfillmentSource,
+  pendingPullSource
 ] = await Promise.all([
   readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/AuthActions.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/PrivyAuthActions.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/walletConnection.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/giwaPull.ts", import.meta.url), "utf8"),
-  readFile(new URL("../src/giwaFulfillment.ts", import.meta.url), "utf8")
+  readFile(new URL("../src/giwaFulfillment.ts", import.meta.url), "utf8"),
+  readFile(new URL("../src/giwaPendingPull.ts", import.meta.url), "utf8")
 ]);
 
 test("the Vending action uses the GIWA transaction path when a contract is configured", () => {
   assert.match(appSource, /requestGiwaPull\(/);
   assert.match(appSource, /getGiwaPackBatchAddress\(\)/);
   assert.match(appSource, /setOnchainPull/);
+  assert.match(appSource, /getGiwaPackBatchState\(/);
+  assert.match(appSource, /selectedGiwaBatchState !== "live"/);
 });
 
 test("a reserved GIWA pull waits for its committed inventory before Reveal", () => {
@@ -33,8 +37,18 @@ test("a reserved GIWA pull waits for its committed inventory before Reveal", () 
 
 test("a pending GIWA pull rechecks its existing receipt instead of requesting again", () => {
   assert.match(appSource, /existingOnchainPull/);
-  assert.match(appSource, /existingOnchainPull\s*\?\?\s*await requestGiwaPull/);
+  assert.match(appSource, /existingPendingPull\s*\n\s*\?\s*await confirmGiwaPullRequest/);
+  assert.match(appSource, /:\s*await requestGiwaPull/);
   assert.match(appSource, /giwaPullPending/);
+});
+
+test("a broadcast GIWA pull is persisted immediately and recovered after reload", () => {
+  assert.match(giwaPullSource, /onSubmitted\?\.\(/);
+  assert.match(appSource, /savePendingGiwaPull\(/);
+  assert.match(appSource, /getPendingGiwaPull\(/);
+  assert.match(appSource, /confirmGiwaPullRequest\(/);
+  assert.match(appSource, /clearPendingGiwaPull\(/);
+  assert.match(pendingPullSource, /requestTransactionHash/);
 });
 
 test("a submitted pull does not interrupt opening with a technical confirmation notice", () => {
@@ -45,6 +59,11 @@ test("Privy passes an EVM wallet to the GIWA pull flow", () => {
   assert.match(authSource, /onWalletChange/);
   assert.match(privyAuthSource, /getIrukaAccountWallet/);
   assert.match(walletSource, /wallet\.walletClientType\?\.startsWith\("privy"\)/);
+});
+
+test("authenticated actions wait for Privy wallets to finish restoring", () => {
+  assert.match(privyAuthSource, /authenticated\s*&&\s*!walletsReady/);
+  assert.match(privyAuthSource, /labels\.connecting/);
 });
 
 test("GIWA pull asks the wallet for one request transaction", () => {

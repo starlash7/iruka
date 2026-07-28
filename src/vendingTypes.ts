@@ -92,7 +92,12 @@ export type VendingPull = {
 // Legacy marketplace and pull-view category values remain until those views move to the Vending API.
 export type Category = "K-pop" | "TCG";
 export type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Iruka";
-export type VaultStatus = "Vaulted" | "Listed" | "Sold" | "Redeem queued";
+export type VaultStatus =
+  | "Pulled"
+  | "Vaulted"
+  | "Listed"
+  | "Sold"
+  | "Redeem queued";
 
 export type CardPull = {
   category: Category;

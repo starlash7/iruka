@@ -13,6 +13,7 @@ type AccountAddFundsDialogProps = {
   copy: AccountCopy;
   externalWalletAddress?: string;
   onClose: () => void;
+  onConnectWallet: () => void;
   onCopyAddress: () => void;
   onTransfer: (amount: string) => Promise<GiwaTransferReceipt>;
   onTransferComplete: () => void;
@@ -26,6 +27,7 @@ export function AccountAddFundsDialog({
   copy,
   externalWalletAddress,
   onClose,
+  onConnectWallet,
   onCopyAddress,
   onTransfer,
   onTransferComplete,
@@ -67,6 +69,7 @@ export function AccountAddFundsDialog({
             copied={copied}
             copy={copy}
             externalWalletAddress={externalWalletAddress}
+            onConnectWallet={onConnectWallet}
             onCopyAddress={onCopyAddress}
             onTransfer={onTransfer}
             onTransferComplete={onTransferComplete}

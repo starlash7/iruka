@@ -18,7 +18,7 @@ export function createVendingCardPull(
     rarity: card.tier,
     estimatedValue: Number(card.estimatedValueRangeUsdc[0]),
     estimatedValueRangeUsdc: card.estimatedValueRangeUsdc,
-    vaultStatus: "Vaulted",
+    vaultStatus: "Pulled",
     imageStyle: "card-style-1",
     imageUrl: card.media.frontUrl,
     inventoryCardId: card.id,
@@ -30,6 +30,12 @@ export function createVendingCardPull(
     }),
     verificationId: card.verificationId
   };
+}
+
+export function isCardCustodyVerified(
+  card: Pick<CardPull, "redemption" | "verificationId">
+) {
+  return Boolean(card.verificationId && card.redemption?.eligible);
 }
 
 export function formatCardPullValue(card: CardPull) {

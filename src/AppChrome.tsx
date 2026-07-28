@@ -13,6 +13,7 @@ type AppHeaderProps = {
   activeView: AppView;
   authenticated: boolean;
   connectSignal: number;
+  externalConnectSignal: number;
   copy: AppCopy["nav"];
   locale: Locale;
   onAuthenticatedChange: Dispatch<SetStateAction<boolean>>;
@@ -27,6 +28,7 @@ export function AppHeader({
   activeView,
   authenticated,
   connectSignal,
+  externalConnectSignal,
   copy,
   locale,
   onAuthenticatedChange,
@@ -77,7 +79,15 @@ export function AppHeader({
         </button>
       </nav>
 
-      <a className="header-wordmark" href="/" aria-label="Iruka home">
+      <a
+        className="header-wordmark"
+        href="#home"
+        aria-label="Iruka home"
+        onClick={(event) => {
+          event.preventDefault();
+          onShowView("home");
+        }}
+      >
         <img src={irukaWordmark} alt="Iruka" />
       </a>
 
@@ -103,6 +113,7 @@ export function AppHeader({
         ) : null}
         <AuthActions
           connectSignal={connectSignal}
+          externalConnectSignal={externalConnectSignal}
           labels={{
             account: copy.account,
             connected: copy.walletConnected,
@@ -139,7 +150,15 @@ export function AppFooter({ copy, onShowView, pullLabel }: AppFooterProps) {
   return (
     <footer className="site-footer" id="footer">
       <div className="footer-brand">
-        <a className="footer-brand-link" href="/" aria-label="Iruka home">
+        <a
+          className="footer-brand-link"
+          href="#home"
+          aria-label="Iruka home"
+          onClick={(event) => {
+            event.preventDefault();
+            onShowView("home");
+          }}
+        >
           <span className="logo-mark" aria-hidden="true">
             <img src="/iruka-logo.png" alt="" />
           </span>

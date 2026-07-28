@@ -47,10 +47,12 @@ export function RevealCard({
 
   return (
     <button
+      aria-hidden={!revealed}
       aria-label={card.name}
       className="pack-reveal-dom-card"
       data-back={showBack}
       data-revealed={revealed}
+      disabled={!revealed}
       onClick={() => revealed && setShowBack((value) => !value)}
       onPointerDown={(event) => event.stopPropagation()}
       onPointerLeave={resetCard}
@@ -59,6 +61,7 @@ export function RevealCard({
         "--card-accent": config.accent,
         "--card-foil": config.foil
       } as CSSProperties}
+      tabIndex={revealed ? 0 : -1}
       type="button"
     >
       <span className="pack-reveal-card-aura" aria-hidden="true" />

@@ -19,6 +19,7 @@ export type AuthLabels = {
 
 export type AuthActionsProps = {
   connectSignal: number;
+  externalConnectSignal: number;
   labels: AuthLabels;
   locale: Locale;
   mode: WalletAuthMode;
@@ -31,6 +32,7 @@ export type AuthActionsProps = {
 
 export function AuthActions({
   connectSignal,
+  externalConnectSignal,
   labels,
   locale,
   mode,
@@ -58,6 +60,7 @@ export function AuthActions({
   return (
     <PrivyAuthActions
       connectSignal={connectSignal}
+      externalConnectSignal={externalConnectSignal}
       labels={labels}
       locale={locale}
       onAuthenticatedChange={onAuthenticatedChange}

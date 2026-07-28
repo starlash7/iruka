@@ -5,6 +5,7 @@ import {
   isAddress,
   parseEther,
   toHex,
+  zeroAddress,
   type Hex
 } from "viem";
 import { giwaSepolia } from "./giwaChain.ts";
@@ -20,6 +21,17 @@ export type GiwaTransferReceipt = {
   explorerUrl: string;
   transactionHash: Hex;
 };
+
+type GiwaTransferOptions = {
+  onSubmitted?: (transactionHash: Hex) => void;
+};
+
+export class GiwaTransferRevertedError extends Error {
+  constructor() {
+    super("GIWA transfer reverted");
+    this.name = "GiwaTransferRevertedError";
+  }
+}
 
 const publicClient = createPublicClient({
   chain: giwaSepolia,
@@ -48,6 +60,9 @@ export function createGiwaTransfer(
 
   const sender = getAddress(from);
   const recipient = getAddress(to);
+  if (recipient === zeroAddress) {
+    throw new TypeError("Enter a valid address");
+  }
   if (sender === recipient) {
     throw new TypeError("Use a different address");
   }
@@ -59,10 +74,33 @@ export function createGiwaTransfer(
   };
 }
 
+export function getSuccessfulGiwaTransferHash(receipt: {
+  status: "success" | "reverted";
+  transactionHash: Hex;
+}) {
+  if (receipt.status !== "success") {
+    throw new GiwaTransferRevertedError();
+  }
+  return receipt.transactionHash;
+}
+
+export async function waitForGiwaNativeTransfer(transactionHash: Hex) {
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: transactionHash
+  });
+  const confirmedTransactionHash = getSuccessfulGiwaTransferHash(receipt);
+
+  return {
+    explorerUrl: `${giwaSepolia.blockExplorers.default.url}/tx/${confirmedTransactionHash}`,
+    transactionHash: confirmedTransactionHash
+  };
+}
+
 export async function sendGiwaNativeTransfer(
   wallet: GiwaWallet,
   destination: string,
-  amount: string
+  amount: string,
+  options: GiwaTransferOptions = {}
 ): Promise<GiwaTransferReceipt> {
   const transaction = createGiwaTransfer(wallet.address, destination, amount);
   await wallet.switchChain(giwaSepolia.id);
@@ -77,10 +115,6 @@ export async function sendGiwaNativeTransfer(
   }
 
   const transactionHash = result as Hex;
-  await publicClient.waitForTransactionReceipt({ hash: transactionHash });
-
-  return {
-    explorerUrl: `${giwaSepolia.blockExplorers.default.url}/tx/${transactionHash}`,
-    transactionHash
-  };
+  options.onSubmitted?.(transactionHash);
+  return waitForGiwaNativeTransfer(transactionHash);
 }

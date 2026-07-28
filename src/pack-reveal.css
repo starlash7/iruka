@@ -30,6 +30,19 @@
   opacity: 0.7;
 }
 
+.pack-reveal-fallback {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  justify-self: center;
+  min-width: min(280px, calc(100vw - 40px));
+  gap: 18px;
+  color: #385071;
+  font-size: 15px;
+  font-weight: 500;
+}
+
 .pack-reveal-stage {
   position: absolute;
   inset: 0;

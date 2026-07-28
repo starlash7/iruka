@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdtemp, readFile, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
@@ -52,6 +52,7 @@ test("batch preparation commits every inventory item and creates Merkle proofs",
   assert.equal(manifest.drawSeeds[0].proof.length, 7);
   assert.equal(manifest.drawSeeds[99].drawIndex, 99);
   assert.notEqual(manifest.drawSeeds[0].seed, manifest.drawSeeds[1].seed);
+  assert.equal((await stat(outputPath)).mode & 0o777, 0o600);
 });
 
 test("pack ID controls the committed inventory IDs", async () => {

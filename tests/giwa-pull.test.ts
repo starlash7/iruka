@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   getGiwaExplorerTransactionUrl,
+  getGiwaPackBatchState,
   getGiwaPackBatchAddress,
   type GiwaPullReceipt
 } from "../src/giwaPull.ts";
@@ -40,6 +41,32 @@ test("links GIWA pull receipts to the explorer transaction", () => {
   assert.equal(
     getGiwaExplorerTransactionUrl("0x1234"),
     "https://sepolia-explorer.giwa.io/tx/0x1234"
+  );
+});
+
+test("enables GIWA pulls only for committed batches with inventory", async () => {
+  assert.equal(
+    await getGiwaPackBatchState(
+      { batchId: "IRK-GG-2026-001" },
+      async () => [100, 98]
+    ),
+    "live"
+  );
+  assert.equal(
+    await getGiwaPackBatchState(
+      { batchId: "IRK-GG-2026-001" },
+      async () => [100, 0]
+    ),
+    "sold-out"
+  );
+  assert.equal(
+    await getGiwaPackBatchState(
+      { batchId: "IRK-GG-2026-002" },
+      async () => {
+        throw new Error("BatchNotFound");
+      }
+    ),
+    "unavailable"
   );
 });
 
@@ -99,6 +126,48 @@ test("checks the result quickly after the Keeper submission", async () => {
 
   assert.deepEqual(result, fulfillment);
   assert.deepEqual(delays, [750]);
+});
+
+test("backs off repeated fulfillment reads", async () => {
+  const delays: number[] = [];
+  let readCount = 0;
+
+  const result = await waitForGiwaPullFulfillment(receipt, {
+    delay: async (milliseconds) => {
+      delays.push(milliseconds);
+    },
+    pollIntervalMs: 10,
+    readFulfillment: async () => {
+      readCount += 1;
+      return readCount === 3 ? fulfillment : undefined;
+    },
+    triggerFulfillment: async () => {},
+    triggerIntervalMs: 100,
+    timeoutMs: 100
+  });
+
+  assert.deepEqual(result, fulfillment);
+  assert.deepEqual(delays, [10, 15]);
+});
+
+test("uses a wall-clock deadline when network work consumes the timeout", async () => {
+  let currentTime = 0;
+  let readCount = 0;
+
+  const result = await waitForGiwaPullFulfillment(receipt, {
+    delay: async () => {},
+    now: () => currentTime,
+    readFulfillment: async () => {
+      readCount += 1;
+      currentTime = 101;
+      return undefined;
+    },
+    triggerFulfillment: async () => {},
+    timeoutMs: 100
+  });
+
+  assert.equal(result, undefined);
+  assert.equal(readCount, 1);
 });
 
 test("asks the same-origin keeper to fulfill the existing request", async () => {

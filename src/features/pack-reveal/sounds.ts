@@ -3,12 +3,19 @@ import type { RevealPhase } from "./revealMachine";
 let audioContext: AudioContext | undefined;
 
 function getAudioContext() {
-  audioContext ??= new AudioContext();
+  if (audioContext) return audioContext;
+  if (typeof AudioContext === "undefined") return undefined;
+  try {
+    audioContext = new AudioContext();
+  } catch {
+    return undefined;
+  }
   return audioContext;
 }
 
 function playTone(frequency: number, duration: number, gainValue: number) {
   const context = getAudioContext();
+  if (!context) return;
   const oscillator = context.createOscillator();
   const gain = context.createGain();
 
@@ -26,6 +33,7 @@ function playTone(frequency: number, duration: number, gainValue: number) {
 
 function playNoise(duration: number, gainValue: number) {
   const context = getAudioContext();
+  if (!context) return;
   const buffer = context.createBuffer(1, context.sampleRate * duration, context.sampleRate);
   const data = buffer.getChannelData(0);
   const filter = context.createBiquadFilter();
@@ -52,7 +60,8 @@ export function playRevealCue(phase: RevealPhase, muted: boolean) {
   if (muted) return;
 
   const context = getAudioContext();
-  void context.resume();
+  if (!context) return;
+  void context.resume().catch(() => undefined);
 
   if (phase === "charging") {
     playTone(132, 0.12, 0.045);

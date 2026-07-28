@@ -40,6 +40,24 @@ export type GiwaPullReceipt = {
   requestTransactionHash: Hex;
 };
 
+export type GiwaPullSubmission = Pick<
+  GiwaPullReceipt,
+  "batchId" | "contractAddress" | "requestTransactionHash"
+>;
+
+type GiwaPullOptions = {
+  onSubmitted?: (submission: GiwaPullSubmission) => void;
+};
+
+export type GiwaPackBatchState = "checking" | "live" | "sold-out" | "unavailable";
+
+export class GiwaPullRequestRevertedError extends Error {
+  constructor() {
+    super("GIWA pull request reverted");
+    this.name = "GiwaPullRequestRevertedError";
+  }
+}
+
 const publicClient = createPublicClient({
   chain: giwaSepolia,
   pollingInterval: 500,
@@ -58,9 +76,36 @@ export function getGiwaExplorerTransactionUrl(transactionHash: Hex | string) {
   return `${giwaSepolia.blockExplorers.default.url}/tx/${transactionHash}`;
 }
 
+export async function getGiwaPackBatchState(
+  pack: Pick<PackDetail, "batchId">,
+  readBatch?: (
+    batchId: Hex
+  ) => Promise<readonly [number, number, ...unknown[]]>
+): Promise<Exclude<GiwaPackBatchState, "checking">> {
+  const contractAddress = getGiwaPackBatchAddress();
+  if (!readBatch && !contractAddress) return "unavailable";
+  const loadBatch = readBatch ?? ((batchId: Hex) =>
+    publicClient.readContract({
+      address: contractAddress!,
+      abi: giwaPackBatchAbi,
+      functionName: "getBatch",
+      args: [batchId]
+    }));
+
+  try {
+    const [, available] = await loadBatch(
+      getBatchCommitmentId(pack.batchId)
+    );
+    return available > 0 ? "live" : "sold-out";
+  } catch {
+    return "unavailable";
+  }
+}
+
 export async function requestGiwaPull(
   wallet: GiwaWallet,
-  pack: Pick<PackDetail, "batchId">
+  pack: Pick<PackDetail, "batchId">,
+  options: GiwaPullOptions = {}
 ): Promise<GiwaPullReceipt> {
   const contractAddress = getGiwaPackBatchAddress();
   if (!contractAddress) throw new Error("GIWA pack contract is not configured");
@@ -89,14 +134,30 @@ export async function requestGiwaPull(
     }),
     value: toHex(priceWei)
   });
+  const submission = { batchId, contractAddress, requestTransactionHash };
+  options.onSubmitted?.(submission);
+
+  return confirmGiwaPullRequest(submission);
+}
+
+export async function confirmGiwaPullRequest(
+  submission: GiwaPullSubmission
+): Promise<GiwaPullReceipt> {
   const requestReceipt = await publicClient.waitForTransactionReceipt({
-    hash: requestTransactionHash
+    hash: submission.requestTransactionHash
   });
-  const { drawIndex, requestId } = getPullRequest(requestReceipt.logs);
+  if (requestReceipt.status !== "success") {
+    throw new GiwaPullRequestRevertedError();
+  }
+  const { drawIndex, requestId } = getPullRequest(
+    requestReceipt.logs,
+    submission.contractAddress
+  );
+  const requestTransactionHash = requestReceipt.transactionHash;
 
   return {
-    batchId,
-    contractAddress,
+    batchId: submission.batchId,
+    contractAddress: submission.contractAddress,
     drawIndex,
     explorerUrl: getGiwaExplorerTransactionUrl(requestTransactionHash),
     requestBlockNumber: requestReceipt.blockNumber,
@@ -121,11 +182,13 @@ async function sendContractTransaction(
   return result as Hex;
 }
 
-function getPullRequest(logs: readonly Log[]) {
+function getPullRequest(logs: readonly Log[], contractAddress: Address) {
   const event = parseEventLogs({
     abi: giwaPackBatchAbi,
     eventName: "PullRequested",
-    logs: [...logs],
+    logs: logs.filter(
+      (log) => log.address.toLowerCase() === contractAddress.toLowerCase()
+    ),
     strict: false
   })[0];
   if (event?.args.requestId === undefined || event.args.drawIndex === undefined) {

@@ -60,6 +60,7 @@ export const copy = {
       collectionSummary: "Collection summary",
       comingSoon: "Coming soon",
       connectExchange: "Connect exchange",
+      connectWallet: "Connect wallet",
       copied: "Copied",
       copyAddress: "Copy address",
       destination: "Destination",
@@ -197,6 +198,7 @@ export const copy = {
       Iruka: "Iruka"
     },
     statuses: {
+      Pulled: "Pulled",
       Vaulted: "Vaulted",
       Listed: "Listed",
       Sold: "Sold",
@@ -313,6 +315,7 @@ export const copy = {
       collectionSummary: "컬렉션 요약",
       comingSoon: "준비 중",
       connectExchange: "거래소 연결",
+      connectWallet: "지갑 연결",
       copied: "복사됨",
       copyAddress: "주소 복사",
       destination: "받을 주소",
@@ -450,6 +453,7 @@ export const copy = {
       Iruka: "Iruka"
     },
     statuses: {
+      Pulled: "확인 대기",
       Vaulted: "보관 중",
       Listed: "판매 중",
       Sold: "판매 완료",

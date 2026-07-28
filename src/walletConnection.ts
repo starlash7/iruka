@@ -4,6 +4,10 @@ import type {
 } from "@privy-io/react-auth";
 
 const externalWalletSessionKey = "iruka-external-wallet-session";
+type WalletSessionStorage = Pick<
+  Storage,
+  "getItem" | "removeItem" | "setItem"
+>;
 
 export function shouldHandleWalletPrompt(
   connectSignal: number,
@@ -75,15 +79,36 @@ export function getExternalGiwaWallet(
   );
 }
 
-export function getExternalWalletSessionAddress() {
-  if (typeof window === "undefined") return undefined;
-  return window.sessionStorage.getItem(externalWalletSessionKey) ?? undefined;
+export function getExternalWalletSessionAddress(
+  storage?: WalletSessionStorage
+) {
+  if (!storage && typeof window === "undefined") return undefined;
+  try {
+    return (storage ?? window.sessionStorage)
+      .getItem(externalWalletSessionKey) ?? undefined;
+  } catch {
+    return undefined;
+  }
 }
 
-export function saveExternalWalletSession(address: string) {
-  window.sessionStorage.setItem(externalWalletSessionKey, address);
+export function saveExternalWalletSession(
+  address: string,
+  storage?: WalletSessionStorage
+) {
+  if (!storage && typeof window === "undefined") return;
+  try {
+    (storage ?? window.sessionStorage)
+      .setItem(externalWalletSessionKey, address);
+  } catch {
+    // The connected wallet remains available for the current render.
+  }
 }
 
-export function clearExternalWalletSession() {
-  window.sessionStorage.removeItem(externalWalletSessionKey);
+export function clearExternalWalletSession(storage?: WalletSessionStorage) {
+  if (!storage && typeof window === "undefined") return;
+  try {
+    (storage ?? window.sessionStorage).removeItem(externalWalletSessionKey);
+  } catch {
+    // Session cleanup must not block login or logout.
+  }
 }

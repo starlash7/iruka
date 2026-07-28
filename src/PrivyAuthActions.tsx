@@ -1,4 +1,5 @@
 import {
+  useConnectWallet,
   useCreateWallet,
   useLogin,
   usePrivy,
@@ -21,6 +22,7 @@ import {
 
 export function PrivyAuthActions({
   connectSignal,
+  externalConnectSignal,
   labels,
   locale,
   onAuthenticatedChange,
@@ -36,6 +38,20 @@ export function PrivyAuthActions({
   const { wallets, ready: walletsReady } = useWallets();
   const { createWallet } = useCreateWallet();
   const walletSetupAttemptRef = useRef<string>();
+  const handledExternalConnectSignalRef = useRef(0);
+  const { connectWallet } = useConnectWallet({
+    onSuccess: ({ wallet }) => {
+      if (
+        wallet.type !== "ethereum"
+        || wallet.walletClientType.startsWith("privy")
+      ) {
+        return;
+      }
+
+      saveExternalWalletSession(wallet.address);
+      setExternalWalletSessionAddress(wallet.address);
+    }
+  });
   const { login } = useLogin({
     onComplete: ({ loginAccount, wasAlreadyAuthenticated }) => {
       const address = getExternalLoginWalletAddress(
@@ -133,6 +149,29 @@ export function PrivyAuthActions({
     if (promptAction === "login") beginLogin();
   }, [authenticated, connectSignal, login, ready]);
 
+  useEffect(() => {
+    if (
+      !authenticated
+      || !walletsReady
+      || externalWallet
+      || externalConnectSignal <= handledExternalConnectSignalRef.current
+    ) {
+      return;
+    }
+
+    handledExternalConnectSignalRef.current = externalConnectSignal;
+    connectWallet({
+      walletChainType: "ethereum-only",
+      walletList: ["phantom", "okx_wallet", "metamask"]
+    });
+  }, [
+    authenticated,
+    connectWallet,
+    externalConnectSignal,
+    externalWallet,
+    walletsReady
+  ]);
+
   if (!authenticated) {
     return (
       <div className="auth-actions">
@@ -146,6 +185,17 @@ export function PrivyAuthActions({
             {labels.signUp}
           </button>
         </IrukaBeam>
+      </div>
+    );
+  }
+
+  if (authenticated && !walletsReady) {
+    return (
+      <div className="auth-actions">
+        <button className="auth-button auth-button-secondary" disabled type="button">
+          <Wallet size={15} />
+          {labels.connecting}
+        </button>
       </div>
     );
   }

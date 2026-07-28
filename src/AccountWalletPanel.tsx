@@ -10,6 +10,7 @@ type AccountWalletPanelProps = {
   onAddFunds: () => void;
   onRetryBalance: () => void;
   onWithdraw: () => void;
+  transferPending?: boolean;
 };
 
 export function AccountWalletPanel({
@@ -20,7 +21,8 @@ export function AccountWalletPanel({
   onCopyAddress,
   onAddFunds,
   onRetryBalance,
-  onWithdraw
+  onWithdraw,
+  transferPending = false
 }: AccountWalletPanelProps) {
   return (
     <article className="account-wallet-panel">
@@ -77,6 +79,7 @@ export function AccountWalletPanel({
       <div className="account-wallet-actions">
         <button
           className="account-add-funds-button iruka-action-button"
+          disabled={transferPending}
           onClick={onAddFunds}
           type="button"
         >
@@ -85,6 +88,7 @@ export function AccountWalletPanel({
         </button>
         <button
           className="account-withdraw-button iruka-secondary-button"
+          disabled={transferPending}
           onClick={onWithdraw}
           type="button"
         >

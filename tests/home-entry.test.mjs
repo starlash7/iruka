@@ -9,7 +9,11 @@ let server;
 let HomeEntry;
 
 before(async () => {
-  server = await createServer({ appType: "custom", server: { middlewareMode: true } });
+  server = await createServer({
+    appType: "custom",
+    optimizeDeps: { noDiscovery: true },
+    server: { hmr: false, middlewareMode: true }
+  });
   ({ HomeEntry } = await server.ssrLoadModule("/src/HomeEntry.tsx"));
 });
 

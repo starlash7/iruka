@@ -74,6 +74,9 @@ test("revealed card supports pointer glare and a flip state", async () => {
   assert.match(source, /pack-reveal-card-edge/);
   assert.match(source, /pack-reveal-card-foil/);
   assert.match(source, /pack-reveal-card-glare/);
+  assert.match(source, /aria-hidden=\{!revealed\}/);
+  assert.match(source, /disabled=\{!revealed\}/);
+  assert.match(source, /tabIndex=\{revealed \? 0 : -1\}/);
 });
 
 test("pack and card motion styles include the premium rarity treatments", async () => {
@@ -129,6 +132,8 @@ test("reveal modal locks background scroll and manages keyboard focus", async ()
   assert.match(dialogSource, /document\.body\.style\.overflow = "hidden"/);
   assert.match(dialogSource, /document\.body\.style\.overflow = previousOverflow/);
   assert.match(dialogSource, /continueButtonRef\.current\?\.focus/);
+  assert.match(dialogSource, /\.inert = true/);
+  assert.match(dialogSource, /event\.key !== "Tab"/);
 });
 
 test("reveal styles cover summary and reduced motion", async () => {
@@ -169,4 +174,20 @@ test("reveal layout includes transparency and narrow-mobile safeguards", async (
   assert.match(source, /max-height:\s*calc\(100dvh/);
   assert.match(source, /@media \(max-width: 390px\)/);
   assert.match(source, /@media \(prefers-reduced-transparency: reduce\)/);
+});
+
+test("reveal loading and chunk failures never leave a blank blocking overlay", async () => {
+  const [appSource, boundarySource, stylesheet] = await Promise.all([
+    readSource("../src/App.tsx"),
+    readSource("../src/features/pack-reveal/PackRevealBoundary.tsx"),
+    readSource("../src/pack-reveal.css")
+  ]);
+
+  assert.match(appSource, /<PackRevealBoundary/);
+  assert.match(appSource, /<PackRevealLoading label=\{t\.hero\.opening\} \/>/);
+  assert.doesNotMatch(appSource, /pack-reveal-loading" aria-hidden="true"/);
+  assert.match(boundarySource, /getDerivedStateFromError/);
+  assert.match(boundarySource, /role="dialog"/);
+  assert.match(boundarySource, /onClick=\{onComplete\}/);
+  assert.match(stylesheet, /\.pack-reveal-fallback/);
 });

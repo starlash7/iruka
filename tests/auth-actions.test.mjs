@@ -8,15 +8,25 @@ let getExternalLoginWalletAddress;
 let getExternalGiwaWallet;
 let getIrukaAccountWallet;
 let getWalletPromptAction;
+let getExternalWalletSessionAddress;
+let saveExternalWalletSession;
+let clearExternalWalletSession;
 let shouldHandleWalletPrompt;
 
 before(async () => {
-  server = await createServer({ appType: "custom", server: { middlewareMode: true } });
+  server = await createServer({
+    appType: "custom",
+    optimizeDeps: { noDiscovery: true },
+    server: { hmr: false, middlewareMode: true }
+  });
   ({
     getExternalLoginWalletAddress,
     getExternalGiwaWallet,
     getIrukaAccountWallet,
     getWalletPromptAction,
+    getExternalWalletSessionAddress,
+    saveExternalWalletSession,
+    clearExternalWalletSession,
     shouldHandleWalletPrompt
   } = await server.ssrLoadModule("/src/walletConnection.ts"));
 });
@@ -128,6 +138,26 @@ test("pack prompts login but never auto-connect an external wallet", () => {
   assert.equal(getWalletPromptAction(1, 1, true, false), undefined);
 });
 
+test("session storage restrictions do not break wallet authentication", () => {
+  const restrictedStorage = {
+    getItem: () => {
+      throw new DOMException("Blocked", "SecurityError");
+    },
+    removeItem: () => {
+      throw new DOMException("Blocked", "SecurityError");
+    },
+    setItem: () => {
+      throw new DOMException("Blocked", "SecurityError");
+    }
+  };
+
+  assert.equal(getExternalWalletSessionAddress(restrictedStorage), undefined);
+  assert.doesNotThrow(() =>
+    saveExternalWalletSession("0xexternal", restrictedStorage)
+  );
+  assert.doesNotThrow(() => clearExternalWalletSession(restrictedStorage));
+});
+
 test("primary authentication buttons use the subtle action beam", async () => {
   const source = await readFile(new URL("../src/PrivyAuthActions.tsx", import.meta.url), "utf8");
 
@@ -152,6 +182,24 @@ test("all login methods receive an Iruka embedded wallet", async () => {
   assert.match(authSource, /useCreateWallet/);
   assert.match(authSource, /getIrukaAccountWallet/);
   assert.match(authSource, /getExternalGiwaWallet/);
+});
+
+test("signed-in users can explicitly connect an external EVM funding wallet", async () => {
+  const [appSource, headerSource, authSource] = await Promise.all([
+    readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/AppChrome.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/PrivyAuthActions.tsx", import.meta.url), "utf8")
+  ]);
+
+  assert.match(appSource, /externalWalletPromptSignal/);
+  assert.match(appSource, /onConnectExternalWallet=/);
+  assert.match(headerSource, /externalConnectSignal/);
+  assert.match(authSource, /useConnectWallet\(\{/);
+  assert.match(authSource, /walletChainType:\s*"ethereum-only"/);
+  assert.match(
+    authSource,
+    /walletList:\s*\["phantom", "okx_wallet", "metamask"\]/
+  );
 });
 
 test("authenticated users get a profile menu instead of a wallet-address button", async () => {

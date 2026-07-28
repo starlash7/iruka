@@ -1,4 +1,4 @@
-import { Copy, ExternalLink } from "lucide-react";
+import { Copy, ExternalLink, Wallet } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { AccountAssetField } from "./AccountAssetField";
 import {
@@ -15,6 +15,7 @@ type AccountCryptoDepositPanelProps = {
   copied: boolean;
   copy: AccountCopy;
   externalWalletAddress?: string;
+  onConnectWallet: () => void;
   onCopyAddress: () => void;
   onTransfer: (amount: string) => Promise<GiwaTransferReceipt>;
   onTransferComplete: () => void;
@@ -25,6 +26,7 @@ export function AccountCryptoDepositPanel({
   copied,
   copy,
   externalWalletAddress,
+  onConnectWallet,
   onCopyAddress,
   onTransfer,
   onTransferComplete
@@ -93,7 +95,16 @@ export function AccountCryptoDepositPanel({
             </button>
           </form>
         </section>
-      ) : null}
+      ) : (
+        <button
+          className="account-connect-wallet iruka-action-button"
+          onClick={onConnectWallet}
+          type="button"
+        >
+          <Wallet size={17} />
+          {copy.connectWallet}
+        </button>
+      )}
 
       <TransferStatus copy={copy} state={state} />
       <a

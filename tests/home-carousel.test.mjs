@@ -9,7 +9,11 @@ let server;
 let HomeImageCarousel;
 
 before(async () => {
-  server = await createServer({ appType: "custom", server: { middlewareMode: true } });
+  server = await createServer({
+    appType: "custom",
+    optimizeDeps: { noDiscovery: true },
+    server: { hmr: false, middlewareMode: true }
+  });
   ({ HomeImageCarousel } = await server.ssrLoadModule("/src/HomeImageCarousel.tsx"));
 });
 

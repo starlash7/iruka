@@ -21,6 +21,7 @@ export type AccountCopy = {
   collectionSummary: string;
   comingSoon: string;
   connectExchange: string;
+  connectWallet: string;
   copied: string;
   copyAddress: string;
   destination: string;
@@ -83,6 +84,7 @@ type AccountPageProps = {
   onAddFundsTransfer: (amount: string) => Promise<GiwaTransferReceipt>;
   onCloseAddFunds: () => void;
   onCloseWithdraw: () => void;
+  onConnectExternalWallet: () => void;
   onCopyAddress: () => void;
   onRetryBalance: () => void;
   onTransferComplete: () => void;
@@ -91,6 +93,7 @@ type AccountPageProps = {
     destination: string,
     amount: string
   ) => Promise<GiwaTransferReceipt>;
+  transferPending?: boolean;
   withdrawOpen: boolean;
 };
 
@@ -107,11 +110,13 @@ export function AccountPage({
   onAddFundsTransfer,
   onCloseAddFunds,
   onCloseWithdraw,
+  onConnectExternalWallet,
   onCopyAddress,
   onRetryBalance,
   onTransferComplete,
   onWithdraw,
   onWithdrawTransfer,
+  transferPending = false,
   withdrawOpen
 }: AccountPageProps) {
   return (
@@ -138,6 +143,7 @@ export function AccountPage({
               onCopyAddress={onCopyAddress}
               onRetryBalance={onRetryBalance}
               onWithdraw={onWithdraw}
+              transferPending={transferPending}
             />
           </section>
         </div>
@@ -161,6 +167,7 @@ export function AccountPage({
         copy={copy}
         externalWalletAddress={externalWalletAddress}
         onClose={onCloseAddFunds}
+        onConnectWallet={onConnectExternalWallet}
         onCopyAddress={onCopyAddress}
         onTransfer={onAddFundsTransfer}
         onTransferComplete={onTransferComplete}

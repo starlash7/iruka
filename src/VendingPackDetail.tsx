@@ -31,6 +31,7 @@ type VendingPackDetailProps = {
   onOpenPack: () => void;
   onchainReceipt?: GiwaPullReceipt;
   pack: PackDetail;
+  pullDisabled?: boolean;
   rarityLabels: Record<RarityTier, string>;
   testnetEnabled?: boolean;
   walletRequired: boolean;
@@ -54,6 +55,7 @@ export function VendingPackDetail({
   onOpenPack,
   onchainReceipt,
   pack,
+  pullDisabled = false,
   rarityLabels,
   testnetEnabled = false,
   walletRequired
@@ -98,10 +100,10 @@ export function VendingPackDetail({
           <strong>{formatUsdc(pack.priceUsdc)}</strong>
         </div>
 
-        <IrukaBeam active={!isOpening} className="vending-primary-beam" variant="action">
+        <IrukaBeam active={!isOpening && !pullDisabled} className="vending-primary-beam" variant="action">
           <button
             className="iruka-action-button vending-primary-action"
-            disabled={isOpening}
+            disabled={isOpening || pullDisabled}
             onClick={onOpenPack}
             type="button"
           >

@@ -69,3 +69,21 @@ test("Funds dialogs and header sign-out reuse the accessible session lifecycle",
     /if \(walletAuth !== "privy" \|\| !wasSignedIn \|\| isSignedIn\) return;[\s\S]*?setActiveView\("home"\);/
   );
 });
+
+test("app views update browser history and restore revealed inventory", async () => {
+  const [appSource, chromeSource] = await Promise.all([
+    readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/AppChrome.tsx", import.meta.url), "utf8")
+  ]);
+
+  assert.match(appSource, /window\.history\.pushState/);
+  assert.match(appSource, /window\.addEventListener\("popstate"/);
+  assert.match(appSource, /getWalletCardCollection\(/);
+  assert.match(appSource, /saveWalletCardCollection\(/);
+  assert.match(
+    appSource,
+    /setCollection\(\(items\) =>[\s\S]*?pendingReveal/
+  );
+  assert.match(chromeSource, /onClick=\{\(\) => onShowView\("home"\)\}/);
+  assert.doesNotMatch(chromeSource, /className="header-wordmark" href="\/"/);
+});

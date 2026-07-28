@@ -24,6 +24,19 @@
   font-weight: 620;
 }
 
+.account-connect-wallet {
+  display: inline-flex;
+  gap: 8px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 620;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
 .account-transfer-form {
   display: grid;
   gap: 11px;

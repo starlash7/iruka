@@ -20,6 +20,7 @@ const accountCopy = {
   collectionSummary: "Collection summary",
   comingSoon: "Coming soon",
   connectExchange: "Connect exchange",
+  connectWallet: "Connect wallet",
   copied: "Copied",
   copyAddress: "Copy address",
   destination: "Destination",
@@ -68,6 +69,7 @@ let server;
 before(async () => {
   server = await createServer({
     appType: "custom",
+    optimizeDeps: { noDiscovery: true },
     server: { hmr: false, middlewareMode: true }
   });
 
@@ -111,6 +113,7 @@ function renderAccountPage(overrides = {}) {
       }),
       onCloseAddFunds: () => undefined,
       onCloseWithdraw: () => undefined,
+      onConnectExternalWallet: () => undefined,
       onCopyAddress: () => undefined,
       onRetryBalance: () => undefined,
       onTransferComplete: () => undefined,
@@ -212,6 +215,19 @@ test("Account primary actions reuse the Iruka action treatment", () => {
   assert.match(
     markup,
     /class="account-address-button iruka-secondary-button"/
+  );
+});
+
+test("Account blocks another funds action while a submitted transfer is pending", () => {
+  const markup = renderAccountPage({ transferPending: true });
+
+  assert.match(
+    markup,
+    /class="account-add-funds-button iruka-action-button" disabled=""/
+  );
+  assert.match(
+    markup,
+    /class="account-withdraw-button iruka-secondary-button" disabled=""/
   );
 });
 
@@ -406,6 +422,7 @@ test("Crypto deposit exposes the Iruka address and only enables GIWA test ETH", 
       copied: false,
       copy: accountCopy,
       externalWalletAddress: "0x0000000000000000000000000000000000000002",
+      onConnectWallet: () => undefined,
       onCopyAddress: () => undefined,
       onTransfer: async () => ({
         explorerUrl: "https://sepolia-explorer.giwa.io/tx/0x1",
@@ -486,4 +503,33 @@ test("Account copy is available in English and Korean", () => {
   assert.equal(localizedCopy.ko.account.connectExchange, "거래소 연결");
   assert.equal(localizedCopy.ko.account.receiveChain, "받을 체인");
   assert.equal(localizedCopy.ko.account.testEth, "ETH");
+});
+
+test("crypto funding offers an explicit wallet connection when needed", async () => {
+  const source = await readFile(
+    new URL("../src/AccountCryptoDepositPanel.tsx", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(source, /onConnectWallet:\s*\(\)\s*=>\s*void/);
+  assert.match(source, /\{externalWalletAddress \? \(/);
+  assert.match(source, /copy\.connectWallet/);
+  assert.match(source, /onClick=\{onConnectWallet\}/);
+});
+
+test("deposit confirmation is persisted under the Iruka account address", async () => {
+  const source = await readFile(
+    new URL("../src/AccountView.tsx", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(
+    source,
+    /createPendingGiwaTransfer\(\{[\s\S]*?walletAddress[\s\S]*?\}\)/
+  );
+  assert.doesNotMatch(source, /walletAddress:\s*sender\.address/);
+  assert.match(
+    source,
+    /clearPendingGiwaTransfer\([\s\S]*?window\.localStorage,[\s\S]*?walletAddress,[\s\S]*?receipt\.transactionHash/
+  );
 });

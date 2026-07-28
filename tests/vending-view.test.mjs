@@ -18,7 +18,11 @@ let VendingPackRail;
 let VendingView;
 
 before(async () => {
-  server = await createServer({ appType: "custom", server: { middlewareMode: true } });
+  server = await createServer({
+    appType: "custom",
+    optimizeDeps: { noDiscovery: true },
+    server: { hmr: false, middlewareMode: true }
+  });
   ({ createRevealCard, createVendingCardPull, formatCardPullValue } = await server.ssrLoadModule("/src/cardFlow.tsx"));
   ({ copy: appCopy } = await server.ssrLoadModule("/src/appCopy.ts"));
   ({ getPackInventory, packDetails } = await server.ssrLoadModule("/src/vendingData.ts"));
@@ -119,6 +123,7 @@ test("Vending API pulls preserve the selected inventory card and USDC range", ()
   assert.equal(card.imageUrl, inventoryCard.media.frontUrl);
   assert.deepEqual(card.estimatedValueRangeUsdc, inventoryCard.estimatedValueRangeUsdc);
   assert.equal(formatCardPullValue(card), "21.00 – 57.00 USDC");
+  assert.equal(card.vaultStatus, "Pulled");
 });
 
 test("Vending pull records use the active locale's pack label", () => {
@@ -246,7 +251,10 @@ test("Vending keeps a subtle beam aligned to the purchase CTA and tier selection
     readFile(new URL("../src/vending-responsive.css", import.meta.url), "utf8")
   ]);
 
-  assert.match(detailSource, /<IrukaBeam active=\{!isOpening\} className="vending-primary-beam" variant="action">/);
+  assert.match(
+    detailSource,
+    /<IrukaBeam active=\{!isOpening && !pullDisabled\} className="vending-primary-beam" variant="action">/
+  );
   assert.match(detailSource, /className="iruka-action-button vending-primary-action"/);
   assert.match(railSource, /<IrukaBeam/);
   assert.match(stylesheet, /\.vending-primary-beam \{[\s\S]*?margin-top: 20px;/);

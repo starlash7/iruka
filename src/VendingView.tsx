@@ -59,6 +59,7 @@ type VendingViewProps = {
   packs: readonly PackDetail[];
   pullActions: ReactNode;
   pullCard: ReactNode;
+  pullDisabled?: boolean;
   recentPulls: readonly CardPull[];
   resultRef: Ref<HTMLElement>;
   selectedPack: PackDetail;
@@ -82,6 +83,7 @@ export function VendingView({
   packs,
   pullActions,
   pullCard,
+  pullDisabled = false,
   recentPulls,
   resultRef,
   selectedPack,
@@ -120,6 +122,7 @@ export function VendingView({
         onOpenPack={onOpenPack}
         onchainReceipt={onchainReceipt}
         pack={selectedPack}
+        pullDisabled={pullDisabled}
         rarityLabels={copy.rarities}
         testnetEnabled={testnetEnabled}
         walletRequired={walletRequired}
