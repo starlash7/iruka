@@ -16,6 +16,7 @@ import {
   snapshotAt,
   type PackFixture
 } from "./vendingFixtures.ts";
+import { getPullCardAsset } from "./pullCardAssets.ts";
 
 type AvailabilityInput = {
   configured?: "coming-soon";
@@ -23,10 +24,6 @@ type AvailabilityInput = {
   total: number;
 };
 
-const cardMedia = {
-  frontUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href,
-  backUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href
-};
 function createInventoryCards(fixture: PackFixture): readonly InventoryCard[] {
   const entries = fixture.rarityOdds.flatMap((odds, rarityIndex) =>
     Array.from({ length: odds.eligibleCount }, (_, raritySequence) => ({
@@ -40,18 +37,22 @@ function createInventoryCards(fixture: PackFixture): readonly InventoryCard[] {
 
   return entries
     .sort((a, b) => a.raritySequence - b.raritySequence || a.rarityIndex - b.rarityIndex)
-    .map(({ individualOddsBasisPoints, odds, raritySequence }, index) => {
+    .map(({ individualOddsBasisPoints, odds }, index) => {
       const sequence = index + 1;
+      const cardAsset = getPullCardAsset(index);
 
       return {
         id: `${fixture.id}-inventory-${String(sequence).padStart(3, "0")}`,
         packId: fixture.id,
-        title: `${fixture.tier} ${odds.tier} ${String(raritySequence + 1).padStart(2, "0")}`,
+        title: cardAsset.title,
         tier: odds.tier,
         serial: `IRK-${fixture.id.toUpperCase()}-${String(sequence).padStart(4, "0")}`,
         estimatedValueRangeUsdc: odds.estimatedValueRangeUsdc,
         individualOddsBasisPoints,
-        media: cardMedia,
+        media: {
+          backUrl: cardAsset.imageUrl,
+          frontUrl: cardAsset.imageUrl
+        },
         redemption: { eligible: false, shipmentAvailable: false }
       };
     });

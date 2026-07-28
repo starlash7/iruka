@@ -13,9 +13,9 @@
 .account-inventory-panel > header {
   display: flex;
   grid-column: 1 / -1;
-  gap: 16px;
+  gap: 8px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .account-inventory-panel h2 {
@@ -28,13 +28,19 @@
 
 .account-inventory-icon {
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   place-items: center;
   color: var(--blue);
-  border: 1px solid rgba(111, 141, 255, 0.14);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.82);
+  border: 0;
+  background: transparent;
+}
+
+.account-inventory-icon img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 7px rgba(63, 99, 184, 0.15));
 }
 
 .account-inventory-list {

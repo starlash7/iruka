@@ -117,7 +117,7 @@ export function createRevealCard(
 ): RevealCard {
   return {
     estimatedValue: card.estimatedValue,
-    imageUrl: createRevealImageUrl(card, rarityLabel, valueLabel),
+    imageUrl: card.imageUrl ?? createRevealImageUrl(card, rarityLabel, valueLabel),
     name: card.member,
     rarity: toRevealRarity(card.rarity),
     serial: card.serial,

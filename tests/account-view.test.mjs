@@ -138,6 +138,9 @@ test("Account page presents an Iruka IP profile with real account essentials", (
   assert.doesNotMatch(markup, /roadmap-iruka-universe\.jpg/);
   assert.doesNotMatch(markup, /<video|account-profile-cover\.mp4/);
   assert.match(markup, /class="account-profile-nav"/);
+  assert.match(markup, /src="\/assets\/iruka-icon-overview\.png"/);
+  assert.match(markup, /src="\/assets\/iruka-icon-inventory\.png"/);
+  assert.match(markup, /src="\/assets\/iruka-icon-wallet\.png"/);
   assert.doesNotMatch(
     markup,
     /account-profile-cluster|account-profile-mark|account-identity|iruka-logo\.png/
@@ -149,7 +152,12 @@ test("Account page presents an Iruka IP profile with real account essentials", (
   assert.match(markup, /class="account-wallet-panel"/);
   assert.equal(markup.match(/class="account-stat /g)?.length, 2);
   assert.doesNotMatch(markup, /account-stat-listed|account-stat-shipping/);
+  assert.doesNotMatch(markup, /account-stat-icon/);
   assert.match(markup, /class="account-inventory-panel" id="account-inventory"/);
+  assert.ok(
+    markup.indexOf("iruka-icon-inventory.png", markup.indexOf("account-inventory-panel")) <
+      markup.indexOf("<h2>Inventory</h2>", markup.indexOf("account-inventory-panel"))
+  );
   assert.doesNotMatch(markup, /account-profile-card|account-balance-card|account-avatar/);
   assert.match(markup, />Account</);
   assert.match(markup, />Overview</);
@@ -180,9 +188,8 @@ test("Wallet keeps only essential account actions and values", () => {
   assert.match(wallet, /0\.0012 ETH/);
   assert.match(wallet, />Add funds</);
   assert.match(wallet, />Withdraw</);
-  assert.match(
-    wallet,
-    /class="account-wallet-heading"><h2>Iruka Wallet<\/h2><span aria-hidden="true">/
+  assert.ok(
+    wallet.indexOf("iruka-icon-wallet.png") < wallet.indexOf("<h2>Iruka Wallet</h2>")
   );
   assert.doesNotMatch(wallet, /Sign out|account-wallet-sign-out/);
   assert.doesNotMatch(
@@ -224,7 +231,11 @@ test("Account navigation and metrics use the compact Iruka type hierarchy", asyn
   );
   assert.match(
     profileStyles,
-    /\.account-profile-nav a \{[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 550;/
+    /\.account-profile-nav a \{[\s\S]*?min-height: 52px;[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 550;/
+  );
+  assert.match(
+    profileStyles,
+    /\.account-nav-icon \{[\s\S]*?width: 44px;[\s\S]*?height: 44px;/
   );
   assert.match(
     profileStyles,
@@ -238,6 +249,7 @@ test("Account navigation and metrics use the compact Iruka type hierarchy", asyn
     statStyles,
     /\.account-stat-label \{[\s\S]*?color: var\(--muted\);[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 550;/
   );
+  assert.doesNotMatch(statStyles, /\.account-stat-icon/);
   assert.match(
     statStyles,
     /\.account-stat strong \{[\s\S]*?font-size: clamp\(27px, 2vw, 32px\);[\s\S]*?font-weight: 600;/
@@ -251,8 +263,20 @@ test("Account navigation and metrics use the compact Iruka type hierarchy", asyn
     /\.account-balance-value \{[\s\S]*?font-size: clamp\(27px, 2vw, 32px\);[\s\S]*?font-weight: 600;/
   );
   assert.match(
+    balanceStyles,
+    /\.account-wallet-heading > span img \{[\s\S]*?width: 44px;[\s\S]*?height: 44px;/
+  );
+  assert.match(
     inventoryStyles,
     /\.account-inventory-panel h2 \{[\s\S]*?font-weight: 600;/
+  );
+  assert.match(
+    inventoryStyles,
+    /\.account-inventory-panel > header \{[\s\S]*?justify-content: flex-start;/
+  );
+  assert.match(
+    inventoryStyles,
+    /\.account-inventory-icon img \{[\s\S]*?width: 46px;[\s\S]*?height: 46px;/
   );
   assert.match(
     inventoryStyles,

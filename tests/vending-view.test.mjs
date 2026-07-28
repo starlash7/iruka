@@ -9,6 +9,7 @@ let server;
 let createRevealCard;
 let createVendingCardPull;
 let formatCardPullValue;
+let getPackInventory;
 let appCopy;
 let packDetails;
 let VendingPackDetail;
@@ -20,7 +21,7 @@ before(async () => {
   server = await createServer({ appType: "custom", server: { middlewareMode: true } });
   ({ createRevealCard, createVendingCardPull, formatCardPullValue } = await server.ssrLoadModule("/src/cardFlow.tsx"));
   ({ copy: appCopy } = await server.ssrLoadModule("/src/appCopy.ts"));
-  ({ packDetails } = await server.ssrLoadModule("/src/vendingData.ts"));
+  ({ getPackInventory, packDetails } = await server.ssrLoadModule("/src/vendingData.ts"));
   ({ VendingPackDetail } = await server.ssrLoadModule("/src/VendingPackDetail.tsx"));
   ({ VendingPackInventory } = await server.ssrLoadModule("/src/VendingPackInventory.tsx"));
   ({ VendingPackRail } = await server.ssrLoadModule("/src/VendingPackRail.tsx"));
@@ -62,6 +63,45 @@ test("Vending reveal cards retain their USDC display value", () => {
 
   assert.equal(card.valueLabel, "29.00 USDC");
   assert.match(decodeURIComponent(card.imageUrl), /29\.00 USDC/);
+});
+
+test("Vending reveal cards prefer the selected inventory image", () => {
+  const imageUrl = "/assets/pull-cards/card-01.jpg";
+  const card = createRevealCard({
+    estimatedValue: 29,
+    group: "Debut",
+    imageUrl,
+    member: "fromis_9 · Hayoung",
+    rarity: "Rare",
+    serial: "IRK-0001"
+  }, "Rare", "29.00 USDC");
+
+  assert.equal(card.imageUrl, imageUrl);
+});
+
+test("Vending inventory rotates through the twenty vaulted card images", async () => {
+  const inventory = await getPackInventory("debut", { limit: 21 });
+  const firstCycle = inventory.items.slice(0, 20).map((card) => card.media.frontUrl);
+
+  assert.equal(new Set(firstCycle).size, 20);
+  assert.equal(firstCycle[0], "/assets/pull-cards/card-01.jpg");
+  assert.equal(firstCycle[19], "/assets/pull-cards/card-20.jpg");
+  assert.equal(inventory.items[20].media.frontUrl, firstCycle[0]);
+  assert.equal(inventory.items[0].title, "fromis_9 · Hayoung");
+});
+
+test("Vending pull card assets are present in the public bundle", async () => {
+  const assets = await Promise.all(
+    Array.from({ length: 20 }, (_, index) =>
+      readFile(new URL(
+        `../public/assets/pull-cards/card-${String(index + 1).padStart(2, "0")}.jpg`,
+        import.meta.url
+      ))
+    )
+  );
+
+  assert.equal(assets.length, 20);
+  assert.ok(assets.every((asset) => asset.byteLength > 100_000));
 });
 
 test("Vending API pulls preserve the selected inventory card and USDC range", () => {

@@ -1,4 +1,4 @@
-import { ArrowDownToLine, ArrowUpFromLine, Copy, RefreshCw, WalletCards } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Copy, RefreshCw } from "lucide-react";
 import type { AccountBalance, AccountCopy } from "./AccountPage";
 
 type AccountWalletPanelProps = {
@@ -25,8 +25,10 @@ export function AccountWalletPanel({
   return (
     <article className="account-wallet-panel">
       <header className="account-wallet-heading">
+        <span aria-hidden="true">
+          <img alt="" src="/assets/iruka-icon-wallet.png" />
+        </span>
         <h2>{copy.wallet}</h2>
-        <span aria-hidden="true"><WalletCards size={20} /></span>
       </header>
 
       <div className="account-wallet-balance">

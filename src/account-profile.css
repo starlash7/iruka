@@ -63,7 +63,7 @@
 .account-profile-nav a {
   display: inline-flex;
   gap: 8px;
-  min-height: 42px;
+  min-height: 52px;
   padding: 0 17px;
   align-items: center;
   justify-content: center;
@@ -75,6 +75,14 @@
   border-radius: var(--radius-pill);
   box-shadow: none;
   transition: color 160ms ease, background 160ms ease;
+}
+
+.account-nav-icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(63, 99, 184, 0.16));
 }
 
 .account-profile-nav a:hover,

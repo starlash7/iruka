@@ -92,7 +92,7 @@ test("Account layout is responsive and keeps touch targets usable", async () => 
   );
   assert.match(
     stylesheet,
-    /\.account-wallet-heading\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s*38px;/is
+    /\.account-wallet-heading\s*\{[^}]*grid-template-columns:\s*44px\s*minmax\(0,\s*1fr\);/is
   );
   assert.doesNotMatch(stylesheet, /\.account-wallet-sign-out/);
   assert.match(

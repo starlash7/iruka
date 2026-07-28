@@ -1,4 +1,3 @@
-import { PackageOpen } from "lucide-react";
 import type { ReactNode } from "react";
 import { AccountAddFundsDialog } from "./AccountAddFundsDialog";
 import { AccountProfileHero } from "./AccountProfileHero";
@@ -145,10 +144,10 @@ export function AccountPage({
 
         <article className="account-inventory-panel" id="account-inventory">
           <header>
-            <h2>{copy.inventory}</h2>
             <span className="account-inventory-icon">
-              <PackageOpen size={20} />
+              <img alt="" aria-hidden="true" src="/assets/iruka-icon-inventory.png" />
             </span>
+            <h2>{copy.inventory}</h2>
           </header>
 
           <div className="account-inventory-list">{inventoryContent}</div>

@@ -1,9 +1,7 @@
 import {
   ChevronDown,
   Languages,
-  LogOut,
-  Settings2,
-  UserRound
+  LogOut
 } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import type { Locale } from "./appTypes";
@@ -105,7 +103,12 @@ export function ProfileMenu({
           role="menuitem"
           type="button"
         >
-          <UserRound size={17} />
+          <img
+            alt=""
+            aria-hidden="true"
+            className="profile-menu-item-icon"
+            src="/assets/iruka-icon-account.png"
+          />
           <span>{labels.account}</span>
         </button>
 
@@ -116,7 +119,12 @@ export function ProfileMenu({
           role="menuitem"
           type="button"
         >
-          <Settings2 size={17} />
+          <img
+            alt=""
+            aria-hidden="true"
+            className="profile-menu-item-icon"
+            src="/assets/iruka-icon-settings.png"
+          />
           <span>{labels.settings}</span>
           <ChevronDown className={settingsOpen ? "is-open" : ""} size={16} />
         </button>

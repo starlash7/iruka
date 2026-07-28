@@ -111,7 +111,7 @@
 
 .profile-menu-item {
   display: grid;
-  grid-template-columns: 20px minmax(0, 1fr) auto;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
   gap: 9px;
   align-items: center;
   width: 100%;
@@ -130,6 +130,13 @@
   background: var(--sky);
 }
 
+.profile-menu-item-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(63, 99, 184, 0.14));
+}
+
 .profile-menu-item span {
   font-size: 13px;
   font-weight: 600;
@@ -145,7 +152,7 @@
 }
 
 .profile-menu-settings {
-  margin: 2px 3px 5px 31px;
+  margin: 2px 3px 5px 39px;
   padding: 10px;
   border-radius: 13px;
   background: #f7faff;

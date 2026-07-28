@@ -5,8 +5,6 @@
 }
 
 .account-stat {
-  --account-stat-accent: #5572ef;
-  --account-stat-soft: #edf2ff;
   position: relative;
   display: grid;
   gap: 9px;
@@ -21,24 +19,11 @@
   box-shadow: 0 12px 28px rgba(63, 99, 184, 0.06);
 }
 
-.account-stat-icon {
-  position: absolute;
-  top: 17px;
-  right: 17px;
-  display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  color: var(--account-stat-accent);
-  border-radius: 13px;
-  background: var(--account-stat-soft);
-}
-
 .account-stat-label {
   position: absolute;
   top: 20px;
   left: 20px;
-  max-width: calc(100% - 82px);
+  max-width: calc(100% - 40px);
   overflow: hidden;
   color: var(--muted);
   font-size: 13px;
@@ -54,11 +39,6 @@
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-}
-
-.account-stat-cards {
-  --account-stat-accent: #16a6c5;
-  --account-stat-soft: #eafcff;
 }
 
 @media (max-width: 980px) {
@@ -80,13 +60,6 @@
   .account-stat {
     min-height: 120px;
     padding: 17px;
-  }
-
-  .account-stat-icon {
-    top: 14px;
-    right: 14px;
-    width: 34px;
-    height: 34px;
   }
 
   .account-stat-label {

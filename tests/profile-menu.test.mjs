@@ -19,6 +19,13 @@ test("profile menu exposes Account, Settings, language, and sign out", async () 
   assert.match(source, /role="menu"/);
   assert.match(source, /labels\.account/);
   assert.match(source, /labels\.settings/);
+  assert.match(source, /src="\/assets\/iruka-icon-account\.png"/);
+  assert.match(source, /src="\/assets\/iruka-icon-settings\.png"/);
+  assert.match(styles, /\.profile-menu-item-icon\s*\{[^}]*object-fit:\s*contain;/is);
+  assert.match(
+    styles,
+    /\.profile-menu-item-icon\s*\{[^}]*width:\s*28px;[^}]*height:\s*28px;/is
+  );
   assert.match(source, /labels\.language/);
   assert.match(source, /labels\.signOut/);
   assert.match(source, /event\.key !== "Escape"/);
