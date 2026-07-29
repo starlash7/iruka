@@ -71,6 +71,7 @@ export function AccountAddFundsDialog({
             externalWalletAddress={externalWalletAddress}
             onConnectWallet={onConnectWallet}
             onCopyAddress={onCopyAddress}
+            onDone={onClose}
             onTransfer={onTransfer}
             onTransferComplete={onTransferComplete}
           />

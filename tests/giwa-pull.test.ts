@@ -37,6 +37,13 @@ test("reads only a valid configured GIWA batch contract", () => {
   );
 });
 
+test("local development keeps Privy but bypasses GIWA pulls", () => {
+  const address = "0x000000000000000000000000000000000000dEaD";
+
+  assert.equal(getGiwaPackBatchAddress(address, true), undefined);
+  assert.equal(getGiwaPackBatchAddress(address, false), address);
+});
+
 test("links GIWA pull receipts to the explorer transaction", () => {
   assert.equal(
     getGiwaExplorerTransactionUrl("0x1234"),

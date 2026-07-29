@@ -20,6 +20,21 @@ after(async () => {
 });
 
 test("unsupported audio never interrupts the reveal timeline", () => {
-  assert.doesNotThrow(() => playRevealCue("charging", false));
-  assert.doesNotThrow(() => playRevealCue("summary", false));
+  for (const scene of ["unpacking", "peel", "card-front", "summary"]) {
+    assert.doesNotThrow(() => playRevealCue(scene, false));
+  }
+});
+
+test("sound cues follow the unpacking state instead of the removed film", async () => {
+  const source = await import("node:fs/promises").then(({ readFile }) =>
+    readFile(
+      new URL("../src/features/pack-reveal/sounds.ts", import.meta.url),
+      "utf8"
+    )
+  );
+
+  assert.match(source, /scene === "unpacking"/);
+  assert.match(source, /scene === "peel"/);
+  assert.doesNotMatch(source, /scene === "hint"/);
+  assert.doesNotMatch(source, /scene === "cinematic"/);
 });

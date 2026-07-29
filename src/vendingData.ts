@@ -16,7 +16,7 @@ import {
   snapshotAt,
   type PackFixture
 } from "./vendingFixtures.ts";
-import { getPullCardAsset } from "./pullCardAssets.ts";
+import { pullCardAssets } from "./pullCardAssets.ts";
 
 type AvailabilityInput = {
   configured?: "coming-soon";
@@ -24,35 +24,86 @@ type AvailabilityInput = {
   total: number;
 };
 
+const catalogCardCounts: Record<RarityTier, number> = {
+  Common: 6,
+  Rare: 6,
+  Epic: 5,
+  Legendary: 2,
+  Iruka: 1
+};
+
+const catalogRarityOrder: readonly RarityTier[] = [
+  "Common", "Rare", "Epic", "Legendary", "Iruka",
+  "Common", "Rare", "Epic", "Legendary",
+  "Common", "Rare", "Epic",
+  "Common", "Rare", "Epic",
+  "Common", "Rare", "Epic",
+  "Common", "Rare"
+];
+
+function createCatalogCards(fixture: PackFixture): readonly InventoryCard[] {
+  const raritySequences: Record<RarityTier, number> = {
+    Common: 0,
+    Rare: 0,
+    Epic: 0,
+    Legendary: 0,
+    Iruka: 0
+  };
+
+  return pullCardAssets.map((cardAsset, index) => {
+    const tier = catalogRarityOrder[index];
+    const odds = fixture.rarityOdds.find((entry) => entry.tier === tier)!;
+    const raritySequence = raritySequences[tier]++;
+    const cardCount = catalogCardCounts[tier];
+    const sequence = index + 1;
+
+    return {
+      id: `${fixture.id}-catalog-${String(sequence).padStart(3, "0")}`,
+      packId: fixture.id,
+      title: cardAsset.title,
+      tier,
+      serial: `IRK-${fixture.id.toUpperCase()}-${String(sequence).padStart(4, "0")}`,
+      estimatedValueRangeUsdc: odds.estimatedValueRangeUsdc,
+      individualOddsBasisPoints: Math.floor(odds.basisPoints / cardCount)
+        + (raritySequence < odds.basisPoints % cardCount ? 1 : 0),
+      media: {
+        backUrl: cardAsset.imageUrl,
+        frontUrl: cardAsset.imageUrl
+      },
+      redemption: { eligible: false, shipmentAvailable: false }
+    };
+  });
+}
+
 function createInventoryCards(fixture: PackFixture): readonly InventoryCard[] {
-  const entries = fixture.rarityOdds.flatMap((odds, rarityIndex) =>
-    Array.from({ length: odds.eligibleCount }, (_, raritySequence) => ({
+  const catalog = createCatalogCards(fixture);
+  const entries = fixture.rarityOdds.flatMap((odds, rarityIndex) => {
+    const tierCards = catalog.filter((card) => card.tier === odds.tier);
+
+    return Array.from({ length: odds.eligibleCount }, (_, raritySequence) => ({
+      card: tierCards[raritySequence % tierCards.length],
       individualOddsBasisPoints: Math.floor(odds.basisPoints / odds.eligibleCount)
         + (raritySequence < odds.basisPoints % odds.eligibleCount ? 1 : 0),
       odds,
       rarityIndex,
       raritySequence
-    }))
-  );
+    }));
+  });
 
   return entries
     .sort((a, b) => a.raritySequence - b.raritySequence || a.rarityIndex - b.rarityIndex)
-    .map(({ individualOddsBasisPoints, odds }, index) => {
+    .map(({ card, individualOddsBasisPoints, odds }, index) => {
       const sequence = index + 1;
-      const cardAsset = getPullCardAsset(index);
 
       return {
         id: `${fixture.id}-inventory-${String(sequence).padStart(3, "0")}`,
         packId: fixture.id,
-        title: cardAsset.title,
+        title: card.title,
         tier: odds.tier,
         serial: `IRK-${fixture.id.toUpperCase()}-${String(sequence).padStart(4, "0")}`,
         estimatedValueRangeUsdc: odds.estimatedValueRangeUsdc,
         individualOddsBasisPoints,
-        media: {
-          backUrl: cardAsset.imageUrl,
-          frontUrl: cardAsset.imageUrl
-        },
+        media: card.media,
         redemption: { eligible: false, shipmentAvailable: false }
       };
     });
@@ -85,7 +136,7 @@ export function selectRarityByBasisPoints(
 }
 
 function createPackDetail(fixture: PackFixture): PackDetail {
-  const inventory = createInventoryCards(fixture);
+  const catalog = createCatalogCards(fixture);
 
   return {
     id: fixture.id,
@@ -104,13 +155,16 @@ function createPackDetail(fixture: PackFixture): PackDetail {
     snapshotAt,
     redemption: { eligible: false, shipmentAvailable: false },
     rarityOdds: fixture.rarityOdds,
-    featuredInventory: inventory.slice(0, 8)
+    featuredInventory: catalog.slice(0, 8)
   };
 }
 
 export const packDetails: readonly PackDetail[] = packFixtures.map(createPackDetail);
 const inventoryByPack = new Map(
   packFixtures.map((fixture) => [fixture.id, createInventoryCards(fixture)])
+);
+const catalogByPack = new Map(
+  packFixtures.map((fixture) => [fixture.id, createCatalogCards(fixture)])
 );
 
 export async function listPacks(): Promise<readonly PackSummary[]> {
@@ -132,9 +186,9 @@ export async function getPackDetail(packId: string): Promise<PackDetail | undefi
 
 export async function getPackInventory(
   packId: string,
-  { cursor = 0, limit = 24, rarity }: InventoryQuery = {}
+  { catalog = false, cursor = 0, limit = 24, rarity }: InventoryQuery = {}
 ): Promise<InventoryPage> {
-  const fullInventory = inventoryByPack.get(packId) ?? [];
+  const fullInventory = (catalog ? catalogByPack : inventoryByPack).get(packId) ?? [];
   const inventory = rarity
     ? fullInventory.filter((card) => card.tier === rarity)
     : fullInventory;

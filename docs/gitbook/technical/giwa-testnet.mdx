@@ -16,7 +16,7 @@ redemption eligibility.
 
 | Network | Chain ID | Contract | Address | Explorer |
 | --- | --- | --- | --- | --- |
-| GIWA Sepolia | `91342` | `IrukaPackBatch` V2 | [`0x0C2F...d180`](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180) | [Verified source](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180?tab=contract) |
+| GIWA Sepolia | `91342` | `IrukaPackBatch` | [`0xbB3c...4334`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334) | [Verified source](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334?tab=contract) |
 
 The web application enables its GIWA transaction path when this verified
 address is configured as `VITE_GIWA_PACK_BATCH_ADDRESS`.
@@ -25,9 +25,9 @@ address is configured as `VITE_GIWA_PACK_BATCH_ADDRESS`.
 
 | Component | Status | Explorer transaction |
 | --- | --- | --- |
-| Contract deployment and source | Live | [Contract](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180) · [Deployment transaction](https://sepolia-explorer.giwa.io/tx/0xecda2fe67290fbeecca83cc8a745c05d5838f3b78371da4ebfe3f0bdf0a53ce3) |
-| Dedicated Keeper operator | Live | [Operator transaction](https://sepolia-explorer.giwa.io/tx/0x0d2b5bc4da25a3137cd19d9a1e18d37553e0f4ea85125117c856ed9159170de2) |
-| Debut batch commitment | Live | [BatchCommitted transaction](https://sepolia-explorer.giwa.io/tx/0x5c2ca90c0fc07faa9b185355e2a7d1040fe64834f7c96f73040f989e7459c79a) |
+| Contract deployment and source | Live | [Contract](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334) · [Deployment transaction](https://sepolia-explorer.giwa.io/tx/0xbf39aa26f3edb6fce45b151282d40dc83c643fcd348ecf5b68fdb5f6c8d6449d) |
+| Dedicated Keeper operator | Live | [Operator transaction](https://sepolia-explorer.giwa.io/tx/0xc569ee917a1b3664afbc8eb40ce6497dd60953bf11a799c894a37667cc24f258) |
+| Debut batch commitment | Live | [BatchCommitted transaction](https://sepolia-explorer.giwa.io/tx/0x5ac3933f2b5db9ee0ceb73138bbf5b661a1edbd453a6e581f43b29fd80a80e78) |
 
 ## Pull Transactions
 
@@ -36,12 +36,15 @@ the same request on the deployed contract.
 
 | Pull | Request | Fulfillment |
 | --- | --- | --- |
-| 1 | [`0x411801...176d`](https://sepolia-explorer.giwa.io/tx/0x4118014dc390ab03e0843c90ffdae3c0bd029472b6aa7407d0e9c085fe74176d) | [`0xbbab1f...c4de`](https://sepolia-explorer.giwa.io/tx/0xbbab1fc046f01a7f82eb7ce99f61daba88decf63d0766ae3d42af06f5367c4de) |
-| 2 | [`0xde7e40...7b0b`](https://sepolia-explorer.giwa.io/tx/0xde7e40e97cd6c1631f2f490a5707457308ea5d56bbe8114f21646912c1bf7b0b) | [`0x8a0da6...f79c`](https://sepolia-explorer.giwa.io/tx/0x8a0da6b397518ec64bbe4e16cb053fe6f9af6e8e9d92220f78f646e28791f79c) |
+| 1 | [`0xa01530...1b71`](https://sepolia-explorer.giwa.io/tx/0xa01530136ffc040d476d9ac523ec103ec4a947050b6f86f7b20f0dad4841b71c) | [`0x11bcc9...3c9e`](https://sepolia-explorer.giwa.io/tx/0x11bcc9a0a4b61d38f1d8ee1fe722335983bc78a1a861b324dda799e3bf773c9e) |
 
 For each pair, the Explorer shows the contract address, successful status,
 `PullRequested`, `PullFulfilled`, request identifier, assigned inventory
 commitment, and remaining supply.
+
+Two earlier request and fulfillment pairs remain available on the
+[previous test deployment](https://sepolia-explorer.giwa.io/address/0x0c2fdd0912a70d7311a5dd2e89a360afc1eed180).
+They are historical test records and are not part of the current Debut batch.
 
 ## Contract Behavior
 
@@ -82,7 +85,7 @@ Prepare and commit the 100-position Debut manifest:
 node scripts/giwa/prepare-batch.mjs \
   IRK-GG-2026-001 \
   100 \
-  1000000000000000 \
+  10000000000000 \
   scripts/giwa/debut-odds.json \
   .context/giwa-debut-batch.json \
   debut
@@ -94,7 +97,7 @@ The public rarity distribution is Common 60, Rare 28, Epic 9, Legendary 2,
 and Iruka 1. The private manifest contains committed draw seeds and remains
 outside source control under `.context/`.
 
-The test price is `0.001` test ETH. It is separate from displayed product
+The test price is `0.00001` test ETH. It is separate from displayed product
 pricing and is not canonical USDC settlement.
 
 ## Keeper Fulfillment

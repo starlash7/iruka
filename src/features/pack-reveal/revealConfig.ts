@@ -1,6 +1,6 @@
 export type IrukaRarity = "common" | "rare" | "epic" | "legendary" | "iruka";
 
-export type RevealPhase =
+export type LegacyRevealPhase =
   | "blackout"
   | "shake"
   | "tear"
@@ -21,7 +21,7 @@ export type RevealCard = {
 
 type PhaseEvent = {
   at: number;
-  phase: RevealPhase;
+  phase: LegacyRevealPhase;
 };
 
 export type RevealConfig = {

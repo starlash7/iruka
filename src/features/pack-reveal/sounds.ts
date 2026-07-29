@@ -1,4 +1,6 @@
-import type { RevealPhase } from "./revealMachine";
+import type { RevealScene } from "./revealMachine";
+
+type RevealCue = RevealScene | "peel" | "card-front";
 
 let audioContext: AudioContext | undefined;
 
@@ -56,30 +58,30 @@ function playNoise(duration: number, gainValue: number) {
   source.start();
 }
 
-export function playRevealCue(phase: RevealPhase, muted: boolean) {
+export function playRevealCue(scene: RevealCue, muted: boolean) {
   if (muted) return;
 
   const context = getAudioContext();
   if (!context) return;
   void context.resume().catch(() => undefined);
 
-  if (phase === "charging") {
-    playTone(132, 0.12, 0.045);
-    return;
-  }
-
-  if (phase === "tear") {
+  if (scene === "unpacking") {
     playNoise(0.22, 0.035);
     return;
   }
 
-  if (phase === "reveal") {
+  if (scene === "peel") {
+    playNoise(0.28, 0.026);
+    return;
+  }
+
+  if (scene === "card-front") {
     playTone(440, 0.16, 0.035);
     playTone(660, 0.18, 0.026);
     return;
   }
 
-  if (phase === "summary") {
+  if (scene === "summary") {
     playTone(880, 0.2, 0.042);
   }
 }

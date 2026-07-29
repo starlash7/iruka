@@ -1,13 +1,10 @@
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";
-import { formatUsdcRange } from "./currency";
 import type { InventoryCard, RarityTier } from "./vendingTypes";
 
 type VendingInventoryCardProps = {
   card: InventoryCard;
   copy: {
-    estimatedValue: string;
-    individualOdds: string;
     redeemable: string;
     viewBack: string;
     viewFront: string;
@@ -24,7 +21,6 @@ export function VendingInventoryCard({
   const hasDistinctBack = card.media.backUrl !== card.media.frontUrl;
   const imageUrl = showBack ? card.media.backUrl : card.media.frontUrl;
   const flipLabel = showBack ? copy.viewFront : copy.viewBack;
-  const individualOdds = `${(card.individualOddsBasisPoints / 100).toFixed(2)}%`;
   const verification = [card.grade, card.certificateId, card.verificationId].filter(Boolean);
 
   return (
@@ -45,19 +41,14 @@ export function VendingInventoryCard({
       </div>
       <div className="vending-inventory-copy">
         <div>
-          <span className={`rarity-${card.tier.toLowerCase()}`}>{rarityLabel}</span>
+          <span className={`vending-card-rarity rarity-${card.tier.toLowerCase()}`}>
+            {rarityLabel}
+          </span>
           {card.redemption.eligible ? <small>{copy.redeemable}</small> : null}
         </div>
         <strong>{card.title}</strong>
-        <p className="vending-card-facts">
-          <span>{card.serial}</span>
-          <span>{copy.individualOdds} {individualOdds}</span>
-        </p>
+        <p className="vending-card-facts">{card.serial}</p>
         {verification.length > 0 ? <p>{verification.join(" · ")}</p> : null}
-        <b>
-          <small>{copy.estimatedValue}</small>
-          {formatUsdcRange(card.estimatedValueRangeUsdc)}
-        </b>
       </div>
     </article>
   );

@@ -73,6 +73,7 @@ export type InventoryPage = {
 };
 
 export type InventoryQuery = {
+  catalog?: boolean;
   cursor?: number;
   limit?: number;
   rarity?: RarityTier;

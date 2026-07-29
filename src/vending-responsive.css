@@ -61,9 +61,8 @@
   .vending-price-row > strong { max-width: 70%; font-size: 29px; overflow-wrap: anywhere; }
   .vending-primary-action { min-height: 52px; padding: 0 14px; font-size: 13px; }
 
-  .vending-odds-row { grid-template-columns: 64px minmax(0, 1fr) 42px; gap: 6px; }
+  .vending-odds-row { grid-template-columns: minmax(0, 1fr) 42px; gap: 6px; }
   .vending-odds-row > span { font-size: 12px; }
-  .vending-odds-row small { font-size: 12px; }
   .vending-odds-row strong { font-size: 15px; }
 
   .vending-result-section,
@@ -74,6 +73,13 @@
   .vending-section-heading h2,
   html[lang="ko"] .vending-section-heading h2 { font-size: 32px; }
   .vending-text-action { min-height: 38px; padding: 0 12px; font-size: 11px; }
+  .vending-rarity-filters {
+    flex-wrap: nowrap;
+    padding: 2px 2px 7px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .vending-rarity-filter { flex: 0 0 auto; }
 
   .vending-inventory-section:not([data-expanded="true"]) .vending-inventory-grid {
     grid-auto-columns: minmax(218px, 72vw);
@@ -97,7 +103,6 @@
   .vending-inventory-copy { padding: 12px; }
   .vending-inventory-copy > div { align-items: start; flex-direction: column; gap: 2px; }
   .vending-inventory-copy > strong { font-size: 13px; }
-  .vending-inventory-copy > b { font-size: 14px; }
 
   .vending-result-content { grid-template-columns: 1fr; min-height: 0; gap: 24px; padding: 20px 16px; }
   .vending-result-content .asset-actions { grid-template-columns: 1fr; width: min(100%, 340px); }
@@ -112,5 +117,6 @@
   .vending-tier-option,
   .vending-primary-action,
   .vending-inventory-card,
+  .vending-rarity-filter,
   .vending-inventory-media > img { transition: none; }
 }

@@ -25,6 +25,7 @@ export type AccountCopy = {
   copied: string;
   copyAddress: string;
   destination: string;
+  done: string;
   enterAmount: string;
   enterRecipient: string;
   empty: string;
@@ -48,6 +49,7 @@ export type AccountCopy = {
   testEth: string;
   token: string;
   transfer: string;
+  transferComplete: string;
   transferCrypto: string;
   transferFailed: string;
   transferring: string;

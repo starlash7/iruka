@@ -87,6 +87,15 @@ test("operator scripts reject reverted receipts before reporting success", async
   assert.match(fulfillSource, /receipt\.status !== "success"/);
 });
 
+test("fulfillment ABI is initialized before the script uses it", async () => {
+  const fulfillSource = await readSource("../scripts/giwa/fulfill-pull.mjs");
+
+  assert.ok(
+    fulfillSource.indexOf("const packBatchAbi") <
+      fulfillSource.indexOf("abi: packBatchAbi")
+  );
+});
+
 test("batch manifests are encrypted at rest and reject the wrong key", () => {
   const manifest = {
     batchId: `0x${"1".repeat(64)}`,

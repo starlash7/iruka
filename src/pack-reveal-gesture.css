@@ -1,0 +1,95 @@
+.pack-reveal-gesture-copy {
+  position: absolute;
+  bottom: 18px;
+  z-index: 9;
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.pack-reveal-gesture-copy > strong {
+  color: #66758a;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pack-reveal-drag-track {
+  position: relative;
+  display: grid;
+  width: min(360px, calc(100vw - 48px));
+  height: 56px;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.96);
+  border-radius: var(--radius-pill);
+  background: rgba(225, 239, 252, 0.8);
+  box-shadow:
+    0 14px 30px rgba(22, 119, 255, 0.08),
+    inset 0 1px rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+}
+
+.pack-reveal-drag-track::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    rgba(32, 199, 223, 0.2),
+    rgba(111, 141, 255, 0.28)
+  );
+  opacity: 0.9;
+  transform: scaleX(var(--drag-progress));
+  transform-origin: left center;
+}
+
+.pack-reveal-drag-track > span {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  color: #53708f;
+  font-size: 13px;
+  font-weight: 540;
+  pointer-events: none;
+}
+
+.pack-reveal-drag-handle {
+  position: absolute;
+  left: 6px;
+  z-index: 2;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: #1677ff;
+  border: 1px solid rgba(255, 255, 255, 0.96);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(42, 117, 190, 0.18);
+  cursor: grab;
+  place-items: center;
+  transform: translateX(var(--drag-x));
+  touch-action: none;
+}
+
+.pack-reveal-drag-handle:active {
+  cursor: grabbing;
+}
+
+.pack-reveal-drag-handle:disabled {
+  cursor: default;
+}
+
+.pack-reveal-drag-handle:focus-visible {
+  outline: 3px solid rgba(22, 119, 255, 0.32);
+  outline-offset: 3px;
+}
+
+.pack-reveal-vending-scene[data-returning="true"] .pack-reveal-drag-handle,
+.pack-reveal-vending-scene[data-returning="true"] .pack-reveal-drag-track::before {
+  transition:
+    opacity 220ms ease,
+    transform 220ms cubic-bezier(0.2, 0.72, 0.2, 1);
+}

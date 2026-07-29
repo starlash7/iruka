@@ -14,6 +14,7 @@ let appCopy;
 let packDetails;
 let VendingPackDetail;
 let VendingPackInventory;
+let VendingRarityFilters;
 let VendingPackRail;
 let VendingView;
 
@@ -27,7 +28,7 @@ before(async () => {
   ({ copy: appCopy } = await server.ssrLoadModule("/src/appCopy.ts"));
   ({ getPackInventory, packDetails } = await server.ssrLoadModule("/src/vendingData.ts"));
   ({ VendingPackDetail } = await server.ssrLoadModule("/src/VendingPackDetail.tsx"));
-  ({ VendingPackInventory } = await server.ssrLoadModule("/src/VendingPackInventory.tsx"));
+  ({ VendingPackInventory, VendingRarityFilters } = await server.ssrLoadModule("/src/VendingPackInventory.tsx"));
   ({ VendingPackRail } = await server.ssrLoadModule("/src/VendingPackRail.tsx"));
   ({ VendingView } = await server.ssrLoadModule("/src/VendingView.tsx"));
 });
@@ -90,14 +91,14 @@ test("Vending reveal cards prefer the selected inventory image", () => {
   assert.equal(card.imageUrl, imageUrl);
 });
 
-test("Vending inventory rotates through the twenty vaulted card images", async () => {
-  const inventory = await getPackInventory("debut", { limit: 21 });
-  const firstCycle = inventory.items.slice(0, 20).map((card) => card.media.frontUrl);
+test("Vending catalog shows the twenty vaulted card images once", async () => {
+  const inventory = await getPackInventory("debut", { catalog: true, limit: 24 });
+  const images = inventory.items.map((card) => card.media.frontUrl);
 
-  assert.equal(new Set(firstCycle).size, 20);
-  assert.equal(firstCycle[0], "/assets/pull-cards/card-01.jpg");
-  assert.equal(firstCycle[19], "/assets/pull-cards/card-20.jpg");
-  assert.equal(inventory.items[20].media.frontUrl, firstCycle[0]);
+  assert.equal(inventory.total, 20);
+  assert.equal(new Set(images).size, 20);
+  assert.equal(images[0], "/assets/pull-cards/card-01.jpg");
+  assert.equal(images[19], "/assets/pull-cards/card-20.jpg");
   assert.equal(inventory.items[0].title, "fromis_9 · Hayoung");
 });
 
@@ -389,7 +390,7 @@ test("machine bases use one normalized square frame", async () => {
   assert.doesNotMatch(stylesheet, /\.vending-detail-media\[data-tier=/);
 });
 
-test("pack detail keeps direct odds and values in color-coded rows", () => {
+test("pack detail keeps direct rarity odds without estimated values", () => {
   const pack = packDetails[0];
   const markup = renderToStaticMarkup(
     React.createElement(VendingPackDetail, {
@@ -416,7 +417,8 @@ test("pack detail keeps direct odds and values in color-coded rows", () => {
   assert.equal((markup.match(/class="vending-odds-row rarity-/g) ?? []).length, 5);
   assert.equal((markup.match(/class="vending-odds-card/g) ?? []).length, 0);
   assert.doesNotMatch(markup, /72 cards/);
-  assert.match(markup, /6\.00 – 18\.00 USDC/);
+  assert.doesNotMatch(markup, /6\.00 – 18\.00 USDC/);
+  assert.doesNotMatch(markup, /21\.00 – 57\.00 USDC/);
   assert.match(markup, /rarity-common/);
   assert.match(markup, /rarity-iruka/);
   assert.doesNotMatch(markup, /vending-odds-bar|vending-odds-legend/);
@@ -559,9 +561,55 @@ test("inventory starts with eight featured cards and an explicit full-list actio
 
   assert.match(markup, /Inside this pack/);
   assert.match(markup, /View all cards/);
-  assert.match(markup, /1\.00%/);
+  assert.doesNotMatch(markup, /Individual odds|1\.00%/);
+  assert.doesNotMatch(markup, /Est\. value|6\.00 – 18\.00 USDC|21\.00 – 57\.00 USDC/);
+  assert.equal((markup.match(/class="vending-rarity-filter"/g) ?? []).length, 6);
   assert.doesNotMatch(markup, /vending-card-flip/);
   assert.equal((markup.match(/class="vending-inventory-card/g) ?? []).length, 8);
+});
+
+test("inventory rarity filters use hoverable pill buttons", async () => {
+  assert.equal(typeof VendingRarityFilters, "function");
+
+  const markup = renderToStaticMarkup(React.createElement(VendingRarityFilters, {
+    allLabel: "All rarities",
+    filter: "Rare",
+    onSelect: () => undefined,
+    rarityLabels
+  }));
+  const stylesheet = await readFile(new URL("../src/vending-inventory.css", import.meta.url), "utf8");
+
+  assert.equal((markup.match(/type="button"/g) ?? []).length, 6);
+  assert.equal((markup.match(/aria-pressed=/g) ?? []).length, 6);
+  assert.match(markup, /aria-pressed="true"[^>]*>Rare</);
+  assert.doesNotMatch(markup, /<select|<option/);
+  assert.match(stylesheet, /\.vending-rarity-filter:hover/);
+  assert.match(stylesheet, /\.vending-rarity-filter\[aria-pressed="true"\]/);
+});
+
+test("inventory card rarity renders as a hoverable pill", async () => {
+  const pack = packDetails[0];
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackInventory, {
+      copy: {
+        allRarities: "All rarities",
+        insidePack: "Inside this pack",
+        loadMore: "Load more",
+        redeemable: "Redeemable",
+        showFeatured: "Show featured",
+        viewAllCards: "View all cards",
+        viewBack: "View back",
+        viewFront: "View front"
+      },
+      pack,
+      rarityLabels
+    })
+  );
+  const stylesheet = await readFile(new URL("../src/vending-inventory.css", import.meta.url), "utf8");
+
+  assert.match(markup, /class="vending-card-rarity rarity-[a-z]+"/);
+  assert.match(stylesheet, /\.vending-card-rarity\s*\{/);
+  assert.match(stylesheet, /\.vending-card-rarity:hover/);
 });
 
 test("recent pulls render only from the explicit Vending session list", () => {

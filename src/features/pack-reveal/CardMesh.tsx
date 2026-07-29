@@ -2,12 +2,16 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import { CanvasTexture, DoubleSide, Group, MathUtils, SRGBColorSpace } from "three";
 import { formatUsd } from "../../currency";
-import type { RevealCard, RevealConfig, RevealPhase } from "./revealConfig";
+import type {
+  LegacyRevealPhase,
+  RevealCard,
+  RevealConfig
+} from "./revealConfig";
 
 type CardMeshProps = {
   card: RevealCard;
   config: RevealConfig;
-  phase: RevealPhase;
+  phase: LegacyRevealPhase;
   progress: number;
   reducedMotion: boolean;
 };

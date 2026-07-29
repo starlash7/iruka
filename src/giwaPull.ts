@@ -20,6 +20,7 @@ import type { PackDetail } from "./vendingTypes.ts";
 
 type GiwaEnvironment = ImportMeta & {
   env?: {
+    DEV?: boolean;
     VITE_GIWA_PACK_BATCH_ADDRESS?: string;
   };
 };
@@ -68,8 +69,15 @@ function getConfiguredEnvironmentAddress() {
   return (import.meta as GiwaEnvironment).env?.VITE_GIWA_PACK_BATCH_ADDRESS;
 }
 
-export function getGiwaPackBatchAddress(value = getConfiguredEnvironmentAddress()) {
-  return isContractAddress(value) ? value : undefined;
+function getConfiguredDevelopmentMode() {
+  return Boolean((import.meta as GiwaEnvironment).env?.DEV);
+}
+
+export function getGiwaPackBatchAddress(
+  value = getConfiguredEnvironmentAddress(),
+  isDevelopment = getConfiguredDevelopmentMode()
+) {
+  return !isDevelopment && isContractAddress(value) ? value : undefined;
 }
 
 export function getGiwaExplorerTransactionUrl(transactionHash: Hex | string) {

@@ -3,6 +3,7 @@ import { AccountAssetField } from "./AccountAssetField";
 import type { AccountBalance, AccountCopy } from "./AccountPage";
 import {
   FundsDialogHeader,
+  TransferComplete,
   TransferStatus,
   type FundsDialogState
 } from "./AccountFundsDialogShared";
@@ -79,73 +80,82 @@ export function AccountWithdrawDialog({
           title={copy.withdraw}
           titleId="account-withdraw-title"
         />
-        <form className="account-withdraw-form" onSubmit={submitTransfer}>
-          <label className="account-input-field">
-            <span>{copy.destination}</span>
-            <input
-              data-autofocus
-              onChange={(event) => setDestination(event.target.value)}
-              placeholder="0x..."
-              required
-              value={destination}
-            />
-          </label>
-          <label className="account-input-field">
-            <span>{copy.amount}</span>
-            <div className="account-amount-control">
+        {state.status === "complete" ? (
+          <TransferComplete
+            amount={amount}
+            copy={copy}
+            explorerUrl={state.explorerUrl}
+            onDone={onClose}
+          />
+        ) : (
+          <form className="account-withdraw-form" onSubmit={submitTransfer}>
+            <label className="account-input-field">
+              <span>{copy.destination}</span>
               <input
-                inputMode="decimal"
-                onChange={(event) => setAmount(event.target.value)}
-                placeholder="0.00"
+                data-autofocus
+                onChange={(event) => setDestination(event.target.value)}
+                placeholder="0x..."
                 required
-                value={amount}
+                value={destination}
               />
-              <span>ETH</span>
+            </label>
+            <label className="account-input-field">
+              <span>{copy.amount}</span>
+              <div className="account-amount-control">
+                <input
+                  inputMode="decimal"
+                  onChange={(event) => setAmount(event.target.value)}
+                  placeholder="0.00"
+                  required
+                  value={amount}
+                />
+                <span>ETH</span>
+              </div>
+            </label>
+
+            <div className="account-withdraw-balance">
+              <span>{copy.balance}</span>
+              <strong>{balanceLabel}</strong>
             </div>
-          </label>
 
-          <div className="account-withdraw-balance">
-            <span>{copy.balance}</span>
-            <strong>{balanceLabel}</strong>
-          </div>
-
-          <div className="account-asset-grid">
-            <AccountAssetField
-              copy={copy}
-              label={copy.receiveToken}
-              type="token"
-            />
-            <AccountAssetField
-              copy={copy}
-              label={copy.receiveChain}
-              type="chain"
-            />
-          </div>
-
-          <dl className="account-transfer-summary">
-            <div>
-              <dt>{copy.youWillReceive}</dt>
-              <dd>{trimmedAmount ? `${trimmedAmount} ETH` : "—"}</dd>
+            <div className="account-asset-grid">
+              <AccountAssetField
+                copy={copy}
+                label={copy.receiveToken}
+                type="token"
+              />
+              <AccountAssetField
+                copy={copy}
+                label={copy.receiveChain}
+                type="chain"
+              />
             </div>
-            <div>
-              <dt>{copy.networkFee}</dt>
-              <dd>{copy.shownInWallet}</dd>
-            </div>
-          </dl>
 
-          <TransferStatus copy={copy} state={state} />
-          <button
-            className="account-withdraw-submit iruka-action-button"
-            disabled={
-              state.status === "pending" ||
-              !trimmedDestination ||
-              !trimmedAmount
-            }
-            type="submit"
-          >
-            {state.status === "pending" ? copy.transferring : actionLabel}
-          </button>
-        </form>
+            <dl className="account-transfer-summary">
+              <div>
+                <dt>{copy.youWillReceive}</dt>
+                <dd>{trimmedAmount ? `${trimmedAmount} ETH` : "—"}</dd>
+              </div>
+              <div>
+                <dt>{copy.networkFee}</dt>
+                <dd>{copy.shownInWallet}</dd>
+              </div>
+            </dl>
+
+            <TransferStatus copy={copy} state={state} />
+            <button
+              className="account-withdraw-submit iruka-action-button"
+              disabled={
+                state.status === "pending" ||
+                !trimmedDestination ||
+                !trimmedAmount
+              }
+              type="submit"
+            >
+              {state.status === "pending" ? copy.transferring : actionLabel}
+            </button>
+          </form>
+        )}
       </div>
     </MarketplaceDialog>
   );

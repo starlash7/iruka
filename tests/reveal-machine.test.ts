@@ -1,76 +1,60 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  getRevealTimeline,
-  getSkippedRevealPhase,
-  revealPhaseOrder
-} from "../src/features/pack-reveal/revealMachine.ts";
+import * as revealMachine from "../src/features/pack-reveal/revealMachine.ts";
 
-test("reveal follows the sprint state order", () => {
-  const timeline = getRevealTimeline("rare");
+const {
+  getRevealSequenceDuration,
+  getSkippedRevealScene,
+  REVEAL_OPEN_THRESHOLD,
+  REVEAL_SEQUENCE_TIMING,
+  revealSequencePhaseOrder,
+  revealSceneOrder,
+  shouldCompleteRevealDrag
+} = revealMachine;
 
-  assert.deepEqual(
-    ["idle", ...timeline.events.map((event) => event.phase)],
-    revealPhaseOrder
-  );
-  assert.ok(timeline.events.find((event) => event.phase === "tear").atMs <= 500);
+test("reveal keeps one unpacking scene before summary", () => {
+  assert.deepEqual(revealSceneOrder, [
+    "sealed",
+    "unpacking",
+    "summary"
+  ]);
 });
 
-test("rarity timelines do not exceed their established maximum", () => {
-  const maximums = {
-    common: 1500,
-    rare: 3000,
-    epic: 3000,
-    legendary: 4500,
-    iruka: 4500
-  } as const;
-
-  for (const [rarity, maximum] of Object.entries(maximums)) {
-    assert.ok(
-      getRevealTimeline(rarity as keyof typeof maximums).durationMs <= maximum
-    );
-  }
+test("drag completes only at the 72 percent seal threshold", () => {
+  assert.equal(REVEAL_OPEN_THRESHOLD, 0.72);
+  assert.equal(shouldCompleteRevealDrag(0.719), false);
+  assert.equal(shouldCompleteRevealDrag(0.72), true);
+  assert.equal(shouldCompleteRevealDrag(1), true);
 });
 
-test("default reveals preserve the approved anticipation and tear holds", () => {
-  const expected = {
-    common: [0, 400, 900, 1500],
-    rare: [0, 480, 1750, 3000],
-    epic: [0, 480, 1750, 3000],
-    legendary: [0, 500, 2800, 4500],
-    iruka: [0, 500, 2800, 4500]
-  } as const;
-
-  for (const [rarity, eventTimes] of Object.entries(expected)) {
-    assert.deepEqual(
-      getRevealTimeline(rarity as keyof typeof expected).events.map(
-        (event) => event.atMs
-      ),
-      eventTimes
-    );
-  }
+test("unpacking publishes the vending dispense reveal contract", () => {
+  assert.deepEqual(revealSequencePhaseOrder, [
+    "sealed",
+    "release",
+    "dispensing",
+    "opening",
+    "extracting",
+    "showcase"
+  ]);
+  assert.deepEqual(REVEAL_SEQUENCE_TIMING, {
+    dispensingAtMs: 600,
+    extractingAtMs: 3500,
+    nameAtMs: 6200,
+    openingAtMs: 2000,
+    rarityAtMs: 5600,
+    showcaseAtMs: 8700,
+    summaryAtMs: 9000
+  });
+  assert.equal(getRevealSequenceDuration(false), 9000);
 });
 
-test("quick opening shortens a completed user's later reveal", () => {
-  const normal = getRevealTimeline("legendary");
-  const quick = getRevealTimeline("legendary", { quick: true });
-
-  assert.ok(quick.durationMs < normal.durationMs);
-  assert.deepEqual(
-    quick.events.map((event) => event.phase),
-    normal.events.map((event) => event.phase)
-  );
+test("reduced motion uses a short static-card transition", () => {
+  assert.equal(typeof getRevealSequenceDuration, "function");
+  assert.equal(getRevealSequenceDuration(true), 300);
 });
 
-test("reduced motion uses a short complete fallback", () => {
-  const timeline = getRevealTimeline("iruka", { reducedMotion: true });
-
-  assert.ok(timeline.durationMs <= 600);
-  assert.equal(timeline.events.at(-1)?.phase, "summary");
-});
-
-test("skip reaches summary from every active phase", () => {
-  for (const phase of revealPhaseOrder.slice(0, -1)) {
-    assert.equal(getSkippedRevealPhase(phase), "summary");
+test("skip reaches summary from every active scene", () => {
+  for (const scene of revealSceneOrder.slice(0, -1)) {
+    assert.equal(getSkippedRevealScene(scene), "summary");
   }
 });

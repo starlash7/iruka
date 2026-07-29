@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { MathUtils } from "three";
-import type { RevealConfig, RevealPhase } from "./revealConfig";
+import type { LegacyRevealPhase, RevealConfig } from "./revealConfig";
 
 type PackMeshProps = {
   config: RevealConfig;
-  phase: RevealPhase;
+  phase: LegacyRevealPhase;
   progress: number;
 };
 

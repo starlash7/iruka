@@ -50,54 +50,68 @@ Treat reveal as part of Vending, not a separate game.
 Use this state machine:
 
 ```text
-idle -> charging -> tear -> reveal -> summary
+sealed -> unpacking -> summary
 ```
 
-- `idle`: the selected pack uses a restrained floating or glow loop.
-- `charging`: a tap starts no more than 500ms of anticipation.
-- `tear`: use a pre-rendered pack-opening clip when the required asset exists.
-- `reveal`: render cards as interactive DOM with tilt, glare, and flip states.
-- `summary`: show obtained cards, resulting vault state, and a real explorer
-  receipt when available.
+- `sealed`: show one centered pack and require a left-to-right drag to release
+  it.
+- `unpacking`: keep a single pack and one card surface mounted in one bright
+  DOM scene. GSAP settles the pack, opens its top seal, extracts the card, and
+  holds it for Showcase without video.
+- `summary`: replace the reveal scene with card details and a real Explorer
+  receipt when one exists. Card interaction starts only in this state.
 
-Do not invest this sprint in improving a real-time Three.js pack simulation.
-Migrate an existing reveal only after skip, fallback, and result actions are
-covered by tests.
+- Track drag progress from `0` to `1`. Complete once at `72%` or above.
+- A released drag below `72%` returns to the start in `220ms`.
+- Pointer movement writes CSS variables through `requestAnimationFrame` and
+  does not trigger React renders.
+- Enter and Space perform the same open action.
+- Do not make the whole overlay tappable. Use an explicit Skip control.
+- Keep one Unpacking DOM scene mounted until Summary replaces it. The pack and
+  card use no rotation or flip.
 
 #### Reveal Timing
 
-Follow the established rarity timing:
+All rarities use the same 9.0-second GSAP sequence:
 
-| Rarity | Maximum reveal | Treatment |
+| Step | Timeline | Behavior |
 | --- | ---: | --- |
-| Common | 1.5s | Fast transition, no long tear video |
-| Rare | 3.0s | Green flare and moderate foil |
-| Epic | 3.0s | Red flare and stronger foil |
-| Legendary | 4.5s | Yellow flare and full premium sequence |
-| Iruka | 4.5s | Holographic blue and strongest sequence |
+| Release | 0.0-0.6s | The drag control clears |
+| Pack motion | 0.6-2.0s | The centered pack settles into its opening position |
+| Opening | 2.0-3.8s | The pack mouth opens and its top seal clears with no rotation |
+| Extracting | 3.5-6.8s | One card surface rises while remaining inside the viewport |
+| Rarity | 5.6s | The actual rarity appears |
+| Name | 6.2s | The actual inventory name appears |
+| Showcase | 8.7-9.0s | One bright wash replaces the extracted card with Summary |
 
-- Show lower-rarity cards first and the best card last.
-- Hold Legendary or Iruka for up to 800ms before the final flip.
-- Tap skip must work from every state.
-- Offer quick opening after the first completed reveal.
-- Use haptics only when supported and never require them.
+Edition appears only in Summary. Serial appears only in Summary. Rarity changes
+the real card treatment but not the timing. An explicit Skip cancels the active
+GSAP timeline and moves from any active scene to Summary.
 
-#### Media Contract
+- Do not invent year, grade, serial, or value clues.
+- Remove particles, radial rings, rays, and full-screen tap skip.
+- Keep only a restrained rarity glow and foil on the card.
+- Keep the white and ice-blue frame through the full sequence.
+- Reduced-motion reaches a static front card, then Summary, in
+  `300ms`.
 
-- Mobile tear clips: `9:16`.
-- Desktop tear clips: `1:1` or `16:9`.
-- Clips use a pure black compositing background and end on a light flash.
-- Do not include text, watermarks, third-party logos, real artists, or hands.
-- Use original Iruka pack art as the image-to-video source.
-- Preload the selected clip after purchase confirmation and before reveal.
-- If an asset is missing or fails to load, continue with the CSS fallback.
+#### Visual Asset Contract
 
-- Store clips under `public/videos/pack-{common,rare,premium}-*` and generic
-  audio under `public/sfx/{tear,whoosh,sparkle,rare-sting}.*`.
+- Normalize the selected transparent Iruka pack inside a fixed pack frame.
+- Keep the pack and card upright with no rotation or flip.
+- Show the actual pulled card image from extraction through Showcase.
+- Use the same original image URL in extraction and Summary with
+  `object-fit: contain`.
+- The pack and pulled card remain visible together until the final wash.
+- Do not request or play an MP4 in the runtime reveal path.
+- If pack art fails, show the neutral Iruka pack fallback and continue.
+- If card art fails, the reveal boundary must still provide a way to continue.
+- Do not include text, watermarks, third-party logos, real artists, or hands in
+  new Iruka-owned assets.
 
 Sound must be generic, licensed for use, visibly toggleable, and muted by
-default. Reduced-motion users receive a short CSS transition without flashing
-or forced 3D motion.
+default. Reduced-motion users receive the short static-card path without
+flashing or forced 3D motion.
 
 ### P0. Odds And Randomness
 
@@ -147,9 +161,9 @@ marked as planned rather than live.
 
 | Day | Deliverable |
 | --- | --- |
-| D1 | Finalize reveal asset contract, source licensed generic audio, select mobile and desktop clips |
+| D1 | Finalize transparent pack and inventory-card asset contracts |
 | D2 | Build the DOM foil card and rarity presets |
-| D3 | Connect the state machine, clip preload, skip, and CSS fallback |
+| D3 | Connect the GSAP unpacking sequence, explicit Skip, and CSS fallback |
 | D4 | Add muted audio controls, quick opening, mobile polish, and performance checks |
 | D5 | Finish odds, vault trust flow, and real explorer receipt links |
 | D6 | Align Mintlify Docs with live app and contract data |
@@ -165,7 +179,7 @@ marked as planned rather than live.
   out.
 - Do not create fake assets, transactions, inventory, metrics, partners, or
   custody evidence to make the review look complete.
-- If a required video, sound, contract, or API is missing, implement the typed
+- If a required image, sound, contract, or API is missing, implement the typed
   interface and fallback, then report the missing input.
 - Use English for the judging surface and verify the Korean equivalent.
 - Run focused checks during development. Run the build only at release time, as

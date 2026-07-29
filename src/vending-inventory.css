@@ -1,14 +1,21 @@
 .vending-inventory-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   margin-bottom: 14px;
 }
 
-.vending-inventory-toolbar select {
-  min-height: 42px;
-  padding: 0 36px 0 14px;
+.vending-rarity-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vending-rarity-filter {
+  --filter-accent: #1677ff;
+  --filter-surface: #eaf4ff;
+  min-height: 38px;
+  padding: 0 15px;
   color: #344054;
   font: inherit;
   font-size: 12px;
@@ -16,12 +23,52 @@
   border: 1px solid #dce8ff;
   border-radius: var(--radius-pill);
   background: #fff;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
-.vending-inventory-toolbar > span {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 650;
+.vending-rarity-filter:hover {
+  color: var(--filter-accent);
+  border-color: var(--filter-accent);
+  background: var(--filter-surface);
+  transform: translateY(-1px);
+}
+
+.vending-rarity-filter[aria-pressed="true"] {
+  color: var(--filter-accent);
+  border-color: var(--filter-accent);
+  background: var(--filter-surface);
+  box-shadow: 0 8px 20px rgba(72, 101, 214, 0.1);
+}
+
+.vending-rarity-filter:focus-visible {
+  outline: 3px solid rgba(22, 119, 255, 0.2);
+  outline-offset: 2px;
+}
+
+.vending-rarity-filter[data-rarity="common"] {
+  --filter-accent: #586579;
+  --filter-surface: #f2f4f7;
+}
+
+.vending-rarity-filter[data-rarity="rare"] {
+  --filter-accent: #12b76a;
+  --filter-surface: #ecfdf3;
+}
+
+.vending-rarity-filter[data-rarity="epic"] {
+  --filter-accent: #f04438;
+  --filter-surface: #fef3f2;
+}
+
+.vending-rarity-filter[data-rarity="legendary"] {
+  --filter-accent: #f79009;
+  --filter-surface: #fffaeb;
+}
+
+.vending-rarity-filter[data-rarity="iruka"] {
+  --filter-accent: #1677ff;
+  --filter-surface: #eaf4ff;
 }
 
 .vending-inventory-grid {
@@ -97,6 +144,48 @@
   font-weight: 750;
 }
 
+.vending-card-rarity {
+  --rarity-accent: #667085;
+  --rarity-surface: #f2f4f7;
+  --rarity-hover-text: #fff;
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid var(--rarity-surface);
+  border-radius: var(--radius-pill);
+  background: var(--rarity-surface);
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.vending-card-rarity:hover {
+  color: var(--rarity-hover-text);
+  border-color: var(--rarity-accent);
+  background: var(--rarity-accent);
+  transform: translateY(-1px);
+}
+
+.vending-card-rarity.rarity-rare {
+  --rarity-accent: #12b76a;
+  --rarity-surface: #ecfdf3;
+}
+
+.vending-card-rarity.rarity-epic {
+  --rarity-accent: #f04438;
+  --rarity-surface: #fef3f2;
+}
+
+.vending-card-rarity.rarity-legendary {
+  --rarity-accent: #fdb022;
+  --rarity-surface: #fffaeb;
+  --rarity-hover-text: #4a3600;
+}
+
+.vending-card-rarity.rarity-iruka {
+  --rarity-accent: #6f8dff;
+  --rarity-surface: #eef4ff;
+}
+
 .vending-inventory-copy > div small {
   color: #52708f;
 }
@@ -119,29 +208,7 @@
 }
 
 .vending-card-facts {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.vending-card-facts span:last-child {
-  text-align: right;
-}
-
-.vending-inventory-copy > b {
-  display: grid;
-  gap: 1px;
-  margin-top: 6px;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
   overflow-wrap: anywhere;
-}
-
-.vending-inventory-copy > b small {
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 600;
 }
 
 .vending-load-more {

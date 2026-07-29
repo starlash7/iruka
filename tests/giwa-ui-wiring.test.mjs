@@ -51,6 +51,13 @@ test("a broadcast GIWA pull is persisted immediately and recovered after reload"
   assert.match(pendingPullSource, /requestTransactionHash/);
 });
 
+test("local fixture pulls do not restore pending onchain requests", () => {
+  assert.match(
+    appSource,
+    /const pendingPull = hasGiwaPullContract\s*\?\s*getPendingGiwaPull\(/
+  );
+});
+
 test("a submitted pull does not interrupt opening with a technical confirmation notice", () => {
   assert.doesNotMatch(appSource, /showNotice\(t\.feedback\.giwaPullConfirmed\)/);
 });

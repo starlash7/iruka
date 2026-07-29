@@ -158,6 +158,35 @@ test("Debut review inventory matches uniform onchain rarity odds exactly", async
   );
 });
 
+test("Debut catalog exposes twenty numbered cards without changing onchain positions", async () => {
+  const detail = await getPackDetail("debut");
+  const catalog = await getPackInventory("debut", { catalog: true, limit: 24 });
+
+  assert.ok(detail);
+  assert.equal(detail.supply.total, 100);
+  assert.equal(catalog.total, 20);
+  assert.equal(catalog.items.length, 20);
+  assert.equal(catalog.nextCursor, undefined);
+  assert.deepEqual(
+    catalog.items.map((card) => card.media.frontUrl),
+    Array.from(
+      { length: 20 },
+      (_, index) => `/assets/pull-cards/card-${String(index + 1).padStart(2, "0")}.jpg`
+    )
+  );
+  assert.deepEqual(
+    catalog.items.map((card) => card.tier),
+    [
+      "Common", "Rare", "Epic", "Legendary", "Iruka",
+      "Common", "Rare", "Epic", "Legendary",
+      "Common", "Rare", "Epic",
+      "Common", "Rare", "Epic",
+      "Common", "Rare", "Epic",
+      "Common", "Rare"
+    ]
+  );
+});
+
 test("inventory card odds reconcile with each published rarity distribution", async () => {
   const packs = await listPacks();
 

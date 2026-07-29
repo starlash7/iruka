@@ -1,6 +1,4 @@
 import {
-  ArrowRight,
-  ExternalLink,
   FastForward,
   Volume2,
   VolumeX
@@ -12,38 +10,28 @@ import {
   useRef,
   useState
 } from "react";
-import { formatUsd } from "../../currency";
-import { RevealCard } from "./RevealCard";
-import { RevealEffects } from "./RevealEffects";
-import { RevealTear, type RevealMedia } from "./RevealTear";
-import { getRevealConfig, type RevealCard as RevealCardData } from "./revealConfig";
+import { getRevealConfig, type RevealCard } from "./revealConfig";
+import { RevealSummary } from "./RevealSummary";
+import type {
+  PackRevealLabels,
+  RevealMedia,
+  RevealReceipt
+} from "./revealTypes";
 import { useRevealDialog } from "./useRevealDialog";
 import {
   markRevealSeen,
   usePrefersReducedMotion
 } from "./useRevealPreferences";
 import { useRevealTimeline } from "./useRevealTimeline";
-
-type PackRevealLabels = {
-  continue: string;
-  estimatedValue: string;
-  skip: string;
-  soundOff: string;
-  soundOn: string;
-  viewReceipt: string;
-};
-
-type RevealReceipt = {
-  explorerUrl: string;
-  requestId: bigint;
-};
+import { VendingRevealScene } from "./VendingRevealScene";
 
 type PackRevealOverlayProps = {
-  cards: RevealCardData[];
+  cards: RevealCard[];
   labels: PackRevealLabels;
   media?: RevealMedia;
   onComplete: () => void;
   onSkip?: () => void;
+  packTier: string;
   receipt?: RevealReceipt;
 };
 
@@ -53,6 +41,7 @@ export function PackRevealOverlay({
   media,
   onComplete,
   onSkip,
+  packTier,
   receipt
 }: PackRevealOverlayProps) {
   const [muted, setMuted] = useState(true);
@@ -62,10 +51,14 @@ export function PackRevealOverlay({
   const completedRef = useRef(false);
   const seenRef = useRef(false);
   const skippedRef = useRef(false);
-  const { isSummary, phase, skip } = useRevealTimeline({
+  const {
+    finishUnpacking,
+    isSummary,
+    open,
+    scene,
+    skip
+  } = useRevealTimeline({
     muted,
-    quick: false,
-    rarity: card.rarity,
     reducedMotion
   });
   const { continueButtonRef, overlayRef } = useRevealDialog(isSummary);
@@ -110,10 +103,8 @@ export function PackRevealOverlay({
       aria-label="Pack reveal"
       aria-modal="true"
       className="pack-reveal-overlay"
-      data-phase={phase}
-      data-quick={false}
       data-rarity={card.rarity}
-      onPointerDown={handleSkip}
+      data-scene={scene}
       ref={overlayRef}
       role="dialog"
       style={{
@@ -124,62 +115,51 @@ export function PackRevealOverlay({
       tabIndex={-1}
     >
       <div className="pack-reveal-stage">
-        <RevealEffects phase={phase} />
-        <RevealTear media={media} phase={phase} />
-        <RevealCard
-          card={card}
-          reducedMotion={reducedMotion}
-          revealed={phase === "reveal" || isSummary}
-        />
+        {isSummary ? (
+          <RevealSummary
+            card={card}
+            continueButtonRef={continueButtonRef}
+            labels={labels}
+            onComplete={complete}
+            packTier={packTier}
+            receipt={receipt}
+            reducedMotion={reducedMotion}
+          />
+        ) : (
+          <VendingRevealScene
+            card={card}
+            labels={labels}
+            muted={muted}
+            onFinish={finishUnpacking}
+            onOpen={open}
+            packImageUrl={media?.posterUrl}
+            packTier={packTier}
+            reducedMotion={reducedMotion}
+            scene={scene}
+          />
+        )}
       </div>
 
-      <div className="pack-reveal-hud" onPointerDown={(event) => event.stopPropagation()}>
-        <button
-          aria-pressed={!muted}
-          className="pack-reveal-sound"
-          onClick={() => setMuted((value) => !value)}
-          type="button"
-        >
-          {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          {muted ? labels.soundOff : labels.soundOn}
-        </button>
-        {!isSummary ? (
-          <button className="pack-reveal-skip" onClick={handleSkip} type="button">
+      {!isSummary ? (
+        <div className="pack-reveal-hud">
+          <button
+            aria-pressed={!muted}
+            className="pack-reveal-sound"
+            onClick={() => setMuted((value) => !value)}
+            type="button"
+          >
+            {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            {muted ? labels.soundOff : labels.soundOn}
+          </button>
+          <button
+            className="pack-reveal-skip"
+            onClick={handleSkip}
+            type="button"
+          >
             <FastForward size={16} />
             {labels.skip}
           </button>
-        ) : null}
-      </div>
-
-      {isSummary ? (
-        <aside
-          aria-live="polite"
-          className="pack-reveal-summary"
-          onPointerDown={(event) => event.stopPropagation()}
-        >
-          <span className="pack-reveal-rarity">{config.name}</span>
-          <h1>{card.name}</h1>
-          {card.serial ? <p>{card.serial}</p> : null}
-          <div className="pack-reveal-summary-value">
-            <span>{labels.estimatedValue}</span>
-            <strong>{card.valueLabel ?? formatUsd(card.estimatedValue)}</strong>
-          </div>
-          {receipt ? (
-            <a href={receipt.explorerUrl} rel="noreferrer" target="_blank">
-              {labels.viewReceipt} #{receipt.requestId.toString()}
-              <ExternalLink size={15} />
-            </a>
-          ) : null}
-          <button
-            className="pack-reveal-continue"
-            onClick={complete}
-            ref={continueButtonRef}
-            type="button"
-          >
-            {labels.continue}
-            <ArrowRight size={17} />
-          </button>
-        </aside>
+        </div>
       ) : null}
     </section>
   );

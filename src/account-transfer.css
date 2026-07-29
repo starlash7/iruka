@@ -178,3 +178,69 @@
   color: var(--account-action);
   text-decoration: none;
 }
+
+.account-transfer-complete-view {
+  display: grid;
+  min-height: 286px;
+  padding: 24px 8px 4px;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.account-transfer-complete-mark {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  color: #fff;
+  border-radius: 50%;
+  background: var(--account-action);
+  box-shadow: 0 14px 34px rgba(22, 119, 255, 0.2);
+}
+
+.account-transfer-complete-view h3 {
+  margin: 0 0 7px;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 650;
+}
+
+.account-transfer-complete-view strong {
+  color: #344158;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.account-transfer-complete-actions {
+  display: grid;
+  width: min(100%, 320px);
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.account-transfer-complete-actions > a,
+.account-transfer-complete-actions > button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 620;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+}
+
+.account-transfer-complete-actions > a {
+  color: var(--account-action);
+  border: 1px solid #dce8f7;
+  background: #f8fbff;
+}
+
+.account-transfer-complete-actions > button {
+  color: #fff;
+  cursor: pointer;
+}

@@ -199,10 +199,9 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       getWalletCardCollection(window.localStorage, giwaWallet.address)
     );
     setCollectionOwnerAddress(giwaWallet.address);
-    const pendingPull = getPendingGiwaPull(
-      window.localStorage,
-      giwaWallet.address
-    );
+    const pendingPull = hasGiwaPullContract
+      ? getPendingGiwaPull(window.localStorage, giwaWallet.address)
+      : undefined;
     setPendingGiwaPull(pendingPull);
     if (!pendingPull) return;
 
@@ -211,7 +210,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     if (receipt) {
       setOnchainPull({ ...receipt, packId: pendingPull.packId });
     }
-  }, [giwaWallet?.address]);
+  }, [giwaWallet?.address, hasGiwaPullContract]);
 
   useEffect(() => {
     if (
@@ -871,8 +870,11 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             <PackRevealOverlay
               cards={[pendingRevealCard]}
               labels={t.revealOverlay}
-              media={{ posterUrl: selectedPackDetail.media.packFrontUrl }}
+              media={{
+                posterUrl: selectedPackDetail.media.packFrontUrl
+              }}
               onComplete={completePendingReveal}
+              packTier={selectedPackDetail.tier}
               receipt={
                 onchainPull?.packId === selectedPackDetail.id
                 && onchainPull.fulfillment

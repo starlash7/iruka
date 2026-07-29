@@ -24,7 +24,7 @@
 
 .vending-odds-row {
   display: grid;
-  grid-template-columns: 84px minmax(0, 1fr) 50px;
+  grid-template-columns: minmax(0, 1fr) 50px;
   gap: 8px;
   align-items: center;
   min-height: 52px;
@@ -39,15 +39,6 @@
   font-size: 13px;
   font-weight: 750;
   line-height: 1.15;
-}
-
-.vending-odds-row small {
-  color: #344054;
-  font-size: 13px;
-  font-weight: 650;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-  text-align: right;
 }
 
 .vending-odds-row strong {

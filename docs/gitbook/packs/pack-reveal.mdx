@@ -1,92 +1,129 @@
 ---
 title: "Pack Reveal Experience"
-description: "Implementation rules for Iruka rarity-aware pack reveals, media fallbacks, and result evidence."
+description: "Implementation rules for Iruka drag opening, centered pack motion, accessibility, and pull results."
 icon: "sparkles"
 ---
 
-> **Status: Live testnet behavior** - The reveal timeline and GIWA receipt
-> checks are implemented. Commercial inventory, custody, and redemption remain
-> in validation or planned.
+> **Status: Live testnet behavior** - The reveal flow and GIWA receipt checks
+> are implemented. Commercial inventory, custody, and redemption remain in
+> validation or planned.
 
-Iruka reveals are part of Vending. A completed pull moves through one short
-sequence and ends on a result that the collector can keep in Vault, list, or
-ship when redemption is eligible.
+Reveal is the final step of an Iruka Vending pull. It does not assign the card
+or replace the GIWA result. It presents the card already returned by the local
+fixture or verified `PullFulfilled` record, then hands the collector back to
+the existing Vault, Sell, and Ship flow.
 
-## State Machine
+## Scene Model
 
 ```text
-idle -> charging -> tear -> reveal -> summary
+sealed -> unpacking -> summary
 ```
 
-- `idle`: the selected pack remains visible before the Pull action.
-- `charging`: no more than 500ms of anticipation.
-- `tear`: play a configured pack-opening clip or the CSS pack tear.
-- `reveal`: show the resulting card as interactive DOM.
-- `summary`: show rarity, serial, value range, and verified receipt when one exists.
+- `sealed`: a centered pack is ready and the collector drags the control from
+  left to right.
+- `unpacking`: the single pack settles, opens, and releases one card surface.
+  GSAP controls the 9.0-second sequence without video.
+- `summary`: a separate flow layout shows the card details and a real Explorer
+  receipt when one exists.
 
-The summary stays open until the collector continues. A result is not added to
-the current session before summary is reached.
+The pack and actual pulled card remain in one persistent Unpacking DOM scene.
+The pack does not rotate or flip. The pulled card uses the same source image as
+Summary, so duplicate preview artwork never overlaps. Card tilt and manual
+front/back flipping are enabled only in Summary.
 
-## Rarity Pacing
+## Seal Gesture
 
-| Tier | Maximum | Treatment |
+Drag progress is normalized from `0` to `1`.
+
+- A release at `72%` or above opens the pack exactly once.
+- A release below `72%` returns to the start over `220ms`.
+- `pointercancel` also returns the handle to the start.
+- Pointer movement updates CSS variables through `requestAnimationFrame`; it
+  does not trigger React renders.
+- Enter and Space provide the same open action for keyboard users.
+- The overlay itself does not skip on tap. Skip is an explicit Skip button.
+- Completing the drag releases the centered pack.
+- Repeated pointer, touch, or keyboard input cannot start a second sequence.
+
+## Reveal Pacing
+
+All rarities use the same 9.0-second GSAP sequence:
+
+| Step | Timeline | Behavior |
 | --- | ---: | --- |
-| Common | 1.5s | Fast transition and restrained foil |
-| Rare | 3.0s | Green flare and moderate foil |
-| Epic | 3.0s | Red flare and stronger foil |
-| Legendary | 4.5s | Yellow flare and premium sequence |
-| Iruka | 4.5s | Holographic blue and strongest sequence |
+| Release | 0.0-0.6s | The drag control clears |
+| Pack motion | 0.6-2.0s | The centered pack settles into its opening position |
+| Opening | 2.0-3.8s | The pack mouth opens and its top seal slides away with no rotation |
+| Extracting | 3.5-6.8s | One card surface rises while remaining inside the viewport |
+| Rarity | 5.6s | The real rarity treatment appears |
+| Name | 6.2s | The real inventory name appears |
+| Showcase | 8.7-9.0s | One bright wash replaces the extracted card with Summary |
 
-Later reveals use the quick timeline. Skip moves directly to summary from
-every active state. Legendary and Iruka may hold briefly before the final card
-appears, but the full sequence must stay within 4.5 seconds.
+Edition appears only in Summary. Serial appears only in Summary. Rarity changes
+the real card treatment, but it does not change the sequence duration. The UI
+does not invent a year, grade, serial, or value for dramatic effect.
 
-## Media Contract
+Particles, radial rings, light rays, and a global tap-to-skip handler are not
+part of this flow. The background remains white and ice blue. Visual treatment
+is limited to the pack opening, card rarity glow, edge, and foil.
 
-- Mobile tear clips use `9:16`.
-- Desktop clips use `1:1` or `16:9`.
-- Clips use a black compositing background and end on a light flash.
-- Clips contain no text, watermark, third-party logo, artist, or real hand.
-- Original Iruka pack art is the image-to-video source.
-- Video is preloaded in the overlay before the tear state.
-- A missing or failed clip immediately falls back to CSS.
+## Asset Behavior
 
-Store approved assets at:
+- The selected transparent Iruka pack image is normalized inside a fixed pack
+  frame so transparent canvas padding cannot change its visual size.
+- The pack falls vertically and opens at its real top edge. It uses no rotation
+  or perspective flip.
+- The extraction scene shows the actual pulled card image as it rises from the
+  pack.
+- The extracted card and Summary use the same original image URL with
+  `object-fit: contain` inside a 3:4 card surface.
+- One opaque ice-blue wash hides only the final change into Summary.
+- The runtime does not request or play an MP4.
+- A missing pack image falls back to a neutral Iruka pack surface.
+- A missing card image cannot trap the collector in the reveal.
+- No new Iruka-owned asset may include an unlicensed artist, logo, watermark,
+  commercial card artwork, or real song.
 
-```text
-public/videos/pack-{common,rare,premium}-*
-public/sfx/{tear,whoosh,sparkle,rare-sting}.*
-```
+The result data exists before animation begins. GSAP changes only the
+presentation; it does not choose or alter the inventory result.
 
-No placeholder video or audio is generated for the review build.
+## Card And Summary
 
-## DOM Card
+The vending sequence and Summary card are regular DOM rather than WebGL:
 
-The revealed card uses regular DOM:
-
-- front and branded back faces
-- pointer tilt after reveal
-- glare position derived from the pointer
-- click or tap to flip
+- one centered pack during release and opening
+- the actual pulled card visible from extraction through Showcase
+- rarity followed by the real card name
+- the same actual inventory image retained in Summary
+- pointer tilt and glare after Summary begins
+- click or tap to flip in Summary
 - rarity color from the shared reveal configuration
 
-Pointer movement updates CSS variables directly so it does not trigger React
-renders. Reduced-motion disables tilt, glare, flashing, and long transitions.
+The Unpacking scene and Summary are not mounted together. The extracted card
+stays in place while rarity and name remain visible, then one bright wash
+replaces the DOM with the Summary layout using the same image. Summary uses a
+fixed two-column flow on desktop and a scrollable single column on mobile, so
+the card and result information cannot overlap.
+
+The pack and pulled card remain visible together until that final wash.
 
 ## Sound And Accessibility
 
 - Sound is generic and muted by default.
 - A visible control reports whether sound is on or off.
-- Escape skips an active sequence and closes a completed summary.
-- The card remains keyboard focusable.
-- The CSS fallback does not require WebGL.
-- Missing storage, media, audio, or haptic support cannot block the result.
+- The explicit Skip control cancels the active GSAP timeline and works from
+  every active scene.
+- Escape performs Skip during the sequence and closes a completed Summary.
+- Focus remains trapped in the reveal dialog.
+- Reduced-motion shows a static front card and reaches Summary in `300ms`.
+- Reduced-transparency replaces glass controls with opaque controls.
+- Missing image, audio, or haptic support cannot block the result.
 
-## GIWA Evidence
+## GIWA Receipt
 
-The browser may show a GIWA Sepolia Explorer link only when it has a real
-transaction hash. A request receipt proves that a draw position was reserved;
-the assigned card is proven only after `PullFulfilled`.
+The browser shows a GIWA Sepolia Explorer link only when a real transaction
+hash exists. A request receipt proves that a draw position was reserved; the
+assigned card is proven only after `PullFulfilled`.
 
 For a configured GIWA batch, Reveal remains closed until the browser reads the
 fulfilled request, finds its canonical `PullFulfilled` transaction, and
@@ -94,43 +131,52 @@ matches the returned inventory commitment to the local card at that inventory
 index. A pending request is checked again without submitting a second pull.
 
 After the collector's `requestPull` transaction confirms, the browser asks the
-same-origin Keeper endpoint to submit the committed server-seed and inventory
+same-origin Keeper endpoint to submit the committed server seed and inventory
 proof. The collector does not sign a fulfillment transaction. Keeper retries
 remain tied to the original request ID, and the contract event remains the
 source of truth if the endpoint is delayed or temporarily unavailable.
 
-The local fixture flow may demonstrate reveal motion, but it must not display
-a fabricated contract address, request identifier, block number, or Explorer
-URL.
+The local fixture flow can run the same reveal without a transaction. It must
+not display a fabricated contract address, request ID, block number, or
+Explorer URL.
 
 ## Source Boundaries
 
 ```text
 src/features/pack-reveal/
   PackRevealOverlay.tsx
+  VendingRevealScene.tsx
+  DispensedPack.tsx
+  EmergingCard.tsx
   RevealCard.tsx
-  RevealTear.tsx
+  RevealSummary.tsx
   revealMachine.ts
-  revealConfig.ts
+  revealSequenceAnimation.ts
+  revealTypes.ts
   sounds.ts
+  useRevealDrag.ts
   useRevealTimeline.ts
 ```
 
-`revealMachine.ts` owns pure phase timing. `useRevealTimeline.ts` owns browser
-timers and skip. `RevealTear.tsx` owns optional media failure. `RevealCard.tsx`
-owns tilt, glare, and flip. `PackRevealOverlay.tsx` composes the dialog and
-summary.
+`revealMachine.ts` owns the three public scenes, `72%` threshold, and pure
+timing contract. `revealSequenceAnimation.ts` owns the scoped GSAP timeline.
+`VendingRevealScene.tsx` keeps the centered pack and one card surface in the
+persistent sequence. `useRevealTimeline.ts` owns Summary completion and explicit
+Skip.
+`PackRevealOverlay.tsx` coordinates focus, sound state, accessibility, and the
+boundary between the persistent reveal and Summary.
 
 ## Acceptance
 
-- State order matches the sprint state machine.
-- Charging is at most 500ms.
-- Rarity maximums are enforced.
-- Skip works from every active phase.
-- Sound is muted by default.
-- Reduced-motion completes through the short CSS path.
-- Missing video does not block reveal.
-- The result persists until the collector continues.
-- A configured GIWA pull reveals only the inventory committed by
+- The scene order matches the documented state machine.
+- Drag below `72%` returns in `220ms`; drag at or above it opens once.
+- The completed drag releases one centered pack.
+- Every rarity uses the documented 9.0-second sequence.
+- The pack opens and one card surface rises with no rotation.
+- The opaque transition hides only the final change into Summary.
+- The explicit Skip and muted sound controls remain available.
+- Reduced-motion completes through the `300ms` static-card path.
+- Summary remains open until the collector continues.
+- A configured GIWA pull reveals only inventory committed by
   `PullFulfilled`.
 - Explorer links are backed by real GIWA Sepolia transaction hashes.

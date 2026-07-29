@@ -1,11 +1,11 @@
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import { BufferGeometry, Points } from "three";
-import type { RevealConfig, RevealPhase } from "./revealConfig";
+import type { LegacyRevealPhase, RevealConfig } from "./revealConfig";
 
 type LightstickParticlesProps = {
   config: RevealConfig;
-  phase: RevealPhase;
+  phase: LegacyRevealPhase;
   progress: number;
 };
 

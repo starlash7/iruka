@@ -24,6 +24,7 @@ const accountCopy = {
   copied: "Copied",
   copyAddress: "Copy address",
   destination: "Destination",
+  done: "Done",
   enterAmount: "Enter amount",
   enterRecipient: "Enter recipient address",
   empty: "Empty",
@@ -47,6 +48,7 @@ const accountCopy = {
   testEth: "ETH",
   token: "Token",
   transfer: "Transfer",
+  transferComplete: "Transfer complete",
   transferCrypto: "Transfer crypto",
   transferFailed: "Transaction failed",
   transferring: "Confirming",
@@ -60,6 +62,7 @@ const accountCopy = {
 
 let AccountPage;
 let AccountCryptoDepositPanel;
+let TransferComplete;
 let createAccountBalanceLoader;
 let getAccountIdentity;
 let getAccountInventorySummary;
@@ -83,6 +86,9 @@ before(async () => {
   } = accountModule);
   ({ AccountCryptoDepositPanel } = await server.ssrLoadModule(
     "/src/AccountCryptoDepositPanel.tsx"
+  ));
+  ({ TransferComplete } = await server.ssrLoadModule(
+    "/src/AccountFundsDialogShared.tsx"
   ));
   ({ copy: localizedCopy } = await server.ssrLoadModule("/src/appCopy.ts"));
 });
@@ -455,6 +461,28 @@ test("Crypto deposit exposes the Iruka address and only enables GIWA test ETH", 
   assert.match(markup, /target="_blank"/);
 });
 
+test("completed transfers replace the form with a dedicated receipt view", async () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(TransferComplete, {
+      amount: "0.001",
+      copy: accountCopy,
+      explorerUrl: "https://sepolia-explorer.giwa.io/tx/0x1",
+      onDone: () => undefined
+    })
+  );
+  const [depositSource, withdrawSource] = await Promise.all([
+    readFile(new URL("../src/AccountCryptoDepositPanel.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/AccountWithdrawDialog.tsx", import.meta.url), "utf8")
+  ]);
+
+  assert.match(markup, />Transfer complete</);
+  assert.match(markup, />0\.001 ETH</);
+  assert.match(markup, />View transaction</);
+  assert.match(markup, />Done</);
+  assert.match(depositSource, /state\.status === "complete"[\s\S]*?<TransferComplete/);
+  assert.match(withdrawSource, /state\.status === "complete"[\s\S]*?<TransferComplete/);
+});
+
 test("Withdraw requires an explicit destination address", () => {
   const markup = renderAccountPage({ withdrawOpen: true });
 
@@ -482,6 +510,7 @@ test("Withdraw requires an explicit destination address", () => {
 test("Account copy is available in English and Korean", () => {
   assert.equal(localizedCopy.en.account.account, "Account");
   assert.equal(localizedCopy.en.account.addFunds, "Add funds");
+  assert.equal(localizedCopy.en.account.transferComplete, "Transfer complete");
   assert.equal(localizedCopy.en.account.withdraw, "Withdraw");
   assert.equal(localizedCopy.en.account.inventoryValue, "Inventory FMV");
   assert.equal(localizedCopy.en.account.overview, "Overview");
@@ -497,6 +526,7 @@ test("Account copy is available in English and Korean", () => {
   assert.equal(localizedCopy.ko.account.overview, "개요");
   assert.equal(localizedCopy.ko.account.wallet, "Iruka Wallet");
   assert.equal(localizedCopy.ko.account.addFunds, "충전");
+  assert.equal(localizedCopy.ko.account.transferComplete, "전송 완료");
   assert.equal(localizedCopy.ko.account.withdraw, "출금");
   assert.equal(localizedCopy.ko.account.walletDetails, "지갑 정보");
   assert.equal(localizedCopy.ko.account.transferCrypto, "코인 보내기");

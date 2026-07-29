@@ -7,8 +7,6 @@ type InventoryFilter = "all" | RarityTier;
 
 type VendingPackInventoryCopy = {
   allRarities: string;
-  estimatedValue: string;
-  individualOdds: string;
   insidePack: string;
   loadError?: string;
   loadMore: string;
@@ -25,6 +23,42 @@ type VendingPackInventoryProps = {
   rarityLabels: InventoryRarityLabels;
 };
 
+type VendingRarityFiltersProps = {
+  allLabel: string;
+  filter: InventoryFilter;
+  onSelect: (filter: InventoryFilter) => void;
+  rarityLabels: InventoryRarityLabels;
+};
+
+export function VendingRarityFilters({
+  allLabel,
+  filter,
+  onSelect,
+  rarityLabels
+}: VendingRarityFiltersProps) {
+  const filters: readonly InventoryFilter[] = [
+    "all",
+    ...(Object.keys(rarityLabels) as RarityTier[])
+  ];
+
+  return (
+    <div aria-label={allLabel} className="vending-rarity-filters" role="group">
+      {filters.map((rarity) => (
+        <button
+          aria-pressed={filter === rarity}
+          className="vending-rarity-filter"
+          data-rarity={rarity}
+          key={rarity}
+          onClick={() => onSelect(rarity)}
+          type="button"
+        >
+          {rarity === "all" ? allLabel : rarityLabels[rarity]}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function VendingPackInventory({
   copy,
   pack,
@@ -36,7 +70,6 @@ export function VendingPackInventory({
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [nextCursor, setNextCursor] = useState<number>();
-  const [total, setTotal] = useState(pack.featuredInventory.length);
   const requestIdRef = useRef(0);
 
   useEffect(() => {
@@ -46,7 +79,6 @@ export function VendingPackInventory({
     setIsLoading(false);
     setLoadError(false);
     setNextCursor(undefined);
-    setTotal(pack.featuredInventory.length);
     requestIdRef.current += 1;
   }, [pack]);
 
@@ -57,6 +89,7 @@ export function VendingPackInventory({
     setIsLoading(true);
     try {
       const page = await getPackInventory(pack.id, {
+        catalog: true,
         cursor,
         limit: 24,
         rarity: nextFilter === "all" ? undefined : nextFilter
@@ -65,7 +98,6 @@ export function VendingPackInventory({
 
       setInventory((items) => append ? [...items, ...page.items] : page.items);
       setNextCursor(page.nextCursor);
-      setTotal(page.total);
     } catch {
       if (requestId === requestIdRef.current) setLoadError(true);
     } finally {
@@ -87,11 +119,11 @@ export function VendingPackInventory({
     setIsLoading(false);
     setLoadError(false);
     setNextCursor(undefined);
-    setTotal(pack.featuredInventory.length);
   }
 
   function filterCards(nextFilter: InventoryFilter) {
     setFilter(nextFilter);
+    setIsExpanded(true);
     void loadCards(nextFilter);
   }
 
@@ -117,23 +149,14 @@ export function VendingPackInventory({
         </button>
       </div>
 
-      {isExpanded ? (
-        <div className="vending-inventory-toolbar">
-          <label>
-            <span className="sr-only">{copy.allRarities}</span>
-            <select
-              onChange={(event) => filterCards(event.target.value as InventoryFilter)}
-              value={filter}
-            >
-              <option value="all">{copy.allRarities}</option>
-              {(Object.keys(rarityLabels) as RarityTier[]).map((rarity) => (
-                <option key={rarity} value={rarity}>{rarityLabels[rarity]}</option>
-              ))}
-            </select>
-          </label>
-          <span>{inventory.length} / {total}</span>
-        </div>
-      ) : null}
+      <div className="vending-inventory-toolbar">
+        <VendingRarityFilters
+          allLabel={copy.allRarities}
+          filter={filter}
+          onSelect={filterCards}
+          rarityLabels={rarityLabels}
+        />
+      </div>
 
       <div className="vending-inventory-grid" aria-busy={isLoading}>
         {inventory.map((card) => (

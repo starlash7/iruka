@@ -5,11 +5,15 @@ import { CardMesh } from "./CardMesh";
 import { LightstickParticles } from "./LightstickParticles";
 import { PackMesh } from "./PackMesh";
 import { StageLights } from "./StageLights";
-import { getRevealConfig, type RevealCard, type RevealPhase } from "./revealConfig";
+import {
+  getRevealConfig,
+  type LegacyRevealPhase,
+  type RevealCard
+} from "./revealConfig";
 
 type RevealSceneProps = {
   card: RevealCard;
-  phase: RevealPhase;
+  phase: LegacyRevealPhase;
   progress: number;
   reducedMotion: boolean;
 };

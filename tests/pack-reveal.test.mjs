@@ -3,124 +3,276 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const readSource = (path) => readFile(new URL(path, import.meta.url), "utf8");
+const readOptionalSource = (path) => readSource(path).catch(() => "");
 
-test("pack reveal composes DOM tear, card, and summary surfaces", async () => {
-  const source = await readSource("../src/features/pack-reveal/PackRevealOverlay.tsx");
+test("pack reveal mounts one vending sequence until summary", async () => {
+  const [
+    overlaySource,
+    sequenceSource,
+    packSource,
+    emergingCardSource
+  ] = await Promise.all([
+    readSource("../src/features/pack-reveal/PackRevealOverlay.tsx"),
+    readOptionalSource("../src/features/pack-reveal/VendingRevealScene.tsx"),
+    readOptionalSource("../src/features/pack-reveal/DispensedPack.tsx"),
+    readOptionalSource("../src/features/pack-reveal/EmergingCard.tsx")
+  ]);
+  const revealSource = [
+    sequenceSource,
+    packSource,
+    emergingCardSource
+  ].join("\n");
 
-  assert.match(source, /from "\.\/RevealCard"/);
-  assert.match(source, /from "\.\/RevealEffects"/);
-  assert.match(source, /from "\.\/RevealTear"/);
-  assert.match(source, /<RevealEffects phase=\{phase\} \/>/);
-  assert.match(source, /className="pack-reveal-summary"/);
-  assert.match(source, /labels\.continue/);
-  assert.doesNotMatch(source, /RevealScene/);
+  assert.match(overlaySource, /<VendingRevealScene/);
+  assert.match(overlaySource, /<RevealSummary/);
+  assert.match(overlaySource, /isSummary \?/);
+  assert.doesNotMatch(overlaySource, /switch \(scene\)/);
+  assert.doesNotMatch(overlaySource, /RevealCinematicScene/);
+  assert.doesNotMatch(overlaySource, /RevealCardScene/);
+  assert.doesNotMatch(sequenceSource, /VendingSlot/);
+  assert.match(sequenceSource, /<DispensedPack/);
+  assert.match(sequenceSource, /<EmergingCard/);
+  assert.equal((sequenceSource.match(/<EmergingCard/g) ?? []).length, 1);
+  assert.match(sequenceSource, /imageUrl=\{card\.imageUrl\}/);
+  assert.match(packSource, /pack-reveal-pack-body/);
+  assert.match(packSource, /pack-reveal-pack-seal/);
+  assert.match(emergingCardSource, /pack-reveal-emerging-card/);
+  assert.match(emergingCardSource, /src=\{imageUrl\}/);
+  assert.match(emergingCardSource, /<img/);
+  assert.doesNotMatch(revealSource, /RevealReceipt/);
+  assert.doesNotMatch(revealSource, /RevealFullPhoto/);
+  assert.doesNotMatch(revealSource, /pack-reveal-receipt/);
+  assert.doesNotMatch(revealSource, /pack-reveal-full-photo/);
+  assert.match(sequenceSource, /data-phase=\{phase\}/);
 });
 
-test("rarity stage effects are decorative, deterministic, and phase driven", async () => {
-  const source = await readSource("../src/features/pack-reveal/RevealEffects.tsx");
-
-  assert.match(source, /aria-hidden="true"/);
-  assert.match(source, /className="pack-reveal-atmosphere"/);
-  assert.match(source, /className="pack-reveal-burst"/);
-  assert.match(source, /className="pack-reveal-rings"/);
-  assert.match(source, /className="pack-reveal-rays"/);
-  assert.match(source, /className="pack-reveal-particles"/);
-  assert.match(source, /data-phase=\{phase\}/);
-  assert.doesNotMatch(source, /Math\.random/);
-});
-
-test("rarity stage styles distinguish every tier and respect motion preferences", async () => {
+test("seal gesture updates CSS progress without React pointer renders", async () => {
   const source = (
     await Promise.all([
-      readSource("../src/pack-reveal-effects.css"),
-      readSource("../src/pack-reveal-responsive.css")
+      readOptionalSource("../src/features/pack-reveal/VendingRevealScene.tsx"),
+      readSource("../src/features/pack-reveal/useRevealDrag.ts")
     ])
   ).join("\n");
 
-  for (const rarity of ["common", "rare", "epic", "legendary", "iruka"]) {
-    assert.match(source, new RegExp(`data-rarity="${rarity}"`));
-  }
-  assert.match(source, /@media \(max-width: 760px\)/);
-  assert.match(source, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(source, /\.pack-reveal-particle:nth-child\(n \+ 11\)/);
+  assert.match(source, /setPointerCapture/);
+  assert.match(source, /releasePointerCapture/);
+  assert.match(source, /onPointerCancel=/);
+  assert.match(source, /requestAnimationFrame/);
+  assert.match(source, /--drag-progress/);
+  assert.match(source, /shouldCompleteRevealDrag/);
+  assert.match(source, /event\.key === "Enter"/);
+  assert.match(source, /event\.key === " "/);
+
+  const releasePointer = source.slice(
+    source.indexOf("function releasePointer"),
+    source.indexOf("function handlePointerDown")
+  );
+  assert.ok(
+    releasePointer.indexOf("dragRef.current.active = false")
+      < releasePointer.indexOf("releasePointerCapture"),
+    "pointer capture must become inactive before lostpointercapture can fire"
+  );
 });
 
-test("tear media always has a preload and CSS failure fallback", async () => {
-  const source = await readSource("../src/features/pack-reveal/RevealTear.tsx");
+test("pack and card preserve complete artwork inside normalized frames", async () => {
+  const styles = (
+    await Promise.all([
+      readSource("../src/pack-reveal-tear.css"),
+      readSource("../src/pack-reveal-vending-product.css"),
+      readSource("../src/pack-reveal-card.css")
+    ])
+  ).join("\n");
 
-  assert.match(source, /preload="auto"/);
-  assert.match(source, /onError=/);
-  assert.match(source, /pack-reveal-tear-fallback/);
+  assert.match(styles, /\.pack-reveal-product-frame/);
+  assert.match(styles, /\.pack-reveal-pack-body[\s\S]*?overflow:\s*hidden/);
+  assert.match(styles, /\.pack-reveal-pack-body img[\s\S]*?object-fit:\s*contain/);
+  assert.match(styles, /\.pack-reveal-pack-seal img[\s\S]*?object-fit:\s*contain/);
+  assert.match(styles, /\.pack-reveal-emerging-card[\s\S]*?aspect-ratio:\s*3\s*\/\s*4/);
+  assert.match(styles, /\.pack-reveal-emerging-card img[\s\S]*?object-fit:\s*contain/);
+  assert.match(styles, /\.pack-reveal-card-front img[\s\S]*?object-fit:\s*contain/);
+  assert.doesNotMatch(styles, /\.pack-reveal-receipt/);
+  assert.doesNotMatch(styles, /\.pack-reveal-full-photo/);
 });
 
-test("CSS pack opening includes a sealed foil shell, core light, and deterministic fragments", async () => {
-  const source = await readSource("../src/features/pack-reveal/RevealTear.tsx");
-
-  assert.match(source, /className="pack-reveal-pack-shell"/);
-  assert.match(source, /className="pack-reveal-pack-foil"/);
-  assert.match(source, /className="pack-reveal-pack-core"/);
-  assert.match(source, /className="pack-reveal-seal-edge/);
-  assert.match(source, /className="pack-reveal-fragments"/);
-  assert.match(source, /packFragments\.map/);
-  assert.doesNotMatch(source, /Math\.random/);
-});
-
-test("revealed card supports pointer glare and a flip state", async () => {
-  const source = await readSource("../src/features/pack-reveal/RevealCard.tsx");
-
-  assert.match(source, /onPointerMove=/);
-  assert.match(source, /data-revealed=/);
-  assert.match(source, /pack-reveal-card-aura/);
-  assert.match(source, /pack-reveal-card-edge/);
-  assert.match(source, /pack-reveal-card-foil/);
-  assert.match(source, /pack-reveal-card-glare/);
-  assert.match(source, /aria-hidden=\{!revealed\}/);
-  assert.match(source, /disabled=\{!revealed\}/);
-  assert.match(source, /tabIndex=\{revealed \? 0 : -1\}/);
-});
-
-test("pack and card motion styles include the premium rarity treatments", async () => {
-  const [tearStyles, cardSource, responsiveStyles] = await Promise.all([
+test("sealed pack is centered without a vending gauge or crop mask", async () => {
+  const [sequenceSource, styles, productStyles] = await Promise.all([
+    readSource("../src/features/pack-reveal/VendingRevealScene.tsx"),
     readSource("../src/pack-reveal-tear.css"),
-    readSource("../src/pack-reveal-card.css"),
-    readSource("../src/pack-reveal-responsive.css")
+    readSource("../src/pack-reveal-vending-product.css")
   ]);
-  const cardStyles = `${cardSource}\n${responsiveStyles}`;
 
-  assert.match(tearStyles, /\.pack-reveal-pack-core/);
-  assert.match(tearStyles, /\.pack-reveal-fragment/);
-  assert.match(tearStyles, /data-phase="tear"[\s\S]*?pack-reveal-pack-top/);
-  assert.match(cardStyles, /\.pack-reveal-card-aura/);
-  assert.match(cardStyles, /\.pack-reveal-card-edge/);
-  assert.match(cardStyles, /\.pack-reveal-card-foil/);
-  assert.match(cardStyles, /data-rarity="legendary"/);
-  assert.match(cardStyles, /data-rarity="iruka"/);
+  assert.doesNotMatch(sequenceSource, /VendingSlot/);
+  assert.doesNotMatch(styles, /\.pack-reveal-vending-slot/);
+  assert.doesNotMatch(styles, /--slot-clearance/);
+  assert.match(
+    styles,
+    /\.pack-reveal-product-frame[\s\S]*?overflow:\s*visible/
+  );
+  assert.match(
+    productStyles,
+    /\.pack-reveal-dispensed-pack[\s\S]*?--pack-drop:\s*-18%/
+  );
+});
+
+test("unpacking uses the existing pack art without loading a video", async () => {
+  const [appSource, overlaySource, mediaTypes] = await Promise.all([
+    readSource("../src/App.tsx"),
+    readSource("../src/features/pack-reveal/PackRevealOverlay.tsx"),
+    readSource("../src/features/pack-reveal/revealTypes.ts")
+  ]);
+
+  assert.match(appSource, /posterUrl: selectedPackDetail\.media\.packFrontUrl/);
+  assert.match(appSource, /packTier=\{selectedPackDetail\.tier\}/);
+  assert.doesNotMatch(appSource, /pack-closeup-portrait\.mp4/);
+  assert.doesNotMatch(overlaySource, /useRevealMediaPreload/);
+  assert.doesNotMatch(mediaTypes, /VideoUrl/);
+});
+
+test("summary owns edition, serial, and rarity metadata", async () => {
+  const [overlaySource, source] = await Promise.all([
+    readSource("../src/features/pack-reveal/PackRevealOverlay.tsx"),
+    readSource("../src/features/pack-reveal/RevealSummary.tsx")
+  ]);
+
+  assert.match(overlaySource, /packTier=\{packTier\}/);
+  assert.match(source, /packTier:\s*string/);
+  assert.match(source, /labels\.edition/);
+  assert.match(source, /labels\.serial/);
+  assert.match(source, /config\.name/);
+  assert.doesNotMatch(source, /grade/i);
+  assert.doesNotMatch(source, /year/i);
+});
+
+test("the pulled card rises from the pack and summary stays interactive", async () => {
+  const [sequenceSource, emergingCardSource, cardSource, cardStyles] = await Promise.all([
+    readOptionalSource("../src/features/pack-reveal/VendingRevealScene.tsx"),
+    readOptionalSource("../src/features/pack-reveal/EmergingCard.tsx"),
+    readSource("../src/features/pack-reveal/RevealCard.tsx"),
+    readSource("../src/pack-reveal-card.css")
+  ]);
+
+  assert.doesNotMatch(sequenceSource, /<RevealCard/);
+  assert.equal((sequenceSource.match(/<EmergingCard/g) ?? []).length, 1);
+  assert.match(sequenceSource, /imageUrl=\{card\.imageUrl\}/);
+  assert.match(emergingCardSource, /src=\{imageUrl\}/);
+  assert.match(emergingCardSource, /onError=/);
+  assert.match(emergingCardSource, /pack-reveal-emerging-card-fallback/);
+  assert.match(sequenceSource, /data-phase=\{phase\}/);
+  assert.match(cardSource, /face:\s*"back" \| "front"/);
+  assert.match(cardSource, /onPointerMove=/);
+  assert.match(cardSource, /onError=/);
+  assert.match(cardSource, /pack-reveal-card-foil/);
+  assert.match(cardSource, /pack-reveal-card-image-fallback/);
+  assert.match(cardSource, /interactive:\s*boolean/);
+  assert.match(cardStyles, /\[data-back="false"\]/);
   assert.match(
     cardStyles,
-    /data-rarity="common"\]\[data-phase="reveal"[\s\S]*?animation-duration:\s*520ms/
+    /\.pack-reveal-dom-card[\s\S]*?aspect-ratio:\s*3\s*\/\s*4/
   );
-  assert.match(cardStyles, /data-quick="true"[\s\S]*?animation-duration:/);
-  assert.match(cardStyles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(
+    cardStyles,
+    /\.pack-reveal-card-front img[\s\S]*?object-fit:\s*contain/
+  );
+  assert.doesNotMatch(cardStyles, /\[data-face="front"\]/);
 });
 
-test("a reveal session keeps one timeline instead of restarting on prop changes", async () => {
-  const source = await readSource("../src/features/pack-reveal/useRevealTimeline.ts");
+test("GSAP sequence dispenses one pack and extracts one card without rotation", async () => {
+  const source = (
+    await Promise.all([
+      readOptionalSource(
+        "../src/features/pack-reveal/VendingRevealScene.tsx"
+      ),
+      readOptionalSource(
+        "../src/features/pack-reveal/revealSequenceAnimation.ts"
+      )
+    ])
+  ).join("\n");
 
-  assert.match(source, /useState\(\(\) =>\s*getRevealTimeline/);
-  assert.doesNotMatch(source, /useMemo\(/);
+  assert.match(source, /import \{ gsap \} from "gsap"/);
+  assert.match(source, /gsap\.context/);
+  assert.match(source, /REVEAL_SEQUENCE_TIMING/);
+  assert.match(source, /dispensingAtMs/);
+  assert.match(source, /openingAtMs/);
+  assert.match(source, /extractingAtMs/);
+  assert.match(source, /rarityAtMs/);
+  assert.match(source, /nameAtMs/);
+  assert.match(source, /showcaseAtMs/);
+  assert.match(source, /summaryAtMs/);
+  for (const selector of [
+    "pack-reveal-dispensed-pack",
+    "pack-reveal-pack-seal",
+    "pack-reveal-pack-mouth",
+    "pack-reveal-emerging-card",
+    "pack-reveal-reveal-rarity",
+    "pack-reveal-reveal-name",
+    "pack-reveal-screen-wash"
+  ]) {
+    assert.match(source, new RegExp(selector));
+  }
+  assert.match(source, /context\.revert\(\)/);
+  assert.doesNotMatch(source, /rotationX/);
+  assert.doesNotMatch(source, /rotationY/);
+  assert.doesNotMatch(source, /rotationZ/);
+  assert.doesNotMatch(source, /rotation:/);
+  assert.doesNotMatch(source, /scaleY/);
+  assert.doesNotMatch(source, /<video/);
+  assert.doesNotMatch(source, /pack-reveal-vending-slot/);
 });
 
-test("full reveal is the default and skip remains available", async () => {
-  const source = await readSource("../src/features/pack-reveal/PackRevealOverlay.tsx");
+test("the opened pack remains until the final wash masks the summary handoff", async () => {
+  const [animationSource, styles] = await Promise.all([
+    readSource("../src/features/pack-reveal/revealSequenceAnimation.ts"),
+    readSource("../src/pack-reveal-tear.css")
+  ]);
 
-  assert.doesNotMatch(source, /getRevealCount/);
-  assert.match(source, /quick:\s*false/);
-  assert.match(source, /data-quick=\{false\}/);
-  assert.match(source, /\{!isSummary \? \(/);
-  assert.doesNotMatch(source, /!isSummary && quick/);
+  assert.match(animationSource, /"--pack-drop": "-18%"/);
+  assert.match(animationSource, /"--card-rise": "-78%"/);
+  assert.doesNotMatch(
+    animationSource,
+    /pack-reveal-dispensed-pack[\s\S]{0,220}autoAlpha:\s*0[\s\S]{0,100}yPercent:\s*18/
+  );
+  assert.match(
+    animationSource,
+    /pack-reveal-screen-wash[\s\S]*?summaryAtMs\)\s*-\s*0\.3/
+  );
+  assert.equal(
+    (animationSource.match(/\.to\(\s*"\.pack-reveal-screen-wash"/g) ?? []).length,
+    1
+  );
+  assert.doesNotMatch(animationSource, /top:\s*"50%"/);
+  assert.doesNotMatch(
+    styles,
+    /\[data-phase="showcase"\][\s\S]*?\.pack-reveal-emerging-card[\s\S]*?top:\s*50%/
+  );
 });
 
-test("reveal modal locks background scroll and manages keyboard focus", async () => {
+test("skip and reduced motion finish the persistent sequence once", async () => {
+  const source = await readSource(
+    "../src/features/pack-reveal/useRevealTimeline.ts"
+  );
+
+  assert.match(source, /getRevealSequenceDuration/);
+  assert.match(source, /sceneRef\.current !== "unpacking"/);
+  assert.match(source, /window\.clearTimeout/);
+  assert.match(source, /setRevealScene\("summary"\)/);
+  assert.doesNotMatch(source, /finishCinematic/);
+});
+
+test("summary is a separate flow layout and preserves receipt and completion", async () => {
+  const source = await readSource(
+    "../src/features/pack-reveal/RevealSummary.tsx"
+  );
+  const styles = await readSource("../src/pack-reveal-summary.css");
+
+  assert.match(source, /className="pack-reveal-summary-layout"/);
+  assert.match(source, /labels\.viewReceipt/);
+  assert.match(source, /labels\.continue/);
+  assert.match(styles, /\.pack-reveal-summary-layout/);
+  assert.doesNotMatch(styles, /position:\s*absolute/);
+  assert.doesNotMatch(styles, /translate3d/);
+});
+
+test("reveal modal keeps focus, explicit skip, and muted sound controls", async () => {
   const [overlaySource, dialogSource] = await Promise.all([
     readSource("../src/features/pack-reveal/PackRevealOverlay.tsx"),
     readSource("../src/features/pack-reveal/useRevealDialog.ts")
@@ -129,50 +281,67 @@ test("reveal modal locks background scroll and manages keyboard focus", async ()
   assert.match(overlaySource, /useRevealDialog\(isSummary\)/);
   assert.match(overlaySource, /ref=\{overlayRef\}/);
   assert.match(overlaySource, /tabIndex=\{-1\}/);
+  assert.match(overlaySource, /labels\.skip/);
+  assert.match(overlaySource, /labels\.soundOff/);
   assert.match(dialogSource, /document\.body\.style\.overflow = "hidden"/);
-  assert.match(dialogSource, /document\.body\.style\.overflow = previousOverflow/);
   assert.match(dialogSource, /continueButtonRef\.current\?\.focus/);
-  assert.match(dialogSource, /\.inert = true/);
-  assert.match(dialogSource, /event\.key !== "Tab"/);
 });
 
-test("reveal styles cover summary and reduced motion", async () => {
-  const [stylesheets, copySource] = await Promise.all([
+test("reveal styles are feature-owned with no legacy global selectors", async () => {
+  const [mainSource, globalStyles, stylesheets] = await Promise.all([
+    readSource("../src/main.tsx"),
+    readSource("../src/styles.css"),
     Promise.all([
       "../src/pack-reveal.css",
-      "../src/pack-reveal-effects.css",
       "../src/pack-reveal-tear.css",
+      "../src/pack-reveal-vending-product.css",
+      "../src/pack-reveal-gesture.css",
       "../src/pack-reveal-card.css",
       "../src/pack-reveal-summary.css",
       "../src/pack-reveal-motion.css",
       "../src/pack-reveal-responsive.css"
-    ].map(readSource)),
-    readSource("../src/appCopy.ts")
+    ].map(readSource))
   ]);
   const stylesheet = stylesheets.join("\n");
 
-  assert.match(stylesheet, /\.pack-reveal-dom-card/);
-  assert.match(stylesheet, /\.pack-reveal-summary/);
-  assert.match(
-    stylesheet,
-    /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.pack-reveal-dom-card/
-  );
-  assert.match(copySource, /continue:\s*"Continue"/);
-  assert.match(copySource, /continue:\s*"계속"/);
+  assert.doesNotMatch(mainSource, /pack-reveal-effects\.css/);
+  assert.match(mainSource, /pack-reveal-gesture\.css/);
+  assert.doesNotMatch(globalStyles, /\.pack-reveal-overlay/);
+  assert.match(stylesheet, /\.pack-reveal-vending-scene/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-vending-slot/);
+  assert.match(stylesheet, /\.pack-reveal-dispensed-pack/);
+  assert.match(stylesheet, /\.pack-reveal-pack-seal/);
+  assert.match(stylesheet, /\.pack-reveal-emerging-card/);
+  assert.match(stylesheet, /\.pack-reveal-screen-wash/);
+  assert.match(stylesheet, /\.pack-reveal-summary-layout/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-receipt/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-full-photo/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-ticket/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-sequence-card/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-result-title/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-sequence-mouth/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-sequence-pack-half/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-hints/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-sequence-glow/);
+  assert.doesNotMatch(stylesheet, /\.pack-reveal-cinematic/);
 });
 
-test("reveal layout includes transparency and narrow-mobile safeguards", async () => {
+test("reveal layout covers mobile, reduced motion, and transparency preferences", async () => {
   const source = (
     await Promise.all([
       readSource("../src/pack-reveal.css"),
+      readSource("../src/pack-reveal-tear.css"),
       readSource("../src/pack-reveal-summary.css"),
       readSource("../src/pack-reveal-responsive.css")
     ])
   ).join("\n");
 
   assert.match(source, /overscroll-behavior:\s*none/);
-  assert.match(source, /max-height:\s*calc\(100dvh/);
+  assert.match(source, /min\(58dvh,\s*560px\)/);
+  assert.match(source, /min\(52dvh,\s*440px\)/);
+  assert.match(source, /@media \(max-width: 760px\)/);
   assert.match(source, /@media \(max-width: 390px\)/);
+  assert.match(source, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(source, /@media \(prefers-reduced-transparency: reduce\)/);
 });
 
@@ -185,9 +354,7 @@ test("reveal loading and chunk failures never leave a blank blocking overlay", a
 
   assert.match(appSource, /<PackRevealBoundary/);
   assert.match(appSource, /<PackRevealLoading label=\{t\.hero\.opening\} \/>/);
-  assert.doesNotMatch(appSource, /pack-reveal-loading" aria-hidden="true"/);
   assert.match(boundarySource, /getDerivedStateFromError/);
-  assert.match(boundarySource, /role="dialog"/);
   assert.match(boundarySource, /onClick=\{onComplete\}/);
   assert.match(stylesheet, /\.pack-reveal-fallback/);
 });

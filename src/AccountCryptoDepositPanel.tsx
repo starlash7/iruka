@@ -2,6 +2,7 @@ import { Copy, ExternalLink, Wallet } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { AccountAssetField } from "./AccountAssetField";
 import {
+  TransferComplete,
   TransferStatus,
   type FundsDialogState
 } from "./AccountFundsDialogShared";
@@ -17,6 +18,7 @@ type AccountCryptoDepositPanelProps = {
   externalWalletAddress?: string;
   onConnectWallet: () => void;
   onCopyAddress: () => void;
+  onDone: () => void;
   onTransfer: (amount: string) => Promise<GiwaTransferReceipt>;
   onTransferComplete: () => void;
 };
@@ -28,6 +30,7 @@ export function AccountCryptoDepositPanel({
   externalWalletAddress,
   onConnectWallet,
   onCopyAddress,
+  onDone,
   onTransfer,
   onTransferComplete
 }: AccountCryptoDepositPanelProps) {
@@ -45,6 +48,17 @@ export function AccountCryptoDepositPanel({
     } catch {
       setState({ status: "error" });
     }
+  }
+
+  if (state.status === "complete") {
+    return (
+      <TransferComplete
+        amount={amount}
+        copy={copy}
+        explorerUrl={state.explorerUrl}
+        onDone={onDone}
+      />
+    );
   }
 
   return (

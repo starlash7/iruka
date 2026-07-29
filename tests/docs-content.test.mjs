@@ -117,6 +117,50 @@ test("pack odds match the committed Debut fixture", async () => {
   assert.match(packInformation, /rarity is not a physical grade/i);
 });
 
+test("pack reveal docs publish the vending dispense sequence", async () => {
+  const [packReveal, sprint] = await Promise.all([
+    readDoc("packs/pack-reveal"),
+    readFile(new URL("../sprint.md", import.meta.url), "utf8")
+  ]);
+
+  for (const source of [packReveal, sprint]) {
+    assert.doesNotMatch(source, /5\.04-second/i);
+    assert.match(source, /72%/);
+    assert.match(source, /220ms/);
+    assert.match(
+      source,
+      /sealed\s*->\s*unpacking\s*->\s*summary/i
+    );
+    assert.match(source, /GSAP/i);
+    assert.match(source, /without video|no video/i);
+    assert.match(source, /single (?:pack|package|card surface)/i);
+    assert.match(source, /every rarity|all rarities/i);
+    assert.match(source, /Release[\s\S]{0,140}0\.0-0\.6s/i);
+    assert.match(source, /Pack motion[\s\S]{0,140}0\.6-2\.0s/i);
+    assert.match(source, /Opening[\s\S]{0,140}2\.0-3\.8s/i);
+    assert.match(source, /Extracting[\s\S]{0,140}3\.5-6\.8s/i);
+    assert.match(source, /Showcase[\s\S]{0,140}8\.7-9\.0s/i);
+    assert.match(source, /centered pack/i);
+    assert.doesNotMatch(source, /vending slot/i);
+    assert.match(source, /one card surface/i);
+    assert.match(source, /actual (?:pulled|inventory) (?:card|image)/i);
+    assert.match(source, /pack and (?:the )?(?:pulled )?card remain[\s\S]{0,100}wash/i);
+    assert.match(source, /no rotation/i);
+    assert.match(source, /Edition[\s\S]{0,100}Summary/i);
+    assert.match(source, /Serial[\s\S]{0,100}Summary/i);
+    assert.match(source, /explicit Skip/i);
+    assert.match(source, /300ms/);
+    assert.doesNotMatch(source, /hint chips/i);
+    assert.doesNotMatch(source, /idle\s*->\s*charging/i);
+    assert.doesNotMatch(source, /7\.5 seconds/i);
+  }
+
+  assert.match(
+    packReveal,
+    /extracted card and Summary use the same original image URL/i
+  );
+});
+
 test("grading policy documents both tracks and complete records", async () => {
   const grading = await readDoc("product/grading-and-verification");
 
@@ -175,10 +219,11 @@ test("account docs separate the Iruka Wallet from optional external wallets", as
 test("GIWA Contracts documents deployment and successful pull transactions", async () => {
   const giwaContracts = await readDoc("technical/giwa-testnet");
   const hashes = [
-    "0x4118014dc390ab03e0843c90ffdae3c0bd029472b6aa7407d0e9c085fe74176d",
-    "0xbbab1fc046f01a7f82eb7ce99f61daba88decf63d0766ae3d42af06f5367c4de",
-    "0xde7e40e97cd6c1631f2f490a5707457308ea5d56bbe8114f21646912c1bf7b0b",
-    "0x8a0da6b397518ec64bbe4e16cb053fe6f9af6e8e9d92220f78f646e28791f79c",
+    "0xbf39aa26f3edb6fce45b151282d40dc83c643fcd348ecf5b68fdb5f6c8d6449d",
+    "0xc569ee917a1b3664afbc8eb40ce6497dd60953bf11a799c894a37667cc24f258",
+    "0x5ac3933f2b5db9ee0ceb73138bbf5b661a1edbd453a6e581f43b29fd80a80e78",
+    "0xa01530136ffc040d476d9ac523ec103ec4a947050b6f86f7b20f0dad4841b71c",
+    "0x11bcc9a0a4b61d38f1d8ee1fe722335983bc78a1a861b324dda799e3bf773c9e",
   ];
 
   for (const hash of hashes) {

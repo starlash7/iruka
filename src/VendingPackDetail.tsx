@@ -1,5 +1,5 @@
 import { Clock3, ExternalLink, PackageOpen, RefreshCw, Truck, Wallet } from "lucide-react";
-import { formatUsdc, formatUsdcRange } from "./currency";
+import { formatUsdc } from "./currency";
 import type { GiwaPullReceipt } from "./giwaPull.ts";
 import debutVendingMachineImage from "./assets/iruka-vending-machine-debut.png";
 import encoreVendingMachineImage from "./assets/iruka-vending-machine-encore.png";
@@ -143,7 +143,6 @@ export function VendingPackDetail({
             {pack.rarityOdds.map((odds) => (
               <div className={`vending-odds-row rarity-${odds.tier.toLowerCase()}`} key={odds.tier}>
                 <span>{rarityLabels[odds.tier]}</span>
-                <small>{formatUsdcRange(odds.estimatedValueRangeUsdc)}</small>
                 <strong>{formatOdds(odds.basisPoints)}</strong>
               </div>
             ))}

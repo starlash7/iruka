@@ -1,4 +1,4 @@
-import { ChevronLeft, ExternalLink, X } from "lucide-react";
+import { Check, ChevronLeft, ExternalLink, X } from "lucide-react";
 import type { AccountCopy } from "./AccountPage";
 import type { GiwaTransferReceipt } from "./giwaTransfer";
 
@@ -76,5 +76,50 @@ export function TransferStatus({
       {copy.viewTransaction}
       <ExternalLink size={15} />
     </a>
+  );
+}
+
+export function TransferComplete({
+  amount,
+  copy,
+  explorerUrl,
+  onDone
+}: {
+  amount: string;
+  copy: AccountCopy;
+  explorerUrl: string;
+  onDone: () => void;
+}) {
+  return (
+    <section
+      aria-live="polite"
+      className="account-transfer-complete-view"
+    >
+      <span className="account-transfer-complete-mark">
+        <Check aria-hidden="true" size={25} strokeWidth={2.4} />
+      </span>
+      <div>
+        <h3>{copy.transferComplete}</h3>
+        <strong>{amount.trim()} ETH</strong>
+      </div>
+      <div className="account-transfer-complete-actions">
+        <a
+          className="iruka-secondary-button"
+          href={explorerUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {copy.viewTransaction}
+          <ExternalLink size={15} />
+        </a>
+        <button
+          className="iruka-action-button"
+          onClick={onDone}
+          type="button"
+        >
+          {copy.done}
+        </button>
+      </div>
+    </section>
   );
 }
