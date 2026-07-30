@@ -1,82 +1,107 @@
 ---
 title: "How Iruka Works"
-description: "Follow the Iruka pack, reveal, vault, marketplace, and redemption flow."
+description: "Follow the Iruka collector journey from pack discovery to physical redemption."
 icon: "route"
 ---
 
-> **Status: Live testnet flow** - Sign-in, pack selection, GIWA Sepolia pull
-> requests, Keeper fulfillment, and reveal receipts are available. Physical
-> custody and commercial settlement are not live.
+> **Status: Live testnet flow** - Vending, GIWA Sepolia Pull requests, Keeper
+> fulfillment, and Reveal are available. Physical Vault operations, commercial
+> Marketplace settlement, and Redemption are not live.
 
-## 1. Sign In
+Iruka brings the collectible journey into one continuous product:
 
-Collectors can browse without signing in. Email, Google, and supported EVM
-wallet login methods create an Iruka account through Privy. Each account is
-assigned a user-controlled Iruka Wallet on EVM, including accounts that use
-MetaMask or another external wallet to sign in.
+**Vending → Reveal → Vault → Marketplace → Redemption**
 
-The Iruka Wallet submits the GIWA Sepolia pull. A connected external wallet is
-optional and remains separate: it can fund the Iruka Wallet or receive a
-same-chain withdrawal.
+K-pop photocards are the initial category. The same lifecycle is designed to
+support officially issued trot, cheerleader, and sports collectibles only
+after each category passes its own sourcing and verification gates.
+
+## The Collector Journey
+
+### 1. Vending
+
+Collectors browse without signing in, compare the available pack tier, and
+review the eligible card pool and published odds. A production pack must also
+show the inventory snapshot, remaining supply, value methodology, and physical
+redemption status before purchase.
+
+The current Debut pack is a GIWA Sepolia test batch. Stage, Encore, and Grail
+remain **Coming soon**.
+
+### 2. Reveal
+
+After sign-in, one Pull reserves a position from the selected batch. The result
+is revealed only after Iruka receives the assigned inventory record. A GIWA
+pack also shows the request and fulfillment receipts that produced that
+result.
+
+Reveal presents the assigned card; it does not choose the result. A delayed
+fulfillment resumes from the same request instead of creating another paid
+Pull.
+
+### 3. Vault
+
+A production card enters the Vault only after the exact physical item is
+received, authenticated, photographed, assigned a storage record, and matched
+to its ownership and redemption records.
+
+A certificate number, image, test Pull, or account inventory row is not enough
+to claim physical custody.
+
+### 4. Marketplace
+
+Only eligible vaulted inventory can enter the Marketplace. One listing points
+to one `inventoryId`, and listing the card locks it against physical
+redemption. A completed sale transfers the ownership record while the same
+physical item remains in custody.
+
+### 5. Redemption
+
+Redemption removes an active listing, locks the matching physical item, checks
+the destination and applicable terms, and releases that exact card through the
+published fulfillment process.
+
+Personal identity, address, carrier, and storage-location data remain offchain.
+
+## Account And Wallet
+
+Email, Google, and supported EVM wallet login methods create an Iruka account
+through Privy. Each signed-in account receives a user-controlled Iruka Wallet
+on EVM, including accounts that use MetaMask or another external wallet to sign
+in.
+
+The Iruka Wallet submits the GIWA Sepolia Pull. An external wallet is optional
+and remains separate: it can fund the Iruka Wallet or receive a same-chain
+withdrawal.
 
 Current Add funds and Withdraw actions transfer GIWA Sepolia test ETH only.
 They are not fiat funding, cross-chain routing, or a GIWA-to-Ethereum bridge.
 Testnet ETH has no monetary value, and Iruka does not currently accept
 commercial USDC payments.
 
-## 2. Select A Pack
+## What Is Available Today
 
-Before a commercial pack opens, its page must publish:
+| Product surface | Current state |
+| --- | --- |
+| Account and Iruka Wallet | Live |
+| Debut pack discovery and odds | Live testnet fixture |
+| GIWA request, Keeper fulfillment, and receipt | Live on GIWA Sepolia |
+| Pack Reveal and account inventory result | Live |
+| Physical verification and Vault intake | In validation |
+| Fixed-price Marketplace settlement | Planned |
+| Physical Redemption and shipping | Planned |
 
-- Batch ID and inventory snapshot time
-- Price, total supply, and remaining supply
-- Complete eligible card pool
-- Individual card and rarity-tier odds
-- Estimated value evidence and snapshot time
-- Physical redemption eligibility
-- GIWA batch commitment
+## Product State Rules
 
-The current Debut batch is a testnet fixture. It proves the commitment and draw
-flow; it does not represent sellable physical inventory.
+Iruka's commercial flow is designed to fail closed:
 
-## 3. Review Odds
+- A Pull result does not automatically prove physical custody.
+- An unverified item cannot become `Vaulted`.
+- A non-vaulted item cannot be listed.
+- A listed item must be delisted before Redemption.
+- A redeemed item cannot return to inventory without a new intake.
 
-Odds come from the eligible inventory remaining in a batch. Each card occupies
-one inventory position, and a fulfilled position cannot be assigned again.
-Material inventory changes require a new batch version and commitment.
-
-See [Packs and Odds](/packs/pack-information) for the current Debut test batch.
-
-## 4. Pull
-
-The collector confirms one `requestPull` transaction. The contract reserves a
-draw index and emits `PullRequested`. The Iruka Keeper then submits the
-precommitted draw proof in a separate `fulfillPull` transaction.
-
-If fulfillment is delayed, Iruka checks the same request again. It does not
-create a second paid request.
-
-## 5. Reveal
-
-Reveal opens only after Iruka reads a confirmed `PullFulfilled` result and
-matches the returned inventory commitment to the selected card record. The
-receipt links the request, fulfillment, batch, and assigned inventory ID.
-
-The current contract is a testnet commit-reveal implementation. It is not VRF,
-commercial settlement, or proof of physical custody.
-
-## 6. Vault
-
-A production card can become `Vaulted` only when its inventory record,
-authentication evidence, physical intake, sealed storage record, and ownership
-record agree. The interface must not infer custody from a certificate number or
-testnet pull alone.
-
-## 7. Sell Or Redeem
-
-Eligible vaulted cards will support either a fixed-price listing or a physical
-redemption request. A listed card must be delisted before redemption can lock
-the item for shipment.
-
-Fees, payment assets, supported regions, shipping methods, timelines, and loss
-or damage procedures will be published before these actions become live.
+See [Packs and Odds](/packs/pack-information) for the pack model,
+[Vault and Custody](/product/vault) for physical states, and
+[Onchain Architecture](/technical/onchain-architecture) for the GIWA
+responsibility boundary.

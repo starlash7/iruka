@@ -1,67 +1,174 @@
 ---
 title: "Iruka Overview"
-description: "Understand Iruka's physical collectible flow, product architecture, and rollout status."
+description: "Understand Iruka's K-pop-first fandom collectible product, business direction, and current GIWA execution."
 icon: "house"
 ---
 
-Iruka is building one collecting flow for discovering physical photocard packs,
-revealing a card, holding verified inventory in a Vault, trading eligible cards,
-and requesting physical redemption.
+> **한눈에 보기** - Iruka는 K-pop 포토카드에서 시작해 트로트·치어리더·
+> 스포츠까지 확장하는 팬 컬렉터블 인프라입니다. 팩 선택부터 검증된 실물
+> 보관, 거래, 배송까지 하나로 연결합니다. 현재 공개 버전은 GIWA Sepolia에서
+> Pull과 Reveal을 검증하며, 실물 Vault와 상업 거래는 운영 검증 이후 엽니다.
 
-The public application currently demonstrates this flow and records test pulls
-on GIWA Sepolia. Commercial packs, custody, marketplace settlement, and
-shipping are not live.
+## Product Vision
+
+Iruka is Korea-first infrastructure for physical fandom collectibles, starting
+with K-pop photocards. It is designed to extend the same verified product rails
+to officially issued trot, cheerleader, and sports collectibles.
+
+Unlike a gameplay-led TCG catalog, a fandom collectible is identified by its
+artist or team, member or player, release, event or benefit, official source,
+condition, and grade. Iruka preserves that identity through one product:
+
+**Vending → Reveal → Vault → Marketplace → Redemption**
+
+The goal is not to turn an image into a collectible. It is to connect one
+genuine physical item to transparent pack rules, verification, controlled
+custody, trading, and physical delivery.
+
+## Why K-pop First
+
+K-pop already has a global, collection-driven physical merchandise market.
+The [Korea Consumer Agency](https://www.kca.go.kr/eng/sub.do?menukey=6007&mode=view&no=1003533572&page=3)
+found that **52.7%** of surveyed K-pop fans had purchased albums to collect
+fandom goods. [Weverse](https://en.weverse.co/news/?bmode=view&idx=165565023)
+reported that its physical merchandise sales, including albums and
+collectibles, grew **10% year over year** in 2024.
+
+These signals support K-pop as Iruka's first category. They do not show that
+every photocard will rise in value. Each card still requires exact identity,
+condition, verification, custody, and completed-sale evidence.
+
+See [Why Fandom Collectibles](/project/why-fandom-collectibles) for the market
+sources, category model, and claim boundaries.
+
+## What Makes Iruka Different
+
+<CardGroup cols={3}>
+  <Card title="Fandom-native identity" icon="id-card">
+    Catalog each item by artist or team, member or player, release, event or
+    benefit, official source, and exact physical condition.
+  </Card>
+  <Card title="Verification matched to value" icon="badge-check">
+    Use documented Iruka intake for accessible cards and certificate-verifiable
+    third-party grading for eligible premium inventory.
+  </Card>
+  <Card title="One reusable collectible rail" icon="route">
+    Prove the complete K-pop flow first, then apply the same controls to trot,
+    cheerleader, and sports collectibles.
+  </Card>
+</CardGroup>
+
+## Who Iruka Is For
+
+<CardGroup cols={2}>
+  <Card title="Collectors" icon="heart">
+    Discover packs, understand the odds before opening, and choose whether to
+    keep, trade, or receive an eligible physical card.
+  </Card>
+  <Card title="Rights holders and creators" icon="sparkles">
+    Build licensed collectible releases with defined inventory, approvals,
+    distribution rules, and fan experiences once the required rights and
+    operations are in place.
+  </Card>
+</CardGroup>
+
+## Core Product
+
+<Steps>
+  <Step title="Vending">
+    Select a pack and review its tier, eligible card pool, supply, odds, and
+    redemption status before opening.
+  </Step>
+  <Step title="Reveal">
+    Pull one committed position and reveal the assigned card with a transaction
+    receipt when the pack runs on GIWA.
+  </Step>
+  <Step title="Vault">
+    Connect the digital record to the same physical item only after intake,
+    authentication, custody, and ownership records agree.
+  </Step>
+  <Step title="Marketplace">
+    List an eligible vaulted card at a fixed price while the physical item
+    remains secured under the same inventory record.
+  </Step>
+  <Step title="Redemption">
+    Delist and lock the item, verify the destination, and release the matching
+    physical card through the published fulfillment process.
+  </Step>
+</Steps>
+
+See [How Iruka Works](/project/how-it-works) for the complete collector journey
+and the current availability of each step.
+
+## Business Direction
+
+Iruka starts with verified physical inventory because product trust must be
+proven before new IP is created around it.
+
+1. **Verified physical inventory** - establish sourcing, authentication,
+   grading, Vault, marketplace, and redemption operations for genuine,
+   officially issued cards.
+2. **Licensed IP drops** - create new cards and branded pack experiences only
+   after rights holders approve the assets, product scope, territory, and
+   distribution.
+3. **Creator experiences** - give approved creators controlled tools for
+   original collectible releases.
+4. **Iruka Universe** - connect collection identity with moderated fan and
+   collector communities.
+
+This path expands the product without treating an artist name, image, or fan
+community as permission to create commercial merchandise. See
+[Roadmap](/roadmap) for the release gates and category expansion plan.
 
 ## Current Product Status
 
 | Status | Scope | References |
 | --- | --- | --- |
-| **Live** | Web application, Privy sign-in, verified GIWA Sepolia pack-batch contract, committed Debut test batch, Keeper fulfillment, and successful test pulls | [Open Iruka](https://playiruka.space) · [Verified contract](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334?tab=contract) · [GIWA contracts](/technical/giwa-testnet) |
-| **In validation** | Physical inventory sourcing, card verification, grading acceptance, intake and custody operations, and market-value snapshots | Operating records will be published before an item is marked `Vaulted` |
-| **Planned** | ERC-721 ownership, canonical USDC payments, marketplace settlement, commercial packs, redemption and shipping, and licensed IP drops | Contract addresses and operating terms will be published after review |
+| **Live** | Web application, Privy sign-in, GIWA Sepolia pack-batch contract, committed Debut test batch, Keeper fulfillment, Reveal, and successful test pulls | [Open Iruka](https://playiruka.space) · [GIWA Contracts](/technical/giwa-testnet) |
+| **In validation** | Physical inventory sourcing, card verification, grading acceptance, intake and custody operations, and market-value methodology | [Grading and Verification](/product/grading-and-verification) · [Vault and Custody](/product/vault) |
+| **Planned** | ERC-721 ownership, canonical USDC payments, marketplace settlement, commercial packs, redemption and shipping, and licensed IP drops | [Marketplace](/product/marketplace) · [Roadmap](/roadmap) |
 
-`Live` applies only to the scope named in the same row. A working testnet
-transaction does not mean commercial inventory, payments, or custody are
-operational.
+`Live` applies only to the scope named in the same row. A successful testnet
+transaction does not mean commercial inventory, payment, custody, or shipping
+is operational.
 
-## GIWA Contract Snapshot
+## Why GIWA
 
-| Metric | Current value |
+Iruka is a Korea-first consumer and RWA product. GIWA provides an
+EVM-compatible environment, public transaction verification, and approximately
+one-second blocks without requiring Iruka to create a separate wallet standard
+or contract toolchain.
+
+The current product uses GIWA Sepolia for pack commitments and Pull receipts.
+Future GIWA wallet and paymaster capabilities remain ecosystem direction, not
+features Iruka claims as live today.
+
+- [GIWA network overview](https://docs.giwa.io/giwa-chain/en)
+- [GIWA and Ethereum compatibility](https://docs.giwa.io/giwa-chain/en/network-information/diffs-ethereum-giwa)
+
+## Execution Evidence
+
+Iruka separates product claims by how they can be checked.
+
+| Claim | Current evidence | Level |
+| --- | --- | --- |
+| Pack rules exist before a Pull | Debut supply, inventory root, odds commitment, and draw-seed root were recorded in a `BatchCommitted` transaction | Mined on GIWA Sepolia |
+| A fulfilled Pull consumes one committed position | `PullRequested` and `PullFulfilled` receipts reference the deployed contract and assigned inventory commitment | Mined on GIWA Sepolia |
+| A delayed result resumes without a second Pull | The browser persists the request ID and scheduled Keeper recovery fulfills the same request | Reproducible in the product |
+| A card is physically held and redeemable | Intake, verification, custody, and ownership records must agree | In validation |
+
+The immutable deployment snapshot is:
+
+| Item | Published value |
 | --- | ---: |
 | Source-verified pack contracts | 1 |
-| Committed Debut inventory positions | 100 |
-| Published rarity allocation | 10,000 basis points |
-| Current deployment request and fulfillment pairs | 1 |
+| Committed Debut test positions | 100 |
+| Initial rarity allocation | 10,000 basis points |
+| Documented request and fulfillment reference pairs | 1 |
 
-Each value links back to a contract or transaction in
-[GIWA Contracts](/technical/giwa-testnet). These are network execution
-metrics, not commercial user, revenue, custody, or trading metrics.
-
-## The Collecting Loop
-
-1. **Sign in** with email, Google, or a supported EVM wallet.
-2. **Select a pack** and review its inventory, supply, odds, value snapshot, and
-   redemption eligibility.
-3. **Pull** one card from the committed batch.
-4. **Reveal** the assigned inventory record and transaction receipt.
-5. **Vault** the card only after physical intake, verification, and custody
-   records agree.
-6. **Sell or redeem** an eligible vaulted card.
-
-The GIWA Sepolia application currently covers the testnet portion of steps
-1-4. Steps 5-6 remain in validation or planned until the required physical and
-commercial operations are available.
-
-## Operating Standard
-
-Iruka treats product claims as records, not labels:
-
-- Pack odds must match a published inventory snapshot and onchain commitment.
-- Rarity and physical grade must remain separate.
-- A certificate lookup alone cannot establish custody.
-- A listing must reference one verified physical item.
-- A listed item must be removed from sale before redemption begins.
-- Estimated value is reference data, not a guaranteed sale price.
+These are technical execution records, not user, revenue, custody, or trading
+metrics. Contract addresses and transaction links are published in
+[GIWA Contracts](/technical/giwa-testnet).
 
 ## Official Links
 

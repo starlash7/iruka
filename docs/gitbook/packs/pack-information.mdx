@@ -1,16 +1,44 @@
 ---
 title: "Packs and Odds"
-description: "Review Iruka batch inventory, rarity, odds, valuation evidence, and redemption eligibility."
+description: "Understand Iruka's pack tiers, publication standard, current Debut batch, and rarity model."
 icon: "percent"
 ---
 
-> **Status: In validation** - The Debut commitment and test pulls are live on
+> **Status: In validation** - The Debut commitment and test Pulls are live on
 > GIWA Sepolia. Commercial inventory, pricing, valuation, and redemption
 > eligibility are not live.
 
 Debut is the only live testnet pack. Stage, Encore, and Grail remain visible
 for product discovery but are marked **Coming soon** and cannot submit a GIWA
-pull transaction.
+Pull transaction.
+
+## Pack Model
+
+Every Iruka pack has two independent labels:
+
+- **Category** identifies the fandom collectible market and its required
+  metadata.
+- **Tier** describes the collector experience and intended inventory profile.
+
+| Category | Current state | Role |
+| --- | --- | --- |
+| **K-pop** | Testnet | Initial category for proving photocard identity, verification, Vault, Marketplace, and Redemption |
+| **Trot** | Planned | Officially issued trot photocards after category-specific supply and identity checks |
+| **Cheerleader** | Planned | Officially issued cards with team, season, event, and subject records |
+| **Sports** | Planned | Player cards and domestic sports collectibles with category-specific grading evidence |
+
+The category does not determine price or rarity. The same category may contain
+different tiers after its inventory and operating controls are ready.
+
+| Tier | Product role | Intended inventory |
+| --- | --- | --- |
+| **Debut** | Entry pack for collectors opening Iruka for the first time | Accessible verified photocards with a clear, broad card pool |
+| **Stage** | Balanced pack for repeat collectors | A balanced mix of accessible cards and scarcer chase inventory |
+| **Encore** | Premium pack with a narrower card pool | Higher concentration of premium authenticated or graded inventory |
+| **Grail** | Highest Iruka tier with limited availability | Scarce, high-confidence graded cards with complete verification records |
+
+The tier names do not promise a return or specific grade. Every commercial
+batch publishes its actual inventory and odds independently.
 
 ## Pack Publication Standard
 
@@ -30,16 +58,44 @@ Cards are assigned without replacement. Displayed odds must be recalculated
 from the eligible inventory remaining at the published snapshot. Removing,
 adding, or replacing inventory requires a new batch version and commitment.
 
+## Fandom Inventory Identity
+
+One physical card keeps the same `inventoryId` across its pack, Vault,
+Marketplace, and Redemption records. The category-specific identity fields are:
+
+| Field | Required meaning |
+| --- | --- |
+| `category` | K-pop, trot, cheerleader, or sports |
+| `artistOrTeam` | Officially identified artist, group, club, or team |
+| `memberOrPlayer` | Member, cheerleader, athlete, or other depicted subject |
+| `release` | Album, season, event, tour, set, or product release |
+| `eventOrBenefit` | Distribution event, preorder benefit, or other official variant |
+| `cardType` | Album inclusion, benefit, merchandise, graded slab, or licensed release |
+| `officialSource` | Issuer and documented acquisition source |
+| `verificationTrack` | Iruka verification or eligible third-party grading |
+
+These fields identify genuine physical inventory. They do not imply that Iruka
+is affiliated with the named artist, agency, team, issuer, or marketplace.
+
 ## Debut Test Batch
 
-The current Debut batch demonstrates the testnet data and draw flow.
+The current Debut fixture separates the visible product catalog from the
+onchain test distribution:
+
+- The app contains **20 preview card identities** used to exercise browsing and
+  Reveal.
+- The contract contains **100 committed test positions** used to represent the
+  published rarity distribution.
+- Repeated preview media across test positions does not represent 100 distinct
+  physical cards.
+- No test position is eligible for physical redemption.
 
 | Field | Value |
 | --- | --- |
 | Batch ID | `IRK-GG-2026-001` |
 | Network | GIWA Sepolia, chain ID `91342` |
 | Contract | [`0xbB3c...4334`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334) |
-| Supply | 100 test inventory positions |
+| Supply | 100 committed test positions |
 | Test price | `0.00001` test ETH |
 | Commitment | [BatchCommitted transaction](https://sepolia-explorer.giwa.io/tx/0x5ac3933f2b5db9ee0ceb73138bbf5b661a1edbd453a6e581f43b29fd80a80e78) |
 | Physical redemption | Not eligible |
@@ -53,7 +109,7 @@ transaction are not canonical USDC settlement.
 | --- | ---: | ---: | --- |
 | Common | 60 | 60% | Baseline allocation tier |
 | Rare | 28 | 28% | Scarcer allocation tier |
-| Epic | 9 | 9% | High-value chase allocation |
+| Epic | 9 | 9% | Premium chase allocation |
 | Legendary | 2 | 2% | Very limited allocation |
 | Iruka | 1 | 1% | Highest chase allocation |
 
@@ -66,13 +122,13 @@ card.
 
 ## Individual Card Odds
 
-Each eligible physical item receives one inventory position. For an initial
-batch of 100 equally weighted positions, one position has a 1% individual
-probability. A production inventory page will publish each position, its
-current eligibility, and its individual probability.
+In a commercial batch, each eligible physical item receives one inventory
+position and one published probability. The current test fixture instead uses
+100 weighted positions across 20 preview identities to validate the product
+and contract flow.
 
 Iruka does not use a hidden replacement pool. A material correction pauses the
-affected batch and requires a new public snapshot.
+affected commercial batch and requires a new public snapshot.
 
 ## Estimated Value
 
@@ -90,7 +146,7 @@ data and never guarantees a sale price, return, or future liquidity.
 
 ## GIWA Commitment
 
-Before a test pull, Iruka records the inventory root, odds commitment, and
+Before a test Pull, Iruka records the inventory root, odds commitment, and
 draw-seed root on GIWA Sepolia. A collector request reserves a draw index. The
 Keeper later proves the committed draw seed and selected inventory membership.
 

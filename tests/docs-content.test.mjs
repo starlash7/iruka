@@ -10,10 +10,15 @@ const docsConfig = JSON.parse(
 const expectedNavigation = [
   {
     group: "Start Here",
-    pages: ["overview", "project/how-it-works", "faq"],
+    pages: [
+      "overview",
+      "project/why-fandom-collectibles",
+      "project/how-it-works",
+      "faq",
+    ],
   },
   {
-    group: "Collecting",
+    group: "Product",
     pages: [
       "packs/pack-information",
       "product/grading-and-verification",
@@ -23,12 +28,12 @@ const expectedNavigation = [
     ],
   },
   {
-    group: "Technology",
-    pages: ["technical/onchain-architecture", "technical/giwa-testnet"],
-  },
-  {
     group: "Trust and Direction",
     pages: ["policies/ip-and-listing-policy", "roadmap"],
+  },
+  {
+    group: "Technology and Evidence",
+    pages: ["technical/onchain-architecture", "technical/giwa-testnet"],
   },
 ];
 
@@ -85,6 +90,74 @@ test("overview separates live, validation, and planned work", async () => {
   assert.match(overview, /successful test pulls/i);
 });
 
+test("overview leads with the product before technical execution evidence", async () => {
+  const overview = await readDoc("overview");
+  const productVisionIndex = overview.indexOf("## Product Vision");
+  const executionIndex = overview.indexOf("## Execution Evidence");
+
+  assert.ok(productVisionIndex >= 0);
+  assert.ok(executionIndex > productVisionIndex);
+  assert.match(overview, /팬 컬렉터블/);
+  assert.match(overview, /Who Iruka Is For/i);
+  assert.match(
+    overview,
+    /Vending[\s\S]{0,160}Reveal[\s\S]{0,160}Vault[\s\S]{0,160}Marketplace[\s\S]{0,160}Redemption/i,
+  );
+  assert.match(overview, /verified physical inventory[\s\S]{0,240}licensed IP/i);
+});
+
+test("overview states Iruka's fandom collectible differentiation", async () => {
+  const overview = await readDoc("overview");
+
+  assert.match(
+    overview,
+    /Korea-first infrastructure for physical fandom collectibles/i,
+  );
+  assert.match(overview, /starting\s+with K-pop photocards/i);
+  assert.match(overview, /Why K-pop First/i);
+  assert.match(overview, /What Makes Iruka Different/i);
+  assert.match(overview, /artist[\s\S]{0,120}member[\s\S]{0,120}release/i);
+  assert.match(overview, /trot[\s\S]{0,160}cheerleader[\s\S]{0,160}sports/i);
+});
+
+test("fandom collectible thesis uses sourced demand signals without promising appreciation", async () => {
+  const thesis = await readDoc("project/why-fandom-collectibles");
+
+  assert.match(thesis, /## Why K-pop First/i);
+  assert.match(thesis, /52\.7%/);
+  assert.match(thesis, /96\.9%/);
+  assert.match(thesis, /10%/);
+  assert.match(thesis, /Korea Consumer Agency/i);
+  assert.match(thesis, /Weverse/i);
+  assert.match(thesis, /Korea Creative Content Agency/i);
+  assert.match(thesis, /https:\/\/www\.kca\.go\.kr\//);
+  assert.match(thesis, /https:\/\/en\.weverse\.co\/news\//);
+  assert.match(thesis, /https:\/\/sns\.kocca\.kr\//);
+  assert.match(
+    thesis,
+    /does not mean that every photocard appreciates|does not show that every photocard appreciates/i,
+  );
+  assert.match(thesis, /completed sales/i);
+  assert.match(thesis, /K-pop[\s\S]{0,180}trot[\s\S]{0,180}cheerleader[\s\S]{0,180}sports/i);
+});
+
+test("product flow stays collector-first across the overview and product guide", async () => {
+  const [overview, howItWorks] = await Promise.all([
+    readDoc("overview"),
+    readDoc("project/how-it-works"),
+  ]);
+
+  for (const doc of [overview, howItWorks]) {
+    assert.match(
+      doc,
+      /Vending[\s\S]{0,220}Reveal[\s\S]{0,220}Vault[\s\S]{0,220}Marketplace[\s\S]{0,220}Redemption/i,
+    );
+  }
+
+  assert.match(howItWorks, /## The Collector Journey/);
+  assert.match(howItWorks, /## What Is Available Today/);
+});
+
 test("every product page uses the shared status taxonomy", async () => {
   const docs = await Promise.all(navigationPages.slice(1).map(readDoc));
 
@@ -115,6 +188,41 @@ test("pack odds match the committed Debut fixture", async () => {
   }
 
   assert.match(packInformation, /rarity is not a physical grade/i);
+});
+
+test("pack documentation defines the four-tier product model", async () => {
+  const packInformation = await readDoc("packs/pack-information");
+
+  assert.match(packInformation, /## Pack Model/);
+  assert.match(packInformation, /category[\s\S]{0,100}tier/i);
+  assert.match(packInformation, /K-pop[\s\S]{0,200}initial category/i);
+  assert.match(packInformation, /Trot[\s\S]{0,200}Planned/i);
+  assert.match(packInformation, /Cheerleader[\s\S]{0,200}Planned/i);
+  assert.match(packInformation, /Sports[\s\S]{0,200}Planned/i);
+  assert.match(packInformation, /Debut[\s\S]{0,180}entry/i);
+  assert.match(packInformation, /Stage[\s\S]{0,180}balanced/i);
+  assert.match(packInformation, /Encore[\s\S]{0,180}premium/i);
+  assert.match(packInformation, /Grail[\s\S]{0,180}highest/i);
+  assert.match(packInformation, /20 preview card identities/i);
+  assert.match(packInformation, /100 committed test positions/i);
+});
+
+test("pack documentation defines fandom-native inventory metadata", async () => {
+  const packInformation = await readDoc("packs/pack-information");
+
+  assert.match(packInformation, /## Fandom Inventory Identity/i);
+  for (const field of [
+    "category",
+    "artistOrTeam",
+    "memberOrPlayer",
+    "release",
+    "eventOrBenefit",
+    "cardType",
+    "officialSource",
+    "verificationTrack",
+  ]) {
+    assert.match(packInformation, new RegExp(`\\b${field}\\b`));
+  }
 });
 
 test("pack reveal docs publish the vending dispense sequence", async () => {
@@ -187,6 +295,23 @@ test("grading policy documents both tracks and complete records", async () => {
   }
 
   assert.match(grading, /does not establish a partnership/i);
+  assert.match(grading, /professional grading is not required for every photocard/i);
+  assert.match(grading, /cost[\s\S]{0,120}turnaround/i);
+});
+
+test("marketplace documents fandom identity and evidence-based value references", async () => {
+  const marketplace = await readDoc("product/marketplace");
+
+  assert.match(marketplace, /## Fandom Card Identity/i);
+  assert.match(marketplace, /artist or team/i);
+  assert.match(marketplace, /member or player/i);
+  assert.match(marketplace, /release/i);
+  assert.match(marketplace, /event or benefit/i);
+  assert.match(marketplace, /## Estimated Value Method/i);
+  assert.match(marketplace, /completed sales/i);
+  assert.match(marketplace, /sample count/i);
+  assert.match(marketplace, /asking prices/i);
+  assert.match(marketplace, /does not publish an estimate/i);
 });
 
 test("onchain architecture states current boundaries", async () => {
@@ -252,12 +377,37 @@ test("Docs identify Debut as the only live pack and scheduled Keeper recovery", 
 test("roadmap includes gated category expansion", async () => {
   const roadmap = await readDoc("roadmap");
 
+  assert.match(roadmap, /## Product Direction/);
+  assert.match(roadmap, /## 1\. Iruka Vending/);
+  assert.match(roadmap, /## 2\. Licensed IP Drops/);
+  assert.match(roadmap, /## 3\. Creator Playground/);
+  assert.match(roadmap, /## 4\. The Iruka Universe/);
   assert.match(roadmap, /Category Expansion Track/);
   assert.match(roadmap, /K-pop/i);
   assert.match(roadmap, /trot/i);
   assert.match(roadmap, /cheerleader/i);
   assert.match(roadmap, /sports (?:player|athlete)/i);
   assert.match(roadmap, /rights holder/i);
+  assert.match(roadmap, /same (?:physical )?(?:collectible )?infrastructure/i);
+});
+
+test("FAQ explains the K-pop wedge, value limits, grading, and category expansion", async () => {
+  const faq = await readDoc("faq");
+
+  assert.match(faq, /Why Does Iruka Start With K-pop/i);
+  assert.match(faq, /Do All Photocards Gain Value/i);
+  assert.match(faq, /Does Every Card Need Professional Grading/i);
+  assert.match(faq, /How Does Iruka Expand Beyond K-pop/i);
+  assert.match(faq, /trot/i);
+  assert.match(faq, /cheerleader/i);
+  assert.match(faq, /sports/i);
+});
+
+test("technical execution evidence is the final documentation group", () => {
+  assert.equal(
+    expectedNavigation.at(-1)?.group,
+    "Technology and Evidence",
+  );
 });
 
 test("public docs avoid competitor names and unsupported promises", async () => {
