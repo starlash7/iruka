@@ -87,3 +87,28 @@ test("app views update browser history and restore revealed inventory", async ()
   assert.match(chromeSource, /onClick=\{\(\) => onShowView\("home"\)\}/);
   assert.doesNotMatch(chromeSource, /className="header-wordmark" href="\/"/);
 });
+
+test("Account section hashes restore the protected Account view", async () => {
+  const appSource = await readFile(
+    new URL("../src/App.tsx", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(
+    appSource,
+    /\(\s*hash === "account-overview" \|\| hash === "account-inventory"\s*\)\s*\?\s*"account"/
+  );
+});
+
+test("a protected Account hash falls back to Home content while auth restores", async () => {
+  const appSource = await readFile(
+    new URL("../src/App.tsx", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(
+    appSource,
+    /const showHomeContent = activeView === "home"\s*\|\|\s*\(\s*activeView === "account"[\s\S]*?!isSignedIn[\s\S]*?!giwaWallet/
+  );
+  assert.match(appSource, /\{showHomeContent \? \(\s*<HomeView/);
+});

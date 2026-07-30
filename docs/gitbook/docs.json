@@ -50,7 +50,7 @@
         ]
       },
       {
-        "group": "Technology and Evidence",
+        "group": "Technology",
         "pages": [
           "technical/onchain-architecture",
           "technical/giwa-testnet"

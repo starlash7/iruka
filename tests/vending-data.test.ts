@@ -52,6 +52,7 @@ test("pack summaries use their supplied preview-pack media", async () => {
   for (const pack of packs) {
     assert.match(pack.media.coverUrl, new RegExp(`iruka-pack-${pack.id}\\.webp$`));
     assert.match(pack.media.packFrontUrl, new RegExp(`iruka-pack-${pack.id}\\.webp$`));
+    assert.match(pack.media.railIconUrl, new RegExp(`iruka-pack-rail-${pack.id}\\.png$`));
   }
 });
 

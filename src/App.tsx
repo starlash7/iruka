@@ -35,7 +35,7 @@ import { VaultView } from "./VaultView";
 import { VendingView } from "./VendingView";
 import {
   confirmGiwaPullRequest,
-  getGiwaPackBatchState,
+  getGiwaPackBatchSnapshot,
   getGiwaPackBatchAddress,
   GiwaPullRequestRevertedError,
   requestGiwaPull,
@@ -85,7 +85,9 @@ function getInitialView(): AppView {
     return "home";
   }
 
-  const view = hash === "account-inventory" ? "account" : hash;
+  const view = (
+    hash === "account-overview" || hash === "account-inventory"
+  ) ? "account" : hash;
   return [
     "home",
     "pull",
@@ -127,6 +129,8 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const [pendingGiwaPull, setPendingGiwaPull] = useState<PendingGiwaPull>();
   const [selectedGiwaBatchState, setSelectedGiwaBatchState] =
     useState<GiwaPackBatchState>("checking");
+  const [selectedGiwaBatchPriceWei, setSelectedGiwaBatchPriceWei] =
+    useState<bigint>();
   const [walletPromptSignal, setWalletPromptSignal] = useState(0);
   const [externalWalletPromptSignal, setExternalWalletPromptSignal] = useState(0);
   const [notice, setNotice] = useState<string | undefined>();
@@ -178,6 +182,11 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     || pendingGiwaPull?.packId === selectedPackDetail.id
   );
   const isPrimaryView = activeView === "pull";
+  const showHomeContent = activeView === "home"
+    || (
+      activeView === "account"
+      && (!isSignedIn || !giwaWallet)
+    );
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -218,13 +227,17 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       || selectedPackDetail.id !== activeGiwaPackId
     ) {
       setSelectedGiwaBatchState("unavailable");
+      setSelectedGiwaBatchPriceWei(undefined);
       return;
     }
 
     let active = true;
     setSelectedGiwaBatchState("checking");
-    void getGiwaPackBatchState(selectedPackDetail).then((state) => {
-      if (active) setSelectedGiwaBatchState(state);
+    setSelectedGiwaBatchPriceWei(undefined);
+    void getGiwaPackBatchSnapshot(selectedPackDetail).then((snapshot) => {
+      if (!active) return;
+      setSelectedGiwaBatchState(snapshot.state);
+      setSelectedGiwaBatchPriceWei(snapshot.priceWei);
     });
 
     return () => {
@@ -692,7 +705,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         walletAuth={walletAuth}
       />
 
-      {activeView === "home" ? (
+      {showHomeContent ? (
         <HomeView
           copy={t.home}
           items={marketplaceItems}
@@ -785,6 +798,11 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
               || isAwaitingOnchainFulfillment
             )
           }
+          testnetConfigured={
+            hasGiwaPullContract
+            && selectedPackDetail.id === activeGiwaPackId
+          }
+          testnetPriceWei={selectedGiwaBatchPriceWei}
           walletRequired={walletRequired}
         />
       ) : null}

@@ -1,4 +1,5 @@
 import { Clock3, ExternalLink, PackageOpen, RefreshCw, Truck, Wallet } from "lucide-react";
+import { formatEther } from "viem";
 import { formatUsdc } from "./currency";
 import type { GiwaPullReceipt } from "./giwaPull.ts";
 import debutVendingMachineImage from "./assets/iruka-vending-machine-debut.png";
@@ -34,7 +35,9 @@ type VendingPackDetailProps = {
   pack: PackDetail;
   pullDisabled?: boolean;
   rarityLabels: Record<RarityTier, string>;
+  testnetConfigured?: boolean;
   testnetEnabled?: boolean;
+  testnetPriceWei?: bigint;
   walletRequired: boolean;
 };
 
@@ -58,7 +61,9 @@ export function VendingPackDetail({
   pack,
   pullDisabled = false,
   rarityLabels,
+  testnetConfigured = false,
   testnetEnabled = false,
+  testnetPriceWei,
   walletRequired
 }: VendingPackDetailProps) {
   const tier = pack.tier.toLowerCase();
@@ -70,6 +75,9 @@ export function VendingPackDetail({
       : pack.status === "coming-soon"
         ? copy.comingSoon
         : copy.openPack;
+  const priceLabel = testnetConfigured
+    ? `${testnetPriceWei === undefined ? "—" : formatEther(testnetPriceWei)} test ETH`
+    : formatUsdc(pack.priceUsdc);
 
   return (
     <section className="vending-detail" id="drops">
@@ -100,7 +108,7 @@ export function VendingPackDetail({
         </div>
 
         <div className="vending-price-row">
-          <strong>{formatUsdc(pack.priceUsdc)}</strong>
+          <strong>{priceLabel}</strong>
         </div>
 
         <IrukaBeam active={!isOpening && !pullDisabled} className="vending-primary-beam" variant="action">

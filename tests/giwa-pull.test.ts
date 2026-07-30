@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   getGiwaExplorerTransactionUrl,
+  getGiwaPackBatchSnapshot,
   getGiwaPackBatchState,
   getGiwaPackBatchAddress,
   type GiwaPullReceipt
@@ -74,6 +75,19 @@ test("enables GIWA pulls only for committed batches with inventory", async () =>
       }
     ),
     "unavailable"
+  );
+});
+
+test("reads the live GIWA price from the committed batch", async () => {
+  assert.deepEqual(
+    await getGiwaPackBatchSnapshot(
+      { batchId: "IRK-GG-2026-001" },
+      async () => [100, 98, 98, 10_000_000_000_000n]
+    ),
+    {
+      priceWei: 10_000_000_000_000n,
+      state: "live"
+    }
   );
 });
 

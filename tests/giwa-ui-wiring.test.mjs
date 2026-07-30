@@ -24,7 +24,7 @@ test("the Vending action uses the GIWA transaction path when a contract is confi
   assert.match(appSource, /requestGiwaPull\(/);
   assert.match(appSource, /getGiwaPackBatchAddress\(\)/);
   assert.match(appSource, /setOnchainPull/);
-  assert.match(appSource, /getGiwaPackBatchState\(/);
+  assert.match(appSource, /getGiwaPackBatchSnapshot\(/);
   assert.match(appSource, /selectedGiwaBatchState !== "live"/);
 });
 

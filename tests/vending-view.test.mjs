@@ -146,23 +146,20 @@ test("Vending pull records use the active locale's pack label", () => {
   assert.equal(card.group, "Debut 팩");
 });
 
-test("pack rail exposes four selectable tiers with USDC prices", () => {
+test("pack rail exposes four icon tabs without repeated prices or statuses", () => {
   const markup = renderToStaticMarkup(
     React.createElement(VendingPackRail, {
       onSelectPack: () => undefined,
       packs: packDetails,
-      selectedPackId: "debut",
-      statusLabels
+      selectedPackId: "debut"
     })
   );
 
   assert.equal((markup.match(/aria-pressed=/g) ?? []).length, 4);
+  assert.equal((markup.match(/class="vending-tier-media"/g) ?? []).length, 4);
   assert.match(markup, /Debut/);
   assert.match(markup, /Grail/);
-  assert.match(markup, /19\.00 USDC/);
-  assert.equal((markup.match(/>Live</g) ?? []).length, 1);
-  assert.equal((markup.match(/>Coming soon</g) ?? []).length, 3);
-  assert.doesNotMatch(markup, /left|Low stock|Sold out/);
+  assert.doesNotMatch(markup, /USDC|Live|Coming soon|Low stock|Sold out/);
 });
 
 test("only the Debut pack exposes the live pull action", () => {
@@ -198,20 +195,66 @@ test("pack pull CTA does not repeat the price shown in the purchase panel", () =
   assert.doesNotMatch(markup, /Pull 1 pack · 19\.00 USDC/);
 });
 
-test("pack rail uses clean pack product artwork", () => {
+test("the live GIWA pack shows the test ETH charge approved by the wallet", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack: packDetails[0],
+      rarityLabels,
+      testnetConfigured: true,
+      testnetPriceWei: 10_000_000_000_000n,
+      walletRequired: false
+    })
+  );
+
+  assert.match(markup, /0\.00001 test ETH/);
+  assert.doesNotMatch(markup, /19\.00 USDC/);
+});
+
+test("a configured GIWA pack never flashes the planned USDC price", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(VendingPackDetail, {
+      copy: packDetailCopy,
+      isOpening: false,
+      onOpenPack: () => undefined,
+      pack: packDetails[0],
+      rarityLabels,
+      testnetConfigured: true,
+      walletRequired: false
+    })
+  );
+
+  assert.match(markup, /— test ETH/);
+  assert.doesNotMatch(markup, /19\.00 USDC/);
+});
+
+test("pack rail uses tier-colored packs cropped from the vending machines", () => {
   const markup = renderToStaticMarkup(
     React.createElement(VendingPackRail, {
       onSelectPack: () => undefined,
       packs: packDetails,
-      selectedPackId: "debut",
-      statusLabels
+      selectedPackId: "debut"
     })
   );
 
   for (const packId of ["debut", "stage", "encore", "grail"]) {
-    assert.match(markup, new RegExp(`iruka-pack-${packId}\\.webp`));
+    assert.match(markup, new RegExp(`iruka-pack-rail-${packId}\\.png`));
   }
-  assert.doesNotMatch(markup, /iruka-vending-pack-/);
+  assert.doesNotMatch(markup, /iruka-pack-(debut|stage|encore|grail)\\.webp/);
+});
+
+test("the Stage rail icon clips the adjacent vending bay", async () => {
+  const stylesheet = await readFile(
+    new URL("../src/vending-layout.css", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(
+    stylesheet,
+    /\.vending-tier-option\[data-tier="stage"\] \.vending-tier-media img\s*\{[^}]*clip-path:\s*inset\(0 4px 0 0\);/s
+  );
 });
 
 test("entering Vending does not scroll to the machine detail", async () => {
@@ -271,11 +314,12 @@ test("post-pull actions use one primary and two secondary Iruka roles", async ()
   assert.match(stylesheet, /\.asset-actions \.asset-action-secondary:disabled\s*\{/);
 });
 
-test("Vending keeps a subtle beam aligned to the purchase CTA and tier selection", async () => {
-  const [detailSource, railSource, stylesheet, purchaseStylesheet, responsiveStylesheet] = await Promise.all([
+test("Vending keeps the purchase beam while tier tabs remain borderless", async () => {
+  const [detailSource, railSource, stylesheet, layoutStylesheet, purchaseStylesheet, responsiveStylesheet] = await Promise.all([
     readFile(new URL("../src/VendingPackDetail.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/VendingPackRail.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/styles.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/vending-layout.css", import.meta.url), "utf8"),
     readFile(new URL("../src/vending-purchase.css", import.meta.url), "utf8"),
     readFile(new URL("../src/vending-responsive.css", import.meta.url), "utf8")
   ]);
@@ -285,7 +329,9 @@ test("Vending keeps a subtle beam aligned to the purchase CTA and tier selection
     /<IrukaBeam active=\{!isOpening && !pullDisabled\} className="vending-primary-beam" variant="action">/
   );
   assert.match(detailSource, /className="iruka-action-button vending-primary-action"/);
-  assert.match(railSource, /<IrukaBeam/);
+  assert.doesNotMatch(railSource, /IrukaBeam|formatUsdc|statusLabels/);
+  assert.match(layoutStylesheet, /\.vending-tier-option\s*\{[^}]*border:\s*0;/is);
+  assert.match(layoutStylesheet, /\.vending-tier-option\.is-selected\s*\{[^}]*background:/is);
   assert.match(stylesheet, /\.vending-primary-beam \{[\s\S]*?margin-top: 20px;/);
   assert.match(
     purchaseStylesheet,
@@ -302,8 +348,7 @@ test("tier packs keep the product art clean inside the selected machine", () => 
     React.createElement(VendingPackRail, {
       onSelectPack: () => undefined,
       packs: packDetails,
-      selectedPackId: "debut",
-      statusLabels
+      selectedPackId: "debut"
     })
   );
   const detailMarkup = renderToStaticMarkup(

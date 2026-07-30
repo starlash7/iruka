@@ -32,7 +32,7 @@ const expectedNavigation = [
     pages: ["policies/ip-and-listing-policy", "roadmap"],
   },
   {
-    group: "Technology and Evidence",
+    group: "Technology",
     pages: ["technical/onchain-architecture", "technical/giwa-testnet"],
   },
 ];
@@ -390,6 +390,15 @@ test("Docs identify Debut as the only live pack and scheduled Keeper recovery", 
 
   assert.match(packInformation, /Debut is the only live testnet pack/i);
   assert.match(packInformation, /Stage, Encore, and Grail[\s\S]{0,80}Coming soon/i);
+  assert.match(
+    giwaContracts,
+    /Vending panel displays[\s\S]{0,80}0\.00001[\s\S]{0,40}test ETH/i
+  );
+  assert.match(
+    packInformation,
+    /Vending panel displays[\s\S]{0,80}test ETH/i
+  );
+  assert.doesNotMatch(packInformation, /displayed app price/i);
   assert.match(giwaContracts, /scheduled recovery/i);
   assert.match(giwaContracts, /once per minute/i);
 });
@@ -423,11 +432,20 @@ test("FAQ explains the K-pop wedge, value limits, grading, and category expansio
   assert.match(faq, /sports/i);
 });
 
-test("technical execution evidence is the final documentation group", () => {
+test("Technology is the final documentation group", () => {
   assert.equal(
     expectedNavigation.at(-1)?.group,
-    "Technology and Evidence",
+    "Technology",
   );
+});
+
+test("the repository links to GIWA Contracts without legacy evidence wording", async () => {
+  const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+
+  assert.match(readme, /\[GIWA Contracts\]/);
+  assert.match(readme, /committed server-seed proof/i);
+  assert.doesNotMatch(readme, /GIWA Testnet Evidence/i);
+  assert.doesNotMatch(readme, /client-seed reveal/i);
 });
 
 test("public docs avoid competitor names and unsupported promises", async () => {

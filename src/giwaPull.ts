@@ -52,6 +52,11 @@ type GiwaPullOptions = {
 
 export type GiwaPackBatchState = "checking" | "live" | "sold-out" | "unavailable";
 
+export type GiwaPackBatchSnapshot = {
+  priceWei?: bigint;
+  state: Exclude<GiwaPackBatchState, "checking">;
+};
+
 export class GiwaPullRequestRevertedError extends Error {
   constructor() {
     super("GIWA pull request reverted");
@@ -84,14 +89,14 @@ export function getGiwaExplorerTransactionUrl(transactionHash: Hex | string) {
   return `${giwaSepolia.blockExplorers.default.url}/tx/${transactionHash}`;
 }
 
-export async function getGiwaPackBatchState(
+export async function getGiwaPackBatchSnapshot(
   pack: Pick<PackDetail, "batchId">,
   readBatch?: (
     batchId: Hex
   ) => Promise<readonly [number, number, ...unknown[]]>
-): Promise<Exclude<GiwaPackBatchState, "checking">> {
+): Promise<GiwaPackBatchSnapshot> {
   const contractAddress = getGiwaPackBatchAddress();
-  if (!readBatch && !contractAddress) return "unavailable";
+  if (!readBatch && !contractAddress) return { state: "unavailable" };
   const loadBatch = readBatch ?? ((batchId: Hex) =>
     publicClient.readContract({
       address: contractAddress!,
@@ -101,13 +106,26 @@ export async function getGiwaPackBatchState(
     }));
 
   try {
-    const [, available] = await loadBatch(
+    const batch = await loadBatch(
       getBatchCommitmentId(pack.batchId)
     );
-    return available > 0 ? "live" : "sold-out";
+    const priceWei = typeof batch[3] === "bigint" ? batch[3] : undefined;
+    return {
+      priceWei,
+      state: batch[1] > 0 ? "live" : "sold-out"
+    };
   } catch {
-    return "unavailable";
+    return { state: "unavailable" };
   }
+}
+
+export async function getGiwaPackBatchState(
+  pack: Pick<PackDetail, "batchId">,
+  readBatch?: (
+    batchId: Hex
+  ) => Promise<readonly [number, number, ...unknown[]]>
+): Promise<Exclude<GiwaPackBatchState, "checking">> {
+  return (await getGiwaPackBatchSnapshot(pack, readBatch)).state;
 }
 
 export async function requestGiwaPull(

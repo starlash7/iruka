@@ -10,127 +10,67 @@
 .vending-tier-rail {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   margin-bottom: 18px;
 }
 
-.vending-pack-beam {
-  width: 100%;
-  border-radius: var(--radius-lg);
-}
-
 .vending-tier-option {
-  display: grid;
-  grid-template-columns: 66px minmax(0, 1fr);
-  gap: 12px;
+  display: flex;
+  gap: 10px;
   align-items: center;
   width: 100%;
-  min-height: 96px;
-  padding: 10px 14px 10px 9px;
-  overflow: hidden;
+  min-height: 64px;
+  padding: 8px 12px;
   text-align: left;
-  border: 1px solid var(--tier-option-line, rgba(207, 223, 250, 0.8));
-  border-radius: var(--radius-lg);
-  background: var(--tier-option-surface, rgba(255, 255, 255, 0.88));
-  box-shadow: 0 10px 26px rgba(72, 101, 214, 0.06);
+  color: var(--ink);
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
   cursor: pointer;
-  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition: color 180ms ease, background-color 180ms ease;
 }
 
-.vending-tier-option:hover,
+.vending-tier-option:hover {
+  background: rgba(239, 246, 255, 0.72);
+}
+
 .vending-tier-option.is-selected {
-  border-color: var(--tier-option-active-line, rgba(111, 141, 255, 0.42));
-  box-shadow: var(--tier-option-shadow, 0 16px 36px rgba(72, 101, 214, 0.11));
-  transform: translateY(-1px);
+  color: var(--blue-hover);
+  background: rgba(228, 240, 255, 0.9);
+}
+
+.vending-tier-option:focus-visible {
+  outline: 2px solid rgba(22, 119, 255, 0.38);
+  outline-offset: 2px;
 }
 
 .vending-tier-media {
-  position: relative;
   display: grid;
-  width: 66px;
-  height: 74px;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   place-items: center;
-  overflow: hidden;
-  border-radius: 14px;
-  background: var(--tier-media-surface, linear-gradient(145deg, #f9fcff, #eaf4ff));
 }
 
 .vending-tier-media img {
-  width: 58px;
-  height: 68px;
+  width: 40px;
+  height: 44px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 8px rgba(31, 74, 150, 0.16));
+  filter: drop-shadow(0 5px 7px rgba(31, 74, 150, 0.14));
 }
 
-.vending-tier-option[data-tier="debut"] {
-  --tier-option-line: rgba(243, 133, 28, 0.36);
-  --tier-option-active-line: rgba(221, 103, 12, 0.58);
-  --tier-option-shadow: 0 16px 36px rgba(220, 113, 22, 0.16);
-  --tier-option-surface: linear-gradient(135deg, rgba(255, 251, 246, 0.98), rgba(255, 220, 182, 0.54));
-  --tier-media-surface: linear-gradient(145deg, #fff8ef, #ffc98d);
+.vending-tier-option[data-tier="stage"] .vending-tier-media img {
+  clip-path: inset(0 4px 0 0);
 }
 
-.vending-tier-option[data-tier="stage"] {
-  --tier-option-line: rgba(238, 182, 49, 0.36);
-  --tier-option-active-line: rgba(218, 159, 24, 0.58);
-  --tier-option-shadow: 0 16px 36px rgba(209, 158, 33, 0.16);
-  --tier-option-surface: linear-gradient(135deg, rgba(255, 253, 244, 0.98), rgba(255, 241, 190, 0.5));
-  --tier-media-surface: linear-gradient(145deg, #fffdf4, #ffe8a1);
-}
-
-.vending-tier-option[data-tier="encore"] {
-  --tier-option-line: rgba(39, 127, 248, 0.34);
-  --tier-option-active-line: rgba(14, 106, 229, 0.6);
-  --tier-option-shadow: 0 16px 36px rgba(19, 116, 226, 0.16);
-  --tier-option-surface: linear-gradient(135deg, rgba(247, 251, 255, 0.98), rgba(197, 228, 255, 0.62));
-  --tier-media-surface: linear-gradient(145deg, #edf8ff, #75c7ff);
-}
-
-.vending-tier-option[data-tier="grail"] {
-  --tier-option-line: rgba(199, 116, 238, 0.38);
-  --tier-option-active-line: rgba(180, 75, 229, 0.62);
-  --tier-option-shadow: 0 16px 36px rgba(160, 90, 219, 0.18);
-  --tier-option-surface: linear-gradient(135deg, rgba(255, 249, 253, 0.98), rgba(234, 239, 255, 0.64));
-  --tier-media-surface: linear-gradient(145deg, #f7edff, #ffc2df 36%, #b5ecf6 70%, #fff0a8);
-}
-
-.vending-tier-copy {
-  display: grid;
+.vending-tier-option > strong {
   min-width: 0;
-  gap: 1px;
-}
-
-.vending-tier-copy strong,
-.vending-tier-copy b {
   overflow: hidden;
+  font-size: 15px;
+  font-weight: 620;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.vending-tier-copy strong {
-  color: var(--ink);
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.vending-tier-copy b {
-  color: #344054;
-  font-size: 12px;
-  font-weight: 650;
-}
-
-.vending-tier-copy small {
-  width: max-content;
-  margin-top: 3px;
-  color: var(--blue-hover);
-  font-size: 10px;
-  font-weight: 650;
-  line-height: 1.2;
-}
-
-.vending-tier-copy small[data-status="coming-soon"] {
-  color: var(--muted);
 }
 
 .vending-detail {

@@ -8,6 +8,7 @@ export type PackMedia = {
   coverUrl: string;
   packBackUrl: string;
   packFrontUrl: string;
+  railIconUrl: string;
 };
 
 export type CardMedia = {

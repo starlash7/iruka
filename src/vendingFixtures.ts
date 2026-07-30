@@ -25,22 +25,26 @@ export const packMedia: Record<PackTier, PackMedia> = {
   Debut: {
     coverUrl: new URL("./assets/iruka-pack-debut.webp", import.meta.url).href,
     packFrontUrl: new URL("./assets/iruka-pack-debut.webp", import.meta.url).href,
-    packBackUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href
+    packBackUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href,
+    railIconUrl: new URL("./assets/iruka-pack-rail-debut.png", import.meta.url).href
   },
   Stage: {
     coverUrl: new URL("./assets/iruka-pack-stage.webp", import.meta.url).href,
     packFrontUrl: new URL("./assets/iruka-pack-stage.webp", import.meta.url).href,
-    packBackUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href
+    packBackUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href,
+    railIconUrl: new URL("./assets/iruka-pack-rail-stage.png", import.meta.url).href
   },
   Encore: {
     coverUrl: new URL("./assets/iruka-pack-encore.webp", import.meta.url).href,
     packFrontUrl: new URL("./assets/iruka-pack-encore.webp", import.meta.url).href,
-    packBackUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href
+    packBackUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href,
+    railIconUrl: new URL("./assets/iruka-pack-rail-encore.png", import.meta.url).href
   },
   Grail: {
     coverUrl: new URL("./assets/iruka-pack-grail.webp", import.meta.url).href,
     packFrontUrl: new URL("./assets/iruka-pack-grail.webp", import.meta.url).href,
-    packBackUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href
+    packBackUrl: new URL("./assets/iruka-pack-product.jpg", import.meta.url).href,
+    railIconUrl: new URL("./assets/iruka-pack-rail-grail.png", import.meta.url).href
   }
 };
 

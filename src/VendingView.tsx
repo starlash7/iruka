@@ -65,7 +65,9 @@ type VendingViewProps = {
   recentPulls: readonly CardPull[];
   resultRef: Ref<HTMLElement>;
   selectedPack: PackDetail;
+  testnetConfigured: boolean;
   testnetEnabled: boolean;
+  testnetPriceWei?: bigint;
   walletRequired: boolean;
 };
 
@@ -89,7 +91,9 @@ export function VendingView({
   recentPulls,
   resultRef,
   selectedPack,
+  testnetConfigured,
   testnetEnabled,
+  testnetPriceWei,
   walletRequired
 }: VendingViewProps) {
   const visiblePull = activePull?.packId === selectedPack.id ? activePull : undefined;
@@ -101,7 +105,6 @@ export function VendingView({
         onSelectPack={onSelectPack}
         packs={packs}
         selectedPackId={selectedPack.id}
-        statusLabels={copy.statusLabels}
       />
 
       <VendingPackDetail
@@ -128,7 +131,9 @@ export function VendingView({
         pack={selectedPack}
         pullDisabled={pullDisabled}
         rarityLabels={copy.rarities}
+        testnetConfigured={testnetConfigured}
         testnetEnabled={testnetEnabled}
+        testnetPriceWei={testnetPriceWei}
         walletRequired={walletRequired}
       />
 

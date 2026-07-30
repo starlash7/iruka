@@ -22,9 +22,9 @@
     scrollbar-width: thin;
   }
 
-  .vending-pack-beam {
-    width: 240px;
-    flex: 0 0 240px;
+  .vending-tier-option {
+    width: 142px;
+    flex: 0 0 142px;
     scroll-snap-align: start;
   }
 
@@ -39,12 +39,10 @@
     padding-top: 14px;
   }
 
-  .vending-pack-beam { width: 220px; flex-basis: 220px; }
-  .vending-tier-option { grid-template-columns: 58px minmax(0, 1fr); min-height: 86px; }
-  .vending-tier-media { width: 58px; height: 66px; }
-  .vending-tier-media img { width: 50px; height: 60px; }
-  .vending-tier-copy strong { font-size: 14px; }
-  .vending-tier-copy b { font-size: 11px; }
+  .vending-tier-option { width: 132px; min-height: 58px; flex-basis: 132px; padding: 7px 10px; }
+  .vending-tier-media { width: 40px; height: 40px; flex-basis: 40px; }
+  .vending-tier-media img { width: 36px; height: 40px; }
+  .vending-tier-option > strong { font-size: 14px; }
 
   .vending-detail { gap: 12px; }
   .vending-detail-media { aspect-ratio: 1 / 1; border-radius: 18px; }
