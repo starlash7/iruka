@@ -7,6 +7,8 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "preview": "vite preview --host 0.0.0.0",
+    "test": "node --experimental-strip-types --test --test-concurrency=1 tests/*.test.mjs tests/*.test.ts",
+    "test:contracts": "forge test",
     "test:vending-data": "node --test tests/vending-data.test.ts"
   },
   "dependencies": {
