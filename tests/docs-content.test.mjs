@@ -48,6 +48,22 @@ test("uses the production documentation information architecture", () => {
   assert.deepEqual(docsConfig.navigation.groups, expectedNavigation);
 });
 
+test("documentation chrome exposes one Iruka website action per region", () => {
+  assert.equal(docsConfig.navbar.links, undefined);
+  assert.deepEqual(docsConfig.navbar.primary, {
+    type: "button",
+    label: "Open Iruka",
+    href: "https://playiruka.space",
+  });
+  assert.equal(docsConfig.footer.socials, undefined);
+
+  const websiteLinks = docsConfig.footer.links
+    .flatMap(({ items }) => items)
+    .filter(({ href }) => href === "https://playiruka.space");
+
+  assert.equal(websiteLinks.length, 1);
+});
+
 test("every navigation page and redirect destination exists", async () => {
   await Promise.all(
     navigationPages.map((page) => access(new URL(`${page}.mdx`, docsRoot))),
@@ -118,6 +134,10 @@ test("overview states Iruka's fandom collectible differentiation", async () => {
   assert.match(overview, /What Makes Iruka Different/i);
   assert.match(overview, /artist[\s\S]{0,120}member[\s\S]{0,120}release/i);
   assert.match(overview, /trot[\s\S]{0,160}cheerleader[\s\S]{0,160}sports/i);
+  assert.doesNotMatch(
+    overview,
+    /Documentation:\s*\[docs\.playiruka\.space\]/i,
+  );
 });
 
 test("fandom collectible thesis uses sourced demand signals without promising appreciation", async () => {

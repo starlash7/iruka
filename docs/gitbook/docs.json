@@ -59,12 +59,6 @@
     ]
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Iruka",
-        "href": "https://playiruka.space"
-      }
-    ],
     "primary": {
       "type": "button",
       "label": "Open Iruka",
@@ -72,9 +66,6 @@
     }
   },
   "footer": {
-    "socials": {
-      "website": "https://playiruka.space"
-    },
     "links": [
       {
         "header": "Iruka",
