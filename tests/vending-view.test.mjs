@@ -559,6 +559,8 @@ test("Vending copy avoids test and verification language in the pull flow", () =
   assert.equal(appCopy.en.vending.resumeOpening, "Resume opening");
   assert.equal(appCopy.en.vending.giwaTestnet, "GIWA Sepolia");
   assert.equal(appCopy.en.vending.giwaReceipt, "Pull receipt");
+  assert.equal(appCopy.en.vending.viewOdds, undefined);
+  assert.equal(appCopy.ko.vending.viewOdds, undefined);
   assert.equal(appCopy.en.feedback.giwaPullPending, "Opening is taking longer than usual.");
   assert.doesNotMatch(
     JSON.stringify({

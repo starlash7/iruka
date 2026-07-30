@@ -40,7 +40,6 @@ type VendingViewCopy = {
     redemptionUnavailable: string;
     recentPulls: string;
     viewTransaction: string;
-    viewOdds: string;
     yourPull: string;
   };
   rarities: Record<RarityTier, string>;
@@ -119,8 +118,7 @@ export function VendingView({
           physicalRedemption: copy.labels.physicalRedemption,
           redemptionUnavailable: copy.labels.redemptionUnavailable,
           resumeOpening: copy.hero.resumeOpening,
-          viewTransaction: copy.labels.viewTransaction,
-          viewOdds: copy.labels.viewOdds
+          viewTransaction: copy.labels.viewTransaction
         }}
         isAwaitingFulfillment={isAwaitingFulfillment}
         isOpening={isOpening}

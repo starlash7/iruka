@@ -154,7 +154,6 @@ export const copy = {
       viewTransaction: "View on Explorer",
       viewBack: "View back",
       viewFront: "View front",
-      viewOdds: "View odds & values",
       yourPull: "Your pull"
     },
     feedback: {
@@ -413,7 +412,6 @@ export const copy = {
       viewTransaction: "Explorer에서 보기",
       viewBack: "뒷면 보기",
       viewFront: "앞면 보기",
-      viewOdds: "확률과 예상 시세 보기",
       yourPull: "뽑은 카드"
     },
     feedback: {

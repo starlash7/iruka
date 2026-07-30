@@ -745,7 +745,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
               giwaReceipt: t.vending.giwaReceipt,
               giwaTestnet: t.vending.giwaTestnet,
               viewTransaction: t.vending.viewTransaction,
-              viewOdds: t.vending.viewOdds,
               yourPull: t.vending.yourPull
             },
             rarities: t.rarities,

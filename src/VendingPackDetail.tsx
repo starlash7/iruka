@@ -23,7 +23,6 @@ type VendingPackDetailCopy = {
   redemptionUnavailable: string;
   resumeOpening: string;
   viewTransaction: string;
-  viewOdds: string;
 };
 
 type VendingPackDetailProps = {
