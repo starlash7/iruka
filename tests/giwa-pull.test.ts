@@ -149,6 +149,23 @@ test("checks the result quickly after the Keeper submission", async () => {
   assert.deepEqual(delays, [750]);
 });
 
+test("polls the chain without waiting for the Keeper HTTP response", async () => {
+  let triggerFinished = false;
+
+  const result = await waitForGiwaPullFulfillment(receipt, {
+    readFulfillment: async () => {
+      assert.equal(triggerFinished, false);
+      return fulfillment;
+    },
+    triggerFulfillment: async () => {
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      triggerFinished = true;
+    }
+  });
+
+  assert.deepEqual(result, fulfillment);
+});
+
 test("backs off repeated fulfillment reads", async () => {
   const delays: number[] = [];
   let readCount = 0;

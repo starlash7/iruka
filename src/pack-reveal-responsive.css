@@ -97,10 +97,6 @@
     font-size: clamp(31px, 9vw, 40px);
   }
 
-  .pack-reveal-summary-value {
-    margin-top: 6px;
-    padding-top: 14px;
-  }
 }
 
 @media (max-width: 390px) {

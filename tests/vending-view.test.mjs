@@ -64,17 +64,18 @@ const statusLabels = {
   "coming-soon": "Coming soon"
 };
 
-test("Vending reveal cards retain their USDC display value", () => {
+test("Vending reveal cards omit estimated value data", () => {
   const card = createRevealCard({
     estimatedValue: 29,
     group: "Debut",
     member: "Collectible 01",
     rarity: "Rare",
     serial: "IRK-0001"
-  }, "Rare", "29.00 USDC");
+  }, "Rare");
 
-  assert.equal(card.valueLabel, "29.00 USDC");
-  assert.match(decodeURIComponent(card.imageUrl), /29\.00 USDC/);
+  assert.equal(card.estimatedValue, undefined);
+  assert.equal(card.valueLabel, undefined);
+  assert.doesNotMatch(decodeURIComponent(card.imageUrl), /29\.00 USDC/);
 });
 
 test("Vending reveal cards prefer the selected inventory image", () => {
@@ -86,7 +87,7 @@ test("Vending reveal cards prefer the selected inventory image", () => {
     member: "fromis_9 · Hayoung",
     rarity: "Rare",
     serial: "IRK-0001"
-  }, "Rare", "29.00 USDC");
+  }, "Rare");
 
   assert.equal(card.imageUrl, imageUrl);
 });
@@ -144,6 +145,16 @@ test("Vending pull records use the active locale's pack label", () => {
   }, "Debut", "팩");
 
   assert.equal(card.group, "Debut 팩");
+});
+
+test("Vending result cards and recent pulls omit estimated value copy", async () => {
+  const [appSource, vendingSource] = await Promise.all([
+    readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/VendingView.tsx", import.meta.url), "utf8")
+  ]);
+
+  assert.doesNotMatch(appSource, /valueLabel=\{formatCardPullValue\(activePull\)\}/);
+  assert.doesNotMatch(vendingSource, /formatCardPullValue\(card\)/);
 });
 
 test("pack rail exposes four icon tabs without repeated prices or statuses", () => {

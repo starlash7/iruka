@@ -110,14 +110,17 @@ export async function waitForGiwaPullFulfillment(
   let elapsedMs = 0;
   let nextTriggerAt = 0;
   let nextPollIntervalMs = pollIntervalMs;
+  let triggerInFlight: Promise<void> | undefined;
 
   while (true) {
-    if (elapsedMs >= nextTriggerAt) {
-      try {
-        await triggerFulfillment(receipt);
-      } catch {
-        // The canonical contract read below remains the source of truth.
-      }
+    if (elapsedMs >= nextTriggerAt && !triggerInFlight) {
+      triggerInFlight = triggerFulfillment(receipt)
+        .catch(() => {
+          // The canonical contract read below remains the source of truth.
+        })
+        .finally(() => {
+          triggerInFlight = undefined;
+        });
       nextTriggerAt = elapsedMs + triggerIntervalMs;
     }
 

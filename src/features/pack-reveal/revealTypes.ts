@@ -1,7 +1,6 @@
 export type PackRevealLabels = {
   continue: string;
   edition: string;
-  estimatedValue: string;
   rarity: string;
   serial: string;
   skip: string;

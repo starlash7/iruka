@@ -57,8 +57,7 @@
   overflow-wrap: anywhere;
 }
 
-.pack-reveal-summary p,
-.pack-reveal-summary-value span {
+.pack-reveal-summary p {
   color: #667085;
   font-size: 13px;
   font-weight: 500;
@@ -91,21 +90,6 @@
   color: #344054;
   font-size: 13px;
   font-weight: 590;
-}
-
-.pack-reveal-summary-value {
-  display: grid;
-  gap: 3px;
-  margin-top: 12px;
-  padding-top: 18px;
-  border-top: 1px solid #e6eef8;
-}
-
-.pack-reveal-summary-value strong {
-  color: #101828;
-  font-size: 26px;
-  font-weight: 620;
-  font-variant-numeric: tabular-nums;
 }
 
 .pack-reveal-summary a,

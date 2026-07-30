@@ -68,14 +68,12 @@ function toRevealRarity(rarity: Rarity): IrukaRarity {
 
 export function createRevealImageUrl(
   card: CardPull,
-  rarityLabel: string,
-  valueLabel = formatUsd(card.estimatedValue)
+  rarityLabel: string
 ) {
   const title = escapeSvgText(card.member);
   const subtitle = escapeSvgText(card.group);
   const serial = escapeSvgText(card.serial);
   const rarity = escapeSvgText(rarityLabel);
-  const value = escapeSvgText(valueLabel);
   const accent = {
     Common: "#98A2B3",
     Rare: "#12B76A",
@@ -109,7 +107,6 @@ export function createRevealImageUrl(
       <text x="86" y="716" fill="#101828" font-family="Inter, Arial, sans-serif" font-size="46" font-weight="900">${title}</text>
       <text x="86" y="766" fill="#667085" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">${subtitle}</text>
       <text x="86" y="820" fill="${accent}" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900">${rarity}</text>
-      <text x="554" y="820" text-anchor="end" fill="#101828" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="900">${value}</text>
     </svg>
   `;
 
@@ -118,16 +115,13 @@ export function createRevealImageUrl(
 
 export function createRevealCard(
   card: CardPull,
-  rarityLabel: string,
-  valueLabel?: string
+  rarityLabel: string
 ): RevealCard {
   return {
-    estimatedValue: card.estimatedValue,
-    imageUrl: card.imageUrl ?? createRevealImageUrl(card, rarityLabel, valueLabel),
+    imageUrl: card.imageUrl ?? createRevealImageUrl(card, rarityLabel),
     name: card.member,
     rarity: toRevealRarity(card.rarity),
-    serial: card.serial,
-    valueLabel
+    serial: card.serial
   };
 }
 
@@ -136,15 +130,13 @@ type RevealedCardProps = {
   categoryLabel: string;
   rarityClassName: string;
   rarityLabel: string;
-  valueLabel?: string;
 };
 
 export function RevealedCard({
   card,
   categoryLabel,
   rarityClassName,
-  rarityLabel,
-  valueLabel
+  rarityLabel
 }: RevealedCardProps) {
   return (
     <article className={`revealed-card ${rarityClassName} ${card.imageStyle}`}>
@@ -156,7 +148,7 @@ export function RevealedCard({
         <img
           alt=""
           className="revealed-card-art"
-          src={card.imageUrl ?? createRevealImageUrl(card, rarityLabel, valueLabel)}
+          src={card.imageUrl ?? createRevealImageUrl(card, rarityLabel)}
         />
       </div>
       <div className="revealed-copy">

@@ -143,6 +143,22 @@ test("summary owns edition, serial, and rarity metadata", async () => {
   assert.doesNotMatch(source, /year/i);
 });
 
+test("reveal omits unverified estimated values from the result and fallback card", async () => {
+  const [appSource, cardFlowSource, cardMeshSource, configSource, summarySource] = await Promise.all([
+    readSource("../src/App.tsx"),
+    readSource("../src/cardFlow.tsx"),
+    readSource("../src/features/pack-reveal/CardMesh.tsx"),
+    readSource("../src/features/pack-reveal/revealConfig.ts"),
+    readSource("../src/features/pack-reveal/RevealSummary.tsx")
+  ]);
+
+  assert.doesNotMatch(summarySource, /estimatedValue|valueLabel|formatUsd|summary-value/);
+  assert.doesNotMatch(cardMeshSource, /estimatedValue|valueLabel|formatUsd/);
+  assert.doesNotMatch(configSource, /estimatedValue|valueLabel/);
+  assert.doesNotMatch(cardFlowSource, /text x="554"[\s\S]*?\$\{value\}/);
+  assert.doesNotMatch(appSource, /valueLabel=\{formatCardPullValue\(activePull\)\}/);
+});
+
 test("the pulled card rises from the pack and summary stays interactive", async () => {
   const [sequenceSource, emergingCardSource, cardSource, cardStyles] = await Promise.all([
     readOptionalSource("../src/features/pack-reveal/VendingRevealScene.tsx"),

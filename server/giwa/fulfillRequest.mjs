@@ -13,7 +13,7 @@ import {
   renewFulfillmentLease
 } from "./fulfillmentLease.mjs";
 import { getGiwaSepoliaChain } from "./giwaSepoliaChain.mjs";
-import { loadBatchManifest } from "./manifestStore.mjs";
+import { loadDefaultBatchManifest } from "./manifestStore.mjs";
 import { packBatchAbi } from "./packBatchAbi.mjs";
 
 export async function fulfillPullRequest({
@@ -130,11 +130,7 @@ export async function fulfillGiwaPullFromEnvironment(
       fulfilled: pull[6]
     };
   };
-  const initialPull = await readPull(requestId);
-  const manifest = await loadBatchManifest(
-    initialPull.batchId,
-    encryptionKey
-  );
+  const manifest = await loadDefaultBatchManifest(encryptionKey);
   const leaseKey = createFulfillmentLeaseKey(contractAddress, requestId);
 
   return fulfillPullRequest({

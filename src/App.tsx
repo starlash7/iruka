@@ -152,8 +152,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       pendingReveal
         ? createRevealCard(
             pendingReveal,
-            t.rarities[pendingReveal.rarity],
-            formatCardPullValue(pendingReveal)
+            t.rarities[pendingReveal.rarity]
           )
         : undefined,
     [pendingReveal, t.rarities]
@@ -599,8 +598,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   function getVaultCardImageUrl(card: CardPull) {
     return card.imageUrl ?? createRevealImageUrl(
       card,
-      t.rarities[card.rarity],
-      formatCardPullValue(card)
+      t.rarities[card.rarity]
     );
   }
 
@@ -728,7 +726,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             },
             inventory: {
               allRarities: t.vending.allRarities,
-              estimatedValue: t.vending.estimatedValue,
               individualOdds: t.vending.individualOdds,
               insidePack: t.vending.insidePack,
               loadError: t.vending.loadError,
@@ -757,8 +754,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           getCardImageUrl={(card) =>
             createRevealImageUrl(
               card,
-              t.rarities[card.rarity],
-              formatCardPullValue(card)
+              t.rarities[card.rarity]
             )
           }
           isOpening={isOpening}
@@ -775,7 +771,6 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
                 categoryLabel={t.categories[activePull.category]}
                 rarityClassName={rarityClassNames[activePull.rarity]}
                 rarityLabel={t.rarities[activePull.rarity]}
-                valueLabel={formatCardPullValue(activePull)}
               />
             ) : null
           }

@@ -126,6 +126,16 @@ test("the next request submits its committed seed and inventory proof", async ()
   });
 });
 
+test("the environment Keeper does not read a pull twice before fulfillment", async () => {
+  const source = await readFile(
+    new URL("../server/giwa/fulfillRequest.mjs", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(source, /loadDefaultBatchManifest/);
+  assert.doesNotMatch(source, /const initialPull = await readPull/);
+});
+
 test("a concurrent fulfillment race returns the newly confirmed result", async () => {
   let readCount = 0;
   const result = await fulfillPullRequest({

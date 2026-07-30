@@ -1,6 +1,5 @@
 import { ArrowRight, ExternalLink } from "lucide-react";
 import type { RefObject } from "react";
-import { formatUsd } from "../../currency";
 import { RevealCard as RevealCardSurface } from "./RevealCard";
 import { getRevealConfig, type RevealCard } from "./revealConfig";
 import type { PackRevealLabels, RevealReceipt } from "./revealTypes";
@@ -53,10 +52,6 @@ export function RevealSummary({
                 <strong>{card.serial}</strong>
               </div>
             ) : null}
-          </div>
-          <div className="pack-reveal-summary-value">
-            <span>{labels.estimatedValue}</span>
-            <strong>{card.valueLabel ?? formatUsd(card.estimatedValue)}</strong>
           </div>
           {receipt ? (
             <a href={receipt.explorerUrl} rel="noreferrer" target="_blank">

@@ -11,12 +11,10 @@ export type LegacyRevealPhase =
   | "stamp";
 
 export type RevealCard = {
-  estimatedValue: number;
   imageUrl: string;
   name: string;
   rarity: IrukaRarity;
   serial?: string;
-  valueLabel?: string;
 };
 
 type PhaseEvent = {

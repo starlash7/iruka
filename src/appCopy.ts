@@ -129,7 +129,6 @@ export const copy = {
       allRarities: "All rarities",
       batch: "Batch",
       category: "Girl Groups",
-      estimatedValue: "Est. value",
       giwaReceipt: "Pull receipt",
       giwaTestnet: "GIWA Sepolia",
       individualOdds: "Individual odds",
@@ -269,7 +268,6 @@ export const copy = {
     revealOverlay: {
       continue: "Continue",
       edition: "Edition",
-      estimatedValue: "Est. value",
       rarity: "Rarity",
       serial: "Serial",
       skip: "Skip",
@@ -390,7 +388,6 @@ export const copy = {
       allRarities: "전체 등급",
       batch: "배치",
       category: "걸그룹",
-      estimatedValue: "예상 시세",
       giwaReceipt: "뽑기 영수증",
       giwaTestnet: "GIWA Sepolia",
       individualOdds: "개별 확률",
@@ -530,7 +527,6 @@ export const copy = {
     revealOverlay: {
       continue: "계속",
       edition: "에디션",
-      estimatedValue: "예상 시세",
       rarity: "레어도",
       serial: "시리얼",
       skip: "건너뛰기",

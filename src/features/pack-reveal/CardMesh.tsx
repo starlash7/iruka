@@ -1,7 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import { CanvasTexture, DoubleSide, Group, MathUtils, SRGBColorSpace } from "three";
-import { formatUsd } from "../../currency";
 import type {
   LegacyRevealPhase,
   RevealCard,
@@ -96,11 +95,6 @@ function createCardTexture(card: RevealCard, config: RevealConfig) {
   context.fillStyle = config.accent;
   context.font = "900 26px Inter, Arial, sans-serif";
   context.fillText(config.name, 86, 820);
-
-  context.textAlign = "right";
-  context.fillStyle = "#101828";
-  context.font = "900 28px Inter, Arial, sans-serif";
-  context.fillText(card.valueLabel ?? formatUsd(card.estimatedValue), 554, 820);
 
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;

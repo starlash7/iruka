@@ -1,5 +1,4 @@
 import type { ReactNode, Ref } from "react";
-import { formatCardPullValue } from "./cardFlow";
 import type { GiwaPullReceipt } from "./giwaPull.ts";
 import type {
   CardPull,
@@ -22,7 +21,6 @@ type VendingViewCopy = {
   };
   inventory: {
     allRarities: string;
-    estimatedValue: string;
     individualOdds: string;
     insidePack: string;
     loadError: string;
@@ -172,7 +170,6 @@ export function VendingView({
                   <small>{card.group}</small>
                 </div>
                 <p>
-                  <strong>{formatCardPullValue(card)}</strong>
                   <span>{card.pulledAt}</span>
                 </p>
               </article>
