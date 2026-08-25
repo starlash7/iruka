@@ -101,9 +101,17 @@ function getInitialView(): AppView {
     : "home";
 }
 
+function isIntroOnlyEnvironment(isProduction: boolean) {
+  return isProduction;
+}
+
+function shouldShowHomeEntryForEnvironment(isProduction: boolean, hash: string) {
+  return isIntroOnlyEnvironment(isProduction) || hash.length === 0;
+}
+
 function shouldShowHomeEntry() {
   if (typeof window === "undefined") return false;
-  return window.location.hash.length === 0;
+  return shouldShowHomeEntryForEnvironment(import.meta.env.PROD, window.location.hash);
 }
 
 function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
@@ -255,7 +263,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
   useEffect(() => {
     function restoreView() {
-      setShowHomeEntry(false);
+      setShowHomeEntry(isIntroOnlyEnvironment(import.meta.env.PROD));
       setActiveView(getInitialView());
       window.scrollTo({ top: 0, behavior: "auto" });
     }
@@ -676,6 +684,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   }
 
   function enterHome() {
+    if (isIntroOnlyEnvironment(import.meta.env.PROD)) return;
     setShowHomeEntry(false);
     setActiveView("home");
     window.history.replaceState(null, "", "#home");
@@ -683,7 +692,12 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   }
 
   if (showHomeEntry) {
-    return <HomeEntry onEnter={enterHome} />;
+    return (
+      <HomeEntry
+        canEnter={!isIntroOnlyEnvironment(import.meta.env.PROD)}
+        onEnter={enterHome}
+      />
+    );
   }
 
   return (

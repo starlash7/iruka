@@ -4,10 +4,11 @@ import { HomePixelUnfold } from "./HomePixelUnfold";
 import { HomeScrambleText } from "./HomeScrambleText";
 
 type HomeEntryProps = {
+  canEnter?: boolean;
   onEnter: () => void;
 };
 
-export function HomeEntry({ onEnter }: HomeEntryProps) {
+export function HomeEntry({ canEnter = true, onEnter }: HomeEntryProps) {
   return (
     <main className="iruka-entry">
       <HomePixelUnfold />
@@ -18,7 +19,12 @@ export function HomeEntry({ onEnter }: HomeEntryProps) {
       </div>
       <div className="iruka-entry-actions">
         <HomeScrambleText className="iruka-entry-prompt" text="Find your next favorite" />
-        <button className="iruka-action-button iruka-entry-action" onClick={onEnter} type="button">
+        <button
+          className="iruka-action-button iruka-entry-action"
+          disabled={canEnter === false}
+          onClick={onEnter}
+          type="button"
+        >
           <span>Play Iruka!</span>
         </button>
       </div>
