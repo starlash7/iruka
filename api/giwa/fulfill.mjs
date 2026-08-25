@@ -2,6 +2,31 @@ import {
   fulfillGiwaPullFromEnvironment
 } from "../../server/giwa/fulfillRequest.mjs";
 
+const productionOrigins = new Set([
+  "https://playiruka.space",
+  "https://www.playiruka.space"
+]);
+
+export function isAllowedRequestOrigin(
+  request,
+  environment = process.env
+) {
+  const origin = request.headers?.origin;
+  if (typeof origin !== "string" || origin.length === 0) {
+    return environment.VERCEL_ENV !== "production";
+  }
+
+  if (environment.VERCEL_ENV === "production") {
+    return productionOrigins.has(origin);
+  }
+
+  return (
+    origin === "http://localhost:5173"
+    || origin === "http://127.0.0.1:5173"
+    || origin === `https://${environment.VERCEL_URL}`
+  );
+}
+
 export function parseFulfillmentRequest(body) {
   const value = body?.requestId;
   if (
@@ -14,9 +39,15 @@ export function parseFulfillmentRequest(body) {
 }
 
 export default async function handleFulfillment(request, response) {
+  response.setHeader("Cache-Control", "no-store");
+
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     return response.status(405).json({ error: "Method not allowed" });
+  }
+
+  if (!isAllowedRequestOrigin(request)) {
+    return response.status(403).json({ error: "Forbidden" });
   }
 
   try {

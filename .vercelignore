@@ -1,4 +1,5 @@
 .context
+output/
 .conductor
 .git
 .vercel

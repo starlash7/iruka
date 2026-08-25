@@ -24,7 +24,7 @@ test("Account is a protected app view opened from the connected wallet", async (
 });
 
 test("the Account stylesheet is loaded by the application entry", async () => {
-  const source = await readFile(new URL("../src/main.tsx", import.meta.url), "utf8");
+  const source = await readFile(new URL("../src/app-main.tsx", import.meta.url), "utf8");
 
   assert.match(source, /import "\.\/account\.css";/);
   assert.match(source, /import "\.\/account-profile\.css";/);

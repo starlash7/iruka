@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
 
-const source = await readFile(new URL("../src/main.tsx", import.meta.url), "utf8");
+const source = await readFile(new URL("../src/app-main.tsx", import.meta.url), "utf8");
 const chainSource = await readFile(
   new URL("../src/giwaChain.ts", import.meta.url),
   "utf8"

@@ -305,7 +305,7 @@ test("reveal modal keeps focus, explicit skip, and muted sound controls", async 
 
 test("reveal styles are feature-owned with no legacy global selectors", async () => {
   const [mainSource, globalStyles, stylesheets] = await Promise.all([
-    readSource("../src/main.tsx"),
+    readSource("../src/app-main.tsx"),
     readSource("../src/styles.css"),
     Promise.all([
       "../src/pack-reveal.css",

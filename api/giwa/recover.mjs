@@ -15,6 +15,8 @@ export function isAuthorizedCronRequest(
 }
 
 export default async function handleRecovery(request, response) {
+  response.setHeader("Cache-Control", "no-store");
+
   if (request.method !== "GET") {
     response.setHeader("Allow", "GET");
     return response.status(405).json({ error: "Method not allowed" });

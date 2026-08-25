@@ -174,7 +174,7 @@ test("wallet authentication uses Privy's completed login flow", async () => {
 
 test("all login methods receive an Iruka embedded wallet", async () => {
   const [mainSource, authSource] = await Promise.all([
-    readFile(new URL("../src/main.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/app-main.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/PrivyAuthActions.tsx", import.meta.url), "utf8")
   ]);
 
