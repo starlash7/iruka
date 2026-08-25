@@ -28,6 +28,7 @@ import "./vending-odds.css";
 import "./vending-sections.css";
 import "./vending-inventory.css";
 import "./vending-responsive.css";
+import "./brand-kit.css";
 
 const privyConfig: PrivyClientConfig = {
   loginMethods: ["wallet", "email", "google"],

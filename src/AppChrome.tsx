@@ -188,6 +188,9 @@ export function AppFooter({ copy, onShowView, pullLabel }: AppFooterProps) {
         <button onClick={() => onShowView("roadmap")} type="button">
           {copy.links.roadmap}
         </button>
+        <button onClick={() => onShowView("brand-kit")} type="button">
+          {copy.links.brandKit}
+        </button>
         <a href={MINTLIFY_DOCS_URL} target="_blank" rel="noreferrer">
           {copy.links.documentation}
         </a>

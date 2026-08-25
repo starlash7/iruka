@@ -5,6 +5,7 @@ export type AppView =
   | "events"
   | "vault"
   | "account"
-  | "roadmap";
+  | "roadmap"
+  | "brand-kit";
 export type Locale = "en" | "ko";
 export type WalletAuthMode = "disabled" | "privy";

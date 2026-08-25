@@ -214,6 +214,7 @@ export const copy = {
         marketplace: "Marketplace",
         event: "Event",
         roadmap: "Roadmap",
+        brandKit: "Brand Kit",
         contact: "Contact Us",
         documentation: "Documentation"
       }
@@ -472,6 +473,7 @@ export const copy = {
         marketplace: "마켓플레이스",
         event: "이벤트",
         roadmap: "로드맵",
+        brandKit: "브랜드 키트",
         contact: "문의",
         documentation: "문서 보기"
       }

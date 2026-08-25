@@ -4,6 +4,7 @@ import { AccountView } from "./AccountView";
 import { AppFooter, AppHeader, MINTLIFY_DOCS_URL } from "./AppChrome";
 import { copy } from "./appCopy";
 import type { AppView, Locale, WalletAuthMode } from "./appTypes";
+import { BrandKitView } from "./BrandKitView";
 import {
   createRevealCard,
   createRevealImageUrl,
@@ -95,7 +96,8 @@ function getInitialView(): AppView {
     "events",
     "roadmap",
     "account",
-    "vault"
+    "vault",
+    "brand-kit"
   ].includes(view)
     ? (view as AppView)
     : "home";
@@ -883,6 +885,8 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       ) : null}
 
       {activeView === "roadmap" ? <RoadmapView locale={locale} /> : null}
+
+      {activeView === "brand-kit" ? <BrandKitView /> : null}
 
       <AppFooter copy={t.footer} onShowView={showNavigationView} pullLabel={t.nav.pull} />
 
