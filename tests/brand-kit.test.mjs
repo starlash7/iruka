@@ -2,7 +2,21 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
-const [typesSource, appSource, chromeSource, viewSource, styleSource, entrySource, mainSource, markAsset, wordmarkAsset] =
+const [
+  typesSource,
+  appSource,
+  chromeSource,
+  viewSource,
+  styleSource,
+  entrySource,
+  mainSource,
+  mainLogoAsset,
+  mainLogoSvg,
+  logomarkAsset,
+  logomarkSvg,
+  wordmarkAsset,
+  wordmarkSvg
+] =
   await Promise.all([
     readFile(new URL("../src/appTypes.ts", import.meta.url), "utf8"),
     readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
@@ -11,8 +25,12 @@ const [typesSource, appSource, chromeSource, viewSource, styleSource, entrySourc
     readFile(new URL("../src/brand-kit.css", import.meta.url), "utf8"),
     readFile(new URL("../src/app-main.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/main.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../public/brand/iruka-mark.png", import.meta.url)),
-    readFile(new URL("../public/brand/iruka-wordmark.png", import.meta.url))
+    readFile(new URL("../public/brand/iruka-main-logo.png", import.meta.url)),
+    readFile(new URL("../public/brand/iruka-main-logo.svg", import.meta.url), "utf8"),
+    readFile(new URL("../public/brand/iruka-logomark.png", import.meta.url)),
+    readFile(new URL("../public/brand/iruka-logomark.svg", import.meta.url), "utf8"),
+    readFile(new URL("../public/brand/iruka-wordmark.png", import.meta.url)),
+    readFile(new URL("../public/brand/iruka-wordmark.svg", import.meta.url), "utf8")
   ]);
 
 test("Brand Kit is an app view linked from the footer", () => {
@@ -24,16 +42,27 @@ test("Brand Kit is an app view linked from the footer", () => {
 });
 
 test("Brand Kit exposes the supplied Iruka assets and palette", () => {
-  assert.match(viewSource, /iruka-wordmark\.png/);
-  assert.match(viewSource, /brand\/iruka-mark\.png/);
-  assert.match(viewSource, /brand\/iruka-wordmark\.png/);
-  assert.match(viewSource, /download=/);
+  assert.match(viewSource, /Main logo/);
+  assert.match(viewSource, /Logomark/);
+  assert.match(viewSource, /Wordmark/);
+  for (const baseName of ["iruka-main-logo", "iruka-logomark", "iruka-wordmark"]) {
+    assert.match(viewSource, new RegExp(baseName));
+  }
+  assert.match(viewSource, /format="PNG"/);
+  assert.match(viewSource, /format="SVG"/);
+  assert.doesNotMatch(viewSource, /2048|4096|1273/);
   assert.match(viewSource, /#1677FF/);
   assert.match(viewSource, /#20C7DF/);
   assert.match(viewSource, /#101828/);
+  assert.match(viewSource, /Check, Copy, Download, X/);
+  assert.match(viewSource, /brand-kit-guidance-icon-do/);
+  assert.match(viewSource, /brand-kit-guidance-icon-avoid/);
   assert.match(viewSource, /clear space/i);
   assert.match(viewSource, /Do not stretch/i);
   assert.match(styleSource, /brand-kit-page/);
+  assert.match(styleSource, /grid-template-columns: minmax\(0, 1fr\) minmax\(240px, 34ch\)/);
+  assert.match(styleSource, /min-height: 2\.7em/);
+  assert.match(styleSource, /white-space: nowrap/);
   assert.match(entrySource, /brand-kit\.css/);
 });
 
@@ -45,14 +74,19 @@ test("the public Brand Kit is the only production deep-link exception", () => {
   assert.match(mainSource, /void import\("\.\/app-main"\)/);
 });
 
-test("Brand Kit downloads use high-resolution transparent PNG masters", () => {
+test("Brand Kit downloads include transparent PNG and SVG formats", () => {
   const readPngHeader = (asset) => ({
     width: asset.readUInt32BE(16),
     height: asset.readUInt32BE(20),
     colorType: asset[25]
   });
 
-  assert.deepEqual(readPngHeader(markAsset), {
+  assert.deepEqual(readPngHeader(mainLogoAsset), {
+    width: 4600,
+    height: 1400,
+    colorType: 6
+  });
+  assert.deepEqual(readPngHeader(logomarkAsset), {
     width: 2048,
     height: 2048,
     colorType: 6
@@ -62,4 +96,8 @@ test("Brand Kit downloads use high-resolution transparent PNG masters", () => {
     height: 1273,
     colorType: 6
   });
+  for (const svg of [mainLogoSvg, logomarkSvg, wordmarkSvg]) {
+    assert.match(svg, /<svg /);
+    assert.match(svg, /data:image\/png;base64,/);
+  }
 });

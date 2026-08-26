@@ -1,4 +1,4 @@
-import { Check, Copy, Download } from "lucide-react";
+import { Check, Copy, Download, X } from "lucide-react";
 import { useState } from "react";
 
 const brandColors = [
@@ -9,19 +9,49 @@ const brandColors = [
   { name: "Surface", hex: "#FFFFFF", usage: "Cards and clear space" }
 ] as const;
 
+const brandAssets = [
+  {
+    name: "Main logo",
+    baseName: "iruka-main-logo",
+    imageSrc: "/brand/iruka-main-logo.png",
+    alt: "Iruka main logo",
+    previewClass: "brand-kit-asset-preview-main"
+  },
+  {
+    name: "Logomark",
+    baseName: "iruka-logomark",
+    imageSrc: "/brand/iruka-logomark.png",
+    alt: "Iruka logomark",
+    previewClass: "brand-kit-asset-preview-mark"
+  },
+  {
+    name: "Wordmark",
+    baseName: "iruka-wordmark",
+    imageSrc: "/brand/iruka-wordmark.png",
+    alt: "Iruka wordmark",
+    previewClass: "brand-kit-asset-preview-wordmark"
+  }
+] as const;
+
 function AssetDownload({
-  download,
-  href,
-  label
+  baseName,
+  format
 }: {
-  download: string;
-  href: string;
-  label: string;
+  baseName: string;
+  format: "PNG" | "SVG";
 }) {
+  const extension = format.toLowerCase();
+  const fileName = `${baseName}.${extension}`;
+
   return (
-    <a className="brand-kit-download" download={download} href={href}>
+    <a
+      aria-label={`Download ${fileName}`}
+      className="brand-kit-download"
+      download={fileName}
+      href={`/brand/${fileName}`}
+    >
       <Download aria-hidden="true" size={15} strokeWidth={2.2} />
-      {label}
+      {format}
     </a>
   );
 }
@@ -44,16 +74,13 @@ export function BrandKitView() {
   return (
     <section className="brand-kit-page" aria-labelledby="brand-kit-title">
       <header className="brand-kit-hero">
-        <div>
-          <p className="brand-kit-eyebrow">IRUKA / BRAND KIT</p>
-          <h1 id="brand-kit-title">A clear system for Iruka.</h1>
+        <div className="brand-kit-hero-copy">
+          <p className="brand-kit-eyebrow">IRUKA / BRAND</p>
+          <h1 id="brand-kit-title">Iruka brand essentials.</h1>
           <p className="brand-kit-lead">
-            Use the supplied mark, wordmark, and color tokens to keep every Iruka
-            touchpoint bright, calm, and recognisable.
+            Core logos, colors, and usage rules for the Iruka product. Download
+            the core marks and apply the same visual language across Iruka.
           </p>
-        </div>
-        <div className="brand-kit-hero-mark" aria-hidden="true">
-          <img src="/brand/iruka-mark.png" alt="" />
         </div>
       </header>
 
@@ -63,43 +90,24 @@ export function BrandKitView() {
             <p className="brand-kit-kicker">01</p>
             <h2 id="brand-assets-title">Logo assets</h2>
           </div>
-          <p>PNG files with transparent artwork. Keep the original proportions.</p>
+          <p>Choose PNG or SVG for each core mark.</p>
         </div>
 
         <div className="brand-kit-asset-grid">
-          <article className="brand-kit-asset-card">
-            <div className="brand-kit-asset-preview brand-kit-asset-preview-mark">
-              <img src="/brand/iruka-mark.png" alt="Iruka dolphin logo" />
-            </div>
-            <div className="brand-kit-asset-meta">
-              <div>
-                <h3>Dolphin mark</h3>
-                <p>iruka-mark.png · 2048 × 2048</p>
+          {brandAssets.map((asset) => (
+            <article className="brand-kit-asset-card" key={asset.baseName}>
+              <div className={`brand-kit-asset-preview ${asset.previewClass}`}>
+                <img src={asset.imageSrc} alt={asset.alt} />
               </div>
-              <AssetDownload
-                download="iruka-mark.png"
-                href="/brand/iruka-mark.png"
-                label="Download"
-              />
-            </div>
-          </article>
-
-          <article className="brand-kit-asset-card">
-            <div className="brand-kit-asset-preview brand-kit-asset-preview-wordmark">
-              <img src="/brand/iruka-wordmark.png" alt="Iruka wordmark" />
-            </div>
-            <div className="brand-kit-asset-meta">
-              <div>
-                <h3>Iruka wordmark</h3>
-                <p>iruka-wordmark.png · 4096 × 1273</p>
+              <div className="brand-kit-asset-meta">
+                <h3>{asset.name}</h3>
+                <div className="brand-kit-downloads">
+                  <AssetDownload baseName={asset.baseName} format="PNG" />
+                  <AssetDownload baseName={asset.baseName} format="SVG" />
+                </div>
               </div>
-              <AssetDownload
-                download="iruka-wordmark.png"
-                href="/brand/iruka-wordmark.png"
-                label="Download"
-              />
-            </div>
-          </article>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -154,17 +162,32 @@ export function BrandKitView() {
 
         <div className="brand-kit-guidance-grid">
           <article>
-            <span className="brand-kit-guidance-icon brand-kit-guidance-icon-do">✓</span>
+            <span
+              aria-hidden="true"
+              className="brand-kit-guidance-icon brand-kit-guidance-icon-do"
+            >
+              <Check size={16} strokeWidth={2.5} />
+            </span>
             <h3>Keep clear space</h3>
             <p>Leave breathing room around every side of the mark and wordmark.</p>
           </article>
           <article>
-            <span className="brand-kit-guidance-icon brand-kit-guidance-icon-do">✓</span>
+            <span
+              aria-hidden="true"
+              className="brand-kit-guidance-icon brand-kit-guidance-icon-do"
+            >
+              <Check size={16} strokeWidth={2.5} />
+            </span>
             <h3>Keep the artwork</h3>
             <p>Use the supplied files at their original proportions and colors.</p>
           </article>
           <article>
-            <span className="brand-kit-guidance-icon brand-kit-guidance-icon-avoid">×</span>
+            <span
+              aria-hidden="true"
+              className="brand-kit-guidance-icon brand-kit-guidance-icon-avoid"
+            >
+              <X size={16} strokeWidth={2.5} />
+            </span>
             <h3>Do not stretch</h3>
             <p>Do not add outlines, shadows, gradients, or low-contrast treatments.</p>
           </article>
