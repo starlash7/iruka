@@ -1,5 +1,5 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Geist:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Geist:wght@400;500;600;700;800&family=Oxanium:wght@700;800&display=swap");
 
 :root {
   color: #07111f;
@@ -4714,16 +4714,103 @@ html[lang="ko"] .roadmap-phase-copy h3 {
 }
 
 .iruka-entry-action {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: min(214px, 76vw);
   min-height: 58px;
   padding: 0 30px;
-  font-size: clamp(21px, 2vw, 25px);
+  overflow: hidden;
   font-weight: 600;
-  border-radius: var(--radius-pill);
+  border: 1px solid rgba(154, 226, 255, 0.78);
+  border-top-color: rgba(235, 251, 255, 0.94);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #063fb8 0%, #086cf0 52%, #00a9e8 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.46),
+    inset 0 -2px 0 rgba(0, 43, 145, 0.32),
+    0 0 18px rgba(28, 163, 255, 0.28),
+    0 12px 24px rgba(0, 72, 184, 0.26);
   cursor: pointer;
+}
+
+.iruka-entry-action::before {
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  left: 0;
+  z-index: 0;
+  width: 42%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08) 24%,
+    rgba(214, 250, 255, 0.54) 52%,
+    rgba(99, 226, 255, 0.12) 76%,
+    transparent
+  );
+  content: "";
+  transform: translateX(-260%) skewX(-18deg);
+  animation: iruka-entry-action-scan 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.iruka-entry-action-wordmark {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-family: "Oxanium", var(--font-display);
+  font-size: clamp(20px, 1.9vw, 24px);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow:
+    0 1px 2px rgba(0, 30, 103, 0.58),
+    0 0 10px rgba(211, 250, 255, 0.2);
+  transform: skewX(-8deg);
+}
+
+.iruka-entry-action:hover {
+  border-color: rgba(201, 244, 255, 0.92);
+  background: linear-gradient(135deg, #0a4dcc 0%, #0a7aff 52%, #04b7ec 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -2px 0 rgba(0, 43, 145, 0.26),
+    0 0 24px rgba(35, 184, 255, 0.36),
+    0 14px 28px rgba(0, 72, 184, 0.3);
+}
+
+.iruka-entry-action-wordmark span:last-child {
+  color: #bff8ff;
+}
+
+.iruka-entry-action[aria-disabled="true"] {
+  pointer-events: none;
+  cursor: default;
+}
+
+@keyframes iruka-entry-action-scan {
+  0%,
+  55% {
+    transform: translateX(-260%) skewX(-18deg);
+  }
+
+  86%,
+  100% {
+    transform: translateX(340%) skewX(-18deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iruka-entry-action::before {
+    animation: none;
+  }
 }
 
 @media (max-width: 600px) {

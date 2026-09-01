@@ -20,12 +20,16 @@ export function HomeEntry({ canEnter = true, onEnter }: HomeEntryProps) {
       <div className="iruka-entry-actions">
         <HomeScrambleText className="iruka-entry-prompt" text="Find your next favorite" />
         <button
+          aria-disabled={canEnter === false || undefined}
           className="iruka-action-button iruka-entry-action"
-          disabled={canEnter === false}
-          onClick={onEnter}
+          onClick={canEnter === false ? undefined : onEnter}
+          tabIndex={canEnter === false ? -1 : undefined}
           type="button"
         >
-          <span>Play Iruka!</span>
+          <span aria-hidden="true" className="iruka-entry-action-wordmark">
+            <span>Play</span><span>Iruka</span>
+          </span>
+          <span className="sr-only">Play Iruka!</span>
         </button>
       </div>
     </main>

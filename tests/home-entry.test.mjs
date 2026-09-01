@@ -33,6 +33,47 @@ test("home entry presents Play Iruka before the product home", () => {
   assert.doesNotMatch(markup, /<svg/);
 });
 
+test("locked home entry keeps the live button appearance without an action", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(HomeEntry, { canEnter: false, onEnter: () => undefined })
+  );
+
+  assert.match(markup, /aria-disabled="true"/);
+  assert.match(markup, /tabindex="-1"/);
+  assert.doesNotMatch(markup, / disabled=""/);
+});
+
+test("home entry presents its action as an angular Iruka wordmark", async () => {
+  const [markup, stylesheet] = await Promise.all([
+    Promise.resolve(
+      renderToStaticMarkup(React.createElement(HomeEntry, { onEnter: () => undefined }))
+    ),
+    readFile(new URL("../src/styles.css", import.meta.url), "utf8")
+  ]);
+
+  assert.match(markup, /iruka-entry-action-wordmark/);
+  assert.match(markup, />Play<\/span><span[^>]*>Iruka<\/span>/);
+  assert.match(
+    stylesheet,
+    /\.iruka-entry-action-wordmark \{[\s\S]*?font-family: "Oxanium", var\(--font-display\);/
+  );
+  assert.match(
+    stylesheet,
+    /\.iruka-entry-action-wordmark \{[\s\S]*?transform: skewX\(-8deg\);/
+  );
+  assert.doesNotMatch(stylesheet, /\.iruka-entry-action-wordmark::before/);
+  assert.match(
+    stylesheet,
+    /\.iruka-entry-action \{[\s\S]*?background: linear-gradient\(135deg, #063fb8 0%, #086cf0 52%, #00a9e8 100%\);/
+  );
+  assert.match(stylesheet, /@keyframes iruka-entry-action-scan/);
+  assert.match(
+    stylesheet,
+    /\.iruka-entry-action::before \{[\s\S]*?z-index: 0;/
+  );
+  assert.doesNotMatch(stylesheet, /\.iruka-entry-action:disabled/);
+});
+
 test("home entry keeps the sky background free of a kinetic grid", async () => {
   const [markup, stylesheet] = await Promise.all([
     Promise.resolve(

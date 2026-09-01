@@ -21,7 +21,10 @@ test("production visitors stay on intro even with a deep link", () => {
   );
 });
 
-test("the intro entry supports a disabled product action", () => {
+test("the intro entry locks production without dimming the product action", () => {
   assert.match(entrySource, /canEnter\?: boolean/);
-  assert.match(entrySource, /disabled=\{canEnter === false\}/);
+  assert.match(entrySource, /aria-disabled=\{canEnter === false \|\| undefined\}/);
+  assert.match(entrySource, /onClick=\{canEnter === false \? undefined : onEnter\}/);
+  assert.match(entrySource, /tabIndex=\{canEnter === false \? -1 : undefined\}/);
+  assert.doesNotMatch(entrySource, /disabled=\{canEnter === false\}/);
 });
