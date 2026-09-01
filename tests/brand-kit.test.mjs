@@ -15,7 +15,8 @@ const [
   logomarkAsset,
   logomarkSvg,
   wordmarkAsset,
-  wordmarkSvg
+  wordmarkSvg,
+  socialAvatarAsset
 ] =
   await Promise.all([
     readFile(new URL("../src/appTypes.ts", import.meta.url), "utf8"),
@@ -30,7 +31,8 @@ const [
     readFile(new URL("../public/brand/iruka-logomark.png", import.meta.url)),
     readFile(new URL("../public/brand/iruka-logomark.svg", import.meta.url), "utf8"),
     readFile(new URL("../public/brand/iruka-wordmark.png", import.meta.url)),
-    readFile(new URL("../public/brand/iruka-wordmark.svg", import.meta.url), "utf8")
+    readFile(new URL("../public/brand/iruka-wordmark.svg", import.meta.url), "utf8"),
+    readFile(new URL("../public/iruka-logo.png", import.meta.url))
   ]);
 
 test("Brand Kit is an app view linked from the footer", () => {
@@ -96,8 +98,39 @@ test("Brand Kit downloads include transparent PNG and SVG formats", () => {
     height: 1273,
     colorType: 6
   });
-  for (const svg of [mainLogoSvg, logomarkSvg, wordmarkSvg]) {
+  assert.deepEqual(readPngHeader(socialAvatarAsset), {
+    width: 2048,
+    height: 2048,
+    colorType: 6
+  });
+  for (const svg of [mainLogoSvg, wordmarkSvg]) {
     assert.match(svg, /<svg /);
     assert.match(svg, /data:image\/png;base64,/);
   }
+  assert.match(logomarkSvg, /<svg /);
+  assert.match(logomarkSvg, /<path /);
+  assert.match(logomarkSvg, /<linearGradient /);
+  assert.doesNotMatch(logomarkSvg, /data:image\/png;base64,/);
+});
+
+test("web and Mintlify chrome use the new vector logomark", async () => {
+  const [indexSource, docsConfigSource, docsLogomarkSvg] = await Promise.all([
+    readFile(new URL("../index.html", import.meta.url), "utf8"),
+    readFile(new URL("../docs/gitbook/docs.json", import.meta.url), "utf8"),
+    readFile(
+      new URL("../docs/gitbook/images/iruka-logomark.svg", import.meta.url),
+      "utf8"
+    )
+  ]);
+  const docsConfig = JSON.parse(docsConfigSource);
+
+  assert.match(chromeSource, /src="\/brand\/iruka-logomark\.svg"/);
+  assert.match(
+    indexSource,
+    /rel="icon" type="image\/svg\+xml" href="\/brand\/iruka-logomark\.svg"/
+  );
+  assert.equal(docsConfig.logo.light, "/images/iruka-logomark.svg");
+  assert.equal(docsConfig.logo.dark, "/images/iruka-logomark.svg");
+  assert.equal(docsConfig.favicon, "/images/iruka-logomark.svg");
+  assert.equal(docsLogomarkSvg.trim(), logomarkSvg.trim());
 });

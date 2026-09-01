@@ -9,11 +9,11 @@
     "dark": "#0B63F6"
   },
   "logo": {
-    "light": "/images/iruka-wordmark.png",
-    "dark": "/images/iruka-wordmark.png",
+    "light": "/images/iruka-logomark.svg",
+    "dark": "/images/iruka-logomark.svg",
     "href": "https://playiruka.space"
   },
-  "favicon": "/images/iruka-logo.png",
+  "favicon": "/images/iruka-logomark.svg",
   "appearance": {
     "default": "light",
     "strict": true

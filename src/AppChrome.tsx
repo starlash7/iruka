@@ -160,7 +160,7 @@ export function AppFooter({ copy, onShowView, pullLabel }: AppFooterProps) {
           }}
         >
           <span className="logo-mark" aria-hidden="true">
-            <img src="/iruka-logo.png" alt="" />
+            <img src="/brand/iruka-logomark.svg" alt="" />
           </span>
           <img src={irukaWordmark} alt="Iruka" />
         </a>
