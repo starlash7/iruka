@@ -103,7 +103,8 @@
   "seo": {
     "indexing": "navigable",
     "metatags": {
-      "canonical": "https://docs.playiruka.space"
+      "canonical": "https://docs.playiruka.space",
+      "robots": "noindex, nofollow, noarchive, nosnippet, noimageindex"
     }
   },
   "search": {

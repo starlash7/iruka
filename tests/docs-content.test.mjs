@@ -64,6 +64,21 @@ test("documentation chrome exposes one Iruka website action per region", () => {
   assert.equal(websiteLinks.length, 1);
 });
 
+test("public docs opt out of search and AI crawler indexing", async () => {
+  const robots = await readFile(new URL("robots.txt", docsRoot), "utf8").catch(
+    () => "",
+  );
+  const robotsMetatag = docsConfig.seo?.metatags?.robots ?? "";
+
+  assert.match(robotsMetatag, /noindex/);
+  assert.match(robotsMetatag, /nofollow/);
+  assert.match(robotsMetatag, /noarchive/);
+  assert.match(robots, /User-agent:\s*\*/i);
+  assert.match(robots, /Content-Signal:\s*ai-train=no, search=no, ai-input=no/i);
+  assert.match(robots, /Disallow:\s*\//i);
+  assert.doesNotMatch(robots, /ai-train=yes|ai-input=yes|search=yes/i);
+});
+
 test("every navigation page and redirect destination exists", async () => {
   await Promise.all(
     navigationPages.map((page) => access(new URL(`${page}.mdx`, docsRoot))),
