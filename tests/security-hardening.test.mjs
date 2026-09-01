@@ -28,6 +28,27 @@ test("production entry does not load the product application bundle", async () =
   assert.doesNotMatch(mainSource, /from ["']\.\/App["']/);
 });
 
+test("public entry does not describe the private product", async () => {
+  const html = await readProjectFile("index.html");
+
+  assert.match(
+    html,
+    /<meta\s+name="robots"\s+content="noindex, nofollow, noarchive, nosnippet, noimageindex"\s*\/?>/
+  );
+  assert.doesNotMatch(
+    html,
+    /GIWA-ready|collectible random packs|verified vault|marketplace exits|card redemption/i
+  );
+});
+
+test("public deployment asks crawlers not to index any route", async () => {
+  const robots = await readProjectFile("public/robots.txt");
+
+  assert.match(robots, /^User-agent:\s*\*$/m);
+  assert.match(robots, /^Content-Signal:\s*ai-train=no, search=no, ai-input=no$/m);
+  assert.match(robots, /^Disallow:\s*\/$/m);
+});
+
 test("public deployment sends browser security headers", async () => {
   const vercelConfig = JSON.parse(await readProjectFile("vercel.json"));
   const globalHeaders = vercelConfig.headers.find(
@@ -43,6 +64,10 @@ test("public deployment sends browser security headers", async () => {
   assert.equal(
     getHeader(globalHeaders, "Referrer-Policy"),
     "strict-origin-when-cross-origin"
+  );
+  assert.equal(
+    getHeader(globalHeaders, "X-Robots-Tag"),
+    "noindex, nofollow, noarchive, nosnippet, noimageindex"
   );
   assert.match(contentSecurityPolicy ?? "", /frame-ancestors 'none'/);
   assert.match(contentSecurityPolicy ?? "", /object-src 'none'/);
