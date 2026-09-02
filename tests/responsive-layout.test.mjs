@@ -178,6 +178,22 @@ test("desktop surfaces share a stable product canvas", async () => {
   assert.match(vendingLayout, /\.vending-page\s*\{[\s\S]*?width: 100%;[\s\S]*?margin: 0 auto;[\s\S]*?transform: none;/);
 });
 
+test("primary navigation keeps the Oxanium labels prominent", async () => {
+  const stylesheet = await readFile(
+    new URL("../src/styles.css", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(
+    stylesheet,
+    /\.nav-links button,\s*\.nav-links a \{[^}]*min-height: 64px;[^}]*color: var\(--ink\);[^}]*font-size: 14px;[^}]*font-weight: 600;/
+  );
+  assert.match(
+    stylesheet,
+    /\.nav-links button:hover,\s*\.nav-links a:hover,\s*\.nav-links button\.selected \{[^}]*color: var\(--ink\);/
+  );
+});
+
 test("wide Vending and Marketplace surfaces stay dense on desktop", async () => {
   const [stylesheet, vendingInventory, vendingLayout, vendingResponsive] = await Promise.all([
     readFile(new URL("../src/styles.css", import.meta.url), "utf8"),

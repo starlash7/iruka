@@ -253,7 +253,7 @@ test("Account navigation and metrics use the compact Iruka type hierarchy", asyn
   );
   assert.match(
     profileStyles,
-    /\.account-profile-nav a \{[\s\S]*?min-height: 52px;[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 550;/
+    /\.account-profile-nav a \{[\s\S]*?min-height: 52px;[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 500;/
   );
   assert.match(
     profileStyles,
@@ -269,7 +269,7 @@ test("Account navigation and metrics use the compact Iruka type hierarchy", asyn
   );
   assert.match(
     statStyles,
-    /\.account-stat-label \{[\s\S]*?color: var\(--muted\);[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 550;/
+    /\.account-stat-label \{[\s\S]*?color: var\(--muted\);[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 500;/
   );
   assert.doesNotMatch(statStyles, /\.account-stat-icon/);
   assert.match(
@@ -278,7 +278,7 @@ test("Account navigation and metrics use the compact Iruka type hierarchy", asyn
   );
   assert.match(
     balanceStyles,
-    /\.account-wallet-heading h2 \{[\s\S]*?color: var\(--muted\);[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 550;/
+    /\.account-wallet-heading h2 \{[\s\S]*?color: var\(--muted\);[\s\S]*?font-size: 13px;[\s\S]*?font-weight: 500;/
   );
   assert.match(
     balanceStyles,
@@ -302,7 +302,7 @@ test("Account navigation and metrics use the compact Iruka type hierarchy", asyn
   );
   assert.match(
     inventoryStyles,
-    /\.account-inventory-list \.vault-empty strong \{[\s\S]*?font-size: 15px;[\s\S]*?font-weight: 550;/
+    /\.account-inventory-list \.vault-empty strong \{[\s\S]*?font-size: 15px;[\s\S]*?font-weight: 500;/
   );
   assert.match(
     sharedStyles,

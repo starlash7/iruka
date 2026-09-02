@@ -19,7 +19,7 @@
   color: #344054;
   font: inherit;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 800;
   border: 1px solid #dce8ff;
   border-radius: var(--radius-pill);
   background: #fff;
@@ -141,7 +141,7 @@
 .vending-inventory-copy > div span,
 .vending-inventory-copy > div small {
   font-size: 10px;
-  font-weight: 750;
+  font-weight: 600;
 }
 
 .vending-card-rarity {
@@ -152,6 +152,7 @@
   min-height: 26px;
   align-items: center;
   padding: 0 10px;
+  font-weight: 800;
   border: 1px solid var(--rarity-surface);
   border-radius: var(--radius-pill);
   background: var(--rarity-surface);
@@ -194,7 +195,7 @@
   overflow: hidden;
   color: var(--ink);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -204,7 +205,7 @@
   margin: 0;
   color: var(--muted);
   font-size: 10px;
-  font-weight: 550;
+  font-weight: 500;
 }
 
 .vending-card-facts {

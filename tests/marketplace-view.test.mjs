@@ -69,7 +69,7 @@ test("Home photocards match the Marketplace group and name treatment", async () 
   assert.match(stylesheet, /\.home-market-card-copy > \.home-market-card-group\s*\{[^}]*color:\s*#c54884;/is);
   assert.match(
     stylesheet,
-    /\.home-market-card-copy > \.home-market-card-name\s*\{[^}]*color:\s*var\(--ink\);[^}]*font-weight:\s*700;[^}]*white-space:\s*nowrap;/is
+    /\.home-market-card-copy > \.home-market-card-name\s*\{[^}]*color:\s*var\(--ink\);[^}]*font-weight:\s*600;[^}]*white-space:\s*nowrap;/is
   );
 });
 

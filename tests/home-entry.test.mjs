@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
@@ -154,7 +154,7 @@ test("home entry introduces the next favorite prompt above its action", async ()
   assert.match(stylesheet, /\.iruka-entry-prompt \{[\s\S]*?min-height: 1\.5em;/);
   assert.match(stylesheet, /\.iruka-entry-actions \{[\s\S]*?width: min\(100%, 360px\);/);
   assert.match(stylesheet, /\.iruka-entry-prompt \{[\s\S]*?font-size: clamp\(18px, 1\.55vw, 22px\);/);
-  assert.match(stylesheet, /\.iruka-entry-prompt \{[\s\S]*?font-family: Geist, Pretendard, ui-sans-serif, system-ui, sans-serif;/);
+  assert.match(stylesheet, /\.iruka-entry-prompt \{[\s\S]*?font-family: var\(--font-sans\);/);
   assert.match(stylesheet, /\.iruka-entry-prompt \{[\s\S]*?font-weight: 600;/);
   assert.match(stylesheet, /\.iruka-entry-prompt > span \{[\s\S]*?text-align: center;/);
 });
@@ -210,4 +210,64 @@ test("primary action styles use the Iruka blue glass treatment", async () => {
   assert.match(beamSource, /strength: 0\.42/);
   assert.match(beamSource, /theme: "dark" as const/);
   assert.doesNotMatch(stylesheet, /0 4px 0 rgba\(0, 70, 145, 0\.62\)/);
+});
+
+test("product buttons preview the intro typography and primary action surface", async () => {
+  const stylesheet = await readFile(
+    new URL("../src/styles.css", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(
+    stylesheet,
+    /\.product-shell button \{[\s\S]*?font-family: "Oxanium", var\(--font-sans\);/
+  );
+  assert.match(
+    stylesheet,
+    /\.product-shell \.iruka-action-button,[\s\S]*?background: linear-gradient\(135deg, #063fb8 0%, #086cf0 52%, #00a9e8 100%\);/
+  );
+  assert.match(
+    stylesheet,
+    /\.product-shell \.iruka-action-button::before,[\s\S]*?animation: iruka-entry-action-scan 4\.8s ease-in-out infinite;/
+  );
+});
+
+test("product typography previews the intro typeface across text roles", async () => {
+  const [stylesheet, purchaseStyles, sectionStyles] = await Promise.all([
+    readFile(new URL("../src/styles.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/vending-purchase.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/vending-sections.css", import.meta.url), "utf8")
+  ]);
+
+  assert.match(stylesheet, /family=Oxanium:wght@400;500;600;700;800/);
+  assert.match(stylesheet, /--font-sans: "Oxanium", Pretendard,/);
+  assert.match(stylesheet, /--font-display: "Oxanium", Pretendard,/);
+  assert.match(stylesheet, /\.iruka-entry-prompt \{[\s\S]*?font-family: var\(--font-sans\);/);
+  assert.doesNotMatch(stylesheet, /font-family: Pretendard, var\(--font-sans\);/);
+  assert.doesNotMatch(purchaseStyles, /font-family: Pretendard, var\(--font-sans\);/);
+  assert.doesNotMatch(sectionStyles, /font-family: Pretendard, var\(--font-sans\);/);
+});
+
+test("Oxanium typography uses a deliberate supported weight scale", async () => {
+  const sourceDirectory = new URL("../src/", import.meta.url);
+  const cssFiles = (await readdir(sourceDirectory)).filter((file) => file.endsWith(".css"));
+  const stylesheets = await Promise.all(
+    cssFiles.map(async (file) => [file, await readFile(new URL(file, sourceDirectory), "utf8")])
+  );
+
+  for (const [file, stylesheet] of stylesheets) {
+    const weights = [...stylesheet.matchAll(/font-weight:\s*(\d+)/g)].map((match) => Number(match[1]));
+    for (const weight of weights) {
+      assert.ok(
+        [400, 500, 600, 700, 800].includes(weight),
+        `${file} uses unsupported Oxanium weight ${weight}`
+      );
+    }
+  }
+
+  const stylesheet = stylesheets.find(([file]) => file === "styles.css")?.[1] ?? "";
+  assert.match(stylesheet, /\.home-copy p \{[\s\S]*?font-weight: 400;/);
+  assert.match(stylesheet, /\.home-copy > span \{[\s\S]*?font-weight: 600;/);
+  assert.match(stylesheet, /\.product-shell \.iruka-action-button,[\s\S]*?font-weight: 600;/);
+  assert.match(stylesheet, /\.iruka-entry-action-wordmark \{[\s\S]*?font-weight: 800;/);
 });

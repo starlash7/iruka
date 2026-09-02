@@ -84,13 +84,13 @@
 
 .account-inventory-list .vault-row > strong {
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .account-inventory-list .vault-row > span:not(.vault-card-thumb) {
   display: block;
   font-size: 11px;
-  font-weight: 550;
+  font-weight: 500;
 }
 
 .account-inventory-list .vault-row > span:last-child {
@@ -99,7 +99,7 @@
   padding: 5px 8px;
   color: var(--account-action);
   font-size: 10px;
-  font-weight: 650;
+  font-weight: 600;
   border-radius: var(--radius-pill);
   background: #edf5ff;
 }
@@ -118,7 +118,7 @@
 
 .account-inventory-list .vault-empty strong {
   font-size: 15px;
-  font-weight: 550;
+  font-weight: 500;
 }
 
 @media (max-width: 1180px) {

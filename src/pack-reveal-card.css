@@ -99,7 +99,7 @@
   color: #fff;
   font-family: var(--font-display);
   font-size: clamp(36px, 5vw, 58px);
-  font-weight: 560;
+  font-weight: 500;
   background: linear-gradient(145deg, #7ee7ff, #6f8dff 54%, #c8a7ff);
   place-items: center;
 }
@@ -168,7 +168,7 @@
   color: #fff;
   font-family: var(--font-display);
   font-size: clamp(42px, 6vw, 64px);
-  font-weight: 560;
+  font-weight: 500;
   place-items: center;
   background:
     repeating-linear-gradient(

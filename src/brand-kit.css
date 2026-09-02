@@ -27,7 +27,7 @@
   margin: 0;
   color: var(--blue);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.12em;
 }
 
@@ -164,7 +164,7 @@
   margin: 0;
   color: var(--ink);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .brand-kit-asset-meta p,
@@ -187,7 +187,7 @@
   padding: 0 12px;
   color: var(--blue);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400;
   border: 1px solid rgba(22, 119, 255, 0.18);
   border-radius: var(--radius-pill);
   background: var(--sky);

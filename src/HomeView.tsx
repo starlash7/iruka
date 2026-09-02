@@ -3,7 +3,6 @@ import homeIdolStage from "./assets/home-idol-stage-cutout.png";
 import vendingMachineImage from "./assets/iruka-vending-machine.jpg";
 import { HomeDiscovery, type HomeDiscoveryCopy } from "./HomeDiscovery";
 import { HomeImageCarousel } from "./HomeImageCarousel";
-import { IrukaBeam } from "./IrukaBeam";
 import type { MarketplaceBrowseCategory } from "./marketplaceBrowse";
 import type { MarketplaceItem } from "./marketplaceData";
 
@@ -73,11 +72,9 @@ export function HomeView({
             <span>{copy.eyebrow}</span>
             <h2>{copy.rightTitle}</h2>
             <p>{copy.leftBody}</p>
-            <IrukaBeam className="home-primary-beam" variant="action">
-              <button className="iruka-action-button home-primary-action" onClick={onEnterVending} type="button">
-                {copy.action}
-              </button>
-            </IrukaBeam>
+            <button className="iruka-action-button home-primary-action" onClick={onEnterVending} type="button">
+              <span>{copy.action}</span>
+            </button>
             <div className="home-proof">
               <Sparkles size={16} />
               <strong>{copy.proof}</strong>

@@ -282,16 +282,26 @@ test("entering Vending does not scroll to the machine detail", async () => {
   assert.doesNotMatch(chromeSource, /onShowView\("pull", "drops"\)/);
 });
 
-test("home CTA uses a subtle action beam over the primary button surface", async () => {
+test("home CTA uses one intro-style button surface without a nested beam", async () => {
   const [homeSource, stylesheet] = await Promise.all([
     readFile(new URL("../src/HomeView.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/styles.css", import.meta.url), "utf8")
   ]);
 
-  assert.match(homeSource, /<IrukaBeam className="home-primary-beam" variant="action">/);
+  assert.doesNotMatch(homeSource, /IrukaBeam|home-primary-beam/);
   assert.doesNotMatch(homeSource, /ArrowRight/);
-  assert.match(homeSource, /className="iruka-action-button home-primary-action"/);
-  assert.match(stylesheet, /\.home-primary-action/);
+  assert.match(
+    homeSource,
+    /className="iruka-action-button home-primary-action"[\s\S]*?<span>\{copy\.action\}<\/span>/
+  );
+  assert.match(
+    stylesheet,
+    /\.home-primary-action \{[\s\S]*?min-width: 178px;[\s\S]*?border-radius: var\(--radius-lg\);/
+  );
+  assert.match(
+    stylesheet,
+    /\.home-primary-action > span \{[\s\S]*?position: relative;[\s\S]*?z-index: 1;/
+  );
 });
 
 test("post-pull actions use one primary and two secondary Iruka roles", async () => {
@@ -411,6 +421,20 @@ test("odds use bright Iruka rarity colors", async () => {
   assert.match(stylesheet, /\.vending-odds-row\.rarity-epic\s*\{\s*--odds-accent: #f04438;/);
   assert.match(stylesheet, /\.vending-odds-row\.rarity-legendary\s*\{\s*--odds-accent: #f79009;/);
   assert.match(stylesheet, /\.vending-odds-row\.rarity-iruka\s*\{\s*--odds-accent: #1677ff;/);
+});
+
+test("rarity labels keep a stronger product hierarchy", async () => {
+  const [oddsStyles, inventoryStyles] = await Promise.all([
+    readFile(new URL("../src/vending-odds.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/vending-inventory.css", import.meta.url), "utf8")
+  ]);
+
+  assert.match(oddsStyles, /\.vending-odds-row > span \{[\s\S]*?font-weight: 700;/);
+  assert.match(inventoryStyles, /\.vending-rarity-filter \{[\s\S]*?font-weight: 800;/);
+  assert.match(
+    inventoryStyles,
+    /\.vending-card-rarity \{[\s\S]*?font-weight: 800;/
+  );
 });
 
 test("each tier renders its matching vending machine base", () => {
