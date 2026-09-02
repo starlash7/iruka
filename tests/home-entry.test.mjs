@@ -27,6 +27,8 @@ test("home entry presents Play Iruka before the product home", () => {
   );
 
   assert.match(markup, /Play Iruka!/);
+  assert.match(markup, /aria-label="Play Iruka!"/);
+  assert.doesNotMatch(markup, /<span class="sr-only">Play Iruka!<\/span>/);
   assert.match(markup, /iruka-entry-stage/);
   assert.match(markup, /iruka-entry-action/);
   assert.doesNotMatch(markup, /iruka-beam-action|iruka-entry-beam/);
@@ -84,6 +86,18 @@ test("home entry keeps the sky background free of a kinetic grid", async () => {
 
   assert.doesNotMatch(markup, /iruka-entry-grid/);
   assert.doesNotMatch(stylesheet, /\.iruka-entry-grid/);
+});
+
+test("production entry owns the screen-reader utility it renders", async () => {
+  const stylesheet = await readFile(
+    new URL("../src/styles.css", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(
+    stylesheet,
+    /\.sr-only \{[\s\S]*?position: absolute;[\s\S]*?clip: rect\(0, 0, 0, 0\);/
+  );
 });
 
 test("home entry action keeps the shared Iruka glass treatment", async () => {
