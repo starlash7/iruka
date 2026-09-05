@@ -10,6 +10,23 @@ other officially issued fandom and sports collectibles.
 - GIWA Sepolia contract:
   [`0xbB3c...4334`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334)
 
+## Public Access
+
+The website and all 14 documentation pages opened to public access on
+September 5, 2026. Select `Play Iruka` to enter the product, or open
+[`#home`](https://playiruka.space/#home) or
+[`#pull`](https://playiruka.space/#pull) directly. Browsing does not require
+sign-in; account and wallet actions retain their authentication requirements.
+
+All Mintlify navigation groups and the separate pack reveal reference page
+are explicitly public. Website and documentation metadata allow search
+indexing. The production CSP permits the required Privy and WalletConnect
+connections while retaining the other browser security headers.
+
+The release was verified on desktop and mobile for public entry, direct links,
+history navigation, images, wallet options, and the email login screen. Actual
+sign-in and new onchain pulls were not performed during this access check.
+
 ## Product Flow
 
 ```text
