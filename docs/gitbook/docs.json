@@ -25,6 +25,7 @@
     "groups": [
       {
         "group": "Start Here",
+        "public": true,
         "pages": [
           "overview",
           "project/why-fandom-collectibles",
@@ -34,6 +35,7 @@
       },
       {
         "group": "Product",
+        "public": true,
         "pages": [
           "packs/pack-information",
           "product/grading-and-verification",
@@ -44,6 +46,7 @@
       },
       {
         "group": "Trust and Direction",
+        "public": true,
         "pages": [
           "policies/ip-and-listing-policy",
           "roadmap"
@@ -51,6 +54,7 @@
       },
       {
         "group": "Technology",
+        "public": true,
         "pages": [
           "technical/onchain-architecture",
           "technical/giwa-testnet"
@@ -104,7 +108,7 @@
     "indexing": "navigable",
     "metatags": {
       "canonical": "https://docs.playiruka.space",
-      "robots": "noindex, nofollow, noarchive, nosnippet, noimageindex"
+      "robots": "index, follow"
     }
   },
   "search": {

@@ -20,20 +20,20 @@ test("production build disables source maps", async () => {
   assert.match(viteConfig, /sourcemap:\s*false/);
 });
 
-test("production entry does not load the product application bundle", async () => {
+test("public entry loads the product application in every environment", async () => {
   const mainSource = await readProjectFile("src/main.tsx");
 
-  assert.match(mainSource, /import\.meta\.env\.PROD/);
+  assert.doesNotMatch(mainSource, /import\.meta\.env\.PROD|canEnter=\{false\}/);
   assert.match(mainSource, /import\("\.\/app-main"\)/);
   assert.doesNotMatch(mainSource, /from ["']\.\/App["']/);
 });
 
-test("public entry does not describe the private product", async () => {
+test("public entry permits search indexing", async () => {
   const html = await readProjectFile("index.html");
 
   assert.match(
     html,
-    /<meta\s+name="robots"\s+content="noindex, nofollow, noarchive, nosnippet, noimageindex"\s*\/?>/
+    /<meta\s+name="robots"\s+content="index, follow"\s*\/?>/
   );
   assert.doesNotMatch(
     html,
@@ -41,12 +41,14 @@ test("public entry does not describe the private product", async () => {
   );
 });
 
-test("public deployment asks crawlers not to index any route", async () => {
+test("public deployment permits search while excluding API routes", async () => {
   const robots = await readProjectFile("public/robots.txt");
 
   assert.match(robots, /^User-agent:\s*\*$/m);
-  assert.match(robots, /^Content-Signal:\s*ai-train=no, search=no, ai-input=no$/m);
-  assert.match(robots, /^Disallow:\s*\/$/m);
+  assert.match(robots, /^Content-Signal:\s*ai-train=no, search=yes, ai-input=no$/m);
+  assert.match(robots, /^Allow:\s*\/$/m);
+  assert.match(robots, /^Disallow:\s*\/api\/$/m);
+  assert.doesNotMatch(robots, /^Disallow:\s*\/$/m);
 });
 
 test("public deployment sends browser security headers", async () => {
@@ -67,7 +69,7 @@ test("public deployment sends browser security headers", async () => {
   );
   assert.equal(
     getHeader(globalHeaders, "X-Robots-Tag"),
-    "noindex, nofollow, noarchive, nosnippet, noimageindex"
+    "index, follow"
   );
   assert.match(contentSecurityPolicy ?? "", /frame-ancestors 'none'/);
   assert.match(contentSecurityPolicy ?? "", /object-src 'none'/);

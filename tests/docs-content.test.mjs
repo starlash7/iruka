@@ -10,6 +10,7 @@ const docsConfig = JSON.parse(
 const expectedNavigation = [
   {
     group: "Start Here",
+    public: true,
     pages: [
       "overview",
       "project/why-fandom-collectibles",
@@ -19,6 +20,7 @@ const expectedNavigation = [
   },
   {
     group: "Product",
+    public: true,
     pages: [
       "packs/pack-information",
       "product/grading-and-verification",
@@ -29,10 +31,12 @@ const expectedNavigation = [
   },
   {
     group: "Trust and Direction",
+    public: true,
     pages: ["policies/ip-and-listing-policy", "roadmap"],
   },
   {
     group: "Technology",
+    public: true,
     pages: ["technical/onchain-architecture", "technical/giwa-testnet"],
   },
 ];
@@ -46,6 +50,10 @@ async function readDoc(path) {
 
 test("uses the production documentation information architecture", () => {
   assert.deepEqual(docsConfig.navigation.groups, expectedNavigation);
+});
+
+test("the unlisted pack reveal reference is also publicly accessible", async () => {
+  assert.match(await readDoc("packs/pack-reveal"), /^public: true$/m);
 });
 
 test("documentation chrome exposes one Iruka website action per region", () => {
@@ -64,19 +72,18 @@ test("documentation chrome exposes one Iruka website action per region", () => {
   assert.equal(websiteLinks.length, 1);
 });
 
-test("public docs opt out of search and AI crawler indexing", async () => {
+test("public docs permit search while retaining AI usage preferences", async () => {
   const robots = await readFile(new URL("robots.txt", docsRoot), "utf8").catch(
     () => "",
   );
   const robotsMetatag = docsConfig.seo?.metatags?.robots ?? "";
 
-  assert.match(robotsMetatag, /noindex/);
-  assert.match(robotsMetatag, /nofollow/);
-  assert.match(robotsMetatag, /noarchive/);
+  assert.equal(robotsMetatag, "index, follow");
   assert.match(robots, /User-agent:\s*\*/i);
-  assert.match(robots, /Content-Signal:\s*ai-train=no, search=no, ai-input=no/i);
-  assert.match(robots, /Disallow:\s*\//i);
-  assert.doesNotMatch(robots, /ai-train=yes|ai-input=yes|search=yes/i);
+  assert.match(robots, /Content-Signal:\s*ai-train=no, search=yes, ai-input=no/i);
+  assert.match(robots, /^Allow:\s*\/$/m);
+  assert.doesNotMatch(robots, /^Disallow:\s*\/$/m);
+  assert.doesNotMatch(robots, /ai-train=yes|ai-input=yes/i);
 });
 
 test("every navigation page and redirect destination exists", async () => {

@@ -11,17 +11,19 @@ const entrySource = await readFile(
   "utf8"
 );
 
-test("production visitors stay on intro even with a deep link", () => {
-  assert.match(appSource, /shouldShowHomeEntryForEnvironment\(import\.meta\.env\.PROD/);
-  assert.match(appSource, /isIntroOnlyEnvironment\(import\.meta\.env\.PROD\)/);
-  assert.match(appSource, /canEnter=\{!isIntroOnlyEnvironment\(import\.meta\.env\.PROD\)\}/);
+test("public visitors can enter the product and open deep links", () => {
+  assert.match(appSource, /return window\.location\.hash\.length === 0;/);
+  assert.match(appSource, /setShowHomeEntry\(shouldShowHomeEntry\(\)\)/);
+  assert.doesNotMatch(appSource, /isIntroOnlyEnvironment|import\.meta\.env\.PROD/);
   assert.match(
     appSource,
-    /function enterHome\(\) \{[\s\S]*?if \(isIntroOnlyEnvironment\(import\.meta\.env\.PROD\)\) return;/
+    /function enterHome\(\) \{\s*setShowHomeEntry\(false\);/
   );
+  assert.match(appSource, /onEnter=\{enterHome\}/);
 });
 
-test("the intro entry locks production without dimming the product action", () => {
+test("the intro entry is enabled by default and supports an explicit lock", () => {
+  assert.match(entrySource, /canEnter = true/);
   assert.match(entrySource, /canEnter\?: boolean/);
   assert.match(entrySource, /aria-disabled=\{canEnter === false \|\| undefined\}/);
   assert.match(entrySource, /onClick=\{canEnter === false \? undefined : onEnter\}/);

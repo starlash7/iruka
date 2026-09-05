@@ -68,11 +68,10 @@ test("Brand Kit exposes the supplied Iruka assets and palette", () => {
   assert.match(entrySource, /brand-kit\.css/);
 });
 
-test("the public Brand Kit is the only production deep-link exception", () => {
+test("the public Brand Kit remains directly accessible alongside the product", () => {
   assert.match(mainSource, /window\.location\.hash === "#brand-kit"/);
   assert.match(mainSource, /<BrandKitView \/>/);
-  assert.match(mainSource, /if \(import\.meta\.env\.PROD\)/);
-  assert.match(mainSource, /<HomeEntry canEnter=\{false\}/);
+  assert.doesNotMatch(mainSource, /if \(import\.meta\.env\.PROD\)/);
   assert.match(mainSource, /void import\("\.\/app-main"\)/);
 });
 
