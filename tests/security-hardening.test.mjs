@@ -109,6 +109,28 @@ test("Keeper fulfillment rejects foreign production origins", async () => {
   );
 });
 
+test("public wallet login permits Privy's required external connections", async () => {
+  const { headers } = JSON.parse(await readProjectFile("vercel.json"));
+  const policy = getHeader(headers.find((entry) => entry.source === "/(.*)").headers, "Content-Security-Policy");
+  const directives = new Map(policy.split(";").map((directive) => {
+    const [name, ...sources] = directive.trim().split(/\s+/);
+    return [name, sources];
+  }));
+  for (const source of [
+    "https://explorer-api.walletconnect.com",
+    "wss://relay.walletconnect.com",
+    "wss://relay.walletconnect.org",
+    "wss://www.walletlink.org",
+    "https://*.rpc.privy.systems"
+  ]) {
+    assert.ok(directives.get("connect-src").includes(source), source);
+  }
+  for (const source of ["https://verify.walletconnect.com", "https://verify.walletconnect.org"]) {
+    assert.ok(directives.get("frame-src").includes(source), source);
+  }
+  assert.ok(!directives.get("connect-src").includes("*"));
+});
+
 test("server-only credentials are not tracked as environment files", async () => {
   const gitignore = await readProjectFile(".gitignore");
   const vercelIgnore = await readProjectFile(".vercelignore");
