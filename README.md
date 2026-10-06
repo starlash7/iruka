@@ -16,7 +16,10 @@ a result collectors can check, save, and revisit.
 ## The collectible experience
 
 <p align="center">
-  <img src="./src/assets/iruka-vending-machine-debut.png" width="300" alt="Iruka Debut vending machine with original orange foil packs" />
+  <img src="./src/assets/iruka-vending-machine-debut.png" width="24%" alt="Debut — orange Iruka vending machine" />
+  <img src="./src/assets/iruka-vending-machine-stage.png" width="24%" alt="Stage — gold Iruka vending machine" />
+  <img src="./src/assets/iruka-vending-machine-encore.png" width="24%" alt="Encore — blue Iruka vending machine" />
+  <img src="./src/assets/iruka-vending-machine-grail.png" width="24%" alt="Grail — rainbow Iruka vending machine" />
 </p>
 
 **Choose a pack → Check the odds → Open → Reveal → Keep the receipt**
