@@ -58,7 +58,7 @@ It is the Metropolis submission build, targeting **Consumer Products & Payments*
 
 | Deployment | Status | Reference |
 | --- | --- | --- |
-| **Monad Testnet** · `10143` · MON | Code implemented and locally verified; contract deployment and live Pull pending | [Technical status and release gates](./docs/gitbook/technical/monad-testnet.mdx) |
+| **Monad Testnet** · `10143` · MON | Source verified; batch committed; live browser Pull and restored receipt verified | [Technical status and release gates](./docs/gitbook/technical/monad-testnet.mdx) |
 | **GIWA Sepolia** · `91342` · test ETH | Existing source-verified contract and documented successful test pulls; default build | [Contract and receipts](./docs/gitbook/technical/giwa-testnet.mdx) |
 
 The Monad implementation includes:
@@ -70,8 +70,11 @@ The Monad implementation includes:
 - Saved request and fulfillment receipts, restored through the existing Summary
 - Chain-isolated pending requests, transfers and collections
 
-Missing Monad contract configuration disables Pull even in development. No
-Monad address or successful live Pull is published yet. The 100 positions are
+Missing Monad contract configuration disables Pull even in development. The
+[verified Monad contract](https://testnet.monadvision.com/address/0x51fbe474cb6e614dd5a47d3c93486028270212c0)
+is live on testnet; [request #1](https://testnet.monadvision.com/tx/0x47c1e60418ffb23c57432893d03291e0b2c3e59b381ca6a1c1cc920084c50caf)
+and its [fulfillment](https://testnet.monadvision.com/tx/0x364ac9fc19a48e672512d5d82333e475976d27d0910f42960a93cc79283b663a)
+were verified through the deployed browser flow on October 6, 2026. The 100 positions are
 test records, not 100 verified physical cards. GIWA evidence is kept separate.
 
 ## Architecture
@@ -110,8 +113,7 @@ For Monad support in the shared app, set:
 ```dotenv
 VITE_IRUKA_DEPLOYMENT=giwa
 VITE_MONAD_RPC_URL=https://testnet-rpc.monad.xyz
-# Populate with the real contract address after deployment.
-VITE_MONAD_PACK_BATCH_ADDRESS=
+VITE_MONAD_PACK_BATCH_ADDRESS=0x51fbe474cb6e614dd5a47d3c93486028270212c0
 ```
 
 ```bash

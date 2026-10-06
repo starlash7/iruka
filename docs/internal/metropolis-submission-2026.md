@@ -39,16 +39,17 @@ The existing app now supports a header selection for GIWA Sepolia and Monad
 Testnet. `?network=monad#pull` is the intended judging route. Switching reloads
 network-specific clients and state; each chain still requires its own contract,
 manifest and Keeper. Existing GIWA production settings are present in Vercel.
-Monad production configuration and actual Pull evidence remain pending.
+Monad production configuration is installed. Live browser Pull #1 and its
+restored fulfillment receipt are recorded in the Monad technical page.
 
 ## Product Evidence
 
-- [ ] Independently deployed, verified Monad contract and committed batch.
-- [ ] Actual request and fulfillment hashes from the same Monad deployment.
-- [ ] Matching inventory commitment and revealed result.
+- [x] Independently deployed, verified Monad contract and committed batch.
+- [x] Actual request and fulfillment hashes from the same Monad deployment.
+- [x] Matching inventory commitment and revealed result.
 - [ ] Refresh/recovery without another Pull; chain-isolated collection records.
 - [ ] Desktop/mobile product path and existing accessibility controls.
-- [ ] Installed Keeper/manifest/Blob/cron configuration and funded test wallets.
+- [x] Installed Keeper/manifest/Blob/cron configuration and funded test wallets.
 
 The initial scope has 100 test positions, not 100 proven physical cards. Do not
 claim ERC-721 ownership, USDC payments, commercial trading, custody, shipping,

@@ -4,8 +4,9 @@ description: "Review Iruka's independent Monad testnet configuration and deploym
 icon: "blocks"
 ---
 
-> **Status: In validation** - Code is implemented; deployment is pending. No
-> deployed Monad address or successful Pull is published yet.
+> **Status: Live on Monad Testnet** - Source verified, initial batch committed,
+> and browser Pull #1 completed on October 6, 2026. The saved result and its
+> fulfillment receipt were restored after a browser refresh.
 
 ## Deployment Boundary
 
@@ -22,9 +23,9 @@ change together. The interface does not move funds or inventory between chains.
 | Native asset | Test MON |
 | Default RPC | `https://testnet-rpc.monad.xyz` |
 | Explorer | `https://testnet.monadvision.com` |
-| Network link | `https://playiruka.space/?network=monad#pull` (after deployment) |
+| Network link | [Open Monad Vending](https://playiruka.space/?network=monad#pull) |
 | Default without URL selection | `VITE_IRUKA_DEPLOYMENT=giwa` (or omit) |
-| Contract | Not deployed or verified in this release record |
+| Contract | [`0x51fb…12c0`](https://testnet.monadvision.com/address/0x51fbe474cb6e614dd5a47d3c93486028270212c0) · source verified |
 | Batch label | `IRK-MON-2026-001` |
 | Initial test supply | 100 positions |
 | Test price | 0.00001 test MON |
@@ -45,18 +46,25 @@ result and matching event before Reveal. Scheduled recovery operates one initial
 Debut batch; additional batches need a recovery design that resolves global
 request IDs from events.
 
-## Live Release Gates
+## Verified deployment evidence
 
-Before this page can publish a live Monad deployment, the release must provide:
+| Step | Monad receipt |
+| --- | --- |
+| Deploy contract | [Deployment](https://testnet.monadvision.com/tx/0x7d6be7aaaabf6698aa568556889777c942e945cb3109be8c568cdb3b1a75b515) |
+| Configure operator | [Operator](https://testnet.monadvision.com/tx/0x069b745549e45ead51a22a1e4a363c88c98ebf60e6295ba18dda05b423968bc1) |
+| Commit Debut batch | [Batch](https://testnet.monadvision.com/tx/0x63f63e5b1e85543d4728383e2d4f521d5fac5ed4da7a7c582c1dfbcd4920dd20) |
+| Request #1 | [Request](https://testnet.monadvision.com/tx/0x47c1e60418ffb23c57432893d03291e0b2c3e59b381ca6a1c1cc920084c50caf) |
+| Fulfill #1 | [Fulfillment](https://testnet.monadvision.com/tx/0x364ac9fc19a48e672512d5d82333e475976d27d0910f42960a93cc79283b663a) |
 
-- Deployed contract address, verified source and operator configuration receipt
-- Committed batch receipt matching the inventory and odds manifest
-- Successful request and fulfillment receipts from that exact deployment
-- Installed Keeper, encrypted manifest, Blob lease and cron configuration
-- Desktop/mobile product verification and pending-request recovery evidence
+The successful event and `getPull(1)` agree on inventory index 84 and request ID
+1. This leaves 99 unassigned positions in the initial batch. Encrypted manifest,
+Keeper credentials, Blob lease storage and recovery cron are installed in the
+existing Vercel project. Browser verification covered login, test MON payment,
+Skip, Summary, saved collection, refresh restoration and network switching.
 
-Current code and local test results alone do not prove these gates. No Monad
-mint, USDC settlement, commercial trading, custody, shipping or VRF is claimed.
+Local tests cover interrupted-request recovery. A deliberately interrupted live
+request/recovery exercise remains a release check. No Monad mint, USDC settlement,
+commercial trading, custody, shipping or VRF is claimed.
 
 ## Official References
 
