@@ -33,3 +33,4 @@ jobs:
         with:
           version: v1.8.0
       - run: forge test
+      - run: forge test --network monad

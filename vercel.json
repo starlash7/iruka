@@ -1,5 +1,11 @@
 {
   "functions": {
+    "api/monad/fulfill.mjs": {
+      "includeFiles": "server/monad/manifests/**"
+    },
+    "api/monad/recover.mjs": {
+      "includeFiles": "server/monad/manifests/**"
+    },
     "api/giwa/fulfill.mjs": {
       "includeFiles": "server/giwa/manifests/**"
     },
@@ -8,6 +14,10 @@
     }
   },
   "crons": [
+    {
+      "path": "/api/monad/recover",
+      "schedule": "* * * * *"
+    },
     {
       "path": "/api/giwa/recover",
       "schedule": "* * * * *"
@@ -19,7 +29,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://auth.privy.io https://*.privy.io https://accounts.google.com; script-src 'self' https://auth.privy.io https://*.privy.io; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://auth.privy.io https://*.privy.io https://*.rpc.privy.systems https://explorer-api.walletconnect.com wss://relay.walletconnect.com wss://relay.walletconnect.org wss://www.walletlink.org https://sepolia-rpc.giwa.io https://sepolia-explorer.giwa.io https://faucet.giwa.io https://accounts.google.com https://www.googleapis.com https://api.relay.link https://api.testnets.relay.link wss://*.privy.io; frame-src 'self' https://auth.privy.io https://*.privy.io https://verify.walletconnect.com https://verify.walletconnect.org https://accounts.google.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://auth.privy.io https://*.privy.io https://accounts.google.com; script-src 'self' https://auth.privy.io https://*.privy.io; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://auth.privy.io https://*.privy.io https://*.rpc.privy.systems https://explorer-api.walletconnect.com wss://relay.walletconnect.com wss://relay.walletconnect.org wss://www.walletlink.org https://sepolia-rpc.giwa.io https://testnet-rpc.monad.xyz https://sepolia-explorer.giwa.io https://faucet.giwa.io https://accounts.google.com https://www.googleapis.com https://api.relay.link https://api.testnets.relay.link wss://*.privy.io; frame-src 'self' https://auth.privy.io https://*.privy.io https://verify.walletconnect.com https://verify.walletconnect.org https://accounts.google.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",

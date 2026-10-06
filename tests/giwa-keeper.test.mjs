@@ -398,10 +398,22 @@ test("Vercel schedules one idempotent Keeper recovery each minute", async () => 
     "utf8"
   ));
 
-  assert.deepEqual(config.crons, [{
-    path: "/api/giwa/recover",
-    schedule: "* * * * *"
-  }]);
+  assert.ok(config.crons.some((cron) =>
+    cron.path === "/api/giwa/recover" && cron.schedule === "* * * * *"
+  ));
+  assert.ok(config.crons.some((cron) =>
+    cron.path === "/api/monad/recover" && cron.schedule === "* * * * *"
+  ));
+  assert.equal(config.crons.filter((cron) => cron.path === "/api/giwa/recover").length, 1);
+  assert.equal(config.crons.filter((cron) => cron.path === "/api/monad/recover").length, 1);
+  assert.equal(
+    config.functions["api/monad/recover.mjs"].includeFiles,
+    "server/monad/manifests/**"
+  );
+  assert.equal(
+    config.functions["api/monad/fulfill.mjs"].includeFiles,
+    "server/monad/manifests/**"
+  );
   assert.equal(
     config.functions["api/giwa/recover.mjs"].includeFiles,
     "server/giwa/manifests/**"

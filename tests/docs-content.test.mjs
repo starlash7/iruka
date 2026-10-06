@@ -37,7 +37,7 @@ const expectedNavigation = [
   {
     group: "Technology",
     public: true,
-    pages: ["technical/onchain-architecture", "technical/giwa-testnet"],
+    pages: ["technical/onchain-architecture", "technical/giwa-testnet", "technical/monad-testnet"],
   },
 ];
 

@@ -1,0 +1,63 @@
+---
+title: "Monad Testnet"
+description: "Review Iruka's independent Monad testnet configuration and deployment gates."
+icon: "blocks"
+---
+
+> **Status: Planned** - The Monad implementation is being integrated. No
+> deployed Monad address or successful Pull is published yet.
+
+## Deployment Boundary
+
+Iruka's Metropolis scope brings the existing pack-opening flow to Monad
+Testnet. GIWA remains the default deployment and its historical receipts remain
+GIWA evidence. A build selects one deployment; the interface does not move funds
+or inventory between chains.
+
+| Setting | Monad submission target |
+| --- | --- |
+| Network | Monad Testnet |
+| Chain ID | `10143` |
+| Native asset | Test MON |
+| Default RPC | `https://testnet-rpc.monad.xyz` |
+| Explorer | `https://testnet.monadvision.com` |
+| Build selector | `VITE_IRUKA_DEPLOYMENT=monad` |
+| Contract | Not deployed or verified in this release record |
+| Batch label | `IRK-MON-2026-001` |
+| Initial test supply | 100 positions |
+| Test price | 0.00001 test MON |
+
+The 100 positions reuse preview identities to validate the product flow. They
+do not represent proven physical cards, ERC-721 ownership or redemption rights.
+Test MON has no monetary value.
+
+## Configuration
+
+The browser needs its Monad contract address and RPC. Keeper configuration,
+deployer credentials and the manifest encryption key remain server-only.
+The Monad manifest uses independent draw seeds and commitments. Requests,
+collection records and fulfillment leases are isolated from GIWA.
+
+The browser triggers `/api/monad/fulfill`, then confirms the actual contract
+result and matching event before Reveal. Scheduled recovery operates one initial
+Debut batch; additional batches need a recovery design that resolves global
+request IDs from events.
+
+## Live Release Gates
+
+Before this page can publish a live Monad deployment, the release must provide:
+
+- Deployed contract address, verified source and operator configuration receipt
+- Committed batch receipt matching the inventory and odds manifest
+- Successful request and fulfillment receipts from that exact deployment
+- Installed Keeper, encrypted manifest, Blob lease and cron configuration
+- Desktop/mobile product verification and pending-request recovery evidence
+
+Current code and local test results alone do not prove these gates. No Monad
+mint, USDC settlement, commercial trading, custody, shipping or VRF is claimed.
+
+## Official References
+
+- [Monad network information](https://docs.monad.xyz/developer-essentials/testnet)
+- [Foundry deployment guide](https://docs.monad.xyz/guides/deploy-smart-contract/foundry)
+- [Foundry source verification](https://docs.monad.xyz/guides/verify-smart-contract/foundry)
