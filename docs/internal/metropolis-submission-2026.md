@@ -13,7 +13,7 @@ October 6, 2026; this is not a final submission.
 - [ ] Repository access: official Rules require public GitHub source. The form
   also mentions sharing with `metropolis@hackathon.monad.xyz`; clarify with
   organizers if keeping the repository private. The repository is currently private.
-- [ ] Open-source license: MIT candidate prepared locally; owner approval pending.
+- [x] Open-source license: owner approved MIT; `LICENSE` added.
 - [x] External dependencies attributed in `docs/THIRD_PARTY.md`.
 - [x] README identifies the existing foundation, new Monad work and AI assistance.
 - [x] Logo: original Iruka vector rendered at 1024×1024 and saved on platform.

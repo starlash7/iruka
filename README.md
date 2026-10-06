@@ -181,6 +181,12 @@ AI assistance does not replace contract verification, inventory verification or
 human review. The project's direct external packages are attributed in
 [Third-party dependencies](./docs/THIRD_PARTY.md).
 
+## License
+
+Iruka-owned source code is licensed under [MIT](./LICENSE). Third-party packages
+retain their own terms. Brand marks and inventory photographs are not granted
+under the code license; see [attribution](./docs/THIRD_PARTY.md).
+
 ## Security
 
 Never commit deployer, Keeper or manifest keys, Privy secrets, or environment
