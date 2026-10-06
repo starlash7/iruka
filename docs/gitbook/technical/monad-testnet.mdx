@@ -76,14 +76,50 @@ by 08:02:56 UTC, about 21 seconds after the request was confirmed.
 
 `getPull(2)` and its event agree on inventory index 56 and the test-wallet
 collector. This proves scheduled server recovery independently of the browser.
-It does not replace the separate browser interruption and Resume Pull check.
+The browser interruption and Resume Pull check below was verified separately.
+
+### Browser interruption and Resume Pull
+
+Browser request #3 was interrupted by refreshing immediately after the wallet
+finished sending the transaction. The restored app displayed `Resume opening`.
+Resuming required no additional wallet approval or Pull request. Its Reveal
+showed **KiiiKiii · Kya**, Epic, serial `IRK-DEBUT-0015`.
+
+| Step | Monad receipt |
+| --- | --- |
+| Request #3 | [Request](https://testnet.monadvision.com/tx/0x4d8ab616d2337dc6a9914e2b771423ca1ce3eb87b6c83486be7bfb110eb915e9) |
+| Fulfill #3 | [Fulfillment](https://testnet.monadvision.com/tx/0x6849a30f107c6f6110c94c31f08051151d48a74088b2d086f15524f4b85b1b69) |
+
+`getPull(3)` and the event agree on inventory index 14 and the browser collector.
+Continue saved the card; another refresh and reopening it from Account restored
+the same #3 fulfillment receipt. The batch then had 97 positions available.
+The 390×844 mobile path covered Skip, Summary, Continue and saved collection.
 
 Local tests cover interrupted-request recovery, failed collection persistence,
-and wallet-session invalidation. No Monad mint, USDC settlement,
+and wallet-session invalidation. A browser RPC outage also recovered automatically
+without a page refresh after the network was restored. No Monad mint, USDC settlement,
 commercial trading, custody, shipping or VRF is claimed.
+
+## Review report
+
+The [public verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)
+contains 371-test coverage, a read-only receipt verifier, scheduled/browser
+recovery observations and the additional concurrent API test for Pulls #4/#5.
+Both fulfilled exactly once with inventory indices 32 and 37; 95 positions
+remained at the final five-Pull snapshot.
 
 ## Official References
 
 - [Monad network information](https://docs.monad.xyz/developer-essentials/testnet)
 - [Foundry deployment guide](https://docs.monad.xyz/guides/deploy-smart-contract/foundry)
 - [Foundry source verification](https://docs.monad.xyz/guides/verify-smart-contract/foundry)
+
+### Native withdrawal verification
+
+On October 6, browser cancellation/retry completed a 0.001 test MON withdrawal.
+The native form releases its modal layer before Privy approval, and account
+funding actions reject overlap before a transaction hash exists.
+
+- [Successful withdrawal](https://testnet.monadvision.com/tx/0xb26aeb9de8d9c8ce43a43b48eee46049174d65eca8067f408f9f5228075421aa)
+- [Public transfer evidence](https://github.com/starlash7/iruka/blob/monad/docs/evidence/monad-native-transfer.json)
+- [Verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)

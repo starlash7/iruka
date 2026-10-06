@@ -2,12 +2,15 @@
 
 **Collect the moment. Verify the pull.**
 
+[![Verification](https://github.com/starlash7/iruka/actions/workflows/verify.yml/badge.svg?branch=monad)](https://github.com/starlash7/iruka/actions/workflows/verify.yml?query=branch%3Amonad)
+
 A K-pop-first collectible platform built around transparent packs and
 verifiable onchain pulls. Iruka connects the excitement of opening a pack with
 a result collectors can check, save, and revisit.
 
 [![Iruka — original blue vending machine and collectible pack artwork](./public/brand/iruka-x-banner-vending-rush.png)](https://playiruka.space)
 
+[Try Monad](https://playiruka.space/?network=monad#pull) ·
 [Open Iruka](https://playiruka.space/#pull) ·
 [Product docs](https://docs.playiruka.space/overview) ·
 [Monad integration](./docs/gitbook/technical/monad-testnet.mdx) ·
@@ -132,6 +135,10 @@ install those services.
 
 ## Verification
 
+[Full Monad verification report](./docs/MONAD_VERIFICATION.md): **377 passing
+automated tests**, five independently verified live Pulls, browser interruption
+and scheduled recovery, and concurrent fulfillment checks.
+
 ```bash
 npm test
 npm run test:contracts
@@ -139,6 +146,8 @@ VITE_IRUKA_DEPLOYMENT=giwa npm run build
 VITE_IRUKA_DEPLOYMENT=monad npm run build
 # Foundry 1.8+
 forge test --network monad
+# Read-only: no wallet or private manifest required
+node --experimental-strip-types scripts/monad/verify-live-evidence.mjs
 ```
 
 Tests cover deployment isolation, request/event confirmation, delayed recovery,

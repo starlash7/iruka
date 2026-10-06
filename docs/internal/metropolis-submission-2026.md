@@ -46,8 +46,11 @@ restored fulfillment receipt are recorded in the Monad technical page.
 - [x] Independently deployed, verified Monad contract and committed batch.
 - [x] Actual request and fulfillment hashes from the same Monad deployment.
 - [x] Matching inventory commitment and revealed result.
-- [ ] Refresh/recovery without another Pull; chain-isolated collection records.
-- [ ] Desktop/mobile product path and existing accessibility controls.
+- [x] Refresh/recovery without another Pull; chain-isolated collection records.
+  Browser Pull #3 resumed after interruption and restored the same saved receipt.
+  Isolated test-wallet Pull #2 completed through scheduled production recovery.
+- [x] Desktop/mobile product path and existing accessibility controls.
+  Desktop and 390×844 mobile checked, including muted sound, Skip and Continue.
 - [x] Installed Keeper/manifest/Blob/cron configuration and funded test wallets.
 
 The initial scope has 100 test positions, not 100 proven physical cards. Do not
