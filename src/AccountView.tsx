@@ -1,3 +1,4 @@
+import { flushSync } from "react-dom";
 import type { User } from "@privy-io/react-auth";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
@@ -263,7 +264,11 @@ export function AccountView({
         setFundsDialog(undefined);
       }}
       onCloseWithdraw={() => setFundsDialog(undefined)}
-      onConnectExternalWallet={onConnectExternalWallet}
+      onConnectExternalWallet={() => {
+        // Privy's wallet picker is portalled outside the native funding dialog.
+        flushSync(() => setFundsDialog(undefined));
+        onConnectExternalWallet();
+      }}
       onCopyAddress={() => void copyAddress()}
       onRetryBalance={() => void loadBalance()}
       onTransferComplete={() => void loadBalance()}
