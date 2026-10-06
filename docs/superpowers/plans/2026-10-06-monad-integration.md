@@ -29,9 +29,9 @@ values. Never invent deployment evidence. Do not rename the current branch.
 
 - [x] Create frontend and backend Conductor workspaces through CUA.
 - [x] Send approved design, exact ownership and completion evidence requirements.
-- [ ] Review frontend commit, focused test results and both deployment builds.
+- [x] Review frontend commit, focused test results and both deployment builds.
 - [x] Review backend commit, isolation tests and deployment prerequisites.
-- [ ] Integrate reviewed commits into this branch; resolve any conflicts locally.
+- [x] Integrate reviewed commits into this branch; resolve any conflicts locally.
 
 ## Task 3: Shared Configuration
 
@@ -44,9 +44,29 @@ values. Never invent deployment evidence. Do not rename the current branch.
 
 ## Task 4: Integration Evidence
 
-- [ ] Run `npm test`, `npm run test:contracts`, GIWA and Monad builds.
-- [ ] Review desktop/mobile Vending and account states through CUA.
-- [ ] Record screenshots and limitations under `.context/`.
-- [ ] Check live prerequisites without printing private keys.
+- [x] Run `npm test`, `npm run test:contracts`, GIWA and Monad builds.
+- [x] Review desktop/mobile Vending and account states through CUA.
+- [x] Record screenshots and limitations under `.context/`.
+- [x] Check live prerequisites without printing private keys.
 - [ ] Only after actual deployment, publish address and real receipts.
-- [ ] Report remaining user-owned inputs explicitly if runtime validation cannot run.
+- [x] Report remaining user-owned inputs explicitly if runtime validation cannot run.
+
+## Final Integration Evidence
+
+- Frontend `f127b3d` integrated as `51eef92`; backend `fd598ec` as `4340cfd`.
+- `npm test`: 317 passed, zero failures (`.context/final-tests.log`).
+- `npm run test:contracts`: 13 passed; official verified Forge 1.8.0
+  `forge test --network monad`: 13 passed.
+- GIWA and Monad `npm run build`: exit 0 (6.27s / 5.67s).
+- Independent review found the public Monad RPC's 100-block log limit; bounded
+  scans and aged-pending regression resolve it. No outstanding review findings.
+- CUA desktop and 390x844 checks verified labels, odds and disabled Pull without
+  a configured address; screenshots under `.context/`. Authenticated/live flows
+  remain unverified. RPC fixtures are test evidence, not chain receipts.
+- Only `.env.example` is present in this workspace. Live deployment needs
+  funded dedicated deployer/Keeper wallets, Privy configuration, server secrets,
+  Blob storage, HTTPS origin and hosting; no secrets were read or transactions sent.
+- No push, PR, main merge, branch rename or hackathon final submission performed.
+
+The remaining unchecked deployment step is intentionally a live release gate.
+The submission checklist remains in `docs/internal/metropolis-submission-2026.md`.
