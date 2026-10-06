@@ -21,26 +21,26 @@ values. Never invent deployment evidence. Do not rename the current branch.
 - [x] Read every text file in the user's ZIP and adapt the existing-repo rules.
 - [x] Run `npm ci`, `npm test`, `forge test`, `npm run build` before generation.
 - [x] Record baseline: 276 Node tests, 13 contract tests, build exit 0.
-- [ ] Add CI using `.nvmrc`, required Node tests/build and pinned Foundry.
-- [ ] Add PR evidence, Feature Map, decisions and focused manual eval cases.
-- [ ] Verify workflow structure and rule preservation; record actual results.
+- [x] Add CI using `.nvmrc`, required Node tests/build and pinned Foundry.
+- [x] Add PR evidence, Feature Map, decisions and focused manual eval cases.
+- [x] Verify workflow structure and rule preservation; record actual results.
 
 ## Task 2: Independent Implementation
 
 - [x] Create frontend and backend Conductor workspaces through CUA.
 - [x] Send approved design, exact ownership and completion evidence requirements.
 - [ ] Review frontend commit, focused test results and both deployment builds.
-- [ ] Review backend commit, isolation tests and deployment prerequisites.
+- [x] Review backend commit, isolation tests and deployment prerequisites.
 - [ ] Integrate reviewed commits into this branch; resolve any conflicts locally.
 
 ## Task 3: Shared Configuration
 
-- [ ] Add public Monad selector/address/RPC placeholders and server-only secrets
+- [x] Add public Monad selector/address/RPC placeholders and server-only secrets
   to `.env.example`, with an empty contract address until deployment exists.
-- [ ] Add Monad API manifest packaging and cron to `vercel.json`; preserve GIWA.
-- [ ] Permit only the necessary Monad RPC source in CSP.
-- [ ] Adjust cron tests to assert each chain's recovery schedule separately.
-- [ ] Add honest Monad technical status and internal submission checklist.
+- [x] Add Monad API manifest packaging and cron to `vercel.json`; preserve GIWA.
+- [x] Permit only the necessary Monad RPC source in CSP.
+- [x] Adjust cron tests to assert each chain's recovery schedule separately.
+- [x] Add honest Monad technical status and internal submission checklist.
 
 ## Task 4: Integration Evidence
 

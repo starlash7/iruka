@@ -107,7 +107,7 @@ placeholders for server-only values.
 
 ## Monad Metropolis
 
-Monad Testnet integration is being prepared as an additive build deployment.
+Monad Testnet integration is available as an additive build deployment.
 The existing GIWA deployment remains the default. Set
 `VITE_IRUKA_DEPLOYMENT=monad` for the submission build and configure only its
 Monad contract address and RPC. Never reuse GIWA's address or receipts as

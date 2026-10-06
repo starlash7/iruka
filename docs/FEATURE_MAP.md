@@ -9,8 +9,8 @@ collection interface and planned physical collectible operations.
   local collections, Vending, Reveal, Vault and Marketplace interfaces.
 - `api/giwa/` and `server/giwa/`: GIWA Keeper trigger, scheduled recovery,
   encrypted manifest loading and atomic fulfillment leases.
-- `api/monad/`, `server/monad/`, `scripts/monad/`: assigned to the independent
-  Monad backend workstream; implementation and deployment require verification.
+- `api/monad/`, `server/monad/`, `scripts/monad/`: independent Monad
+  Keeper and deployment tooling; live deployment remains unverified.
 - `scripts/giwa/`: prepare, encrypt, commit and fulfill test batches.
 - `contracts/`: chain-neutral `IrukaPackBatch`, deployment script and Foundry tests.
 - `tests/`: Node tests for product wiring, runtime behavior and server operations.
