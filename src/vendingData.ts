@@ -1,3 +1,4 @@
+import { activeDeployment } from "./activeDeployment.ts";
 import type {
   InventoryCard,
   InventoryPage,
@@ -151,7 +152,7 @@ function createPackDetail(fixture: PackFixture): PackDetail {
       total: fixture.total
     }),
     media: packMedia[fixture.tier],
-    batchId: fixture.batchId,
+    batchId: fixture.id === activeDeployment.packId ? activeDeployment.batchLabel : fixture.batchId,
     snapshotAt,
     redemption: { eligible: false, shipmentAvailable: false },
     rarityOdds: fixture.rarityOdds,
@@ -213,6 +214,7 @@ export async function pullPack(
   packId: string,
   { excludedCardIds = [] }: PullPackOptions = {}
 ): Promise<VendingPull> {
+  if (!activeDeployment.allowFixturePull) throw new Error("Monad pulls require onchain fulfillment");
   const detail = await getPackDetail(packId);
   const inventory = inventoryByPack.get(packId);
 

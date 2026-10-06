@@ -2,7 +2,7 @@ import { PrivyProvider, type PrivyClientConfig } from "@privy-io/react-auth";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { giwaSepolia } from "./giwaChain.ts";
+import { activeChain as giwaSepolia } from "./activeDeployment.ts";
 import "./account.css";
 import "./account-profile.css";
 import "./account-balance.css";

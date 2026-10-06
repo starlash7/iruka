@@ -8,7 +8,7 @@ import {
   zeroAddress,
   type Hex
 } from "viem";
-import { giwaSepolia } from "./giwaChain.ts";
+import { activeChain as giwaSepolia } from "./activeDeployment.ts";
 import type { GiwaWallet } from "./giwaPull.ts";
 
 type GiwaTransfer = {

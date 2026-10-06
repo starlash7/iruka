@@ -10,6 +10,7 @@ export function createVendingCardPull(
   const { card } = pull;
 
   return {
+    ...(pull.onchainReceipt ? { onchainReceipt: pull.onchainReceipt } : {}),
     id: pull.id,
     packId: pull.packId,
     category: "K-pop",

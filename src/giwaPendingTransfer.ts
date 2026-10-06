@@ -1,5 +1,5 @@
 import { getAddress, isAddress, isHex, type Address, type Hex } from "viem";
-import { giwaSepolia } from "./giwaChain.ts";
+import { activeChain as giwaSepolia, getDeploymentStorageKey } from "./activeDeployment.ts";
 
 type PendingTransferStorage = Pick<
   Storage,
@@ -22,7 +22,7 @@ type CreatePendingGiwaTransferInput = Pick<
 };
 
 function getPendingTransferKey(walletAddress: string) {
-  return `iruka:giwa-transfer:${giwaSepolia.id}:${walletAddress.toLowerCase()}`;
+  return getDeploymentStorageKey("transfer", walletAddress);
 }
 
 function isTransactionHash(value: unknown): value is Hex {

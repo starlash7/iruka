@@ -1,3 +1,4 @@
+import { activeDeployment } from "./activeDeployment.ts";
 import { useEffect, useState, type FormEvent } from "react";
 import { AccountAssetField } from "./AccountAssetField";
 import type { AccountBalance, AccountCopy } from "./AccountPage";
@@ -109,7 +110,7 @@ export function AccountWithdrawDialog({
                   required
                   value={amount}
                 />
-                <span>ETH</span>
+                <span>{activeDeployment.chain.nativeCurrency.symbol}</span>
               </div>
             </label>
 
@@ -134,7 +135,7 @@ export function AccountWithdrawDialog({
             <dl className="account-transfer-summary">
               <div>
                 <dt>{copy.youWillReceive}</dt>
-                <dd>{trimmedAmount ? `${trimmedAmount} ETH` : "—"}</dd>
+                <dd>{trimmedAmount ? `${trimmedAmount} ${activeDeployment.chain.nativeCurrency.symbol}` : "—"}</dd>
               </div>
               <div>
                 <dt>{copy.networkFee}</dt>

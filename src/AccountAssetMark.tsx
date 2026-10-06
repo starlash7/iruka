@@ -1,11 +1,12 @@
 export type AccountAssetMarkKind =
+  | "monad"
   | "ethereum"
   | "giwa"
   | "upbit"
   | "usdc"
   | "usdt";
 
-const markSources: Record<AccountAssetMarkKind, string> = {
+const markSources: Record<Exclude<AccountAssetMarkKind, "monad">, string> = {
   ethereum: "/assets/wallet-ethereum.png",
   giwa: "/assets/wallet-giwa.png",
   upbit: "/assets/wallet-upbit.png",
@@ -23,11 +24,11 @@ export function AccountAssetMark({
       aria-hidden="true"
       className={`account-asset-mark account-asset-mark-${kind}`}
     >
-      <img
+      {kind === "monad" ? "MON" : <img
         alt=""
         className="account-asset-logo"
         src={markSources[kind]}
-      />
+      />}
     </span>
   );
 }

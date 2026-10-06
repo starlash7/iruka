@@ -1,3 +1,4 @@
+import { activeDeployment } from "./activeDeployment.ts";
 import { ArrowDownToLine, Building2, ChevronRight } from "lucide-react";
 import type { AccountCopy } from "./AccountPage";
 import { AccountAssetMark } from "./AccountAssetMark";
@@ -25,8 +26,8 @@ export function AccountFundingMethods({
           <small>{copy.giwaSepolia} · {copy.testEth}</small>
         </span>
         <span className="account-funding-method-marks">
-          <AccountAssetMark kind="ethereum" />
-          <AccountAssetMark kind="giwa" />
+          <AccountAssetMark kind={activeDeployment.id === "monad" ? "monad" : "ethereum"} />
+          {activeDeployment.id === "giwa" ? <AccountAssetMark kind="giwa" /> : null}
           <ChevronRight size={18} />
         </span>
       </button>

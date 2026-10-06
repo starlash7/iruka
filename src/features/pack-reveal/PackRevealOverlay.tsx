@@ -33,6 +33,7 @@ type PackRevealOverlayProps = {
   onSkip?: () => void;
   packTier: string;
   receipt?: RevealReceipt;
+  summaryOnly?: boolean;
 };
 
 export function PackRevealOverlay({
@@ -42,7 +43,8 @@ export function PackRevealOverlay({
   onComplete,
   onSkip,
   packTier,
-  receipt
+  receipt,
+  summaryOnly = false
 }: PackRevealOverlayProps) {
   const [muted, setMuted] = useState(true);
   const reducedMotion = usePrefersReducedMotion();
@@ -58,6 +60,7 @@ export function PackRevealOverlay({
     scene,
     skip
   } = useRevealTimeline({
+    initialScene: summaryOnly ? "summary" : "sealed",
     muted,
     reducedMotion
   });

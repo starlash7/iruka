@@ -1,3 +1,4 @@
+import { activeDeployment } from "./activeDeployment.ts";
 import { Check, ChevronDown } from "lucide-react";
 import type { AccountCopy } from "./AccountPage";
 import {
@@ -25,15 +26,15 @@ export function AccountAssetField({
 }: AccountAssetFieldProps) {
   const options: AccountAssetOption[] = type === "token"
     ? [
-        { available: true, id: "eth", kind: "ethereum", label: copy.testEth },
+        { available: true, id: "eth", kind: activeDeployment.id === "monad" ? "monad" : "ethereum", label: copy.testEth },
         { available: false, id: "usdc", kind: "usdc", label: "USDC" },
         { available: false, id: "usdt", kind: "usdt", label: "USDT" }
       ]
     : [
         {
           available: true,
-          id: "giwa-sepolia",
-          kind: "giwa",
+          id: activeDeployment.id,
+          kind: activeDeployment.id === "monad" ? "monad" : "giwa",
           label: copy.giwaSepolia
         },
         {

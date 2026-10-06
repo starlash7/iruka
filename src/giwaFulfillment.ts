@@ -1,5 +1,5 @@
 import { createPublicClient, http, type Hex } from "viem";
-import { giwaSepolia } from "./giwaChain.ts";
+import { activeChain as giwaSepolia, activeDeployment } from "./activeDeployment.ts";
 import { giwaPackBatchAbi } from "./giwaPackBatch.ts";
 import {
   getGiwaExplorerTransactionUrl,
@@ -7,6 +7,7 @@ import {
 } from "./giwaPull.ts";
 
 export type GiwaPullFulfillment = {
+  fulfillmentBlockNumber?: bigint;
   explorerUrl: string;
   fulfillmentTransactionHash: Hex;
   inventoryId: Hex;
@@ -45,45 +46,60 @@ export async function readGiwaPullFulfillment(
     functionName: "getPull",
     args: [receipt.requestId]
   });
-  const [, batchId, , drawIndex, inventoryId, inventoryIndex, fulfilled] = pull;
+  const [collector, batchId, , drawIndex, inventoryId, inventoryIndex, fulfilled] = pull;
 
   if (
-    batchId.toLowerCase() !== receipt.batchId.toLowerCase()
+    (receipt.collector && collector.toLowerCase() !== receipt.collector.toLowerCase())
+    || batchId.toLowerCase() !== receipt.batchId.toLowerCase()
     || drawIndex !== receipt.drawIndex
   ) {
     throw new Error("GIWA pull receipt does not match the reserved draw");
   }
   if (!fulfilled) return undefined;
 
-  const events = await publicClient.getContractEvents({
-    address: receipt.contractAddress,
-    abi: giwaPackBatchAbi,
-    eventName: "PullFulfilled",
-    args: { requestId: receipt.requestId },
-    fromBlock: receipt.requestBlockNumber,
-    toBlock: "latest"
-  });
-  const event = events.find(
-    (candidate) =>
-      candidate.args.inventoryId?.toLowerCase() === inventoryId.toLowerCase()
-      && candidate.args.inventoryIndex === inventoryIndex
-  );
-
-  if (!event?.transactionHash) return undefined;
-
-  return {
-    explorerUrl: getGiwaExplorerTransactionUrl(event.transactionHash),
-    fulfillmentTransactionHash: event.transactionHash,
-    inventoryId,
-    inventoryIndex
-  };
+  const latestBlock = activeDeployment.id === "monad"
+    ? await publicClient.getBlockNumber({ cacheTime: 0 }) : undefined;
+  for (let fromBlock = receipt.requestBlockNumber;
+    latestBlock === undefined || fromBlock <= latestBlock;
+    fromBlock += 100n) {
+    // Monad's public RPC accepts at most 100 blocks, including both endpoints.
+    const toBlock = latestBlock === undefined ? "latest"
+      : fromBlock + 99n < latestBlock ? fromBlock + 99n : latestBlock;
+    const events = await publicClient.getContractEvents({
+      address: receipt.contractAddress,
+      abi: giwaPackBatchAbi,
+      eventName: "PullFulfilled",
+      args: { requestId: receipt.requestId },
+      fromBlock,
+      toBlock
+    });
+    const event = events.find(
+      (candidate) =>
+        candidate.args.batchId?.toLowerCase() === receipt.batchId.toLowerCase()
+        && candidate.args.collector?.toLowerCase() === collector.toLowerCase()
+        && candidate.args.inventoryId?.toLowerCase() === inventoryId.toLowerCase()
+        && candidate.args.inventoryIndex === inventoryIndex
+    );
+    if (event?.transactionHash) {
+      return {
+        fulfillmentBlockNumber: event.blockNumber ?? undefined,
+        explorerUrl: getGiwaExplorerTransactionUrl(event.transactionHash),
+        fulfillmentTransactionHash: event.transactionHash,
+        inventoryId,
+        inventoryIndex
+      };
+    }
+    if (latestBlock === undefined) break;
+  }
+  return undefined;
 }
 
 export async function triggerGiwaPullFulfillment(
   receipt: GiwaPullReceipt,
   fetchRequest: KeeperFetch = fetch
 ) {
-  const response = await fetchRequest("/api/giwa/fulfill", {
+  if (receipt.requestId <= 0n) throw new TypeError("A positive request ID is required");
+  const response = await fetchRequest(activeDeployment.fulfillmentPath, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ requestId: receipt.requestId.toString() })

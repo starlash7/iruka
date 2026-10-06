@@ -1,3 +1,4 @@
+import { activeDeployment } from "./activeDeployment.ts";
 import { Check, ChevronLeft, ExternalLink, X } from "lucide-react";
 import type { AccountCopy } from "./AccountPage";
 import type { GiwaTransferReceipt } from "./giwaTransfer";
@@ -100,7 +101,7 @@ export function TransferComplete({
       </span>
       <div>
         <h3>{copy.transferComplete}</h3>
-        <strong>{amount.trim()} ETH</strong>
+        <strong>{amount.trim()} {activeDeployment.chain.nativeCurrency.symbol}</strong>
       </div>
       <div className="account-transfer-complete-actions">
         <a

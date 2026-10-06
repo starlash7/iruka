@@ -1,3 +1,4 @@
+import { activeDeployment } from "./activeDeployment.ts";
 import { Clock3, ExternalLink, PackageOpen, RefreshCw, Truck, Wallet } from "lucide-react";
 import { formatEther } from "viem";
 import { formatUsdc } from "./currency";
@@ -75,7 +76,7 @@ export function VendingPackDetail({
         ? copy.comingSoon
         : copy.openPack;
   const priceLabel = testnetConfigured
-    ? `${testnetPriceWei === undefined ? "—" : formatEther(testnetPriceWei)} test ETH`
+    ? `${testnetPriceWei === undefined ? "—" : formatEther(testnetPriceWei)} test ${activeDeployment.chain.nativeCurrency.symbol}`
     : formatUsdc(pack.priceUsdc);
 
   return (

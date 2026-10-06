@@ -6,16 +6,18 @@ import {
 import { playRevealCue } from "./sounds";
 
 type UseRevealTimelineArgs = {
+  initialScene?: RevealScene;
   muted: boolean;
   reducedMotion: boolean;
 };
 
 export function useRevealTimeline({
+  initialScene = "sealed",
   muted,
   reducedMotion
 }: UseRevealTimelineArgs) {
-  const [scene, setScene] = useState<RevealScene>("sealed");
-  const sceneRef = useRef<RevealScene>("sealed");
+  const [scene, setScene] = useState<RevealScene>(initialScene);
+  const sceneRef = useRef<RevealScene>(initialScene);
   const summaryTimerRef = useRef<number>();
   const mutedRef = useRef(muted);
 

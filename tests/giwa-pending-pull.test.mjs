@@ -78,6 +78,7 @@ test("restores confirmed receipt values without losing bigint precision", () => 
   savePendingGiwaPull(storage, confirmed);
 
   assert.deepEqual(getPendingGiwaPullReceipt(confirmed), {
+    collector: walletAddress,
     batchId,
     contractAddress,
     drawIndex: 19,
