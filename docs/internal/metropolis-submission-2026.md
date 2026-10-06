@@ -2,7 +2,7 @@
 
 Deadline shown in the user's dashboard: October 14, 2026, 12:59 GMT+9.
 Personal registration and Iruka project creation are complete. Final submission
-is still pending. The platform showed 4/6 completed after draft saves on
+is still pending. The platform showed 5/6 completed after draft saves on
 October 6, 2026; this is not a final submission.
 
 ## Submission Checklist
@@ -10,17 +10,16 @@ October 6, 2026; this is not a final submission.
 - [x] Primary track: Consumer Products & Payments saved.
 - [x] Project details: problem, solution, differentiation, first users and reach saved.
 - [x] Repository URL saved: `https://github.com/starlash7/iruka/tree/monad`.
-- [ ] Repository access: official Rules require public GitHub source. The form
-  also mentions sharing with `metropolis@hackathon.monad.xyz`; clarify with
-  organizers if keeping the repository private. The repository is currently private.
+- [x] Repository access: owner approved public visibility on October 6, 2026.
+  `starlash7/iruka` is public; submission source and MIT license are on `monad`.
 - [x] Open-source license: owner approved MIT; `LICENSE` added.
 - [x] External dependencies attributed in `docs/THIRD_PARTY.md`.
 - [x] README identifies the existing foundation, new Monad work and AI assistance.
 - [x] Logo: original Iruka vector rendered at 1024×1024 and saved on platform.
-- [ ] Live product: HTTPS; actually operates on Monad Mainnet or Testnet.
+- [x] Live product saved: `https://playiruka.space/?network=monad#pull`.
 - [ ] Demo video: working product, not slides or code walkthrough; up to 3 minutes.
 - [ ] Pitch video: team, problem and motivation; up to 2 minutes.
-- [ ] Test instructions: access and steps, private to team/judges/organizers.
+- [x] Test instructions saved, including faucet, embedded-wallet funding and receipts.
 - [x] Distinguish pre-existing GIWA work from new work during Sep 1–Oct 13.
 - [ ] Review entry and verify final submitted status before the deadline.
 
