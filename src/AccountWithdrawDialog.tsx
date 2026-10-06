@@ -8,7 +8,7 @@ import {
   TransferStatus,
   type FundsDialogState
 } from "./AccountFundsDialogShared";
-import type { GiwaTransferReceipt } from "./giwaTransfer";
+import { getGiwaTransferInputState, type GiwaTransferReceipt } from "./giwaTransfer";
 import { MarketplaceDialog } from "./MarketplaceDialog";
 
 type AccountWithdrawDialogProps = {
@@ -37,9 +37,10 @@ export function AccountWithdrawDialog({
   const balanceLabel = balance.status === "ready" ? balance.label : "—";
   const trimmedAmount = amount.trim();
   const trimmedDestination = destination.trim();
-  const actionLabel = !trimmedDestination
+  const inputState = getGiwaTransferInputState(trimmedDestination, trimmedAmount);
+  const actionLabel = inputState === "recipient"
     ? copy.enterRecipient
-    : !trimmedAmount
+    : inputState === "amount"
       ? copy.enterAmount
       : copy.withdraw;
 
@@ -55,10 +56,11 @@ export function AccountWithdrawDialog({
 
   async function submitTransfer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (inputState !== "ready" || state.status === "pending") return;
     setState({ status: "pending" });
 
     try {
-      const receipt = await onTransfer(destination, amount);
+      const receipt = await onTransfer(trimmedDestination, trimmedAmount);
       setState({ ...receipt, status: "complete" });
       onTransferComplete();
     } catch {
@@ -93,8 +95,9 @@ export function AccountWithdrawDialog({
             <label className="account-input-field">
               <span>{copy.destination}</span>
               <input
+                disabled={state.status === "pending"}
                 data-autofocus
-                onChange={(event) => setDestination(event.target.value)}
+                onChange={(event) => { setDestination(event.target.value); setState({ status: "idle" }); }}
                 placeholder="0x..."
                 required
                 value={destination}
@@ -104,8 +107,9 @@ export function AccountWithdrawDialog({
               <span>{copy.amount}</span>
               <div className="account-amount-control">
                 <input
+                  disabled={state.status === "pending"}
                   inputMode="decimal"
-                  onChange={(event) => setAmount(event.target.value)}
+                  onChange={(event) => { setAmount(event.target.value); setState({ status: "idle" }); }}
                   placeholder="0.00"
                   required
                   value={amount}
@@ -148,8 +152,7 @@ export function AccountWithdrawDialog({
               className="account-withdraw-submit iruka-action-button"
               disabled={
                 state.status === "pending" ||
-                !trimmedDestination ||
-                !trimmedAmount
+                inputState !== "ready"
               }
               type="submit"
             >

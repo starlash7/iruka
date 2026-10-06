@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-06T08:22:56.122Z",
+  "chainId": 10143,
+  "contract": "0x51fbe474cb6e614dd5a47d3c93486028270212c0",
+  "batch": {
+    "label": "IRK-MON-2026-001",
+    "id": "0xd0659911d7ce234fb81e9c6606249e15f6bfd4e446fd5126a7259c5581db8d1c",
+    "initialSupply": 100,
+    "priceWei": "10000000000000",
+    "inventoryRoot": "0x5a7579c0219c7c1e1551b592710250477f48a3b926daa3e41ca903b7c1ddf2a7",
+    "drawSeedRoot": "0x0846f38dca6652a426aa3a8e93324e456aea665c3eb841d2919519b6e1e9234d"
+  },
+  "setupTransactions": {
+    "deployment": "0x7d6be7aaaabf6698aa568556889777c942e945cb3109be8c568cdb3b1a75b515",
+    "operator": "0x069b745549e45ead51a22a1e4a363c88c98ebf60e6295ba18dda05b423968bc1",
+    "commitBatch": "0x63f63e5b1e85543d4728383e2d4f521d5fac5ed4da7a7c582c1dfbcd4920dd20"
+  },
+  "pulls": [
+    {
+      "requestId": "1",
+      "requestTransactionHash": "0x47c1e60418ffb23c57432893d03291e0b2c3e59b381ca6a1c1cc920084c50caf",
+      "fulfillmentTransactionHash": "0x364ac9fc19a48e672512d5d82333e475976d27d0910f42960a93cc79283b663a",
+      "requestBlock": "68627160",
+      "fulfillmentBlock": "68627274",
+      "collector": "0x3BDBcCD347ace0381cE0fe9ad1026dFB04152D66",
+      "drawIndex": 0,
+      "inventoryIndex": 84,
+      "inventoryId": "0x7124efc2f6aee5ea1b3a2bac3b20f7678cc59f516a4097a7f217afcf15f21301",
+      "scenario": "browser pull and saved receipt restoration"
+    },
+    {
+      "requestId": "2",
+      "requestTransactionHash": "0xf8afc2634116c4506424e91df1e5eda9bbab6d72927f53e6b6c005b28f10d71e",
+      "fulfillmentTransactionHash": "0x83cfd2fa71e6609c7fd52de73e3aa6b423b931bf60cb3ff200d2ecf7677d617a",
+      "requestBlock": "68633150",
+      "fulfillmentBlock": "68633207",
+      "collector": "0x322953D990b6cBDa7Ad3747d305De4BDa0DeCf10",
+      "inventoryIndex": 56,
+      "inventoryId": "0x1c2ff2c94f0b763df38ed76c112d51c2b4590eb1894d684da090bac3aa5524f7",
+      "drawIndex": 1,
+      "scenario": "scheduled recovery without browser API trigger"
+    },
+    {
+      "requestId": "3",
+      "requestTransactionHash": "0x4d8ab616d2337dc6a9914e2b771423ca1ce3eb87b6c83486be7bfb110eb915e9",
+      "fulfillmentTransactionHash": "0x6849a30f107c6f6110c94c31f08051151d48a74088b2d086f15524f4b85b1b69",
+      "requestBlock": "68634287",
+      "fulfillmentBlock": "68634388",
+      "collector": "0x3BDBcCD347ace0381cE0fe9ad1026dFB04152D66",
+      "inventoryIndex": 14,
+      "inventoryId": "0xe2dad64e059be5395c3d992bcbddc1c316628fc8f642522a2a9221fadfa4bbd3",
+      "drawIndex": 2,
+      "scenario": "browser interruption, Resume opening, saved receipt restoration"
+    },
+    {
+      "requestId": "4",
+      "requestTransactionHash": "0xf8c6d3733f1130c12ced4229bfb3f815fc22dd4b8f1cbc75d564a2e7afb5085e",
+      "fulfillmentTransactionHash": "0x4c8769a3783801c4729bcab00ad13e4349b381895eee68d4beb1b540875e8fc9",
+      "requestBlock": "68637081",
+      "fulfillmentBlock": "68637097",
+      "collector": "0x322953D990b6cBDa7Ad3747d305De4BDa0DeCf10",
+      "drawIndex": 3,
+      "inventoryIndex": 32,
+      "inventoryId": "0xb268023ed7cc0893a5dee80b895051cddd0e9b802fc2594e2ebc1fb0ffdd315a",
+      "scenario": "concurrent fulfillment API requests"
+    },
+    {
+      "requestId": "5",
+      "requestTransactionHash": "0x791ea4554835b6c8764ceec26d8b37d24fd914233b91e79e94240df8778b4745",
+      "fulfillmentTransactionHash": "0x94ff63d01bec7e0d52821df55e2ac1ee7b66b0257523d87f6476e3230c6edc27",
+      "requestBlock": "68637084",
+      "fulfillmentBlock": "68637128",
+      "collector": "0x322953D990b6cBDa7Ad3747d305De4BDa0DeCf10",
+      "drawIndex": 4,
+      "inventoryIndex": 37,
+      "inventoryId": "0xa36e39aea50a5738806bf277b098b1f5fd843d14cdfc0128215a7e4923ff6fc7",
+      "scenario": "concurrent fulfillment API requests"
+    }
+  ],
+  "batchSnapshot": {
+    "available": 95,
+    "remaining": 95,
+    "nextDrawIndex": 5,
+    "nextFulfillIndex": 5
+  },
+  "cronObservation": {
+    "timestampUtc": "2026-10-06T08:02:50.154Z",
+    "requestMethod": "GET",
+    "requestPath": "/api/monad/recover",
+    "responseStatusCode": 200
+  },
+  "concurrencyObservation": {
+    "requestIds": [
+      "4",
+      "5"
+    ],
+    "simultaneousHttpCalls": 8,
+    "statuses": [
+      202,
+      200,
+      202,
+      202,
+      202,
+      202,
+      202,
+      202
+    ],
+    "exactlyOneMatchingEventPerRequest": true
+  }
+}

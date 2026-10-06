@@ -41,11 +41,25 @@ const publicClient = createPublicClient({
 
 export function parseGiwaTransferAmount(amount: string) {
   try {
-    const value = parseEther(amount.trim());
+    const normalized = amount.trim();
+    if (!/^(?:\d+(?:\.\d{0,18})?|\.\d{1,18})$/.test(normalized)) throw new Error();
+    const value = parseEther(normalized);
     if (value <= 0n) throw new Error();
     return value;
   } catch {
     throw new TypeError("Enter a valid amount");
+  }
+}
+
+export function getGiwaTransferInputState(destination: string, amount: string) {
+  if (!isAddress(destination.trim()) || destination.trim().toLowerCase() === zeroAddress) {
+    return "recipient";
+  }
+  try {
+    parseGiwaTransferAmount(amount);
+    return "ready";
+  } catch {
+    return "amount";
   }
 }
 
