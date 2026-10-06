@@ -127,6 +127,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const [marketplaceTargetListingId, setMarketplaceTargetListingId] = useState<string>();
   const [sellCardId, setSellCardId] = useState<string>();
   const [isOpening, setIsOpening] = useState(false);
+  const [isTransferring, setIsTransferring] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(walletAuth === "disabled");
   const [giwaWallet, setGiwaWallet] = useState<GiwaWallet>();
   const [externalWallet, setExternalWallet] = useState<GiwaWallet>();
@@ -714,6 +715,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   return (
     <main className="product-shell">
       <AppHeader
+        networkSwitchDisabled={isOpening || Boolean(pendingReveal) || isTransferring}
         activeView={activeView}
         authenticated={isSignedIn}
         connectSignal={walletPromptSignal}
@@ -846,6 +848,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
       {activeView === "account" && walletAuth === "privy" && isSignedIn && giwaWallet ? (
         <AccountView
+          onTransferBusyChange={setIsTransferring}
           cards={collection}
           copy={t.account}
           externalWallet={externalWallet}

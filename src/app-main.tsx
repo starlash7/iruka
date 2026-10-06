@@ -2,7 +2,7 @@ import { PrivyProvider, type PrivyClientConfig } from "@privy-io/react-auth";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { activeChain as giwaSepolia } from "./activeDeployment.ts";
+import { activeChain as giwaSepolia, supportedDeployments } from "./activeDeployment.ts";
 import "./account.css";
 import "./account-profile.css";
 import "./account-balance.css";
@@ -44,7 +44,8 @@ const privyConfig: PrivyClientConfig = {
       createOnLogin: "all-users"
     }
   },
-  supportedChains: [giwaSepolia]
+  defaultChain: giwaSepolia,
+  supportedChains: supportedDeployments.map(({ chain }) => chain)
 };
 
 export function renderApplication(root: HTMLElement) {

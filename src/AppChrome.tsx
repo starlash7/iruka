@@ -1,3 +1,4 @@
+import { NetworkSelector } from "./NetworkSelector";
 import type { Dispatch, SetStateAction } from "react";
 import type { AppCopy } from "./appCopy";
 import type { AppView, Locale, WalletAuthMode } from "./appTypes";
@@ -11,6 +12,7 @@ type ShowView = (view: AppView, targetId?: string) => void;
 
 type AppHeaderProps = {
   activeView: AppView;
+  networkSwitchDisabled?: boolean;
   authenticated: boolean;
   connectSignal: number;
   externalConnectSignal: number;
@@ -26,6 +28,7 @@ type AppHeaderProps = {
 
 export function AppHeader({
   activeView,
+  networkSwitchDisabled = false,
   authenticated,
   connectSignal,
   externalConnectSignal,
@@ -96,6 +99,7 @@ export function AppHeader({
           walletAuth === "privy" && authenticated ? " nav-actions-profile" : ""
         }`}
       >
+        <NetworkSelector disabled={networkSwitchDisabled} locale={locale} />
         {(walletAuth !== "privy" || !authenticated) ? (
           <div className="language-toggle" aria-label={copy.language}>
             {(["en", "ko"] as const).map((item) => (

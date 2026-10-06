@@ -1,3 +1,4 @@
+import { getSelectedNetwork, type NetworkId } from "./networkSelection.ts";
 import { defineChain, isAddress, zeroAddress } from "viem";
 import { getGiwaRpcUrl, giwaSepolia } from "./giwaChain.ts";
 
@@ -21,8 +22,8 @@ function getMonadRpcUrl(value?: string) {
   }
 }
 
-export function getDeployment(env: DeploymentEnvironment = {}) {
-  const id = env.VITE_IRUKA_DEPLOYMENT ?? "giwa";
+export function getDeployment(env: DeploymentEnvironment = {}, selectedNetwork?: NetworkId) {
+  const id = selectedNetwork ?? env.VITE_IRUKA_DEPLOYMENT ?? "giwa";
   if (id !== "giwa" && id !== "monad") {
     throw new Error(`Unknown Iruka deployment: ${id}`);
   }
@@ -54,7 +55,15 @@ export function getDeployment(env: DeploymentEnvironment = {}) {
   } as const;
 }
 
-export const activeDeployment = getDeployment(import.meta.env ?? {});
+const deploymentEnvironment = import.meta.env ?? {};
+export const supportedDeployments = [
+  getDeployment(deploymentEnvironment, "giwa"),
+  getDeployment(deploymentEnvironment, "monad")
+];
+export const activeDeployment = getDeployment(
+  deploymentEnvironment,
+  typeof window === "undefined" ? undefined : getSelectedNetwork(window.location.search)
+);
 export const activeChain = activeDeployment.chain;
 
 export function getDeploymentStorageKey(

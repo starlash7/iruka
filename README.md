@@ -78,7 +78,8 @@ test records, not 100 verified physical cards. GIWA evidence is kept separate.
 
 ![Iruka architecture: request a pull, reserve a draw, fulfill, verify, then reveal and collect](./docs/assets/iruka-architecture.svg)
 
-One build selects one deployment. Monad and GIWA use independent contracts,
+The header selects GIWA Sepolia or Monad Testnet in the same app. Switching
+reloads the selected network, including its wallet configuration and RPC clients. Monad and GIWA use independent contracts,
 batch secrets, API routes and lease namespaces. Physical custody records and
 commercial settlement are outside this testnet contract.
 
@@ -104,10 +105,10 @@ cp .env.example .env.local
 ```
 
 Set `VITE_PRIVY_APP_ID` in `.env.local`; `VITE_PRIVY_CLIENT_ID` is optional.
-For the Monad build, set:
+For Monad support in the shared app, set:
 
 ```dotenv
-VITE_IRUKA_DEPLOYMENT=monad
+VITE_IRUKA_DEPLOYMENT=giwa
 VITE_MONAD_RPC_URL=https://testnet-rpc.monad.xyz
 # Populate with the real contract address after deployment.
 VITE_MONAD_PACK_BATCH_ADDRESS=
@@ -157,6 +158,26 @@ remain planned.
 
 Mintlify source lives in [docs/gitbook](./docs/gitbook). Preview it with
 `mint dev` and validate links with `mint broken-links` from that directory.
+
+## Build window and AI disclosure
+
+Iruka uses an existing foundation. The React/Vite app, Privy authentication,
+Reveal, collection/Vault and Marketplace interfaces, chain-neutral pack contract,
+and GIWA Sepolia deployment were built before this Monad work. The starting
+snapshot is [`c2cce94`](https://github.com/starlash7/iruka/commit/c2cce94).
+
+New work on October 6, 2026 includes the independent Monad build configuration,
+Keeper APIs and deployment tooling, isolated manifests and leases, MON balance
+and transfer routing, chain-isolated recovery/storage, persisted receipt
+provenance, bounded event scans, and integration tests. The `monad` branch
+preserves that history. Final eligibility under the existing-project/build-window
+rules belongs to the organizers; this disclosure is not an eligibility claim.
+
+AI coding assistants accessed through Conductor/Codex were used for planning,
+implementation, tests, reviews, documentation and the architecture diagram.
+AI assistance does not replace contract verification, inventory verification or
+human review. The project's direct external packages are attributed in
+[Third-party dependencies](./docs/THIRD_PARTY.md).
 
 ## Security
 

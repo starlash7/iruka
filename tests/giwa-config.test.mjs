@@ -21,7 +21,8 @@ test("configures Privy for EVM-only GIWA wallets", () => {
 test("limits the GIWA login wallet choices", () => {
   assert.match(source, /loginMethods:\s*\["wallet", "email", "google"\]/);
   assert.match(source, /walletList:\s*\["metamask", "phantom", "okx_wallet"\]/);
-  assert.match(source, /supportedChains:\s*\[giwaSepolia\]/);
+  assert.match(source, /defaultChain:\s*giwaSepolia/);
+  assert.match(source, /supportedChains:\s*supportedDeployments\.map/);
 });
 
 test("allows production to use a dedicated GIWA RPC endpoint", () => {

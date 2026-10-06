@@ -33,6 +33,7 @@ type AccountViewProps = {
   externalWallet?: GiwaWallet;
   inventoryContent: ReactNode;
   onConnectExternalWallet: () => void;
+  onTransferBusyChange?: (busy: boolean) => void;
   wallet: GiwaWallet;
 };
 
@@ -86,6 +87,7 @@ export function createAccountBalanceLoader(
 }
 
 export function AccountView({
+  onTransferBusyChange,
   cards,
   copy,
   externalWallet,
@@ -181,6 +183,7 @@ export function AccountView({
       throw new Error("A GIWA transfer is already confirming");
     }
 
+    onTransferBusyChange?.(true);
     try {
       const receipt = await sendGiwaNativeTransfer(
         sender,
@@ -224,6 +227,8 @@ export function AccountView({
         }
       }
       throw error;
+    } finally {
+      onTransferBusyChange?.(false);
     }
   }
 

@@ -2,28 +2,44 @@
 
 Deadline shown in the user's dashboard: October 14, 2026, 12:59 GMT+9.
 Personal registration and Iruka project creation are complete. Final submission
-still requires the five checklist categories below.
+is still pending. The platform showed 4/6 completed after draft saves on
+October 6, 2026; this is not a final submission.
 
 ## Submission Checklist
 
-- [ ] Primary track: Consumer Products & Payments is the recommended choice.
-- [ ] Project details: problem, solution, differentiation, first users and reach.
-- [ ] Repository: public or shared with `metropolis@hackathon.monad.xyz`.
-- [ ] Logo: PNG/JPG/WEBP; max 2MB; at least 500px; up to 4 million pixels.
+- [x] Primary track: Consumer Products & Payments saved.
+- [x] Project details: problem, solution, differentiation, first users and reach saved.
+- [x] Repository URL saved: `https://github.com/starlash7/iruka/tree/monad`.
+- [ ] Repository access: official Rules require public GitHub source. The form
+  also mentions sharing with `metropolis@hackathon.monad.xyz`; clarify with
+  organizers if keeping the repository private. The repository is currently private.
+- [ ] Open-source license: MIT candidate prepared locally; owner approval pending.
+- [x] External dependencies attributed in `docs/THIRD_PARTY.md`.
+- [x] README identifies the existing foundation, new Monad work and AI assistance.
+- [x] Logo: original Iruka vector rendered at 1024×1024 and saved on platform.
 - [ ] Live product: HTTPS; actually operates on Monad Mainnet or Testnet.
 - [ ] Demo video: working product, not slides or code walkthrough; up to 3 minutes.
 - [ ] Pitch video: team, problem and motivation; up to 2 minutes.
 - [ ] Test instructions: access and steps, private to team/judges/organizers.
-- [ ] Distinguish existing July GIWA work from new work during Sep 1–Oct 13.
+- [x] Distinguish pre-existing GIWA work from new work during Sep 1–Oct 13.
 - [ ] Review entry and verify final submitted status before the deadline.
 
 ## Additional Opportunities
 
-Privy and community bounties are candidates, not confirmed awards or eligibility.
+Privy and Monad Foundation community bounty draft answers are saved.
+They are not confirmed awards or eligibility.
 Theo confirmed BlockchainValley membership. Confirm whether its announced
 $5,000 bounty is separate from the Foundation's community bounty, and whether
 referral or extra application steps apply. One progress update opens mentor
 support. Bounties and the 30-second promotional video are optional.
+
+## Shared deployment
+
+The existing app now supports a header selection for GIWA Sepolia and Monad
+Testnet. `?network=monad#pull` is the intended judging route. Switching reloads
+network-specific clients and state; each chain still requires its own contract,
+manifest and Keeper. Existing GIWA production settings are present in Vercel.
+Monad production configuration and actual Pull evidence remain pending.
 
 ## Product Evidence
 

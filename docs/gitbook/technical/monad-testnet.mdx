@@ -11,8 +11,9 @@ icon: "blocks"
 
 Iruka's Metropolis scope brings the existing pack-opening flow to Monad
 Testnet. GIWA remains the default deployment and its historical receipts remain
-GIWA evidence. A build selects one deployment; the interface does not move funds
-or inventory between chains.
+GIWA evidence. The header selects either testnet within the same deployment. Switching
+reloads the app so wallet configuration, RPC clients and network-specific state
+change together. The interface does not move funds or inventory between chains.
 
 | Setting | Monad submission target |
 | --- | --- |
@@ -21,7 +22,8 @@ or inventory between chains.
 | Native asset | Test MON |
 | Default RPC | `https://testnet-rpc.monad.xyz` |
 | Explorer | `https://testnet.monadvision.com` |
-| Build selector | `VITE_IRUKA_DEPLOYMENT=monad` |
+| Network link | `https://playiruka.space/?network=monad#pull` (after deployment) |
+| Default without URL selection | `VITE_IRUKA_DEPLOYMENT=giwa` (or omit) |
 | Contract | Not deployed or verified in this release record |
 | Batch label | `IRK-MON-2026-001` |
 | Initial test supply | 100 positions |
