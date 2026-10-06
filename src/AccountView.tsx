@@ -119,7 +119,7 @@ export function AccountView({
 
   useEffect(() => {
     const storedTransfer = getPendingGiwaTransfer(
-      window.localStorage,
+      undefined,
       walletAddress
     );
     pendingTransferRef.current = storedTransfer;
@@ -131,7 +131,7 @@ export function AccountView({
       .then(() => {
         if (!active) return;
         clearPendingGiwaTransfer(
-          window.localStorage,
+          undefined,
           walletAddress,
           storedTransfer.transactionHash
         );
@@ -142,7 +142,7 @@ export function AccountView({
       .catch((error) => {
         if (!active || !(error instanceof GiwaTransferRevertedError)) return;
         clearPendingGiwaTransfer(
-          window.localStorage,
+          undefined,
           walletAddress,
           storedTransfer.transactionHash
         );
@@ -197,13 +197,13 @@ export function AccountView({
               walletAddress
             });
             pendingTransferRef.current = transfer;
-            savePendingGiwaTransfer(window.localStorage, transfer);
+            savePendingGiwaTransfer(undefined, transfer);
             setPendingTransfer(transfer);
           }
         }
       );
       clearPendingGiwaTransfer(
-        window.localStorage,
+        undefined,
         walletAddress,
         receipt.transactionHash
       );
@@ -213,12 +213,12 @@ export function AccountView({
     } catch (error) {
       if (error instanceof GiwaTransferRevertedError) {
         const transfer = getPendingGiwaTransfer(
-          window.localStorage,
+          undefined,
           walletAddress
         );
         if (transfer) {
           clearPendingGiwaTransfer(
-            window.localStorage,
+            undefined,
             transfer.walletAddress,
             transfer.transactionHash
           );

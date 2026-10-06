@@ -63,11 +63,11 @@ export function createPendingGiwaTransfer(
 }
 
 export function savePendingGiwaTransfer(
-  storage: PendingTransferStorage,
+  storage: PendingTransferStorage | undefined,
   transfer: PendingGiwaTransfer
 ) {
   try {
-    storage.setItem(
+    (storage ?? window.localStorage).setItem(
       getPendingTransferKey(transfer.walletAddress),
       JSON.stringify(transfer)
     );
@@ -77,14 +77,14 @@ export function savePendingGiwaTransfer(
 }
 
 export function getPendingGiwaTransfer(
-  storage: PendingTransferStorage,
+  storage: PendingTransferStorage | undefined,
   walletAddress: string
 ) {
   if (!isAddress(walletAddress)) return undefined;
   const key = getPendingTransferKey(walletAddress);
 
   try {
-    const storedValue = storage.getItem(key);
+    const storedValue = (storage ?? window.localStorage).getItem(key);
     if (!storedValue) return undefined;
     const transfer: unknown = JSON.parse(storedValue);
     if (
@@ -92,7 +92,7 @@ export function getPendingGiwaTransfer(
       || transfer.walletAddress.toLowerCase() !== walletAddress.toLowerCase()
     ) {
       try {
-        storage.removeItem(key);
+        (storage ?? window.localStorage).removeItem(key);
       } catch {
         // Ignore storage cleanup failures.
       }
@@ -101,7 +101,7 @@ export function getPendingGiwaTransfer(
     return transfer;
   } catch {
     try {
-      storage.removeItem(key);
+      (storage ?? window.localStorage).removeItem(key);
     } catch {
       // Ignore storage cleanup failures.
     }
@@ -110,7 +110,7 @@ export function getPendingGiwaTransfer(
 }
 
 export function clearPendingGiwaTransfer(
-  storage: PendingTransferStorage,
+  storage: PendingTransferStorage | undefined,
   walletAddress: string,
   transactionHash?: Hex
 ) {
@@ -126,7 +126,7 @@ export function clearPendingGiwaTransfer(
   }
 
   try {
-    storage.removeItem(getPendingTransferKey(walletAddress));
+    (storage ?? window.localStorage).removeItem(getPendingTransferKey(walletAddress));
   } catch {
     // The in-memory pending state is cleared by the caller.
   }

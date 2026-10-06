@@ -1,3 +1,4 @@
+import { createPullSession } from "./pullSession.ts";
 import { getStoredRevealReceipt } from "./pullReceiptStorage.ts";
 import { activeDeployment } from "./activeDeployment.ts";
 import { Send, ShieldCheck, Store } from "lucide-react";
@@ -146,6 +147,8 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const revealCompleteRef = useRef(false);
   const revealSectionRef = useRef<HTMLElement | null>(null);
   const wasSignedInRef = useRef(isSignedIn);
+  const pullSession = useMemo(createPullSession, []);
+  const pullSessionVersion = pullSession.updateWallet(isSignedIn ? giwaWallet?.address : undefined);
   const t = copy[locale];
 
   const vendingPacks = packDetails;
@@ -204,18 +207,24 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
 
   useEffect(() => {
     setCollectedSummary(undefined);
+    setActivePull(undefined);
+    setSessionPulls([]);
+    setOnchainPull(undefined);
+    setPendingReveal(undefined);
+    setIsOpening(false);
     if (!giwaWallet) {
+      setCollection([]);
       setPendingGiwaPull(undefined);
       setCollectionOwnerAddress(undefined);
       return;
     }
 
     setCollection(
-      getWalletCardCollection(window.localStorage, giwaWallet.address)
+      getWalletCardCollection(undefined, giwaWallet.address)
     );
     setCollectionOwnerAddress(giwaWallet.address);
     const pendingPull = hasGiwaPullContract
-      ? getPendingGiwaPull(window.localStorage, giwaWallet.address)
+      ? getPendingGiwaPull(undefined, giwaWallet.address)
       : undefined;
     setPendingGiwaPull(pendingPull);
     if (!pendingPull) return;
@@ -240,21 +249,28 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     let active = true;
     setSelectedGiwaBatchState("checking");
     setSelectedGiwaBatchPriceWei(undefined);
-    void getGiwaPackBatchSnapshot(selectedPackDetail).then((snapshot) => {
+    let retryTimer: number | undefined;
+    async function loadBatch() {
+      const snapshot = await getGiwaPackBatchSnapshot(selectedPackDetail);
       if (!active) return;
       setSelectedGiwaBatchState(snapshot.state);
       setSelectedGiwaBatchPriceWei(snapshot.priceWei);
-    });
+      if (snapshot.state === "unavailable") {
+        retryTimer = window.setTimeout(loadBatch, 5000);
+      }
+    }
+    void loadBatch();
 
     return () => {
       active = false;
+      window.clearTimeout(retryTimer);
     };
   }, [hasGiwaPullContract, selectedPackDetail]);
 
   useEffect(() => {
     if (!collectionOwnerAddress) return;
     saveWalletCardCollection(
-      window.localStorage,
+      undefined,
       collectionOwnerAddress,
       collection
     );
@@ -413,6 +429,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         return;
       }
 
+      const isCurrentSession = () => pullSession.isCurrent(pullSessionVersion);
       setIsOpening(true);
       let currentPull = existingOnchainPull;
       let currentPendingPull = existingPendingPull;
@@ -431,24 +448,25 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
                       walletAddress: giwaWallet!.address
                     });
                     currentPendingPull = pendingPull;
-                    savePendingGiwaPull(window.localStorage, pendingPull);
-                    setPendingGiwaPull(pendingPull);
+                    savePendingGiwaPull(undefined, pendingPull);
+                    if (isCurrentSession()) setPendingGiwaPull(pendingPull);
                   }
                 })
           );
         currentPull = { ...pullReceipt, packId: selectedPackDetail.id };
-        setOnchainPull(currentPull);
-
         if (currentPendingPull) {
           currentPendingPull = confirmPendingGiwaPull(
             currentPendingPull,
             pullReceipt
           );
-          savePendingGiwaPull(window.localStorage, currentPendingPull);
-          setPendingGiwaPull(currentPendingPull);
+          savePendingGiwaPull(undefined, currentPendingPull);
+          if (isCurrentSession()) setPendingGiwaPull(currentPendingPull);
         }
 
+        if (!isCurrentSession()) return;
+        setOnchainPull(currentPull);
         const fulfillment = await waitForGiwaPullFulfillment(currentPull);
+        if (!isCurrentSession()) return;
         if (!fulfillment) {
           showNotice(t.feedback.giwaPullPending);
           return;
@@ -465,6 +483,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           t.vending.packLabel
         );
 
+        if (!isCurrentSession()) return;
         revealCompleteRef.current = false;
         revealStarted = true;
         setOnchainPull({ ...currentPull, fulfillment });
@@ -475,23 +494,25 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
           && currentPendingPull
         ) {
           clearPendingGiwaPull(
-            window.localStorage,
+            undefined,
             currentPendingPull.walletAddress,
             currentPendingPull.requestTransactionHash
           );
-          setPendingGiwaPull(undefined);
+          if (isCurrentSession()) setPendingGiwaPull(undefined);
         }
+        if (!isCurrentSession()) return;
         showNotice(
           currentPull || currentPendingPull
             ? t.feedback.giwaResultFailed
             : t.feedback.giwaPullFailed
         );
       } finally {
-        if (!revealStarted) setIsOpening(false);
+        if (isCurrentSession() && !revealStarted) setIsOpening(false);
       }
       return;
     }
 
+    const isCurrentSession = () => pullSession.isCurrent(pullSessionVersion);
     revealCompleteRef.current = false;
     setIsOpening(true);
     try {
@@ -500,12 +521,14 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
         .map((card) => card.inventoryCardId)
         .filter((cardId): cardId is string => Boolean(cardId));
       const pull = await pullPack(selectedPackDetail.id, { excludedCardIds });
+      if (!isCurrentSession()) return;
       setPendingReveal(createVendingCardPull(
         pull,
         selectedPackDetail.name,
         t.vending.packLabel
       ));
     } catch {
+      if (!isCurrentSession()) return;
       setIsOpening(false);
       showNotice(t.vending.loadError);
     }
@@ -518,16 +541,17 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     setActivePull(pendingReveal);
     const nextCollection = collection.some((card) => card.id === pendingReveal.id)
       ? collection : [pendingReveal, ...collection];
-    if (collectionOwnerAddress) {
-      saveWalletCardCollection(window.localStorage, collectionOwnerAddress, nextCollection);
-    }
+    const collectionSaved = collectionOwnerAddress
+      ? saveWalletCardCollection(undefined, collectionOwnerAddress, nextCollection)
+      : false;
     setCollection(nextCollection);
-    setSessionPulls((items) => [pendingReveal, ...items]);
+    setSessionPulls((items) => items.some((card) => card.id === pendingReveal.id)
+      ? items : [pendingReveal, ...items]);
     setPendingReveal(undefined);
     setIsOpening(false);
-    if (pendingGiwaPull) {
+    if (pendingGiwaPull && collectionSaved) {
       clearPendingGiwaPull(
-        window.localStorage,
+        undefined,
         pendingGiwaPull.walletAddress,
         pendingGiwaPull.requestTransactionHash
       );

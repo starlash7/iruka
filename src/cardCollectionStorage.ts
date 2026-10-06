@@ -50,20 +50,20 @@ function isCardPull(value: unknown, walletAddress: string): value is CardPull {
 }
 
 export function getWalletCardCollection(
-  storage: CollectionStorage,
+  storage: CollectionStorage | undefined,
   walletAddress: string
 ): CardPull[] {
   if (!isAddress(walletAddress)) return [];
   const key = getCollectionKey(walletAddress);
 
   try {
-    const storedValue = storage.getItem(key);
+    const storedValue = (storage ?? window.localStorage).getItem(key);
     if (!storedValue) return [];
     const cards: unknown = JSON.parse(storedValue);
     return Array.isArray(cards) ? cards.filter((card) => isCardPull(card, walletAddress)) : [];
   } catch {
     try {
-      storage.removeItem(key);
+      (storage ?? window.localStorage).removeItem(key);
     } catch {
       // Storage availability must not block account rendering.
     }
@@ -72,14 +72,16 @@ export function getWalletCardCollection(
 }
 
 export function saveWalletCardCollection(
-  storage: CollectionStorage,
+  storage: CollectionStorage | undefined,
   walletAddress: string,
   cards: readonly CardPull[]
 ) {
-  if (!isAddress(walletAddress)) return;
+  if (!isAddress(walletAddress)) return false;
   try {
-    storage.setItem(getCollectionKey(walletAddress), JSON.stringify(cards.filter((card) => isCardPull(card, walletAddress))));
+    (storage ?? window.localStorage).setItem(getCollectionKey(walletAddress), JSON.stringify(cards.filter((card) => isCardPull(card, walletAddress))));
+    return true;
   } catch {
-    // The revealed card remains available in memory when storage is blocked.
+    // Retain pending recovery until the card is durably stored.
+    return false;
   }
 }
