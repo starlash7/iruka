@@ -1,3 +1,5 @@
+[![Iruka — collectible packs from a blue vending machine](./public/brand/iruka-x-banner-vending-rush.png)](https://playiruka.space)
+
 # Iruka
 
 Iruka connects fandom collectible pack discovery, onchain pull receipts,
@@ -7,12 +9,62 @@ other officially issued fandom and sports collectibles.
 
 - Product: [playiruka.space](https://playiruka.space)
 - Documentation: [docs.playiruka.space](https://docs.playiruka.space/overview)
-- GIWA Sepolia contract:
-  [`0xbB3c...4334`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334)
+- Networks: [Monad Testnet](./docs/gitbook/technical/monad-testnet.mdx) ·
+  [GIWA Sepolia](./docs/gitbook/technical/giwa-testnet.mdx)
+
+## Monad Metropolis
+
+Iruka brings its K-pop-first collectible experience to Monad: transparent pack
+odds, committed inventory assignment, and verifiable onchain Pull receipts in
+one Vending → Reveal → Collection flow. The Metropolis build targets
+**Monad Testnet**, with **Consumer Products & Payments** as the proposed primary
+track.
+
+| Network | Current status | Evidence |
+| --- | --- | --- |
+| Monad Testnet · `10143` · MON | Integration implemented and locally verified; deployment and live Pull pending | [Monad technical status](./docs/gitbook/technical/monad-testnet.mdx) |
+| GIWA Sepolia · `91342` · test ETH | Existing source-verified contract and documented test pulls; default build | [Contract and receipts](./docs/gitbook/technical/giwa-testnet.mdx) |
+
+### Implemented on Monad
+
+- Privy embedded-wallet configuration, MON balances and native transfers
+- Debut batch `IRK-MON-2026-001`: 100 test positions at 0.00001 test MON
+- Independent Keeper fulfillment, encrypted manifest and atomic recovery leases
+- Canonical contract and event confirmation before Reveal
+- Pending-request recovery with bounded RPC queries and no second purchase
+- Saved request/fulfillment provenance and Explorer links after reload
+- Chain-isolated pending requests, transfers and collections
+
+Missing Monad contract configuration disables Pull, including in development.
+The initial positions are test records, not evidence of physical custody or
+redemption eligibility. Monad deployment needs its own contract, batch seeds,
+funded Keeper and hosting configuration; GIWA receipts remain GIWA evidence.
+
+### Run the Monad build
+
+After the local setup below, set these public values in `.env.local`:
+
+```dotenv
+VITE_IRUKA_DEPLOYMENT=monad
+VITE_MONAD_RPC_URL=https://testnet-rpc.monad.xyz
+# Set the real contract address after deployment.
+VITE_MONAD_PACK_BATCH_ADDRESS=
+```
+
+Run `npm run dev` to preview or `npm run build` to build the selected deployment.
+A complete Pull also requires the same-origin `/api/monad/fulfill` Keeper,
+its encrypted manifest, Blob leases and scheduled recovery. Server-only
+configuration is listed separately in [.env.example](./.env.example).
+
+Deployment tooling lives in [scripts/monad](./scripts/monad), with the
+[approved design](./docs/superpowers/specs/2026-10-06-monad-metropolis-design.md)
+and [submission checklist](./docs/internal/metropolis-submission-2026.md)
+recording the remaining release gates. No Monad address or successful live
+Pull is published yet.
 
 ## Public Access
 
-The website and all 14 documentation pages opened to public access on
+The website and product documentation opened to public access on
 September 5, 2026. Select `Play Iruka` to enter the product, or open
 [`#home`](https://playiruka.space/#home) or
 [`#pull`](https://playiruka.space/#pull) directly. Browsing does not require
@@ -50,6 +102,7 @@ physical card.
 
 **In validation**
 
+- Monad Testnet deployment and live end-to-end Pull verification
 - Physical inventory sourcing, intake, verification, custody, and grading
 - Market-value methodology and shipping operations
 
@@ -69,12 +122,12 @@ are live. The detailed status and operating boundaries are maintained in the
 ```text
 React + Vite
   |-- Privy authentication and embedded wallet
-  |-- viem GIWA Sepolia client
+  |-- build-time Monad Testnet or GIWA Sepolia viem client
   |-- IrukaPackBatch request and receipt reads
   |
 Vercel API
-  |-- authenticated Keeper fulfillment
-  |-- scheduled pending-request recovery
+  |-- independent Monad and GIWA Keeper fulfillment
+  |-- chain-scoped leases and scheduled pending-request recovery
   |
 Mintlify
   `-- product, custody, policy, and contract documentation
@@ -84,6 +137,7 @@ Mintlify
 reserves one position per request, and verifies the configured Keeper's
 committed server-seed proof before assignment. Contract behavior, deployment
 transactions, and current limitations are documented in
+[Monad Testnet](./docs/gitbook/technical/monad-testnet.mdx) and
 [GIWA Contracts](./docs/gitbook/technical/giwa-testnet.mdx).
 
 ## Local Setup
@@ -102,22 +156,9 @@ npm run dev
 ```
 
 Set `VITE_PRIVY_APP_ID` in `.env.local`. `VITE_PRIVY_CLIENT_ID` is optional.
-The checked-in `.env.example` contains the public GIWA configuration and empty
-placeholders for server-only values.
-
-## Monad Metropolis
-
-Monad Testnet integration is available as an additive build deployment.
-The existing GIWA deployment remains the default. Set
-`VITE_IRUKA_DEPLOYMENT=monad` for the submission build and configure only its
-Monad contract address and RPC. Never reuse GIWA's address or receipts as
-Monad evidence.
-
-The implementation scope and release checks are recorded in the
-[Monad design](./docs/superpowers/specs/2026-10-06-monad-metropolis-design.md).
-No Monad address or successful Pull is claimed until deployment and verification
-produce real receipts. Commercial payments, custody and redemption remain
-outside this adaptation.
+The checked-in `.env.example` defaults to GIWA and includes separate Monad
+configuration and empty placeholders for server-only values. Set the deployment
+selector to `monad` to use the Monad configuration above.
 
 ## Verification
 
@@ -125,9 +166,10 @@ outside this adaptation.
 npm test
 npm run test:contracts
 npm run build
+VITE_IRUKA_DEPLOYMENT=monad npm run build
 ```
 
-The browser tests cover authentication wiring, Vending data, GIWA request and
+The browser tests cover authentication wiring, Vending data, Monad and GIWA request and
 recovery behavior, reveal state, account inventory, Marketplace, locale
 persistence, and responsive layout. Foundry tests cover contract permissions,
 commitments, request fulfillment, and concurrent pull behavior.
