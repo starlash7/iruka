@@ -90,7 +90,7 @@ transactions, and current limitations are documented in
 
 Requirements:
 
-- Node.js `20.18.2` from [.nvmrc](./.nvmrc)
+- Node.js `24.14.0` from [.nvmrc](./.nvmrc)
 - npm
 - Foundry for Solidity tests and contract operations
 
@@ -104,6 +104,20 @@ npm run dev
 Set `VITE_PRIVY_APP_ID` in `.env.local`. `VITE_PRIVY_CLIENT_ID` is optional.
 The checked-in `.env.example` contains the public GIWA configuration and empty
 placeholders for server-only values.
+
+## Monad Metropolis
+
+Monad Testnet integration is being prepared as an additive build deployment.
+The existing GIWA deployment remains the default. Set
+`VITE_IRUKA_DEPLOYMENT=monad` for the submission build and configure only its
+Monad contract address and RPC. Never reuse GIWA's address or receipts as
+Monad evidence.
+
+The implementation scope and release checks are recorded in the
+[Monad design](./docs/superpowers/specs/2026-10-06-monad-metropolis-design.md).
+No Monad address or successful Pull is claimed until deployment and verification
+produce real receipts. Commercial payments, custody and redemption remain
+outside this adaptation.
 
 ## Verification
 
