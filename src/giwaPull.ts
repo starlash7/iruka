@@ -47,6 +47,7 @@ type GiwaPullOptions = {
 export type GiwaPackBatchState = "checking" | "live" | "sold-out" | "unavailable";
 
 export type GiwaPackBatchSnapshot = {
+  available?: number;
   priceWei?: bigint;
   state: Exclude<GiwaPackBatchState, "checking">;
 };
@@ -106,6 +107,7 @@ export async function getGiwaPackBatchSnapshot(
     );
     const priceWei = typeof batch[3] === "bigint" ? batch[3] : undefined;
     return {
+      available: batch[1],
       priceWei,
       state: batch[1] > 0 ? "live" : "sold-out"
     };

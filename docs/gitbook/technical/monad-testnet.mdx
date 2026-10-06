@@ -57,13 +57,29 @@ request IDs from events.
 | Fulfill #1 | [Fulfillment](https://testnet.monadvision.com/tx/0x364ac9fc19a48e672512d5d82333e475976d27d0910f42960a93cc79283b663a) |
 
 The successful event and `getPull(1)` agree on inventory index 84 and request ID
-1. This leaves 99 unassigned positions in the initial batch. Encrypted manifest,
+1. After this first Pull, 99 unassigned positions remained in the initial batch. Encrypted manifest,
 Keeper credentials, Blob lease storage and recovery cron are installed in the
 existing Vercel project. Browser verification covered login, test MON payment,
 Skip, Summary, saved collection, refresh restoration and network switching.
 
-Local tests cover interrupted-request recovery. A deliberately interrupted live
-request/recovery exercise remains a release check. No Monad mint, USDC settlement,
+### Scheduled recovery without a browser trigger
+
+On October 6, a separate test wallet submitted request #2 without calling either
+fulfillment or recovery API. The production cron invoked `/api/monad/recover`
+with a successful response at 08:02:50 UTC. The matching fulfillment was observed
+by 08:02:56 UTC, about 21 seconds after the request was confirmed.
+
+| Step | Monad receipt |
+| --- | --- |
+| Request #2 | [Request](https://testnet.monadvision.com/tx/0xf8afc2634116c4506424e91df1e5eda9bbab6d72927f53e6b6c005b28f10d71e) |
+| Fulfill #2 | [Fulfillment](https://testnet.monadvision.com/tx/0x83cfd2fa71e6609c7fd52de73e3aa6b423b931bf60cb3ff200d2ecf7677d617a) |
+
+`getPull(2)` and its event agree on inventory index 56 and the test-wallet
+collector. This proves scheduled server recovery independently of the browser.
+It does not replace the separate browser interruption and Resume Pull check.
+
+Local tests cover interrupted-request recovery, failed collection persistence,
+and wallet-session invalidation. No Monad mint, USDC settlement,
 commercial trading, custody, shipping or VRF is claimed.
 
 ## Official References

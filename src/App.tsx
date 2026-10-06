@@ -136,6 +136,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
   const [pendingGiwaPull, setPendingGiwaPull] = useState<PendingGiwaPull>();
   const [selectedGiwaBatchState, setSelectedGiwaBatchState] =
     useState<GiwaPackBatchState>("checking");
+  const [selectedGiwaBatchAvailable, setSelectedGiwaBatchAvailable] = useState<number>();
   const [selectedGiwaBatchPriceWei, setSelectedGiwaBatchPriceWei] =
     useState<bigint>();
   const [walletPromptSignal, setWalletPromptSignal] = useState(0);
@@ -243,18 +244,21 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
     ) {
       setSelectedGiwaBatchState("unavailable");
       setSelectedGiwaBatchPriceWei(undefined);
+      setSelectedGiwaBatchAvailable(undefined);
       return;
     }
 
     let active = true;
     setSelectedGiwaBatchState("checking");
     setSelectedGiwaBatchPriceWei(undefined);
+    setSelectedGiwaBatchAvailable(undefined);
     let retryTimer: number | undefined;
     async function loadBatch() {
       const snapshot = await getGiwaPackBatchSnapshot(selectedPackDetail);
       if (!active) return;
       setSelectedGiwaBatchState(snapshot.state);
       setSelectedGiwaBatchPriceWei(snapshot.priceWei);
+      setSelectedGiwaBatchAvailable(snapshot.available);
       if (snapshot.state === "unavailable") {
         retryTimer = window.setTimeout(loadBatch, 5000);
       }
@@ -265,7 +269,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
       active = false;
       window.clearTimeout(retryTimer);
     };
-  }, [hasGiwaPullContract, selectedPackDetail]);
+  }, [hasGiwaPullContract, selectedPackDetail, onchainPull?.requestId]);
 
   useEffect(() => {
     if (!collectionOwnerAddress) return;
@@ -773,6 +777,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
               openPack: t.vending.openPack,
               opening: t.hero.opening,
               packLabel: t.vending.packLabel,
+              remaining: t.hero.remaining,
               resumeOpening: t.vending.resumeOpening
             },
             inventory: {
@@ -849,6 +854,7 @@ function App({ walletAuth = "disabled" }: { walletAuth?: WalletAuthMode }) {
             && selectedPackDetail.id === activeGiwaPackId
           }
           testnetPriceWei={selectedGiwaBatchPriceWei}
+          testnetAvailable={selectedGiwaBatchAvailable}
           walletRequired={walletRequired}
         />
       ) : null}
