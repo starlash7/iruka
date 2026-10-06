@@ -12,11 +12,11 @@ export function assertMonadForgeVersion(version) {
 export async function compileMonadContract() {
   const {stdout} = await run("forge", ["--version"]);
   assertMonadForgeVersion(stdout);
-  await run("forge", ["build", "--network", "monad"], {maxBuffer: 10 * 1024 * 1024});
+  await run("forge", ["build"], {maxBuffer: 10 * 1024 * 1024});
 }
 
 export async function verifyMonadContract(address) {
   await run("forge", ["verify-contract", address, "contracts/src/IrukaPackBatch.sol:IrukaPackBatch",
-    "--network", "monad", "--chain", "10143", "--verifier", "sourcify",
+    "--chain", "10143", "--verifier", "sourcify",
     "--verifier-url", "https://sourcify-api-monad.blockvision.org/", "--watch"], {maxBuffer: 10 * 1024 * 1024});
 }
