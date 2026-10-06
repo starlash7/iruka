@@ -104,6 +104,16 @@ flowchart TD
     App -->|"2. Trigger fulfillment"| Keeper
     Keeper -->|"3. Submit committed proofs"| Contract
     Contract -->|"4. Confirm result + event"| App
+
+    classDef product fill:#FFFFFF,stroke:#1677FF,color:#101828,stroke-width:2px
+    classDef proof fill:#1677FF,stroke:#0B63F6,color:#FFFFFF,stroke-width:2px
+    classDef service fill:#FFFFFF,stroke:#20C7DF,color:#101828
+    class Wallet,App,Collection product
+    class Contract,Keeper proof
+    class Manifest,Lease,Cron service
+    style Browser fill:#F4F8FF,stroke:#BDD4FF,color:#101828
+    style Chain fill:#EAF4FF,stroke:#BDD4FF,color:#101828
+    style Server fill:#F4F8FF,stroke:#BDD4FF,color:#101828
 ```
 
 One build selects one deployment. Monad and GIWA use independent contracts,
