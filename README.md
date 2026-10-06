@@ -76,45 +76,7 @@ test records, not 100 verified physical cards. GIWA evidence is kept separate.
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    subgraph Browser["Collector experience · React + Vite"]
-        Wallet["Privy embedded EVM wallet"]
-        App["Vending · Pull · Reveal"]
-        Collection["Collection + saved receipts"]
-        Wallet --> App
-        App --> Collection
-    end
-
-    subgraph Chain["Selected EVM network · Monad Testnet or GIWA Sepolia"]
-        Contract["IrukaPackBatch<br/>Batch commitments · reserved draws · proof checks"]
-    end
-
-    subgraph Server["Keeper operations · Vercel"]
-        Keeper["Same-origin fulfillment API"]
-        Manifest["Encrypted batch manifest"]
-        Lease["Atomic Blob lease<br/>Chain + contract + request"]
-        Cron["Authenticated scheduled recovery"]
-        Manifest --> Keeper
-        Keeper <--> Lease
-        Cron --> Keeper
-    end
-
-    App -->|"1. Request a pull"| Contract
-    App -->|"2. Trigger fulfillment"| Keeper
-    Keeper -->|"3. Submit committed proofs"| Contract
-    Contract -->|"4. Confirm result + event"| App
-
-    classDef product fill:#FFFFFF,stroke:#1677FF,color:#101828,stroke-width:2px
-    classDef proof fill:#1677FF,stroke:#0B63F6,color:#FFFFFF,stroke-width:2px
-    classDef service fill:#FFFFFF,stroke:#20C7DF,color:#101828
-    class Wallet,App,Collection product
-    class Contract,Keeper proof
-    class Manifest,Lease,Cron service
-    style Browser fill:#F4F8FF,stroke:#BDD4FF,color:#101828
-    style Chain fill:#EAF4FF,stroke:#BDD4FF,color:#101828
-    style Server fill:#F4F8FF,stroke:#BDD4FF,color:#101828
-```
+![Iruka architecture: request a pull, reserve a draw, fulfill, verify, then reveal and collect](./docs/assets/iruka-architecture.svg)
 
 One build selects one deployment. Monad and GIWA use independent contracts,
 batch secrets, API routes and lease namespaces. Physical custody records and

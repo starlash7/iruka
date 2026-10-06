@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title description">
+  <title id="title">Iruka: request, reserve, fulfill, verify, reveal</title>
+  <desc id="description">A collector requests a pull with a Privy wallet. IrukaPackBatch reserves a draw. The Keeper submits committed proofs, using an encrypted manifest, atomic lease and scheduled recovery. The browser verifies the contract result and matching event, then reveals the card and saves its receipts. Each build selects Monad Testnet or GIWA Sepolia.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M1 1 6 4 1 7" fill="none" stroke="#1677FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect width="1200" height="560" rx="24" fill="#F4F8FF"/>
+  <g font-family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif">
+    <text x="40" y="57" fill="#101828" font-size="28" font-weight="700">One pull. A verifiable result.</text>
+    <text x="40" y="88" fill="#667085" font-size="16">From wallet request to a revealed card and saved receipt.</text>
+    <text x="1160" y="56" text-anchor="end" fill="#1677FF" font-size="14" font-weight="600">IRUKA / ARCHITECTURE</text>
+
+    <g fill="#FFFFFF" stroke="#D7E6FA" stroke-width="1.5">
+      <rect x="32" y="145" width="208" height="174" rx="22"/>
+      <rect x="264" y="145" width="208" height="174" rx="22"/>
+      <rect x="496" y="145" width="208" height="174" rx="22"/>
+      <rect x="728" y="145" width="208" height="174" rx="22"/>
+      <rect x="960" y="145" width="208" height="174" rx="22"/>
+    </g>
+    <g fill="#EAF4FF">
+      <rect x="52" y="163" width="42" height="28" rx="14"/>
+      <rect x="284" y="163" width="42" height="28" rx="14"/>
+      <rect x="516" y="163" width="42" height="28" rx="14"/>
+      <rect x="748" y="163" width="42" height="28" rx="14"/>
+      <rect x="980" y="163" width="42" height="28" rx="14"/>
+    </g>
+    <g fill="#1677FF" font-size="13" font-weight="700" text-anchor="middle">
+      <text x="73" y="182">01</text><text x="305" y="182">02</text><text x="537" y="182">03</text><text x="769" y="182">04</text><text x="1001" y="182">05</text>
+    </g>
+    <g stroke="#1677FF" stroke-width="1.5" marker-end="url(#arrow)">
+      <path d="M244 232 H258"/><path d="M476 232 H490"/><path d="M708 232 H722"/><path d="M940 232 H954"/>
+    </g>
+    <g fill="#101828" font-size="19" font-weight="650">
+      <text x="52" y="225">Request pull</text>
+      <text x="284" y="225">Reserve draw</text>
+      <text x="516" y="225">Fulfill request</text>
+      <text x="748" y="225">Verify result</text>
+      <text x="980" y="225">Reveal + collect</text>
+    </g>
+    <g fill="#667085" font-size="14">
+      <text x="52" y="253">Privy embedded wallet</text>
+      <text x="52" y="274">Collector confirms</text>
+      <text x="284" y="253">IrukaPackBatch</text>
+      <text x="284" y="274">One reserved position</text>
+      <text x="516" y="253">Committed seed</text>
+      <text x="516" y="274">+ inventory proof</text>
+      <text x="748" y="253">Contract result</text>
+      <text x="748" y="274">+ matching event</text>
+      <text x="980" y="253">Assigned card</text>
+      <text x="980" y="274">+ saved Explorer receipt</text>
+    </g>
+    <g fill="#1677FF" font-size="10" font-weight="700" letter-spacing="1">
+      <text x="52" y="299">BROWSER / WALLET</text>
+      <text x="284" y="299">ONCHAIN CONTRACT</text>
+      <text x="516" y="299">KEEPER / VERCEL</text>
+      <text x="748" y="299">BROWSER / RPC</text>
+      <text x="980" y="299">BROWSER / COLLECTION</text>
+    </g>
+
+    <path d="M600 367 V327" fill="none" stroke="#1677FF" stroke-width="1.5" stroke-dasharray="4 5" marker-end="url(#arrow)"/>
+    <rect x="324" y="368" width="552" height="103" rx="20" fill="#EAF4FF" stroke="#D7E6FA"/>
+    <text x="346" y="397" fill="#1677FF" font-size="13" font-weight="600">Keeper operations</text>
+    <g fill="#FFFFFF">
+      <rect x="344" y="412" width="164" height="36" rx="12"/>
+      <rect x="518" y="412" width="164" height="36" rx="12"/>
+      <rect x="692" y="412" width="164" height="36" rx="12"/>
+    </g>
+    <g fill="#101828" font-size="13" text-anchor="middle">
+      <text x="426" y="435">Encrypted manifest</text>
+      <text x="600" y="435">Atomic request lease</text>
+      <text x="774" y="435">Cron recovery</text>
+    </g>
+    <text x="600" y="519" text-anchor="middle" fill="#667085" font-size="14">Monad Testnet or GIWA Sepolia · One network per build</text>
+  </g>
+</svg>
