@@ -1,3 +1,4 @@
+import { flushSync } from "react-dom";
 import { activeDeployment } from "./activeDeployment.ts";
 import { useEffect, useState, type FormEvent } from "react";
 import { AccountAssetField } from "./AccountAssetField";
@@ -57,7 +58,8 @@ export function AccountWithdrawDialog({
   async function submitTransfer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (inputState !== "ready" || state.status === "pending") return;
-    setState({ status: "pending" });
+    // Release the native top layer before Privy opens its approval portal.
+    flushSync(() => setState({ status: "pending" }));
 
     try {
       const receipt = await onTransfer(trimmedDestination, trimmedAmount);
@@ -73,7 +75,7 @@ export function AccountWithdrawDialog({
       className="account-funds-dialog"
       labelId="account-withdraw-title"
       onRequestClose={onClose}
-      open={open}
+      open={open && state.status !== "pending"}
     >
       <div className="account-funds-panel">
         <FundsDialogHeader

@@ -67,9 +67,28 @@ export async function verifyLiveEvidence(client, evidence) {
     available: batch[1], remaining: batch[2], nextDrawIndex: batch[7], nextFulfillIndex: batch[8] };
 }
 
+export async function verifyNativeTransferEvidence(client, evidence) {
+  assert.equal(evidence.chainId, 10143, 'Native evidence must describe Monad Testnet');
+  assert.equal(await client.getChainId(), evidence.chainId, 'RPC chain differs');
+  const [receipt, transaction] = await Promise.all([
+    client.getTransactionReceipt({ hash: evidence.transactionHash }),
+    client.getTransaction({ hash: evidence.transactionHash })
+  ]);
+  assert.equal(receipt.status, 'success', 'Native transfer receipt failed');
+  assert.equal(normalize(receipt.transactionHash), normalize(evidence.transactionHash), 'Native receipt hash differs');
+  assert.equal(normalize(transaction.hash), normalize(evidence.transactionHash), 'Native transaction hash differs');
+  assert.equal(receipt.blockNumber.toString(), evidence.blockNumber, 'Native receipt block differs');
+  assert.equal(normalize(transaction.from), normalize(evidence.from), 'Native sender differs');
+  assert.equal(normalize(transaction.to), normalize(evidence.to), 'Native recipient differs');
+  assert.equal(transaction.value.toString(), evidence.valueWei, 'Native value differs');
+  return evidence.transactionHash;
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const evidence = JSON.parse(await readFile(new URL('../../docs/evidence/monad-testnet.json', import.meta.url), 'utf8'));
   const client = createPublicClient({ chain: monadTestnet, transport: http(process.env.MONAD_TESTNET_RPC_URL ?? 'https://testnet-rpc.monad.xyz') });
   const result = await verifyLiveEvidence(client, evidence);
-  console.log(JSON.stringify({ status: 'verified', observedAt: new Date().toISOString(), ...result }, null, 2));
+  const nativeEvidence = JSON.parse(await readFile(new URL('../../docs/evidence/monad-native-transfer.json', import.meta.url), 'utf8'));
+  const verifiedNativeTransfer = await verifyNativeTransferEvidence(client, nativeEvidence);
+  console.log(JSON.stringify({ verifiedNativeTransfer, status: 'verified', observedAt: new Date().toISOString(), ...result }, null, 2));
 }

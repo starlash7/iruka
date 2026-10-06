@@ -1,0 +1,12 @@
+{
+  "chainId": 10143,
+  "transactionHash": "0xb26aeb9de8d9c8ce43a43b48eee46049174d65eca8067f408f9f5228075421aa",
+  "blockNumber": "68642811",
+  "from": "0x3bdbccd347ace0381ce0fe9ad1026dfb04152d66",
+  "to": "0x322953d990b6cbda7ad3747d305de4bda0decf10",
+  "valueWei": "1000000000000000",
+  "status": "success",
+  "observedAt": "2026-10-06T08:52:24.631Z",
+  "scenario": "Browser native Withdraw after cancelling and retrying Privy approval",
+  "economicValue": "Test MON only"
+}

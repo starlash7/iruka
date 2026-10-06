@@ -100,6 +100,8 @@ export function AccountView({
   const [copied, setCopied] = useState(false);
   const [fundsDialog, setFundsDialog] = useState<"add" | "withdraw">();
   const [pendingTransfer, setPendingTransfer] = useState<PendingGiwaTransfer>();
+  const [isTransferBusy, setIsTransferBusy] = useState(false);
+  const transferBusyRef = useRef(false);
   const pendingTransferRef = useRef<PendingGiwaTransfer>();
   const walletAddressRef = useRef(walletAddress);
   walletAddressRef.current = walletAddress;
@@ -179,10 +181,12 @@ export function AccountView({
     destination: string,
     amount: string
   ) {
-    if (pendingTransferRef.current) {
+    if (transferBusyRef.current || pendingTransferRef.current) {
       throw new Error("A GIWA transfer is already confirming");
     }
 
+    transferBusyRef.current = true;
+    setIsTransferBusy(true);
     onTransferBusyChange?.(true);
     try {
       const receipt = await sendGiwaNativeTransfer(
@@ -228,6 +232,8 @@ export function AccountView({
       }
       throw error;
     } finally {
+      transferBusyRef.current = false;
+      setIsTransferBusy(false);
       onTransferBusyChange?.(false);
     }
   }
@@ -264,7 +270,7 @@ export function AccountView({
       onWithdraw={() => setFundsDialog("withdraw")}
       onWithdrawTransfer={(destination, amount) =>
         transferGiwaFunds("withdraw", wallet, destination, amount)}
-      transferPending={Boolean(pendingTransfer)}
+      transferPending={isTransferBusy || Boolean(pendingTransfer)}
       withdrawOpen={fundsDialog === "withdraw"}
     />
   );
