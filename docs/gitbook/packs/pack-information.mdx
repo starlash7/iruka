@@ -5,12 +5,12 @@ icon: "percent"
 ---
 
 > **Status: In validation** - The Debut commitment and test Pulls are live on
-> GIWA Sepolia. Commercial inventory, pricing, valuation, and redemption
+> GIWA Sepolia and Monad Testnet. Commercial inventory, pricing, valuation, and redemption
 > eligibility are not live.
 
 Debut is the only live testnet pack. Stage, Encore, and Grail remain visible
-for product discovery but are marked **Coming soon** and cannot submit a GIWA
-Pull transaction.
+for product discovery but are marked **Coming soon** and cannot submit a
+testnet Pull transaction.
 
 ## Pack Model
 
@@ -52,7 +52,7 @@ Every commercial pack must publish the following before sales open:
 | Odds | Individual card probability and aggregate rarity probability |
 | Value | Evidence source, comparable set, range, and snapshot time |
 | Redemption | Eligibility and any item-specific restriction |
-| GIWA | Contract, batch commitment, and transaction link |
+| Network | Selected chain, contract, batch commitment, and transaction link |
 
 Cards are assigned without replacement. Displayed odds must be recalculated
 from the eligible inventory remaining at the published snapshot. Removing,
@@ -90,18 +90,19 @@ onchain test distribution:
   physical cards.
 - No test position is eligible for physical redemption.
 
-| Field | Value |
-| --- | --- |
-| Batch ID | `IRK-GG-2026-001` |
-| Network | GIWA Sepolia, chain ID `91342` |
-| Contract | [`0xbB3c...4334`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334) |
-| Supply | 100 committed test positions |
-| Test price | `0.00001` test ETH |
-| Commitment | [BatchCommitted transaction](https://sepolia-explorer.giwa.io/tx/0x5ac3933f2b5db9ee0ceb73138bbf5b661a1edbd453a6e581f43b29fd80a80e78) |
-| Physical redemption | Not eligible |
+| Field | GIWA Sepolia | Monad Testnet |
+| --- | --- | --- |
+| Batch ID | `IRK-GG-2026-001` | `IRK-MON-2026-001` |
+| Chain ID | `91342` | `10143` |
+| Contract | [`0xbB3c...4334`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334) | [`0x51fb…12c0`](https://testnet.monadvision.com/address/0x51fbe474cb6e614dd5a47d3c93486028270212c0) |
+| Initial supply | 100 committed test positions | 100 committed test positions |
+| Test price | `0.00001` test ETH | `0.00001` test MON |
+| Commitment | [BatchCommitted](https://sepolia-explorer.giwa.io/tx/0x5ac3933f2b5db9ee0ceb73138bbf5b661a1edbd453a6e581f43b29fd80a80e78) | [BatchCommitted](https://testnet.monadvision.com/tx/0x63f63e5b1e85543d4728383e2d4f521d5fac5ed4da7a7c582c1dfbcd4920dd20) |
+| Physical redemption | Not eligible | Not eligible |
 
-Test ETH has no monetary value. The Vending panel displays the current test ETH
-charge read from the contract. It is not canonical USDC settlement.
+Test ETH and test MON have no monetary value. The Vending panel displays the
+selected contract's native test charge and available supply. Network selection
+does not transfer positions between batches. It is not canonical USDC settlement.
 
 ## Rarities and Odds
 
@@ -114,7 +115,9 @@ charge read from the contract. It is not canonical USDC settlement.
 | Iruka | 1 | 1% | Highest chase allocation |
 
 These values total 100% at the initial snapshot. Probabilities change as
-positions are fulfilled because the batch draws without replacement.
+positions are fulfilled because each batch draws without replacement. The
+current testnet panel publishes the initial rarity tiers; it does not yet
+recalculate remaining per-rarity probabilities after every fulfillment.
 
 Pack rarity is not a physical grade. Rarity describes allocation inside one
 batch. Grade describes the condition and verification outcome of a physical
@@ -144,11 +147,12 @@ pack, Iruka will publish:
 Listings and asking prices are not completed sales. An estimate is reference
 data and never guarantees a sale price, return, or future liquidity.
 
-## GIWA Commitment
+## Network Commitment
 
 Before a test Pull, Iruka records the inventory root, odds commitment, and
-draw-seed root on GIWA Sepolia. A collector request reserves a draw index. The
+draw-seed root on the selected GIWA Sepolia or Monad Testnet contract. A collector request reserves a draw index. The
 Keeper later proves the committed draw seed and selected inventory membership.
 
 See [Onchain Architecture](/technical/onchain-architecture) for what this
-contract proves and what remains offchain.
+contract proves and what remains offchain. Actual receipts are published in
+[GIWA Contracts](/technical/giwa-testnet) and [Monad Testnet](/technical/monad-testnet).

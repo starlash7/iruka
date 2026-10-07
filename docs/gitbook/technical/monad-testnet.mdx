@@ -103,18 +103,12 @@ commercial trading, custody, shipping or VRF is claimed.
 ## Review report
 
 The [public verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)
-contains 371-test coverage, a read-only receipt verifier, scheduled/browser
+contains 377 passing automated tests, a read-only receipt verifier, scheduled/browser
 recovery observations and the additional concurrent API test for Pulls #4/#5.
 Both fulfilled exactly once with inventory indices 32 and 37; 95 positions
 remained at the final five-Pull snapshot.
 
-## Official References
-
-- [Monad network information](https://docs.monad.xyz/developer-essentials/testnet)
-- [Foundry deployment guide](https://docs.monad.xyz/guides/deploy-smart-contract/foundry)
-- [Foundry source verification](https://docs.monad.xyz/guides/verify-smart-contract/foundry)
-
-### Native withdrawal verification
+## Native Withdrawal Verification
 
 On October 6, browser cancellation/retry completed a 0.001 test MON withdrawal.
 The native form releases its modal layer before Privy approval, and account
@@ -123,3 +117,9 @@ funding actions reject overlap before a transaction hash exists.
 - [Successful withdrawal](https://testnet.monadvision.com/tx/0xb26aeb9de8d9c8ce43a43b48eee46049174d65eca8067f408f9f5228075421aa)
 - [Public transfer evidence](https://github.com/starlash7/iruka/blob/monad/docs/evidence/monad-native-transfer.json)
 - [Verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)
+
+## Official References
+
+- [Monad network information](https://docs.monad.xyz/developer-essentials/testnet)
+- [Foundry deployment guide](https://docs.monad.xyz/guides/deploy-smart-contract/foundry)
+- [Foundry source verification](https://docs.monad.xyz/guides/verify-smart-contract/foundry)
