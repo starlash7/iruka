@@ -90,7 +90,8 @@ MIT license on its default `main` branch. `monad` is retained and synchronized
 with the published release. Merged Docs task branches were removed; other
 Conductor workspace branches were preserved.
 
-That source was deployed to the existing Iruka production project as
+The same implementation at source `94b1aa7` was deployed to the existing
+Iruka production project as
 `dpl_D74xPyyM2KtBkBLgQCt81qM8E2L8`, Ready and aliased to playiruka.space.
 A dedicated test wallet requested one additional position at 0.00001 test MON.
 The live API returned 200/submitted; the raw Keeper transaction mined
