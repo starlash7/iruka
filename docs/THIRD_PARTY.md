@@ -29,3 +29,13 @@ Direct packages used by Iruka, as recorded in the installed lockfile on October 
 Three.js and React Three Fiber are existing dependencies; the current reveal uses DOM/GSAP. Dependency presence does not imply a new 3D implementation.
 
 Original Iruka brand assets are distinct from third-party inventory identifiers/images. Artist, agency, label, manufacturer and grader names or images do not imply affiliation or a transfer of IP rights. Confirm the provenance and public-use rights of inventory assets before publication.
+
+## Network identifiers
+
+The Monad network mark (`public/assets/wallet-monad.svg`) and native MON token
+icon (`public/assets/wallet-mon.svg`) are unmodified assets from the
+[official Monad token list](https://github.com/monad-crypto/token-list/tree/58c2d743ec2e79767616322086bf4ec97ea6ecc7).
+The testnet list identifies these network/token assets; the
+[Monad brand kit](https://monad.xyz/brand-and-media-kit) documents its visual identity.
+They identify the selected network and asset, imply no partnership, and are
+not relicensed under Iruka's MIT source-code license.

@@ -170,3 +170,34 @@ follow-up. Existing signed-flow observations remain historical evidence.
 Build configuration validation, receipt verification and browser end-to-end
 testing are separate checks. Existing dependency and bundle-size limitations
 above remain applicable.
+
+## Wallet assets and network menu follow-up
+
+The MON token and Monad Testnet network previously rendered the same text
+initials. They now use their separate, unmodified official SVG assets, including
+the funding method, deposit, withdrawal and asset-options surfaces. Source and
+brand attribution are recorded in [THIRD_PARTY.md](./THIRD_PARTY.md). GIWA and
+Ethereum assets remain intact.
+
+The header network control now uses Iruka's white/blue pill and popover styles.
+It exposes the selected network, supports keyboard navigation and retains the
+existing full reload when changing networks. An observed tablet header overlap
+was fixed with a two-row layout between 821 and 1200px. A reproduced Shift+Tab
+focus problem was fixed, and native exclusive details grouping prevents token
+and chain options from remaining open together.
+
+| Check | Actual result |
+| --- | --- |
+| `npm test` | 423 passed, 0 failed, 0 skipped; includes both networks' wallet asset regressions |
+| GIWA and Monad release-validation builds | Passed; TypeScript and Vite, using the configured public Monad address |
+| Actual app header in headless Chromium | Passed at 1440, 1200, 1101, 900, 821, 844, 390 and 320px; no measured control overlap or horizontal overflow |
+| Header keyboard and switching | Arrow keys, Home/End, Tab/Shift+Tab, Escape, outside click, current-network dismissal and route/query/hash preservation passed |
+| Original wallet components in a private browser fixture | Deposit, withdrawal, funding and token/chain options passed at desktop, 375/320px mobile, Korean Monad and English GIWA; assets loaded and operation lock closed/disabled the network menu |
+| Independent read-only review | No remaining findings after the keyboard and tablet fixes |
+
+Screenshots were visually inspected locally. The wallet fixture uses unsigned
+placeholder state and cannot send a transaction; it verifies the original
+components' rendering and interactions, not authenticated production custody,
+a fresh transfer or a Pull. No CUA or new wallet signing was performed. Private
+fixtures, screenshots and environment exports remain excluded from Git and
+Vercel uploads. Existing bundle-size warnings remain applicable.

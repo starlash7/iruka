@@ -136,7 +136,7 @@ install those services.
 
 ## Verification
 
-[Latest release audit](./docs/RELEASE_AUDIT_2026-10-07.md): **421 passing tests**,
+[Latest release audit](./docs/RELEASE_AUDIT_2026-10-07.md): **423 passing tests**,
 both network builds, contract checks, dependency findings and recovery fixes.
 [Latest Monad evidence](./docs/evidence/monad-testnet.json) records **six Pulls**
 and a block-anchored batch checkpoint. The

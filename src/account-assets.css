@@ -137,6 +137,15 @@
   object-fit: cover;
 }
 
+.account-asset-mark-monad .account-asset-logo {
+  padding: 3px;
+  object-fit: contain;
+}
+
+.account-asset-mark-monad-token .account-asset-logo {
+  object-fit: contain;
+}
+
 @media (max-width: 480px) {
   .account-asset-grid { grid-template-columns: 1fr; }
 }

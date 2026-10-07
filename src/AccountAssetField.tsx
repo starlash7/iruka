@@ -26,7 +26,7 @@ export function AccountAssetField({
 }: AccountAssetFieldProps) {
   const options: AccountAssetOption[] = type === "token"
     ? [
-        { available: true, id: "eth", kind: activeDeployment.id === "monad" ? "monad" : "ethereum", label: copy.testEth },
+        { available: true, id: "eth", kind: activeDeployment.id === "monad" ? "monad-token" : "ethereum", label: copy.testEth },
         { available: false, id: "usdc", kind: "usdc", label: "USDC" },
         { available: false, id: "usdt", kind: "usdt", label: "USDT" }
       ]
@@ -49,7 +49,7 @@ export function AccountAssetField({
   return (
     <div className="account-asset-field">
       <span>{label}</span>
-      <details className="account-asset-menu" data-funds-menu={type}>
+      <details className="account-asset-menu" data-funds-menu={type} name="account-assets">
         <summary aria-label={label}>
           <AccountAssetMark kind={selected.kind} />
           <strong>{selected.label}</strong>
