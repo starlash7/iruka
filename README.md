@@ -10,11 +10,8 @@ a result collectors can check, save, and revisit.
 
 [![Iruka — original blue vending machine and collectible pack artwork](./public/brand/iruka-x-banner-vending-rush.png)](https://playiruka.space)
 
-[Try Monad](https://playiruka.space/?network=monad#pull) ·
-[Open Iruka](https://playiruka.space/#pull) ·
 [Product docs](https://docs.playiruka.space/overview) ·
-[Judging guide](./docs/JUDGING_GUIDE.md) ·
-[Monad integration](./docs/gitbook/technical/monad-testnet.mdx) ·
+[Monad Contracts](./docs/gitbook/technical/monad-testnet.mdx) ·
 [GIWA Contracts](./docs/gitbook/technical/giwa-testnet.mdx)
 
 ## The collectible experience
@@ -65,7 +62,7 @@ It is the Metropolis submission build, targeting **Consumer Products & Payments*
 
 | Deployment | Status | Reference |
 | --- | --- | --- |
-| **Monad Testnet** · `10143` · MON | Source verified; batch committed; live browser Pull and restored receipt verified | [Technical status and release gates](./docs/gitbook/technical/monad-testnet.mdx) |
+| **Monad Testnet** · `10143` · MON | Source verified; batch committed; live browser Pull and restored receipt verified | [Contract and receipts](./docs/gitbook/technical/monad-testnet.mdx) |
 | **GIWA Sepolia** · `91342` · test ETH | Existing source-verified contract and documented successful test pulls; default build | [Contract and receipts](./docs/gitbook/technical/giwa-testnet.mdx) |
 
 The Monad implementation includes:
@@ -167,8 +164,7 @@ USDC settlement, commercial trading, redemption, shipping and licensed drops
 remain planned.
 
 - [Product scope and policies](./docs/gitbook/overview.mdx)
-- [Monad release gates](./docs/gitbook/technical/monad-testnet.mdx)
-- [Metropolis submission checklist](./docs/internal/metropolis-submission-2026.md)
+- [Monad Contracts](./docs/gitbook/technical/monad-testnet.mdx)
 - [Repository feature map](./docs/FEATURE_MAP.md)
 - Working rules: [AGENTS.md](./AGENTS.md) · [CLAUDE.md](./CLAUDE.md) ·
   [design.md](./design.md) · [sprint.md](./sprint.md)

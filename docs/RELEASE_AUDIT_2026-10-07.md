@@ -5,7 +5,6 @@ Monad receipts, dependency advisories and GitHub review paths. CUA was not used.
 
 Implementation audited before the tooling follow-up: [`9f08b0c`](https://github.com/starlash7/iruka/commit/9f08b0c93f72840c59b5f15c924859e0b4271e5b).
 Docs-only publication is already merged in [PR #1](https://github.com/starlash7/iruka/pull/1).
-The [judging guide](./JUDGING_GUIDE.md) identifies the submission branch and CI.
 
 ## Reproduced and fixed
 
@@ -92,7 +91,6 @@ Public screenshots from the deployed audit source:
 - New tests and anonymous browser checks do not repeat the historical signed
   Privy Pull/withdrawal UI scenarios. Their existing receipt/screenshots remain
   separate evidence in the Monad verification report.
-- Demo/pitch videos and final platform submission remain outstanding.
 
 ## Publication
 

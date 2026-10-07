@@ -224,11 +224,3 @@ node --env-file=.context/own-monad.env scripts/monad/commit-batch.mjs \
 Recovery currently operates the initial Debut batch, one queued request per
 cron invocation. Additional batches require request resolution from events.
 No VRF, gas sponsorship, seedless/passkey account or mainnet claim is made.
-
-## Submission status
-
-The public source, MIT license, attribution, AI/pre-existing-work disclosure,
-live deployment and transaction evidence are present. Required demo/pitch video
-URLs and final submission are still outstanding in the
-[submission checklist](./internal/metropolis-submission-2026.md).
-Eligibility and judging remain with the organizers.

@@ -69,4 +69,3 @@ values. Never invent deployment evidence. Do not rename the current branch.
 - No push, PR, main merge, branch rename or hackathon final submission performed.
 
 The remaining unchecked deployment step is intentionally a live release gate.
-The submission checklist remains in `docs/internal/metropolis-submission-2026.md`.
