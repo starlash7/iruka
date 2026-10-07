@@ -9,6 +9,9 @@ commercial settlement, custody, redemption and NFT ownership remain planned.
 [Public evidence JSON](./evidence/monad-testnet.json) ·
 [Verify workflow](https://github.com/starlash7/iruka/actions/runs/37439556226)
 
+The [October 7 release audit](./RELEASE_AUDIT_2026-10-07.md) records the latest
+391-test check and subsequent fixes; the October 6 results below remain historical.
+
 ## Tested source and automated checks
 
 Source: [`9108814`](https://github.com/starlash7/iruka/commit/91088149df70fce237b611beb76f5974ff5f438e).

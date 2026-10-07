@@ -13,6 +13,7 @@ a result collectors can check, save, and revisit.
 [Try Monad](https://playiruka.space/?network=monad#pull) ·
 [Open Iruka](https://playiruka.space/#pull) ·
 [Product docs](https://docs.playiruka.space/overview) ·
+[Judging guide](./docs/JUDGING_GUIDE.md) ·
 [Monad integration](./docs/gitbook/technical/monad-testnet.mdx) ·
 [GIWA Contracts](./docs/gitbook/technical/giwa-testnet.mdx)
 
@@ -135,9 +136,10 @@ install those services.
 
 ## Verification
 
-[Full Monad verification report](./docs/MONAD_VERIFICATION.md): **377 passing
-automated tests**, five independently verified live Pulls, browser interruption
-and scheduled recovery, and concurrent fulfillment checks.
+[Latest release audit](./docs/RELEASE_AUDIT_2026-10-07.md): **391 passing tests**,
+both network builds, contract checks, dependency findings and recovery fixes.
+[Live Monad verification](./docs/MONAD_VERIFICATION.md) records five Pulls,
+browser interruption, scheduled recovery, concurrency and a native withdrawal.
 
 ```bash
 npm test
