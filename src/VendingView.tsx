@@ -17,6 +17,7 @@ type VendingViewCopy = {
     openPack: string;
     opening: string;
     packLabel: string;
+    remaining: string;
     resumeOpening: string;
   };
   inventory: {
@@ -65,6 +66,7 @@ type VendingViewProps = {
   testnetConfigured: boolean;
   testnetEnabled: boolean;
   testnetPriceWei?: bigint;
+  testnetAvailable?: number;
   walletRequired: boolean;
 };
 
@@ -91,6 +93,7 @@ export function VendingView({
   testnetConfigured,
   testnetEnabled,
   testnetPriceWei,
+  testnetAvailable,
   walletRequired
 }: VendingViewProps) {
   const visiblePull = activePull?.packId === selectedPack.id ? activePull : undefined;
@@ -114,6 +117,7 @@ export function VendingView({
           openPack: copy.hero.openPack,
           opening: copy.hero.opening,
           packLabel: copy.hero.packLabel,
+          remaining: copy.hero.remaining,
           packOdds: copy.labels.packOdds,
           physicalRedemption: copy.labels.physicalRedemption,
           redemptionUnavailable: copy.labels.redemptionUnavailable,
@@ -130,6 +134,7 @@ export function VendingView({
         testnetConfigured={testnetConfigured}
         testnetEnabled={testnetEnabled}
         testnetPriceWei={testnetPriceWei}
+        testnetAvailable={testnetAvailable}
         walletRequired={walletRequired}
       />
 

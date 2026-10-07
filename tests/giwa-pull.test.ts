@@ -85,6 +85,7 @@ test("reads the live GIWA price from the committed batch", async () => {
       async () => [100, 98, 98, 10_000_000_000_000n]
     ),
     {
+      available: 98,
       priceWei: 10_000_000_000_000n,
       state: "live"
     }

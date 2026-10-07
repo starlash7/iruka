@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { createServer } from "vite";
 
+let getGiwaTransferInputState;
 let createGiwaTransfer;
 let getSuccessfulGiwaTransferHash;
 let parseGiwaTransferAmount;
@@ -14,7 +15,7 @@ before(async () => {
     server: { hmr: false, middlewareMode: true }
   });
 
-  ({ createGiwaTransfer, getSuccessfulGiwaTransferHash, parseGiwaTransferAmount } =
+  ({ getGiwaTransferInputState, createGiwaTransfer, getSuccessfulGiwaTransferHash, parseGiwaTransferAmount } =
     await server.ssrLoadModule("/src/giwaTransfer.ts"));
 });
 
@@ -95,4 +96,21 @@ test("accepts only successful transfer receipts and returns the mined hash", () 
     }),
     /reverted/i
   );
+});
+
+test("rejects excess decimal precision instead of silently rounding a transfer", () => {
+  assert.throws(() => parseGiwaTransferAmount("1.0000000000000000009"), /valid amount/i);
+  assert.equal(parseGiwaTransferAmount(".001"), 1_000_000_000_000_000n);
+});
+
+
+test("withdraw input validation blocks invalid recipients and nonpositive amounts", () => {
+  const address = "0x0000000000000000000000000000000000000002";
+  for (const destination of ["", "not-an-address", "0x0000000000000000000000000000000000000000"]) {
+    assert.equal(getGiwaTransferInputState(destination, "0.001"), "recipient");
+  }
+  for (const amount of ["", "0", "-1", "NaN", "1.0000000000000000009"]) {
+    assert.equal(getGiwaTransferInputState(address, amount), "amount");
+  }
+  assert.equal(getGiwaTransferInputState(address, "0.001"), "ready");
 });

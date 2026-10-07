@@ -1,3 +1,4 @@
+import { activeDeployment } from "./activeDeployment.ts";
 import { Copy, ExternalLink, Wallet } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { AccountAssetField } from "./AccountAssetField";
@@ -97,7 +98,7 @@ export function AccountCryptoDepositPanel({
                   required
                   value={amount}
                 />
-                <span>ETH</span>
+                <span>{activeDeployment.chain.nativeCurrency.symbol}</span>
               </div>
             </label>
             <button
@@ -123,7 +124,7 @@ export function AccountCryptoDepositPanel({
       <TransferStatus copy={copy} state={state} />
       <a
         className="account-faucet-action iruka-secondary-button"
-        href={GIWA_FAUCET_URL}
+        href={activeDeployment.faucetUrl}
         rel="noreferrer"
         target="_blank"
       >

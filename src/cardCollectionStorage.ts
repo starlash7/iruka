@@ -1,5 +1,6 @@
+import { isStoredPullReceipt } from "./pullReceiptStorage.ts";
 import { isAddress } from "viem";
-import { giwaSepolia } from "./giwaChain.ts";
+import { getDeploymentStorageKey } from "./activeDeployment.ts";
 import type { CardPull, Rarity, VaultStatus } from "./vendingTypes.ts";
 
 type CollectionStorage = Pick<Storage, "getItem" | "removeItem" | "setItem">;
@@ -20,15 +21,20 @@ const vaultStatuses = new Set<VaultStatus>([
 ]);
 
 function getCollectionKey(walletAddress: string) {
-  return `iruka:collection:${giwaSepolia.id}:${walletAddress.toLowerCase()}`;
+  return getDeploymentStorageKey("collection", walletAddress);
 }
 
-function isCardPull(value: unknown): value is CardPull {
+function isCardPull(value: unknown, walletAddress: string): value is CardPull {
   if (!value || typeof value !== "object") return false;
   const card = value as Partial<CardPull>;
 
   return (
-    card.category === "K-pop"
+    (card.onchainReceipt === undefined || (
+      isStoredPullReceipt(card.onchainReceipt)
+      && (!card.onchainReceipt.collector
+        || card.onchainReceipt.collector.toLowerCase() === walletAddress.toLowerCase())
+    ))
+    && card.category === "K-pop"
     && typeof card.estimatedValue === "number"
     && Number.isFinite(card.estimatedValue)
     && typeof card.group === "string"
@@ -44,20 +50,20 @@ function isCardPull(value: unknown): value is CardPull {
 }
 
 export function getWalletCardCollection(
-  storage: CollectionStorage,
+  storage: CollectionStorage | undefined,
   walletAddress: string
 ): CardPull[] {
   if (!isAddress(walletAddress)) return [];
   const key = getCollectionKey(walletAddress);
 
   try {
-    const storedValue = storage.getItem(key);
+    const storedValue = (storage ?? window.localStorage).getItem(key);
     if (!storedValue) return [];
     const cards: unknown = JSON.parse(storedValue);
-    return Array.isArray(cards) ? cards.filter(isCardPull) : [];
+    return Array.isArray(cards) ? cards.filter((card) => isCardPull(card, walletAddress)) : [];
   } catch {
     try {
-      storage.removeItem(key);
+      (storage ?? window.localStorage).removeItem(key);
     } catch {
       // Storage availability must not block account rendering.
     }
@@ -66,14 +72,16 @@ export function getWalletCardCollection(
 }
 
 export function saveWalletCardCollection(
-  storage: CollectionStorage,
+  storage: CollectionStorage | undefined,
   walletAddress: string,
   cards: readonly CardPull[]
 ) {
-  if (!isAddress(walletAddress)) return;
+  if (!isAddress(walletAddress)) return false;
   try {
-    storage.setItem(getCollectionKey(walletAddress), JSON.stringify(cards));
+    (storage ?? window.localStorage).setItem(getCollectionKey(walletAddress), JSON.stringify(cards.filter((card) => isCardPull(card, walletAddress))));
+    return true;
   } catch {
-    // The revealed card remains available in memory when storage is blocked.
+    // Retain pending recovery until the card is durably stored.
+    return false;
   }
 }

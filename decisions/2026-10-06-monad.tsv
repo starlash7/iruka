@@ -1,0 +1,7 @@
+ts	phase	decision	why	evidence	result
+2026-10-06	plan	Use additive build-time Monad testnet deployment	Preserve existing GIWA product and keep submission scope bounded	docs/superpowers/specs/2026-10-06-monad-metropolis-design.md	approved by user
+2026-10-06	verify	Establish baseline before generation	Distinguish regressions from existing failures	.context/baseline-tests.log; .context/baseline-contract-tests.log; .context/baseline-build.log	276 Node tests and 13 contract tests passed; build passed
+2026-10-06	plan	Create isolated Conductor frontend and backend workspaces	Independent ownership enables parallel implementation	docs/superpowers/plans/2026-10-06-monad-integration.md	started through CUA
+2026-10-06	implement	Align Node runtime to 24.14.0	Existing test script requires TypeScript stripping unavailable on Node 20	.nvmrc; package.json; .github/workflows/verify.yml	local baseline verified; remote CI unrun
+2026-10-06	verify	Bound Monad fulfillment log queries to 100 blocks	Public RPC rejects aged pending ranges	src/giwaFulfillment.ts; tests/monad-rpc.test.mjs	regression and independent review passed
+2026-10-06	integrate	Integrate both local workstreams without deployment	Code can be verified while live environment is absent	docs/superpowers/plans/2026-10-06-monad-integration.md	317 Node tests; 13 contract tests in each mode; both builds passed

@@ -1,3 +1,4 @@
+import { flushSync } from "react-dom";
 import type { User } from "@privy-io/react-auth";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
@@ -33,7 +34,9 @@ type AccountViewProps = {
   externalWallet?: GiwaWallet;
   inventoryContent: ReactNode;
   onConnectExternalWallet: () => void;
+  onTransferBusyChange?: (busy: boolean) => void;
   wallet: GiwaWallet;
+  transferLock?: { current: boolean };
 };
 
 export function getAccountInventorySummary(
@@ -86,6 +89,8 @@ export function createAccountBalanceLoader(
 }
 
 export function AccountView({
+  transferLock,
+  onTransferBusyChange,
   cards,
   copy,
   externalWallet,
@@ -98,6 +103,9 @@ export function AccountView({
   const [copied, setCopied] = useState(false);
   const [fundsDialog, setFundsDialog] = useState<"add" | "withdraw">();
   const [pendingTransfer, setPendingTransfer] = useState<PendingGiwaTransfer>();
+  const [isTransferBusy, setIsTransferBusy] = useState(false);
+  const localTransferLock = useRef(false);
+  const transferBusyRef = transferLock ?? localTransferLock;
   const pendingTransferRef = useRef<PendingGiwaTransfer>();
   const walletAddressRef = useRef(walletAddress);
   walletAddressRef.current = walletAddress;
@@ -116,46 +124,51 @@ export function AccountView({
   }, [loadBalance]);
 
   useEffect(() => {
-    const storedTransfer = getPendingGiwaTransfer(
-      window.localStorage,
-      walletAddress
-    );
+    const storedTransfer = pendingTransfer?.walletAddress.toLowerCase() === walletAddress.toLowerCase()
+      ? pendingTransfer
+      : getPendingGiwaTransfer(undefined, walletAddress);
     pendingTransferRef.current = storedTransfer;
     setPendingTransfer(storedTransfer);
     if (!storedTransfer) return;
 
+    const transactionHash = storedTransfer.transactionHash;
     let active = true;
-    void waitForGiwaNativeTransfer(storedTransfer.transactionHash)
-      .then(() => {
+    let retryTimer: ReturnType<typeof window.setTimeout> | undefined;
+    async function confirmTransfer() {
+      try {
+        await waitForGiwaNativeTransfer(transactionHash);
         if (!active) return;
-        clearPendingGiwaTransfer(
-          window.localStorage,
-          walletAddress,
-          storedTransfer.transactionHash
-        );
+        clearPendingGiwaTransfer(undefined, walletAddress, transactionHash);
         pendingTransferRef.current = undefined;
         setPendingTransfer(undefined);
         void loadBalance();
-      })
-      .catch((error) => {
-        if (!active || !(error instanceof GiwaTransferRevertedError)) return;
-        clearPendingGiwaTransfer(
-          window.localStorage,
-          walletAddress,
-          storedTransfer.transactionHash
-        );
-        pendingTransferRef.current = undefined;
-        setPendingTransfer(undefined);
-      });
+      } catch (error) {
+        if (!active) return;
+        if (error instanceof GiwaTransferRevertedError) {
+          clearPendingGiwaTransfer(undefined, walletAddress, transactionHash);
+          pendingTransferRef.current = undefined;
+          setPendingTransfer(undefined);
+        } else {
+          retryTimer = window.setTimeout(() => void confirmTransfer(), 5000);
+        }
+      }
+    }
+    void confirmTransfer();
 
     return () => {
       active = false;
+      window.clearTimeout(retryTimer);
     };
-  }, [loadBalance, walletAddress]);
+  }, [loadBalance, walletAddress, pendingTransfer?.transactionHash]);
 
   useEffect(() => {
     function refreshBalance() {
       void loadBalance();
+      const storedTransfer = getPendingGiwaTransfer(undefined, walletAddress);
+      if (storedTransfer && storedTransfer.transactionHash !== pendingTransferRef.current?.transactionHash) {
+        pendingTransferRef.current = storedTransfer;
+        setPendingTransfer(storedTransfer);
+      }
     }
 
     window.addEventListener("focus", refreshBalance);
@@ -177,10 +190,18 @@ export function AccountView({
     destination: string,
     amount: string
   ) {
-    if (pendingTransferRef.current) {
+    const storedTransfer = getPendingGiwaTransfer(undefined, walletAddress);
+    if (storedTransfer) {
+      pendingTransferRef.current = storedTransfer;
+      setPendingTransfer(storedTransfer);
+    }
+    if (transferBusyRef.current || pendingTransferRef.current) {
       throw new Error("A GIWA transfer is already confirming");
     }
 
+    transferBusyRef.current = true;
+    setIsTransferBusy(true);
+    onTransferBusyChange?.(true);
     try {
       const receipt = await sendGiwaNativeTransfer(
         sender,
@@ -194,13 +215,13 @@ export function AccountView({
               walletAddress
             });
             pendingTransferRef.current = transfer;
-            savePendingGiwaTransfer(window.localStorage, transfer);
+            savePendingGiwaTransfer(undefined, transfer);
             setPendingTransfer(transfer);
           }
         }
       );
       clearPendingGiwaTransfer(
-        window.localStorage,
+        undefined,
         walletAddress,
         receipt.transactionHash
       );
@@ -210,12 +231,12 @@ export function AccountView({
     } catch (error) {
       if (error instanceof GiwaTransferRevertedError) {
         const transfer = getPendingGiwaTransfer(
-          window.localStorage,
+          undefined,
           walletAddress
         );
         if (transfer) {
           clearPendingGiwaTransfer(
-            window.localStorage,
+            undefined,
             transfer.walletAddress,
             transfer.transactionHash
           );
@@ -224,6 +245,10 @@ export function AccountView({
         }
       }
       throw error;
+    } finally {
+      transferBusyRef.current = false;
+      setIsTransferBusy(false);
+      onTransferBusyChange?.(false);
     }
   }
 
@@ -252,14 +277,18 @@ export function AccountView({
         setFundsDialog(undefined);
       }}
       onCloseWithdraw={() => setFundsDialog(undefined)}
-      onConnectExternalWallet={onConnectExternalWallet}
+      onConnectExternalWallet={() => {
+        // Privy's wallet picker is portalled outside the native funding dialog.
+        flushSync(() => setFundsDialog(undefined));
+        onConnectExternalWallet();
+      }}
       onCopyAddress={() => void copyAddress()}
       onRetryBalance={() => void loadBalance()}
       onTransferComplete={() => void loadBalance()}
       onWithdraw={() => setFundsDialog("withdraw")}
       onWithdrawTransfer={(destination, amount) =>
         transferGiwaFunds("withdraw", wallet, destination, amount)}
-      transferPending={Boolean(pendingTransfer)}
+      transferPending={isTransferBusy || transferBusyRef.current || Boolean(pendingTransfer)}
       withdrawOpen={fundsDialog === "withdraw"}
     />
   );

@@ -9,7 +9,7 @@ import {
   type Log
 } from "viem";
 import type { EIP1193Provider } from "@privy-io/react-auth";
-import { giwaSepolia } from "./giwaChain.ts";
+import { activeChain as giwaSepolia, activeDeployment } from "./activeDeployment.ts";
 import {
   createClientSeed,
   getBatchCommitmentId,
@@ -18,13 +18,6 @@ import {
 } from "./giwaPackBatch.ts";
 import type { PackDetail } from "./vendingTypes.ts";
 
-type GiwaEnvironment = ImportMeta & {
-  env?: {
-    DEV?: boolean;
-    VITE_GIWA_PACK_BATCH_ADDRESS?: string;
-  };
-};
-
 export type GiwaWallet = {
   address: string;
   getEthereumProvider: () => Promise<EIP1193Provider>;
@@ -32,6 +25,7 @@ export type GiwaWallet = {
 };
 
 export type GiwaPullReceipt = {
+  collector?: Address;
   batchId: Hex;
   contractAddress: Address;
   drawIndex: number;
@@ -53,6 +47,7 @@ type GiwaPullOptions = {
 export type GiwaPackBatchState = "checking" | "live" | "sold-out" | "unavailable";
 
 export type GiwaPackBatchSnapshot = {
+  available?: number;
   priceWei?: bigint;
   state: Exclude<GiwaPackBatchState, "checking">;
 };
@@ -71,18 +66,19 @@ const publicClient = createPublicClient({
 });
 
 function getConfiguredEnvironmentAddress() {
-  return (import.meta as GiwaEnvironment).env?.VITE_GIWA_PACK_BATCH_ADDRESS;
+  return activeDeployment.contractAddress;
 }
 
 function getConfiguredDevelopmentMode() {
-  return Boolean((import.meta as GiwaEnvironment).env?.DEV);
+  return Boolean(import.meta.env?.DEV);
 }
 
 export function getGiwaPackBatchAddress(
   value = getConfiguredEnvironmentAddress(),
   isDevelopment = getConfiguredDevelopmentMode()
 ) {
-  return !isDevelopment && isContractAddress(value) ? value : undefined;
+  return (!isDevelopment || !activeDeployment.allowFixturePull) && isContractAddress(value)
+    && !/^0x0{40}$/i.test(value) ? value : undefined;
 }
 
 export function getGiwaExplorerTransactionUrl(transactionHash: Hex | string) {
@@ -111,6 +107,7 @@ export async function getGiwaPackBatchSnapshot(
     );
     const priceWei = typeof batch[3] === "bigint" ? batch[3] : undefined;
     return {
+      available: batch[1],
       priceWei,
       state: batch[1] > 0 ? "live" : "sold-out"
     };
@@ -175,13 +172,17 @@ export async function confirmGiwaPullRequest(
   if (requestReceipt.status !== "success") {
     throw new GiwaPullRequestRevertedError();
   }
-  const { drawIndex, requestId } = getPullRequest(
+  const { batchId, collector, drawIndex, requestId } = getPullRequest(
     requestReceipt.logs,
     submission.contractAddress
   );
+  if (batchId.toLowerCase() !== submission.batchId.toLowerCase()) {
+    throw new Error("Pull request batch does not match the submission");
+  }
   const requestTransactionHash = requestReceipt.transactionHash;
 
   return {
+    collector,
     batchId: submission.batchId,
     contractAddress: submission.contractAddress,
     drawIndex,
@@ -217,10 +218,13 @@ function getPullRequest(logs: readonly Log[], contractAddress: Address) {
     ),
     strict: false
   })[0];
-  if (event?.args.requestId === undefined || event.args.drawIndex === undefined) {
+  if (event?.args.requestId === undefined || event.args.drawIndex === undefined
+    || !event.args.batchId || !event.args.collector) {
     throw new Error("GIWA pull request was not recorded");
   }
   return {
+    batchId: event.args.batchId,
+    collector: event.args.collector,
     drawIndex: event.args.drawIndex,
     requestId: event.args.requestId
   };

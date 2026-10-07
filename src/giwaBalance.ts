@@ -5,7 +5,7 @@ import {
   isAddress,
   type Address
 } from "viem";
-import { giwaSepolia } from "./giwaChain.ts";
+import { activeChain as giwaSepolia } from "./activeDeployment.ts";
 
 export type GiwaBalanceReader = {
   getBalance: (parameters: { address: Address }) => Promise<bigint>;
@@ -21,11 +21,11 @@ const defaultBalanceReader: GiwaBalanceReader = {
 };
 
 export function formatGiwaNativeBalance(balance: bigint) {
-  if (balance === 0n) return "0 ETH";
-  if (balance < 100_000_000_000_000n) return "<0.0001 ETH";
+  if (balance === 0n) return `0 ${giwaSepolia.nativeCurrency.symbol}`;
+  if (balance < 100_000_000_000_000n) return `<0.0001 ${giwaSepolia.nativeCurrency.symbol}`;
 
   const [whole, fraction = ""] = formatEther(balance).split(".");
-  return `${whole}.${fraction.padEnd(4, "0").slice(0, 4)} ETH`;
+  return `${whole}.${fraction.padEnd(4, "0").slice(0, 4)} ${giwaSepolia.nativeCurrency.symbol}`;
 }
 
 export function getGiwaNativeBalance(

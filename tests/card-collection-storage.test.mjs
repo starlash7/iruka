@@ -92,3 +92,20 @@ test("storage restrictions do not block account rendering or a completed reveal"
     saveWalletCardCollection(restrictedStorage, walletAddress, [card])
   );
 });
+
+
+test("acknowledges durable writes and reports quota failure", () => {
+  assert.equal(saveWalletCardCollection(createStorage(), walletAddress, [card]), true);
+  const storage = createStorage();
+  storage.setItem = () => { throw new DOMException("Full", "QuotaExceededError"); };
+  assert.equal(saveWalletCardCollection(storage, walletAddress, [card]), false);
+});
+
+test("denied browser storage getter does not crash collection restoration", () => {
+  const previousWindow = globalThis.window;
+  globalThis.window = { get localStorage() { throw new DOMException("Blocked", "SecurityError"); } };
+  try {
+    assert.deepEqual(getWalletCardCollection(undefined, walletAddress), []);
+    assert.equal(saveWalletCardCollection(undefined, walletAddress, [card]), false);
+  } finally { globalThis.window = previousWindow; }
+});

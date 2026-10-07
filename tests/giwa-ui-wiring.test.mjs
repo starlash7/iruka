@@ -80,7 +80,7 @@ test("GIWA pull asks the wallet for one request transaction", () => {
 });
 
 test("the confirmed request automatically triggers the same-origin Keeper", () => {
-  assert.match(giwaFulfillmentSource, /\/api\/giwa\/fulfill/);
+  assert.match(giwaFulfillmentSource, /activeDeployment\.fulfillmentPath/);
   assert.match(giwaFulfillmentSource, /requestId:\s*receipt\.requestId\.toString\(\)/);
   assert.doesNotMatch(giwaFulfillmentSource, /eth_sendTransaction/);
 });

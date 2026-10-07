@@ -37,7 +37,7 @@ const expectedNavigation = [
   {
     group: "Technology",
     public: true,
-    pages: ["technical/onchain-architecture", "technical/giwa-testnet"],
+    pages: ["technical/onchain-architecture", "technical/giwa-testnet", "technical/monad-testnet"],
   },
 ];
 
@@ -379,7 +379,8 @@ test("account docs separate the Iruka Wallet from optional external wallets", as
   for (const doc of [howItWorks, faq]) {
     assert.match(doc, /user-controlled Iruka Wallet/i);
     assert.match(doc, /external wallet is\s+optional/i);
-    assert.match(doc, /GIWA Sepolia test ETH/i);
+    assert.match(doc, /(?:GIWA Sepolia test ETH|test ETH on GIWA Sepolia)/i);
+    assert.match(doc, /(?:Monad\s+Testnet MON|test MON on Monad\s+Testnet)/i);
   }
 });
 
@@ -418,8 +419,9 @@ test("Docs identify Debut as the only live pack and scheduled Keeper recovery", 
   );
   assert.match(
     packInformation,
-    /Vending panel displays[\s\S]{0,80}test ETH/i
+    /Vending panel displays[\s\S]{0,80}native test charge and available supply/i
   );
+  assert.match(packInformation, /\| Test price \| `0\.00001` test ETH \| `0\.00001` test MON \|/);
   assert.doesNotMatch(packInformation, /displayed app price/i);
   assert.match(giwaContracts, /scheduled recovery/i);
   assert.match(giwaContracts, /once per minute/i);

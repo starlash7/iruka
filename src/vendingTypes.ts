@@ -1,3 +1,4 @@
+import type { StoredPullReceipt } from "./pullReceiptStorage.ts";
 export type UsdcAmount = `${number}.${number}`;
 export type VendingCategory = "Girl Group";
 export type PackTier = "Debut" | "Stage" | "Encore" | "Grail";
@@ -85,6 +86,7 @@ export type PullPackOptions = {
 };
 
 export type VendingPull = {
+  onchainReceipt?: StoredPullReceipt;
   card: InventoryCard;
   id: string;
   packId: string;
@@ -102,6 +104,7 @@ export type VaultStatus =
   | "Redeem queued";
 
 export type CardPull = {
+  onchainReceipt?: StoredPullReceipt;
   category: Category;
   estimatedValue: number;
   estimatedValueRangeUsdc?: readonly [UsdcAmount, UsdcAmount];

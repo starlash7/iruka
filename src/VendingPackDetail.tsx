@@ -1,3 +1,4 @@
+import { activeDeployment } from "./activeDeployment.ts";
 import { Clock3, ExternalLink, PackageOpen, RefreshCw, Truck, Wallet } from "lucide-react";
 import { formatEther } from "viem";
 import { formatUsdc } from "./currency";
@@ -18,6 +19,7 @@ type VendingPackDetailCopy = {
   openPack: string;
   opening: string;
   packLabel: string;
+  remaining: string;
   packOdds: string;
   physicalRedemption: string;
   redemptionUnavailable: string;
@@ -37,6 +39,7 @@ type VendingPackDetailProps = {
   testnetConfigured?: boolean;
   testnetEnabled?: boolean;
   testnetPriceWei?: bigint;
+  testnetAvailable?: number;
   walletRequired: boolean;
 };
 
@@ -63,6 +66,7 @@ export function VendingPackDetail({
   testnetConfigured = false,
   testnetEnabled = false,
   testnetPriceWei,
+  testnetAvailable,
   walletRequired
 }: VendingPackDetailProps) {
   const tier = pack.tier.toLowerCase();
@@ -75,7 +79,7 @@ export function VendingPackDetail({
         ? copy.comingSoon
         : copy.openPack;
   const priceLabel = testnetConfigured
-    ? `${testnetPriceWei === undefined ? "—" : formatEther(testnetPriceWei)} test ETH`
+    ? `${testnetPriceWei === undefined ? "—" : formatEther(testnetPriceWei)} test ${activeDeployment.chain.nativeCurrency.symbol}`
     : formatUsdc(pack.priceUsdc);
 
   return (
@@ -104,6 +108,8 @@ export function VendingPackDetail({
         <div className="vending-title-block">
           <h1>{pack.name} {copy.packLabel}</h1>
           <span>{copy.batch} {pack.batchId}</span>
+          {testnetAvailable !== undefined && testnetAvailable > 0
+            ? <span>{copy.remaining}: {testnetAvailable}</span> : null}
         </div>
 
         <div className="vending-price-row">

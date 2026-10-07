@@ -1,0 +1,5 @@
+ts	phase	decision	why	evidence	result
+2026-10-07	docs	Add Monad to shared public documentation; preserve GIWA history	Reflect verified implementation without implying NFT, USDC, or custody	docs/gitbook/technical/monad-testnet.mdx; docs/MONAD_VERIFICATION.md	10 shared pages/configurations updated
+2026-10-07	verify	Validate documentation with Mintlify CLI	Check MDX build and internal links	.context/docs-mint-validate.log; .context/docs-mint-links.log; .context/docs-baseline-build.log	Build validation passed; no broken links; application build passed
+2026-10-07	publish	Publish only docs/gitbook changes to main	Mintlify publishes main; avoid merging application code from Monad branch	.context/docs-vercel-project-api.json	Vercel project API has no linked Git repository; docs-only publication completed in PR #1
+2026-10-07	publish	Confirm public Docs after Mintlify deployment	Validate published content without CUA	https://github.com/starlash7/iruka/pull/1; https://docs.playiruka.space/technical/monad-testnet; .context/docs-live-verification.json	Mintlify success; 9 public pages HTTP 200 with Monad content; exact contract and 377-test count present

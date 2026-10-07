@@ -742,3 +742,13 @@ test("recent pulls render only from the explicit Vending session list", () => {
   assert.match(pullMarkup, /Recent pulls/);
   assert.match(pullMarkup, /Collectible 01/);
 });
+
+
+test("shows contract availability and omits supply when it cannot be verified", () => {
+  const props = { copy: { ...packDetailCopy, remaining: "Remaining" }, pack: packDetails[0], rarityLabels,
+    isOpening: false, onOpenPack() {}, walletRequired: false, testnetConfigured: true, testnetPriceWei: 10000000000000n };
+  const render = (available) => renderToStaticMarkup(React.createElement(VendingPackDetail, { ...props, testnetAvailable: available }));
+  assert.match(render(98), /Remaining: 98/);
+  assert.doesNotMatch(render(undefined), /Remaining:/);
+  assert.doesNotMatch(render(0), /Remaining:/);
+});

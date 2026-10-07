@@ -3,6 +3,36 @@
 These instructions apply to the whole repository. Keep `CLAUDE.md`, `design.md`,
 `docs/gitbook/`, and `sprint.md` as the source rules for future agent work.
 
+## Parallel Work And Evidence
+
+- Read `docs/FEATURE_MAP.md` and relevant original code before implementation.
+- Use one isolated workspace and branch per implementation task. Do not rename
+  an existing branch unless the user requests it.
+- Assign file ownership before parallel work. Sequence changes to shared files;
+  do not let multiple agents independently edit them.
+- Record larger scopes in `docs/superpowers/specs/` and file-level execution
+  checklists in `docs/superpowers/plans/` before implementation.
+- Preserve the existing Iruka rules when adapting generic agent templates.
+- Report commands and actual results, applicable desktop/mobile screenshots,
+  and real transaction receipts. An unrun check remains unverified.
+- Record material decisions and unresolved inputs in `decisions/`. Never put
+  keys, private manifests, or personal custody data into evidence.
+- When changing agent instructions, run the relevant manual cases in `evals/`
+  and record the observed result. These cases are not automated software tests.
+- Use existing platform APIs and packages before adding dependencies. Add
+  automated guards only for concrete, recurring errors relevant to the work.
+
+## Chain Boundaries
+
+- Monad work is additive. Preserve GIWA configuration, historical evidence,
+  deployment, and stored collections.
+- Keep requests, collection records, transfers, manifests, and Keeper leases
+  separated by chain and deployment identity where applicable.
+- An explicitly selected Monad build without a valid deployment must not
+  substitute a locally assigned result for an onchain Pull.
+- Do not claim Monad deployment, minting, settlement, VRF, physical custody,
+  or redemption without evidence for that exact claim.
+
 ## Required Context
 
 - Use `karpathy-guidelines` as the base working style: small scoped changes,

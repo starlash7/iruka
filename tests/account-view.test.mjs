@@ -560,6 +560,6 @@ test("deposit confirmation is persisted under the Iruka account address", async 
   assert.doesNotMatch(source, /walletAddress:\s*sender\.address/);
   assert.match(
     source,
-    /clearPendingGiwaTransfer\([\s\S]*?window\.localStorage,[\s\S]*?walletAddress,[\s\S]*?receipt\.transactionHash/
+    /clearPendingGiwaTransfer\([\s\S]*?undefined,[\s\S]*?walletAddress,[\s\S]*?receipt\.transactionHash/
   );
 });

@@ -78,6 +78,7 @@ test("restores confirmed receipt values without losing bigint precision", () => 
   savePendingGiwaPull(storage, confirmed);
 
   assert.deepEqual(getPendingGiwaPullReceipt(confirmed), {
+    collector: walletAddress,
     batchId,
     contractAddress,
     drawIndex: 19,
@@ -138,4 +139,13 @@ test("storage restrictions do not interrupt GIWA pull confirmation", () => {
   assert.doesNotThrow(() =>
     clearPendingGiwaPull(restrictedStorage, walletAddress, transactionHash)
   );
+});
+
+test("denied browser storage getter does not crash pending restoration", () => {
+  const previousWindow = globalThis.window;
+  globalThis.window = { get localStorage() { throw new DOMException("Blocked", "SecurityError"); } };
+  try {
+    assert.equal(getPendingGiwaPull(undefined, walletAddress), undefined);
+    assert.doesNotThrow(() => clearPendingGiwaPull(undefined, walletAddress));
+  } finally { globalThis.window = previousWindow; }
 });

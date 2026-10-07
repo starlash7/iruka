@@ -1,5 +1,7 @@
+import { getBatchCommitmentId } from "./giwaPackBatch.ts";
+import { getGiwaPackBatchAddress } from "./giwaPull.ts";
 import { getAddress, isAddress, isHex, type Address, type Hex } from "viem";
-import { giwaSepolia } from "./giwaChain.ts";
+import { activeChain as giwaSepolia, getDeploymentStorageKey, activeDeployment } from "./activeDeployment.ts";
 import {
   getGiwaExplorerTransactionUrl,
   type GiwaPullReceipt
@@ -28,7 +30,7 @@ type CreatePendingGiwaPullInput = Pick<
 };
 
 function getPendingPullKey(walletAddress: string) {
-  return `iruka:giwa-pull:${giwaSepolia.id}:${walletAddress.toLowerCase()}`;
+  return getDeploymentStorageKey("pull", walletAddress);
 }
 
 function isBytes32(value: unknown): value is Hex {
@@ -41,6 +43,12 @@ function isPendingGiwaPull(value: unknown): value is PendingGiwaPull {
 
   return (
     pull.chainId === giwaSepolia.id
+    && (!getGiwaPackBatchAddress() || (
+      pull.contractAddress?.toLowerCase() === getGiwaPackBatchAddress()?.toLowerCase()
+      && pull.packId === activeDeployment.packId
+      && pull.batchId?.toLowerCase() === getBatchCommitmentId(activeDeployment.batchLabel).toLowerCase()
+    ))
+    && (activeDeployment.allowFixturePull || Boolean(getGiwaPackBatchAddress()))
     && typeof pull.packId === "string"
     && pull.packId.length > 0
     && typeof pull.submittedAt === "string"
@@ -78,11 +86,11 @@ export function createPendingGiwaPull(
 }
 
 export function savePendingGiwaPull(
-  storage: PendingPullStorage,
+  storage: PendingPullStorage | undefined,
   pendingPull: PendingGiwaPull
 ) {
   try {
-    storage.setItem(
+    (storage ?? window.localStorage).setItem(
       getPendingPullKey(pendingPull.walletAddress),
       JSON.stringify(pendingPull)
     );
@@ -92,14 +100,14 @@ export function savePendingGiwaPull(
 }
 
 export function getPendingGiwaPull(
-  storage: PendingPullStorage,
+  storage: PendingPullStorage | undefined,
   walletAddress: string
 ) {
   if (!isAddress(walletAddress)) return undefined;
   const key = getPendingPullKey(walletAddress);
 
   try {
-    const storedValue = storage.getItem(key);
+    const storedValue = (storage ?? window.localStorage).getItem(key);
     if (!storedValue) return undefined;
     const pendingPull: unknown = JSON.parse(storedValue);
     if (
@@ -107,7 +115,7 @@ export function getPendingGiwaPull(
       || pendingPull.walletAddress.toLowerCase() !== walletAddress.toLowerCase()
     ) {
       try {
-        storage.removeItem(key);
+        (storage ?? window.localStorage).removeItem(key);
       } catch {
         // Ignore storage cleanup failures.
       }
@@ -116,7 +124,7 @@ export function getPendingGiwaPull(
     return pendingPull;
   } catch {
     try {
-      storage.removeItem(key);
+      (storage ?? window.localStorage).removeItem(key);
     } catch {
       // Ignore storage cleanup failures.
     }
@@ -125,7 +133,7 @@ export function getPendingGiwaPull(
 }
 
 export function clearPendingGiwaPull(
-  storage: PendingPullStorage,
+  storage: PendingPullStorage | undefined,
   walletAddress: string,
   transactionHash?: Hex
 ) {
@@ -142,7 +150,7 @@ export function clearPendingGiwaPull(
   }
 
   try {
-    storage.removeItem(getPendingPullKey(walletAddress));
+    (storage ?? window.localStorage).removeItem(getPendingPullKey(walletAddress));
   } catch {
     // The in-memory pending state is cleared by the caller.
   }
@@ -160,6 +168,7 @@ export function getPendingGiwaPullReceipt(
   }
 
   return {
+    collector: pendingPull.walletAddress,
     batchId: pendingPull.batchId,
     contractAddress: pendingPull.contractAddress,
     drawIndex: pendingPull.drawIndex,
@@ -176,6 +185,11 @@ export function confirmPendingGiwaPull(
   pendingPull: PendingGiwaPull,
   receipt: GiwaPullReceipt
 ): PendingGiwaPull {
+  if (receipt.contractAddress.toLowerCase() !== pendingPull.contractAddress.toLowerCase()
+    || receipt.batchId.toLowerCase() !== pendingPull.batchId.toLowerCase()
+    || (receipt.collector && receipt.collector.toLowerCase() !== pendingPull.walletAddress.toLowerCase())) {
+    throw new Error("Pull receipt does not match the pending request");
+  }
   return {
     ...pendingPull,
     drawIndex: receipt.drawIndex,

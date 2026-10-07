@@ -1,145 +1,208 @@
 # Iruka
 
-Iruka connects fandom collectible pack discovery, onchain pull receipts,
-verified storage, secondary trading, and physical redemption. The first
-category is K-pop photocards, with the same product rails designed to support
-other officially issued fandom and sports collectibles.
+**Collect the moment. Verify the pull.**
 
-- Product: [playiruka.space](https://playiruka.space)
-- Documentation: [docs.playiruka.space](https://docs.playiruka.space/overview)
-- GIWA Sepolia contract:
-  [`0xbB3c...4334`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334)
+[![Verification](https://github.com/starlash7/iruka/actions/workflows/verify.yml/badge.svg?branch=monad)](https://github.com/starlash7/iruka/actions/workflows/verify.yml?query=branch%3Amonad)
 
-## Public Access
+A K-pop-first collectible platform built around transparent packs and
+verifiable onchain pulls. Iruka connects the excitement of opening a pack with
+a result collectors can check, save, and revisit.
 
-The website and all 14 documentation pages opened to public access on
-September 5, 2026. Select `Play Iruka` to enter the product, or open
-[`#home`](https://playiruka.space/#home) or
-[`#pull`](https://playiruka.space/#pull) directly. Browsing does not require
-sign-in; account and wallet actions retain their authentication requirements.
+[![Iruka — original blue vending machine and collectible pack artwork](./public/brand/iruka-x-banner-vending-rush.png)](https://playiruka.space)
 
-All Mintlify navigation groups and the separate pack reveal reference page
-are explicitly public. Website and documentation metadata allow search
-indexing. The production CSP permits the required Privy and WalletConnect
-connections while retaining the other browser security headers.
+[Try Monad](https://playiruka.space/?network=monad#pull) ·
+[Open Iruka](https://playiruka.space/#pull) ·
+[Product docs](https://docs.playiruka.space/overview) ·
+[Judging guide](./docs/JUDGING_GUIDE.md) ·
+[Monad integration](./docs/gitbook/technical/monad-testnet.mdx) ·
+[GIWA Contracts](./docs/gitbook/technical/giwa-testnet.mdx)
 
-The release was verified on desktop and mobile for public entry, direct links,
-history navigation, images, wallet options, and the email login screen. Actual
-sign-in and new onchain pulls were not performed during this access check.
+## The collectible experience
 
-## Product Flow
+<p align="center">
+  <img src="./src/assets/iruka-vending-machine-debut.png" width="24%" alt="Debut — orange Iruka vending machine" />
+  <img src="./src/assets/iruka-vending-machine-stage.png" width="24%" alt="Stage — gold Iruka vending machine" />
+  <img src="./src/assets/iruka-vending-machine-encore.png" width="24%" alt="Encore — blue Iruka vending machine" />
+  <img src="./src/assets/iruka-vending-machine-grail.png" width="24%" alt="Grail — rainbow Iruka vending machine" />
+</p>
 
-```text
-Vending -> Reveal -> Vault -> Marketplace -> Redemption
-```
+**Choose a pack → Check the odds → Open → Reveal → Keep the receipt**
 
-Collectors select a pack, review its published odds, request a pull, reveal the
-assigned inventory item, and then choose to keep, list, or redeem an eligible
-physical card.
+| Moment | What the collector gets |
+| --- | --- |
+| Vending | Pack selection, published rarity odds, batch identity and redemption status |
+| Pull | An embedded EVM wallet requests one committed inventory position |
+| Reveal | The assigned card appears after the contract result and matching event are confirmed |
+| Collection | The card and its request/fulfillment provenance persist, with an Explorer link after reload |
 
-## Current Scope
+The broader product connects **Vending → Reveal → Vault → Marketplace →
+Redemption**. Vault and trading interfaces are present; commercial settlement,
+verified physical custody and shipping remain release goals. Test pulls do not
+establish physical ownership or redemption rights.
 
-**Live**
+## Why the pull is verifiable
 
-- React and Vite product interface with English and Korean locales
-- Privy sign-in and per-user embedded wallets
-- Debut pack selection, odds review, pull, reveal, and account inventory
-- Source-verified `IrukaPackBatch` contract on GIWA Sepolia
-- Request and Keeper fulfillment receipts linked to GIWA Explorer
-- Marketplace, Vault, funding, and withdrawal product interfaces
+**Rules before purchase. Evidence before reveal. Recovery without repurchase.**
 
-**In validation**
+- **Committed batch:** supply, price, inventory root, odds commitment and draw-seed
+  root are recorded before the batch opens.
+- **Contract-controlled assignment:** each request reserves a draw; only the
+  configured Keeper can fulfill it with a valid committed server-seed proof
+  and inventory proof.
+- **A traceable result:** the browser checks the contract, matching fulfillment
+  event and inventory identity before showing the assigned card.
+- **A recoverable experience:** pending requests resume using the original request
+  ID. Trigger and scheduled recovery share an atomic fulfillment lease.
 
-- Physical inventory sourcing, intake, verification, custody, and grading
-- Market-value methodology and shipping operations
+The current mechanism uses committed server seeds and Merkle proofs. It does
+not claim VRF, production randomness assurance or a completed external audit.
 
-**Planned**
+## Monad
 
-- Canonical USDC settlement and marketplace contracts
-- One-to-one ERC-721 ownership for eligible vaulted inventory
-- Commercial packs, redemption operations, and licensed IP drops
+The Monad integration carries the existing collectible flow onto **Monad
+Testnet**, with dedicated configuration, commitments and Keeper operations.
+It is the Metropolis submission build, targeting **Consumer Products & Payments**.
 
-The public demo is a testnet product implementation. It does not claim that
-commercial payment, physical custody, shipping, or third-party partnerships
-are live. The detailed status and operating boundaries are maintained in the
-[product documentation](./docs/gitbook/overview.mdx).
+| Deployment | Status | Reference |
+| --- | --- | --- |
+| **Monad Testnet** · `10143` · MON | Source verified; batch committed; live browser Pull and restored receipt verified | [Technical status and release gates](./docs/gitbook/technical/monad-testnet.mdx) |
+| **GIWA Sepolia** · `91342` · test ETH | Existing source-verified contract and documented successful test pulls; default build | [Contract and receipts](./docs/gitbook/technical/giwa-testnet.mdx) |
+
+The Monad implementation includes:
+
+- Privy wallet configuration, MON balances and native transfers
+- Initial Debut batch `IRK-MON-2026-001`: 100 test positions, 0.00001 test MON
+- Independent encrypted manifest, fulfillment API, Blob leases and cron recovery
+- Bounded fulfillment-event queries for delayed requests on the public RPC
+- Saved request and fulfillment receipts, restored through the existing Summary
+- Chain-isolated pending requests, transfers and collections
+
+Missing Monad contract configuration disables Pull even in development. The
+[verified Monad contract](https://testnet.monadvision.com/address/0x51fbe474cb6e614dd5a47d3c93486028270212c0)
+is live on testnet; [request #1](https://testnet.monadvision.com/tx/0x47c1e60418ffb23c57432893d03291e0b2c3e59b381ca6a1c1cc920084c50caf)
+and its [fulfillment](https://testnet.monadvision.com/tx/0x364ac9fc19a48e672512d5d82333e475976d27d0910f42960a93cc79283b663a)
+were verified through the deployed browser flow on October 6, 2026. The 100 positions are
+test records, not 100 verified physical cards. GIWA evidence is kept separate.
 
 ## Architecture
 
-```text
-React + Vite
-  |-- Privy authentication and embedded wallet
-  |-- viem GIWA Sepolia client
-  |-- IrukaPackBatch request and receipt reads
-  |
-Vercel API
-  |-- authenticated Keeper fulfillment
-  |-- scheduled pending-request recovery
-  |
-Mintlify
-  `-- product, custody, policy, and contract documentation
-```
+![Iruka architecture: request a pull, reserve a draw, fulfill, verify, then reveal and collect](./docs/assets/iruka-architecture.svg)
 
-`IrukaPackBatch` commits supply, inventory and odds roots before pulls begin,
-reserves one position per request, and verifies the configured Keeper's
-committed server-seed proof before assignment. Contract behavior, deployment
-transactions, and current limitations are documented in
-[GIWA Contracts](./docs/gitbook/technical/giwa-testnet.mdx).
+The header selects GIWA Sepolia or Monad Testnet in the same app. Switching
+reloads the selected network, including its wallet configuration and RPC clients. Monad and GIWA use independent contracts,
+batch secrets, API routes and lease namespaces. Physical custody records and
+commercial settlement are outside this testnet contract.
 
-## Local Setup
+| Layer | Source |
+| --- | --- |
+| Deployment selection and wallet network | [src/activeDeployment.ts](./src/activeDeployment.ts) |
+| Pull, event confirmation and receipt persistence | [src/giwaPull.ts](./src/giwaPull.ts) · [src/giwaFulfillment.ts](./src/giwaFulfillment.ts) · [src/pullReceiptStorage.ts](./src/pullReceiptStorage.ts) |
+| Monad fulfillment and recovery | [api/monad](./api/monad) · [server/monad](./server/monad) |
+| Contract and operator tooling | [contracts](./contracts) · [scripts/monad](./scripts/monad) |
 
-Requirements:
+GIWA-named frontend modules retain compatibility exports and consume the active
+deployment descriptor. They also power the Monad flow.
 
-- Node.js `20.18.2` from [.nvmrc](./.nvmrc)
-- npm
-- Foundry for Solidity tests and contract operations
+## Run locally
+
+Use Node.js `24.14.0` from [.nvmrc](./.nvmrc), npm, and Foundry for contract work.
+Monad contract operations require Foundry **1.8 or later**.
 
 ```bash
 nvm use
 npm ci
 cp .env.example .env.local
-npm run dev
 ```
 
-Set `VITE_PRIVY_APP_ID` in `.env.local`. `VITE_PRIVY_CLIENT_ID` is optional.
-The checked-in `.env.example` contains the public GIWA configuration and empty
-placeholders for server-only values.
+Set `VITE_PRIVY_APP_ID` in `.env.local`; `VITE_PRIVY_CLIENT_ID` is optional.
+For Monad support in the shared app, set:
+
+```dotenv
+VITE_IRUKA_DEPLOYMENT=giwa
+VITE_MONAD_RPC_URL=https://testnet-rpc.monad.xyz
+VITE_MONAD_PACK_BATCH_ADDRESS=0x51fbe474cb6e614dd5a47d3c93486028270212c0
+```
+
+```bash
+npm run dev
+npm run build
+```
+
+The template defaults to GIWA. A complete Monad Pull also needs a deployed and
+committed batch, funded Keeper, same-origin API hosting, encrypted manifest,
+Blob storage and cron configuration. Server-only environment variables are
+listed in [.env.example](./.env.example). Previewing the frontend alone does not
+install those services.
 
 ## Verification
+
+[Latest release audit](./docs/RELEASE_AUDIT_2026-10-07.md): **391 passing tests**,
+both network builds, contract checks, dependency findings and recovery fixes.
+[Live Monad verification](./docs/MONAD_VERIFICATION.md) records five Pulls,
+browser interruption, scheduled recovery, concurrency and a native withdrawal.
 
 ```bash
 npm test
 npm run test:contracts
-npm run build
+VITE_IRUKA_DEPLOYMENT=giwa npm run build
+VITE_IRUKA_DEPLOYMENT=monad npm run build
+# Foundry 1.8+
+forge test --network monad
+# Read-only: no wallet or private manifest required
+node --experimental-strip-types scripts/monad/verify-live-evidence.mjs
 ```
 
-The browser tests cover authentication wiring, Vending data, GIWA request and
-recovery behavior, reveal state, account inventory, Marketplace, locale
-persistence, and responsive layout. Foundry tests cover contract permissions,
-commitments, request fulfillment, and concurrent pull behavior.
+Tests cover deployment isolation, request/event confirmation, delayed recovery,
+receipt restoration, native transfers, existing product flows and contract proof
+checks. Local RPC fixtures and contract tests are verification evidence, not
+live chain receipts.
 
-## Documentation
+## Product status and documentation
 
-Mintlify source lives in [docs/gitbook](./docs/gitbook). Preview it with:
+The public app supports English and Korean, browsing without sign-in, and
+Privy-authenticated account actions. Physical sourcing, verification, custody,
+grading and market-value methodology are in validation. ERC-721 ownership,
+USDC settlement, commercial trading, redemption, shipping and licensed drops
+remain planned.
 
-```bash
-npm install --global mint@latest
-cd docs/gitbook
-mint dev
-mint broken-links
-```
+- [Product scope and policies](./docs/gitbook/overview.mdx)
+- [Monad release gates](./docs/gitbook/technical/monad-testnet.mdx)
+- [Metropolis submission checklist](./docs/internal/metropolis-submission-2026.md)
+- [Repository feature map](./docs/FEATURE_MAP.md)
+- Working rules: [AGENTS.md](./AGENTS.md) · [CLAUDE.md](./CLAUDE.md) ·
+  [design.md](./design.md) · [sprint.md](./sprint.md)
 
-## Repository Rules
+Mintlify source lives in [docs/gitbook](./docs/gitbook). Preview it with
+`mint dev` and validate links with `mint broken-links` from that directory.
 
-- [AGENTS.md](./AGENTS.md) contains repository-wide product and engineering
-  constraints.
-- [CLAUDE.md](./CLAUDE.md) defines editing and verification rules.
-- [design.md](./design.md) defines the product design system.
-- [sprint.md](./sprint.md) defines the current GIWA review scope.
+## Build window and AI disclosure
+
+Iruka uses an existing foundation. The React/Vite app, Privy authentication,
+Reveal, collection/Vault and Marketplace interfaces, chain-neutral pack contract,
+and GIWA Sepolia deployment were built before this Monad work. The starting
+snapshot is [`c2cce94`](https://github.com/starlash7/iruka/commit/c2cce94).
+
+New work on October 6, 2026 includes the independent Monad build configuration,
+Keeper APIs and deployment tooling, isolated manifests and leases, MON balance
+and transfer routing, chain-isolated recovery/storage, persisted receipt
+provenance, bounded event scans, and integration tests. The `monad` branch
+preserves that history. Final eligibility under the existing-project/build-window
+rules belongs to the organizers; this disclosure is not an eligibility claim.
+
+AI coding assistants accessed through Conductor/Codex were used for planning,
+implementation, tests, reviews, documentation and the architecture diagram.
+AI assistance does not replace contract verification, inventory verification or
+human review. The project's direct external packages are attributed in
+[Third-party dependencies](./docs/THIRD_PARTY.md).
+
+## License
+
+Iruka-owned source code is licensed under [MIT](./LICENSE). Third-party packages
+retain their own terms. Brand marks and inventory photographs are not granted
+under the code license; see [attribution](./docs/THIRD_PARTY.md).
 
 ## Security
 
-Never commit deployer keys, Keeper keys, manifest keys, Privy secrets, or
-Vercel environment exports. `.env.local`, `.context/`, and `.vercel/` are
-ignored. Server secrets must never use a `VITE_` prefix because Vite exposes
-those variables to the browser bundle.
+Never commit deployer, Keeper or manifest keys, Privy secrets, or environment
+exports. `.env.local`, `.context/` and `.vercel/` are ignored. Server secrets
+must never use a `VITE_` prefix: Vite exposes those values to the browser.

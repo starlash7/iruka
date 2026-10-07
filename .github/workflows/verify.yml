@@ -1,0 +1,36 @@
+name: verify
+
+on:
+  push:
+    branches: [main, monad]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Monad configuration build
+        run: npm run build
+        env:
+          VITE_IRUKA_DEPLOYMENT: monad
+
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.8.0
+      - run: forge test
+      - run: forge test --network monad

@@ -97,3 +97,12 @@ test("storage restrictions do not interrupt a submitted account transfer", () =>
     clearPendingGiwaTransfer(restrictedStorage, walletAddress, transactionHash)
   );
 });
+
+test("denied browser storage getter does not crash transfer restoration", () => {
+  const previousWindow = globalThis.window;
+  globalThis.window = { get localStorage() { throw new DOMException("Blocked", "SecurityError"); } };
+  try {
+    assert.equal(getPendingGiwaTransfer(undefined, walletAddress), undefined);
+    assert.doesNotThrow(() => clearPendingGiwaTransfer(undefined, walletAddress));
+  } finally { globalThis.window = previousWindow; }
+});
