@@ -74,7 +74,9 @@ The Monad implementation includes:
 - Saved request and fulfillment receipts, restored through the existing Summary
 - Chain-isolated pending requests, transfers and collections
 
-Missing Monad contract configuration disables Pull even in development. The
+Missing Monad contract configuration disables Pull even in development.
+Release validation rejects a missing or different Monad address before emitting
+assets; it also checks both testnet RPC origins against the deployed CSP. The
 [verified Monad contract](https://testnet.monadvision.com/address/0x51fbe474cb6e614dd5a47d3c93486028270212c0)
 is live on testnet; [request #1](https://testnet.monadvision.com/tx/0x47c1e60418ffb23c57432893d03291e0b2c3e59b381ca6a1c1cc920084c50caf)
 and its [fulfillment](https://testnet.monadvision.com/tx/0x364ac9fc19a48e672512d5d82333e475976d27d0910f42960a93cc79283b663a)
@@ -134,16 +136,19 @@ install those services.
 
 ## Verification
 
-[Latest release audit](./docs/RELEASE_AUDIT_2026-10-07.md): **391 passing tests**,
+[Latest release audit](./docs/RELEASE_AUDIT_2026-10-07.md): **421 passing tests**,
 both network builds, contract checks, dependency findings and recovery fixes.
-[Live Monad verification](./docs/MONAD_VERIFICATION.md) records five Pulls,
-browser interruption, scheduled recovery, concurrency and a native withdrawal.
+[Latest Monad evidence](./docs/evidence/monad-testnet.json) records **six Pulls**
+and a block-anchored batch checkpoint. The
+[October 6 verification report](./docs/MONAD_VERIFICATION.md) preserves the
+earlier five-Pull checks, browser interruption, scheduled recovery, concurrency
+and native withdrawal.
 
 ```bash
 npm test
 npm run test:contracts
 VITE_IRUKA_DEPLOYMENT=giwa npm run build
-VITE_IRUKA_DEPLOYMENT=monad npm run build
+VITE_IRUKA_DEPLOYMENT=monad IRUKA_RELEASE_VALIDATE=1 npm run build
 # Foundry 1.8+
 forge test --network monad
 # Read-only: no wallet or private manifest required
@@ -154,6 +159,14 @@ Tests cover deployment isolation, request/event confirmation, delayed recovery,
 receipt restoration, native transfers, existing product flows and contract proof
 checks. Local RPC fixtures and contract tests are verification evidence, not
 live chain receipts.
+
+CI supplies the Monad address from the public evidence JSON. Local release
+validation uses the address configured in `.env.local`; Vercel production builds
+run the same gate automatically. Custom browser RPCs must use HTTPS and have
+their exact origin explicitly allowed in `vercel.json`'s `connect-src` directive.
+The configuration gate does not prove RPC availability or a signed wallet flow;
+the read-only verifier independently checks receipts and every recorded batch
+checkpoint at its explicit block, allowing later legitimate Pulls.
 
 ## Product status and documentation
 
