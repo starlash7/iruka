@@ -1,6 +1,6 @@
 ---
 title: "FAQ"
-description: "Answers about Iruka accounts, cards, odds, grading, GIWA, custody, and licensing."
+description: "Answers about Iruka accounts, cards, odds, grading, GIWA and Monad, custody, and licensing."
 icon: "circle-help"
 ---
 
@@ -56,11 +56,23 @@ New artwork or branded drops remain a separate licensed-IP process.
 No wallet extension is required to browse or sign in. Privy assigns every
 signed-in account a user-controlled Iruka Wallet, whether the collector uses
 email, Google, MetaMask, or another supported EVM login method. The Iruka
-Wallet submits GIWA Sepolia test pulls.
+Wallet submits test Pulls on the selected GIWA Sepolia or Monad Testnet network.
 
 An external wallet is optional. It can fund the Iruka Wallet or receive a
-same-chain withdrawal. Current transfers use GIWA Sepolia test ETH only;
+same-chain withdrawal. Current transfers use GIWA Sepolia test ETH or Monad
+Testnet MON according to the selected network;
 commercial payment support is planned and will be documented separately.
+
+## Which Networks Are Available?
+
+GIWA Sepolia (`91342`, test ETH) is the default. Monad Testnet (`10143`, test
+MON) is available from the header or [Monad Vending](https://playiruka.space/?network=monad#pull).
+Switching reloads the selected deployment; balances, pending requests,
+transfers and collections stay separate. It is not a bridge.
+
+[GIWA Contracts](/technical/giwa-testnet) and [Monad Testnet](/technical/monad-testnet)
+publish each contract and its real receipts. An explicitly selected Monad
+flow without a valid contract cannot substitute a locally assigned result.
 
 ## Are Iruka Cards Authentic?
 
@@ -72,7 +84,7 @@ seller claim or certificate number alone.
 ## How Can I Verify Pack Odds?
 
 Each production batch will publish its inventory snapshot, total supply,
-individual card odds, rarity-tier odds, and GIWA commitments. The current
+individual card odds, rarity-tier odds, and commitments on its selected network. The current
 testnet contract records the batch root, odds commitment, draw-seed root,
 requests, fulfillments, and remaining supply.
 
@@ -94,14 +106,18 @@ third-party grading.
 
 See [Grading and Verification](/product/grading-and-verification).
 
-## What Does GIWA Record?
+## What Do GIWA And Monad Record?
 
-The current GIWA Sepolia contract records pack-batch commitments, pull
+The independent GIWA Sepolia and Monad Testnet contracts record pack-batch commitments, pull
 requests, fulfillment proofs, assigned inventory commitments, and remaining
 supply. Card images, grading evidence, storage locations, personal data, and
 shipping addresses stay offchain.
 
-The current contract does not mint ERC-721 ownership or settle USDC.
+Neither testnet contract mints ERC-721 ownership or settles USDC.
+
+The [Monad verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)
+includes actual Pull and withdrawal receipts and a read-only verification
+command that needs no wallet or private manifest.
 
 ## Can I Receive The Physical Card?
 

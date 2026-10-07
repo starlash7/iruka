@@ -84,14 +84,15 @@ The production target is an atomic flow:
 5. The same physical item remains in custody under its existing `inventoryId`.
 6. Listing status closes and the Vault record updates.
 
-The current GIWA test contract does not perform this settlement and does not
-mint ownership tokens.
+Neither the GIWA Sepolia nor the Monad Testnet pack-batch contract performs
+this settlement or mints ownership tokens. A successful test Pull or native
+transfer is not a Marketplace purchase.
 
 ## Launch Disclosures
 
 Before trading becomes live, Iruka will publish:
 
-- Supported GIWA network and canonical payment asset
+- Supported production network and canonical payment asset for that deployment
 - Contract addresses and verified source
 - Platform, creator, payment, and withdrawal fees
 - Gas responsibility and transaction-failure handling

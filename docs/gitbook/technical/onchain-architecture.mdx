@@ -1,11 +1,11 @@
 ---
 title: "Onchain Architecture"
-description: "See what Iruka records on GIWA, what remains offchain, and what production contracts are still planned."
+description: "See what Iruka records on GIWA and Monad, what remains offchain, and what production contracts are still planned."
 icon: "network"
 ---
 
 > **Status: Live testnet architecture** - `IrukaPackBatch` records committed
-> test batches and fulfilled pulls on GIWA Sepolia. Commercial ownership and
+> test batches and fulfilled pulls independently on GIWA Sepolia and Monad Testnet. Commercial ownership and
 > settlement contracts are planned.
 
 Iruka uses the chain for commitments, state transitions, and receipts that
@@ -17,12 +17,12 @@ commitments.
 
 | Record | Location | Current state |
 | --- | --- | --- |
-| Batch inventory root | GIWA Sepolia | Live |
-| Odds commitment | GIWA Sepolia | Live |
-| Per-draw seed root | GIWA Sepolia | Live |
-| Pull request and reserved draw index | GIWA Sepolia | Live |
-| Fulfillment proof and assigned inventory commitment | GIWA Sepolia | Live |
-| Initial and remaining batch supply | GIWA Sepolia | Live |
+| Batch inventory root | Selected GIWA Sepolia or Monad Testnet contract | Live |
+| Odds commitment | Selected GIWA Sepolia or Monad Testnet contract | Live |
+| Per-draw seed root | Selected GIWA Sepolia or Monad Testnet contract | Live |
+| Pull request and reserved draw index | Selected GIWA Sepolia or Monad Testnet contract | Live |
+| Fulfillment proof and assigned inventory commitment | Selected GIWA Sepolia or Monad Testnet contract | Live |
+| Initial and remaining batch supply | Selected GIWA Sepolia or Monad Testnet contract | Live |
 | Original card images and metadata | Offchain | In validation |
 | Grading and authentication evidence | Offchain | In validation |
 | Physical intake and storage location | Offchain | In validation |
@@ -42,7 +42,7 @@ product:
 | Role | Current responsibility |
 | --- | --- |
 | Privy account | Authenticate with email, Google, or a supported EVM wallet |
-| Iruka Wallet | User-controlled embedded EVM wallet for GIWA pulls, test ETH balance, and same-chain transfers |
+| Iruka Wallet | User-controlled embedded EVM wallet for selected-network Pulls, test ETH/MON balance, and same-chain transfers |
 | Connected wallet | Optional external signer used as an Add funds source or default Withdraw destination |
 
 MetaMask login does not make the MetaMask address the Iruka balance address.
@@ -51,16 +51,17 @@ the user's private key.
 
 The current testnet interface does not provide a cross-chain deposit address,
 fiat on-ramp, custodial balance, or GIWA-to-Ethereum withdrawal route. `Add
-funds` and `Withdraw` mean direct GIWA Sepolia test ETH transfers between EVM
-addresses on the same chain.
+funds` and `Withdraw` mean direct test ETH transfers on GIWA Sepolia or test
+MON transfers on Monad Testnet between EVM addresses on that same chain.
 
 ## Current Testnet Contracts
 
 | Contract | Network | Purpose |
 | --- | --- | --- |
 | [`IrukaPackBatch`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334?tab=contract) | GIWA Sepolia, chain ID `91342` | Commit a test batch, reserve pulls, verify fulfillment proofs, and reduce available supply |
+| [`IrukaPackBatch`](https://testnet.monadvision.com/address/0x51fbe474cb6e614dd5a47d3c93486028270212c0) | Monad Testnet, chain ID `10143` | Independently commit a test batch, reserve pulls, verify fulfillment proofs, and reduce available supply |
 
-The current contract is a commit-reveal test contract. It is not a VRF. It
+Both deployments use the commit-reveal test contract. It is not a VRF. It
 does not mint ERC-721 ownership, and it does not settle USDC.
 
 ## Batch Commitment
@@ -77,7 +78,7 @@ proof material is revealed only as required for fulfillment.
 
 ## Pull Lifecycle
 
-1. The collector submits `requestPull` with the exact GIWA Sepolia test price.
+1. The collector submits `requestPull` with the exact selected-network native test price.
 2. The contract reserves the next draw index and emits `PullRequested`.
 3. The Keeper reads the request and selects the precommitted proof for that
    draw index.
@@ -95,6 +96,27 @@ before the Keeper signs a transaction.
 Concurrent requests reserve unique draw indices. Fulfillment follows the
 contract's deterministic without-replacement state so one position cannot be
 assigned twice.
+
+## Deployment Isolation And Recovery
+
+The header selects a network and reloads its wallet configuration and RPC
+clients. GIWA remains the default. Monad uses its own contract address, Debut
+batch, encrypted manifest, Keeper configuration, API routes and lease namespace.
+Pending Pulls, transfers and collections use chain-specific storage. Switching
+networks does not migrate GIWA records or bridge funds.
+
+The browser calls `/api/giwa/fulfill` or `/api/monad/fulfill` for the selected
+deployment. Trigger and cron recovery share that deployment's atomic lease.
+The result still needs canonical contract state, a matching fulfillment event
+and inventory identity before Reveal. Delayed scans use bounded pages; an RPC
+timeout leaves the request resumable rather than inventing a receipt.
+
+Each recovery cron currently operates one initial Debut batch, one queued
+request per invocation. More batches require resolving request IDs from events.
+An explicitly selected Monad flow without a valid contract fails closed.
+
+See [GIWA Contracts](/technical/giwa-testnet) and [Monad Testnet](/technical/monad-testnet)
+for deployment-specific configuration and evidence.
 
 ## Trust Boundaries
 

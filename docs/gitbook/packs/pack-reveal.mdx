@@ -5,12 +5,12 @@ icon: "sparkles"
 public: true
 ---
 
-> **Status: Live testnet behavior** - The reveal flow and GIWA receipt checks
+> **Status: Live testnet behavior** - The reveal flow and GIWA/Monad receipt checks
 > are implemented. Commercial inventory, custody, and redemption remain in
 > validation or planned.
 
 Reveal is the final step of an Iruka Vending pull. It does not assign the card
-or replace the GIWA result. It presents the card already returned by the local
+or replace the selected-network result. It presents the card already returned by the local
 fixture or verified `PullFulfilled` record, then hands the collector back to
 the existing Vault, Sell, and Ship flow.
 
@@ -120,13 +120,13 @@ The pack and pulled card remain visible together until that final wash.
 - Reduced-transparency replaces glass controls with opaque controls.
 - Missing image, audio, or haptic support cannot block the result.
 
-## GIWA Receipt
+## Testnet Receipt
 
-The browser shows a GIWA Sepolia Explorer link only when a real transaction
+The browser shows a selected-network Explorer link only when a real transaction
 hash exists. A request receipt proves that a draw position was reserved; the
 assigned card is proven only after `PullFulfilled`.
 
-For a configured GIWA batch, Reveal remains closed until the browser reads the
+For a configured GIWA Sepolia or Monad Testnet batch, Reveal remains closed until the browser reads the
 fulfilled request, finds its canonical `PullFulfilled` transaction, and
 matches the returned inventory commitment to the local card at that inventory
 index. A pending request is checked again without submitting a second pull.
@@ -139,7 +139,10 @@ source of truth if the endpoint is delayed or temporarily unavailable.
 
 The local fixture flow can run the same reveal without a transaction. It must
 not display a fabricated contract address, request ID, block number, or
-Explorer URL.
+Explorer URL. An explicitly selected Monad deployment without a valid contract
+never falls back to a locally assigned result. Saved results retain their
+actual network and receipt provenance after refresh; a GIWA receipt cannot
+serve as Monad evidence.
 
 ## Source Boundaries
 
@@ -178,6 +181,6 @@ boundary between the persistent reveal and Summary.
 - The explicit Skip and muted sound controls remain available.
 - Reduced-motion completes through the `300ms` static-card path.
 - Summary remains open until the collector continues.
-- A configured GIWA pull reveals only inventory committed by
+- A configured GIWA or Monad Pull reveals only inventory committed by
   `PullFulfilled`.
-- Explorer links are backed by real GIWA Sepolia transaction hashes.
+- Explorer links are backed by real transaction hashes on the selected network.
