@@ -41,6 +41,13 @@ deployer credentials and the manifest encryption key remain server-only.
 The Monad manifest uses independent draw seeds and commitments. Requests,
 collection records and fulfillment leases are isolated from GIWA.
 
+Vercel production builds and CI release validation require the Monad contract
+address to match the public deployment evidence. To run this gate locally, use
+`IRUKA_RELEASE_VALIDATE=1 npm run build` with the browser address configured.
+Both selectable networks are checked even when GIWA is the default. Custom
+browser RPCs must use HTTPS and have their exact origin explicitly allowed by
+the `connect-src` policy in `vercel.json`.
+
 The browser triggers `/api/monad/fulfill`, then confirms the actual contract
 result and matching event before Reveal. Scheduled recovery operates one initial
 Debut batch; additional batches need a recovery design that resolves global
@@ -102,11 +109,22 @@ commercial trading, custody, shipping or VRF is claimed.
 
 ## Review report
 
-The [public verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)
-contains 377 passing automated tests, a read-only receipt verifier, scheduled/browser
+The [October 6 verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)
+records 377 passing automated tests, a read-only receipt verifier, scheduled/browser
 recovery observations and the additional concurrent API test for Pulls #4/#5.
 Both fulfilled exactly once with inventory indices 32 and 37; 95 positions
-remained at the final five-Pull snapshot.
+remained at that five-Pull snapshot.
+
+The [October 7 release audit](https://github.com/starlash7/iruka/blob/monad/docs/RELEASE_AUDIT_2026-10-07.md)
+and [latest public JSON](https://github.com/starlash7/iruka/blob/monad/docs/evidence/monad-testnet.json)
+include Pull #6, assigned index 75, and 94 remaining positions. The latest
+checkpoint is anchored at block `68874602`; the historical five-Pull checkpoint
+is retained at `68637128`. These anchors describe state after fulfillment, not
+the original observation capture blocks. The read-only verifier checks all six
+receipts and all recorded checkpoint counters at their stated blocks. Later
+Pulls can change live counters without invalidating those historical checks.
+Build configuration checks do not replace a signed browser Pull or live RPC
+verification.
 
 ## Native Withdrawal Verification
 

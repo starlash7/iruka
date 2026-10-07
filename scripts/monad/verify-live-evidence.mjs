@@ -10,6 +10,35 @@ const abi = [...pullAbi,
   parseAbiItem('event BatchCommitted(bytes32 indexed batchId, uint32 totalSupply, uint256 priceWei, bytes32 inventoryRoot, bytes32 oddsCommitment, bytes32 drawSeedRoot)')];
 const normalize = (value) => value?.toLowerCase();
 
+function getCheckpointBlock(snapshot) {
+  assert.match(snapshot?.blockNumber ?? '', /^[1-9]\d*$/, 'Batch checkpoint requires a positive block anchor');
+  return BigInt(snapshot.blockNumber);
+}
+
+async function verifyBatchCheckpoints(client, evidence) {
+  const latestBlock = getCheckpointBlock(evidence.batchSnapshot);
+  for (const pull of evidence.pulls) {
+    assert.ok(latestBlock >= BigInt(pull.fulfillmentBlock), 'Latest checkpoint precedes a recorded fulfillment');
+  }
+  const snapshots = [evidence.batchSnapshot, ...(evidence.historicalBatchSnapshots ?? [])];
+  const release = evidence.releaseAuditObservation;
+  if (release?.batch) {
+    if (release.requestId !== undefined) {
+      const pull = evidence.pulls.find(entry => entry.requestId === release.requestId);
+      assert.ok(pull, 'Release checkpoint must reference a recorded Pull');
+      assert.ok(getCheckpointBlock(release.batch) >= BigInt(pull.fulfillmentBlock), 'Release checkpoint precedes its Pull fulfillment');
+    }
+    snapshots.push(release.batch);
+  }
+  for (const snapshot of snapshots) {
+    const batch = await client.readContract({ address: evidence.contract, abi, functionName: 'getBatch',
+      args: [evidence.batch.id], blockNumber: getCheckpointBlock(snapshot) });
+    for (const [field, index] of [['available', 1], ['remaining', 2], ['nextDrawIndex', 7], ['nextFulfillIndex', 8]]) {
+      assert.equal(batch[index], snapshot[field], `Batch checkpoint ${field} differs at block ${snapshot.blockNumber}`);
+    }
+  }
+}
+
 export async function verifyLiveEvidence(client, evidence) {
   assert.equal(evidence.chainId, 10143, 'Evidence must describe Monad Testnet');
   assert.equal(await client.getChainId(), evidence.chainId, 'RPC chain does not match evidence');
@@ -35,7 +64,11 @@ export async function verifyLiveEvidence(client, evidence) {
       }
     }
   }
-  const batch = await client.readContract({ address: evidence.contract, abi, functionName: 'getBatch', args: [evidence.batch.id] });
+  await verifyBatchCheckpoints(client, evidence);
+  const blockNumber = await client.getBlockNumber();
+  assert.ok(blockNumber >= getCheckpointBlock(evidence.batchSnapshot), 'RPC head precedes the latest verified checkpoint');
+  const batch = await client.readContract({ address: evidence.contract, abi, functionName: 'getBatch',
+    args: [evidence.batch.id], blockNumber });
   assert.ok(committedBatch, 'Batch commitment event required');
   for (const [field, index] of [['totalSupply', 0], ['priceWei', 3], ['inventoryRoot', 4], ['oddsCommitment', 5], ['drawSeedRoot', 6]]) {
     assert.equal(normalize(String(committedBatch.args[field])), normalize(String(batch[index])), `Committed ${field} differs`);
@@ -82,7 +115,7 @@ export async function verifyLiveEvidence(client, evidence) {
     assert.ok(!inventoryIndices.has(entry.inventoryIndex), 'Inventory was assigned twice');
     inventoryIndices.add(entry.inventoryIndex);
   }
-  return { chainId: evidence.chainId, contract: evidence.contract, verifiedPulls: evidence.pulls.length,
+  return { chainId: evidence.chainId, contract: evidence.contract, blockNumber: blockNumber.toString(), verifiedPulls: evidence.pulls.length,
     available: batch[1], remaining: batch[2], nextDrawIndex: batch[7], nextFulfillIndex: batch[8] };
 }
 

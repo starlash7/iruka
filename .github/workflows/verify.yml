@@ -21,9 +21,11 @@ jobs:
       - run: npm test
       - run: npm run build
       - name: Monad configuration build
-        run: npm run build
+        run: |
+          VITE_MONAD_PACK_BATCH_ADDRESS="$(node -p "require('./docs/evidence/monad-testnet.json').contract")" npm run build
         env:
           VITE_IRUKA_DEPLOYMENT: monad
+          IRUKA_RELEASE_VALIDATE: "1"
 
   contracts:
     runs-on: ubuntu-latest

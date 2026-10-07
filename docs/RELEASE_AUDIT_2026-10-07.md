@@ -24,7 +24,7 @@ New failure cases were observed failing before their fixes and passing afterward
 Wallet/RPC/Blob regression boundaries use controlled adapters; these tests do
 not count as new live transactions or a mounted Privy end-to-end test.
 
-## Observed checks
+## Initial audit checks
 
 | Check | Actual result |
 | --- | --- |
@@ -117,3 +117,56 @@ successfully and exactly one matching fulfillment event assigned index 75.
 At 04:24:11 UTC the batch had 94 available/remaining positions and both draw
 counters were 6. The original five inventory indices and index 75 are unique.
 The read-only verifier now checks all six requests.
+
+## Evidence and release configuration follow-up
+
+A later review of `ccb338b` identified three validation gaps still present after
+the documentation cleanup: the top-level batch snapshot retained five-Pull
+counters, CI compiled Monad without a contract address, and custom browser RPCs
+could be excluded by the deployed CSP. The original snapshot was a dated
+October 6 observation; its receipts were valid, but the latest JSON and README
+did not clearly distinguish it from the six-Pull record.
+
+The latest `batchSnapshot` now records six completed Pulls and 94 remaining
+positions at checkpoint block `68874602`. The five-Pull checkpoint at
+`68637128` remains in `historicalBatchSnapshots`. These exact state anchors are
+after the corresponding fulfillment transactions; they are not invented
+original observation capture blocks. The original observation timestamps and
+transaction hashes remain preserved.
+
+The verifier now compares available, remaining, nextDrawIndex and
+nextFulfillIndex for every snapshot using a block-pinned `getBatch` call.
+Missing anchors, changed counters, unavailable historical RPC state, a latest
+checkpoint predating a recorded fulfillment, a stale RPC head and an invalid
+release checkpoint/Pull relationship fail verification. Later legitimate Pulls
+may change live counters without invalidating historical checkpoints. The
+returned current counters include their separately captured block number.
+
+`IRUKA_RELEASE_VALIDATE=1` and Vercel production builds require the browser's
+Monad address to match the public deployment evidence. Both selectable
+networks' browser RPCs must use HTTPS and have their exact origins explicitly
+allowed by `vercel.json`'s `connect-src`. CI derives its address from the public
+JSON and enables this gate. Ordinary development builds retain the existing
+disabled-Pull behavior when the Monad address is missing. The policy was not
+broadened to wildcard RPC origins.
+
+| Follow-up check | Actual result |
+| --- | --- |
+| `npm test` | 421 passed, 0 failed, 0 skipped; 30 additional configuration/checkpoint regressions |
+| Monad build with evidenced address and `IRUKA_RELEASE_VALIDATE=1` | Passed; TypeScript and Vite |
+| Build with privately downloaded Iruka production environment and release gate enabled | Passed; GIWA default, evidenced Monad browser address |
+| Production HTTP/CSP comparison against configured browser RPCs | App 200; both RPC origins allowed by the deployed header |
+| Foundry 1.8 default and Monad contract modes | 13 passed in each mode |
+| Read-only verifier at 05:20:38 UTC, block `68885831` | Six Pulls, all recorded checkpoints and exact 0.001 test MON withdrawal verified; counters 94/94/6/6 |
+| Mintlify `mint validate` and `mint broken-links` | Build valid; no broken links |
+| `git diff --check` | Passed |
+
+The new failure assertions were observed failing before their corresponding
+fixes. Production environment exports remain ignored under `.context`; secret
+values were not published. The downloaded frontend configuration check does
+not validate server-only secrets or prove a new signed wallet transaction.
+No CUA, new login, browser signing or fresh Pull was performed in this
+follow-up. Existing signed-flow observations remain historical evidence.
+Build configuration validation, receipt verification and browser end-to-end
+testing are separate checks. Existing dependency and bundle-size limitations
+above remain applicable.
