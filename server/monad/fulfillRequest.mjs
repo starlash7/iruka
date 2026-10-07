@@ -2,6 +2,7 @@ import {
   createPublicClient,
   createWalletClient,
   http,
+  encodeFunctionData,
   isAddress,
   isHex
 } from "viem";
@@ -84,21 +85,18 @@ export async function fulfillMonadPullFromEnvironment(
       });
       return { inventoryIndex: preview[1] };
     },
-    submitFulfillment: async ({
-      requestId: id,
-      serverSeed,
-      seedProof,
-      inventoryId,
-      inventoryProof
-    }) => {
-      const transactionHash = await walletClient.writeContract({
-        address: contractAddress,
-        abi: packBatchAbi,
-        functionName: "fulfillPull",
-        args: [id, serverSeed, seedProof, inventoryId, inventoryProof]
+    prepareFulfillment: async ({ requestId: id, serverSeed, seedProof, inventoryId, inventoryProof }) => {
+      const transaction = await walletClient.prepareTransactionRequest({
+        to: contractAddress,
+        data: encodeFunctionData({
+          abi: packBatchAbi,
+          functionName: "fulfillPull",
+          args: [id, serverSeed, seedProof, inventoryId, inventoryProof]
+        })
       });
-      return transactionHash;
+      return account.signTransaction({ ...transaction, chainId: chain.id });
     },
+    submitFulfillment: (serializedTransaction) => walletClient.sendRawTransaction({ serializedTransaction }),
     releaseLease: (_id, lease) => releaseFulfillmentLease(leaseKey, lease),
     renewLease: (_id, lease) => renewFulfillmentLease(leaseKey, lease)
   });

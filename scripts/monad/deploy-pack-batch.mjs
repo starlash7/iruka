@@ -1,12 +1,12 @@
 import { readFile } from "node:fs/promises";
-import { createPublicClient, createWalletClient, http, isAddress, isHex, parseAbi } from "viem";
+import { createPublicClient, createWalletClient, http, isAddress, isHex, parseAbi, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { assertMonadTestnet, getMonadTestnetChain, MONAD_EXPLORER_URL } from "../../server/monad/monadTestnetChain.mjs";
 import { compileMonadContract, verifyMonadContract } from "./deploymentForge.mjs";
 
 const privateKey = process.env.MONAD_DEPLOYER_PRIVATE_KEY;
 const operator = process.env.IRUKA_MONAD_KEEPER_ADDRESS;
-if (!isAddress(operator) || !isHex(privateKey) || privateKey.length !== 66) {
+if (!isAddress(operator) || operator.toLowerCase() === zeroAddress || !isHex(privateKey) || privateKey.length !== 66) {
   throw new Error("Set MONAD_DEPLOYER_PRIVATE_KEY and IRUKA_MONAD_KEEPER_ADDRESS before Monad deployment");
 }
 const account = privateKeyToAccount(privateKey);

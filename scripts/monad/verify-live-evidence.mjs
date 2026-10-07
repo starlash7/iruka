@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-import { createPublicClient, http, parseEventLogs } from 'viem';
+import { createPublicClient, http, parseAbiItem, parseEventLogs, zeroAddress } from 'viem';
 import { monadTestnet } from 'viem/chains';
-import { giwaPackBatchAbi as abi } from '../../src/giwaPackBatch.ts';
+import { giwaPackBatchAbi as pullAbi } from '../../src/giwaPackBatch.ts';
 
+const abi = [...pullAbi,
+  parseAbiItem('event OperatorUpdated(address indexed previousOperator, address indexed newOperator)'),
+  parseAbiItem('event BatchCommitted(bytes32 indexed batchId, uint32 totalSupply, uint256 priceWei, bytes32 inventoryRoot, bytes32 oddsCommitment, bytes32 drawSeedRoot)')];
 const normalize = (value) => value?.toLowerCase();
 
 export async function verifyLiveEvidence(client, evidence) {
@@ -12,15 +15,31 @@ export async function verifyLiveEvidence(client, evidence) {
   assert.equal(await client.getChainId(), evidence.chainId, 'RPC chain does not match evidence');
   const code = await client.getBytecode({ address: evidence.contract });
   assert.ok(code && code !== '0x', 'Contract must have deployed code');
+  let committedBatch;
   for (const [step, hash] of Object.entries(evidence.setupTransactions)) {
     const receipt = await client.getTransactionReceipt({ hash });
     assert.equal(receipt.status, 'success', `${step} receipt failed`);
     assert.equal(normalize(receipt.transactionHash), normalize(hash), `${step} receipt hash differs`);
     if (step === 'deployment') {
       assert.equal(normalize(receipt.contractAddress), normalize(evidence.contract), 'Deployment address differs');
+    } else {
+      assert.equal(normalize(receipt.to), normalize(evidence.contract), `${step} setup contract differs`);
+      const events = parseEventLogs({ abi, logs: (receipt.logs ?? []).filter(log => normalize(log.address) === normalize(evidence.contract)) });
+      if (step === 'operator') {
+        const event = events.find(log => log.eventName === 'OperatorUpdated');
+        assert.ok(event, 'Operator setup event missing');
+        assert.notEqual(normalize(event.args.newOperator), zeroAddress, 'Operator cannot be zero');
+      } else if (step === 'commitBatch') {
+        committedBatch = events.find(log => log.eventName === 'BatchCommitted' && normalize(log.args.batchId) === normalize(evidence.batch.id));
+        assert.ok(committedBatch, 'Matching batch commitment event missing');
+      }
     }
   }
   const batch = await client.readContract({ address: evidence.contract, abi, functionName: 'getBatch', args: [evidence.batch.id] });
+  assert.ok(committedBatch, 'Batch commitment event required');
+  for (const [field, index] of [['totalSupply', 0], ['priceWei', 3], ['inventoryRoot', 4], ['oddsCommitment', 5], ['drawSeedRoot', 6]]) {
+    assert.equal(normalize(String(committedBatch.args[field])), normalize(String(batch[index])), `Committed ${field} differs`);
+  }
   assert.equal(batch[0], evidence.batch.initialSupply, 'Batch supply differs');
   assert.equal(batch[3].toString(), evidence.batch.priceWei, 'Batch price differs');
   assert.equal(normalize(batch[4]), normalize(evidence.batch.inventoryRoot), 'Inventory root differs');

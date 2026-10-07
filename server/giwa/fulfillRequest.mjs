@@ -2,6 +2,7 @@ import {
   createPublicClient,
   createWalletClient,
   http,
+  encodeFunctionData,
   isAddress,
   isHex
 } from "viem";
@@ -21,6 +22,7 @@ export async function fulfillPullRequest({
   manifest,
   requestId,
   previewDraw,
+  prepareFulfillment = async (input) => input,
   readBatch,
   readPull,
   releaseLease = async () => undefined,
@@ -62,32 +64,29 @@ export async function fulfillPullRequest({
       );
     }
 
+    const preparedFulfillment = await prepareFulfillment({
+      inventoryId: inventory.inventoryId,
+      inventoryProof: inventory.proof,
+      requestId,
+      seedProof: drawSeed.proof,
+      serverSeed: drawSeed.seed
+    });
     const renewedLease = await renewLease(requestId, lease);
     if (!renewedLease) return { status: "pending" };
     lease = renewedLease;
     keepLease = true;
 
-    try {
-      const transactionHash = await submitFulfillment({
-        inventoryId: inventory.inventoryId,
-        inventoryProof: inventory.proof,
-        requestId,
-        seedProof: drawSeed.proof,
-        serverSeed: drawSeed.seed
-      });
-      return {
-        status: "submitted",
-        transactionHash,
-        inventoryId: inventory.inventoryId,
-        inventoryIndex: inventory.index
-      };
-    } catch (error) {
-      const latestPull = await readPull(requestId);
-      if (latestPull.fulfilled) {
-        return getFulfilledResult(latestPull);
-      }
-      throw error;
-    }
+    const transactionHash = await submitFulfillment(preparedFulfillment);
+    return {
+      status: "submitted",
+      transactionHash,
+      inventoryId: inventory.inventoryId,
+      inventoryIndex: inventory.index
+    };
+  } catch (error) {
+    const latestPull = await readPull(requestId);
+    if (latestPull.fulfilled) return getFulfilledResult(latestPull);
+    throw error;
   } finally {
     if (!keepLease) await releaseLease(requestId, lease);
   }
@@ -156,21 +155,18 @@ export async function fulfillGiwaPullFromEnvironment(
       });
       return { inventoryIndex: preview[1] };
     },
-    submitFulfillment: async ({
-      requestId: id,
-      serverSeed,
-      seedProof,
-      inventoryId,
-      inventoryProof
-    }) => {
-      const transactionHash = await walletClient.writeContract({
-        address: contractAddress,
-        abi: packBatchAbi,
-        functionName: "fulfillPull",
-        args: [id, serverSeed, seedProof, inventoryId, inventoryProof]
+    prepareFulfillment: async ({ requestId: id, serverSeed, seedProof, inventoryId, inventoryProof }) => {
+      const transaction = await walletClient.prepareTransactionRequest({
+        to: contractAddress,
+        data: encodeFunctionData({
+          abi: packBatchAbi,
+          functionName: "fulfillPull",
+          args: [id, serverSeed, seedProof, inventoryId, inventoryProof]
+        })
       });
-      return transactionHash;
+      return account.signTransaction({ ...transaction, chainId: chain.id });
     },
+    submitFulfillment: (serializedTransaction) => walletClient.sendRawTransaction({ serializedTransaction }),
     releaseLease: (_id, lease) => releaseFulfillmentLease(leaseKey, lease),
     renewLease: (_id, lease) => renewFulfillmentLease(leaseKey, lease)
   });

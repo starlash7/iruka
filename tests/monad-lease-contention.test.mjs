@@ -157,3 +157,59 @@ test("overlapping browser and recovery triggers submit each pending draw once in
   assert.equal((await trigger(2n)).status, "fulfilled");
   assert.deepEqual(submissions, [1n, 2n]);
 });
+
+
+test("slow transaction preparation cannot broadcast after its lease is replaced", async () => {
+  const store = createBlobStore();
+  let prepared = false, sends = 0, replacement;
+  const result = await fulfillPullRequest({
+    manifest, requestId: 1n, ...getLeaseCallbacks(store, 1n),
+    readPull: async () => ({ batchId, drawIndex: 0, fulfilled: false }),
+    readBatch: async () => ({ nextFulfillIndex: 0 }),
+    previewDraw: async () => ({ inventoryIndex: 0 }),
+    prepareFulfillment: async () => {
+      prepared = true;
+      store.advanceTime(120001);
+      replacement = await acquireFulfillmentLease(leaseKey, store.options);
+      return 'signed-transaction';
+    },
+    submitFulfillment: async () => { sends++; return 'transaction'; }
+  });
+  assert.equal(prepared, true, 'real preparation must precede final fencing');
+  assert.equal(result.status, 'pending');
+  assert.equal(sends, 0);
+  assert.ok(replacement);
+  assert.equal((await store.operations.head(leaseKey)).etag, replacement.etag);
+});
+
+test("transaction preparation failure releases the lease without sending", async () => {
+  const store = createBlobStore();
+  let sends = 0;
+  await assert.rejects(fulfillPullRequest({
+    manifest, requestId: 1n, ...getLeaseCallbacks(store, 1n),
+    readPull: async () => ({ batchId, drawIndex: 0, fulfilled: false }),
+    readBatch: async () => ({ nextFulfillIndex: 0 }),
+    previewDraw: async () => ({ inventoryIndex: 0 }),
+    prepareFulfillment: async () => { throw new Error('RPC preparation failed'); },
+    submitFulfillment: async () => { sends++; return 'transaction'; }
+  }), /RPC preparation failed/);
+  assert.equal(sends, 0);
+  await assert.rejects(store.operations.head(leaseKey), BlobNotFoundError);
+});
+
+
+test("confirmation during transaction preparation returns the existing fulfillment", async () => {
+  const store = createBlobStore();
+  let reads = 0, sends = 0;
+  const result = await fulfillPullRequest({
+    manifest, requestId: 1n, ...getLeaseCallbacks(store, 1n),
+    readPull: async () => ({ batchId, drawIndex: 0, fulfilled: ++reads > 1, inventoryId, inventoryIndex: 0 }),
+    readBatch: async () => ({ nextFulfillIndex: 0 }),
+    previewDraw: async () => ({ inventoryIndex: 0 }),
+    prepareFulfillment: async () => { throw new Error('PullAlreadyFulfilled during gas estimation'); },
+    submitFulfillment: async () => { sends++; return 'transaction'; }
+  });
+  assert.deepEqual(result, { status: 'fulfilled', inventoryId, inventoryIndex: 0 });
+  assert.equal(sends, 0);
+  await assert.rejects(store.operations.head(leaseKey), BlobNotFoundError);
+});

@@ -156,3 +156,11 @@ test("fresh-contract guard scans bounded ranges from verified deployment receipt
   await assert.rejects(assertFreshMonadContract({...client,getLogs:async () => [{}]},address,`0x${"2".repeat(64)}`), /exactly one batch/);
   await assert.rejects(assertFreshMonadContract(client,`0x${"3".repeat(40)}`,`0x${"2".repeat(64)}`), /deployment receipt/);
 });
+
+
+test("Monad deploy rejects a zero Keeper before decoding credentials or making RPC calls", async () => {
+  await assert.rejects(run(process.execPath, [new URL("../scripts/monad/deploy-pack-batch.mjs", import.meta.url).pathname], {
+    env: { ...process.env, MONAD_DEPLOYER_PRIVATE_KEY: `0x${"00".repeat(32)}`,
+      IRUKA_MONAD_KEEPER_ADDRESS: `0x${"00".repeat(20)}`, MONAD_TESTNET_RPC_URL: "http://127.0.0.1:1" }
+  }), /IRUKA_MONAD_KEEPER_ADDRESS/);
+});
