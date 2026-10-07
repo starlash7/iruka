@@ -100,7 +100,8 @@ assigned twice.
 ## Deployment Isolation And Recovery
 
 The header selects a network and reloads its wallet configuration and RPC
-clients. GIWA remains the default. Monad uses its own contract address, Debut
+clients. The public site opens Monad Testnet by default; GIWA remains selectable.
+Monad uses its own contract address, Debut
 batch, encrypted manifest, Keeper configuration, API routes and lease namespace.
 Pending Pulls, transfers and collections use chain-specific storage. Switching
 networks does not migrate GIWA records or bridge funds.

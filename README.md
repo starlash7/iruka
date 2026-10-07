@@ -128,7 +128,10 @@ npm run dev
 npm run build
 ```
 
-The template defaults to GIWA. A complete Monad Pull also needs a deployed and
+The public site opens Monad Testnet by default; `vercel.json` sets this for every
+deployment. The local template defaults to GIWA; set `VITE_IRUKA_DEPLOYMENT=monad`
+to use Monad locally. Explicit `?network=giwa` or `?network=monad` links override
+the default in either environment. A complete Monad Pull also needs a deployed and
 committed batch, funded Keeper, same-origin API hosting, encrypted manifest,
 Blob storage and cron configuration. Server-only environment variables are
 listed in [.env.example](./.env.example). Previewing the frontend alone does not
