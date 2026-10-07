@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 import { createServer } from 'vite';
 
 async function loadNetwork(search = '', defaultNetwork = 'giwa') {
@@ -20,6 +21,17 @@ async function loadNetwork(search = '', defaultNetwork = 'giwa') {
     else globalThis.window = previous;
   }
 }
+
+test('the public deployment opens Monad without a URL network selection', async () => {
+  const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
+  const defaultNetwork = config.buildCommand?.match(/(?:^|\s)VITE_IRUKA_DEPLOYMENT=(\w+)/)?.[1] ?? 'giwa';
+  const [, descriptor, pull] = await loadNetwork('', defaultNetwork);
+  assert.equal(descriptor.activeDeployment.id, 'monad');
+  assert.equal(descriptor.activeChain.id, 10143);
+  assert.equal(pull.getGiwaPackBatchAddress(), '0x0000000000000000000000000000000000000002');
+  assert.equal(descriptor.activeDeployment.allowFixturePull, false);
+  assert.equal(descriptor.getDeploymentStorageKey('collection', '0xABC'), 'iruka:collection:monad:10143:0xabc');
+});
 
 test('one build selects each network, contract and explorer from the URL', async () => {
   const [, monad, monadPull] = await loadNetwork('?network=monad');

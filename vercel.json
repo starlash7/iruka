@@ -1,4 +1,5 @@
 {
+  "buildCommand": "VITE_IRUKA_DEPLOYMENT=monad npm run build",
   "functions": {
     "api/monad/fulfill.mjs": {
       "includeFiles": "server/monad/manifests/**"
