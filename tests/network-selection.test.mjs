@@ -55,6 +55,12 @@ test('network control exposes both testnets and locks during an operation', asyn
     assert.match(html, /GIWA Sepolia/);
     assert.match(html, /Monad Testnet/);
     assert.match(html, /disabled/);
-    assert.match(html, /aria-label="Network"/);
+    assert.match(html, /aria-label="Network: GIWA Sepolia"/);
+    assert.match(html, /aria-haspopup="menu"/);
+    assert.match(html, /role="menuitemradio"/);
+    assert.match(html, /aria-checked="true"/);
+    assert.match(html, /src="\/assets\/wallet-monad\.svg"/);
+    assert.match(html, /src="\/assets\/wallet-giwa\.png"/);
+    assert.doesNotMatch(html, /<select/);
   } finally { await server.close(); }
 });

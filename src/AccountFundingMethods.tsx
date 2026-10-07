@@ -26,7 +26,7 @@ export function AccountFundingMethods({
           <small>{copy.giwaSepolia} · {copy.testEth}</small>
         </span>
         <span className="account-funding-method-marks">
-          <AccountAssetMark kind={activeDeployment.id === "monad" ? "monad" : "ethereum"} />
+          <AccountAssetMark kind={activeDeployment.id === "monad" ? "monad-token" : "ethereum"} />
           {activeDeployment.id === "giwa" ? <AccountAssetMark kind="giwa" /> : null}
           <ChevronRight size={18} />
         </span>
