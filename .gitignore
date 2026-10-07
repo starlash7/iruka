@@ -3,6 +3,9 @@ dist
 .DS_Store
 .conductor/settings.local.toml
 .context/
+docs/internal/
+/docs/JUDGING_GUIDE.md
+/GASOK_PHASE4.md
 .env
 .env.local
 npm-debug.log*
