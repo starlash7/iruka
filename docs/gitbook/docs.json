@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
   "name": "Iruka",
-  "description": "Product documentation for Iruka's K-pop-first fandom collectible packs, verified custody, marketplace trading, and physical redemption on GIWA.",
+  "description": "Product documentation for Iruka's collectible flow, verified Pull receipts on GIWA Sepolia and Monad Testnet, and planned physical custody, trading, and redemption.",
   "colors": {
     "primary": "#1677FF",
     "light": "#20C7DF",
@@ -57,7 +57,8 @@
         "public": true,
         "pages": [
           "technical/onchain-architecture",
-          "technical/giwa-testnet"
+          "technical/giwa-testnet",
+          "technical/monad-testnet"
         ]
       }
     ]

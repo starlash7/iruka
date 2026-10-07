@@ -1,12 +1,12 @@
 ---
 title: "Iruka Overview"
-description: "Understand Iruka's K-pop-first fandom collectible product, business direction, and current GIWA execution."
+description: "Understand Iruka's K-pop-first fandom collectible product, business direction, and current GIWA and Monad testnet execution."
 icon: "house"
 ---
 
 > **한눈에 보기** - Iruka는 K-pop 포토카드에서 시작해 트로트·치어리더·
 > 스포츠까지 확장하는 팬 컬렉터블 인프라입니다. 팩 선택부터 검증된 실물
-> 보관, 거래, 배송까지 하나로 연결합니다. 현재 공개 버전은 GIWA Sepolia에서
+> 보관, 거래, 배송까지 하나로 연결합니다. 현재 공개 버전은 GIWA Sepolia와 Monad Testnet에서
 > Pull과 Reveal을 검증하며, 실물 Vault와 상업 거래는 운영 검증 이후 엽니다.
 
 ## Product Vision
@@ -81,7 +81,7 @@ sources, category model, and claim boundaries.
   </Step>
   <Step title="Reveal">
     Pull one committed position and reveal the assigned card with a transaction
-    receipt when the pack runs on GIWA.
+    receipt on the selected GIWA Sepolia or Monad Testnet deployment.
   </Step>
   <Step title="Vault">
     Connect the digital record to the same physical item only after intake,
@@ -124,7 +124,7 @@ community as permission to create commercial merchandise. See
 
 | Status | Scope | References |
 | --- | --- | --- |
-| **Live** | Web application, Privy sign-in, GIWA Sepolia pack-batch contract, committed Debut test batch, Keeper fulfillment, Reveal, and successful test pulls | [Open Iruka](https://playiruka.space) · [GIWA Contracts](/technical/giwa-testnet) |
+| **Live** | Web application, Privy sign-in, independent GIWA Sepolia and Monad Testnet pack-batch contracts, committed Debut test batches, Keeper fulfillment, Reveal, and successful test pulls | [Open Iruka](https://playiruka.space) · [GIWA Contracts](/technical/giwa-testnet) · [Monad Testnet](/technical/monad-testnet) |
 | **In validation** | Physical inventory sourcing, card verification, grading acceptance, intake and custody operations, and market-value methodology | [Grading and Verification](/product/grading-and-verification) · [Vault and Custody](/product/vault) |
 | **Planned** | ERC-721 ownership, canonical USDC payments, marketplace settlement, commercial packs, redemption and shipping, and licensed IP drops | [Marketplace](/product/marketplace) · [Roadmap](/roadmap) |
 
@@ -139,12 +139,29 @@ EVM-compatible environment, public transaction verification, and approximately
 one-second blocks without requiring Iruka to create a separate wallet standard
 or contract toolchain.
 
-The current product uses GIWA Sepolia for pack commitments and Pull receipts.
+GIWA Sepolia remains the default testnet for pack commitments and Pull receipts.
+Monad Testnet is also available through the network selector.
 Future GIWA wallet and paymaster capabilities remain ecosystem direction, not
 features Iruka claims as live today.
 
 - [GIWA network overview](https://docs.giwa.io/giwa-chain/en)
 - [GIWA and Ethereum compatibility](https://docs.giwa.io/giwa-chain/en/network-information/diffs-ethereum-giwa)
+
+## Monad Testnet
+
+The Metropolis build adds a separate Monad deployment to the same collectible
+flow. Its Debut batch uses test MON, an independent contract and encrypted
+manifest, dedicated Keeper operations, and chain-isolated requests and
+collections. Selecting Monad does not bridge funds or move GIWA inventory.
+
+The October 6, 2026 review verified five Monad Pulls, browser interruption and
+Resume, scheduled recovery, concurrent fulfillment requests, and a native test
+MON withdrawal. These are technical test records, not physical ownership or
+commercial payment evidence.
+
+- [Open Monad Vending](https://playiruka.space/?network=monad#pull)
+- [Monad configuration and transaction evidence](/technical/monad-testnet)
+- [Full verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)
 
 ## Execution Evidence
 
@@ -152,27 +169,33 @@ Iruka separates product claims by how they can be checked.
 
 | Claim | Current evidence | Level |
 | --- | --- | --- |
-| Pack rules exist before a Pull | Debut supply, inventory root, odds commitment, and draw-seed root were recorded in a `BatchCommitted` transaction | Mined on GIWA Sepolia |
-| A fulfilled Pull consumes one committed position | `PullRequested` and `PullFulfilled` receipts reference the deployed contract and assigned inventory commitment | Mined on GIWA Sepolia |
+| Pack rules exist before a Pull | Debut supply, inventory root, odds commitment, and draw-seed root were recorded in a `BatchCommitted` transaction | Mined independently on GIWA Sepolia and Monad Testnet |
+| A fulfilled Pull consumes one committed position | `PullRequested` and `PullFulfilled` receipts reference the deployed contract and assigned inventory commitment | Mined independently on GIWA Sepolia and Monad Testnet |
 | A delayed result resumes without a second Pull | The browser persists the request ID and scheduled Keeper recovery fulfills the same request | Reproducible in the product |
 | A card is physically held and redeemable | Intake, verification, custody, and ownership records must agree | In validation |
 
-The immutable deployment snapshot is:
+The documented deployment snapshot as of October 6, 2026 is:
 
-| Item | Published value |
-| --- | ---: |
-| Source-verified pack contracts | 1 |
-| Committed Debut test positions | 100 |
-| Initial rarity allocation | 10,000 basis points |
-| Documented request and fulfillment reference pairs | 2 |
+| Item | GIWA Sepolia | Monad Testnet |
+| --- | ---: | ---: |
+| Source-verified pack contracts | 1 | 1 |
+| Initial committed Debut test positions | 100 | 100 |
+| Initial rarity allocation | 10,000 basis points | 10,000 basis points |
+| Documented request and fulfillment reference pairs | 2 | 5 |
+
+Initial supply and receipt counts are dated evidence. Remaining supply is read
+from the selected contract and changes with subsequent Pulls.
 
 These are technical execution records, not user, revenue, custody, or trading
 metrics. Contract addresses and transaction links are published in
-[GIWA Contracts](/technical/giwa-testnet).
+[GIWA Contracts](/technical/giwa-testnet) and [Monad Testnet](/technical/monad-testnet).
 
 ## Official Links
 
 - Website: [playiruka.space](https://playiruka.space)
+- Monad Vending: [playiruka.space/?network=monad#pull](https://playiruka.space/?network=monad#pull)
+- Monad Testnet contract:
+  [`0x51fb…12c0`](https://testnet.monadvision.com/address/0x51fbe474cb6e614dd5a47d3c93486028270212c0)
 - GIWA Sepolia contract:
   [`0xbB3c...4334`](https://sepolia-explorer.giwa.io/address/0xbb3c833df538d1cfce7457952be102b5be154334)
 

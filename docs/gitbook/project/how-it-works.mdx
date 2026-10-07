@@ -4,8 +4,8 @@ description: "Follow the Iruka collector journey from pack discovery to physical
 icon: "route"
 ---
 
-> **Status: Live testnet flow** - Vending, GIWA Sepolia Pull requests, Keeper
-> fulfillment, and Reveal are available. Physical Vault operations, commercial
+> **Status: Live testnet flow** - Vending, GIWA Sepolia and Monad Testnet Pull requests,
+> Keeper fulfillment, and Reveal are available. Physical Vault operations, commercial
 > Marketplace settlement, and Redemption are not live.
 
 Iruka brings the collectible journey into one continuous product:
@@ -25,15 +25,16 @@ review the eligible card pool and published odds. A production pack must also
 show the inventory snapshot, remaining supply, value methodology, and physical
 redemption status before purchase.
 
-The current Debut pack is a GIWA Sepolia test batch. Stage, Encore, and Grail
+Debut has separate GIWA Sepolia and Monad Testnet batches. The header selects
+the network; price, remaining supply and receipts come from that deployment. Stage, Encore, and Grail
 remain **Coming soon**.
 
 ### 2. Reveal
 
 After sign-in, one Pull reserves a position from the selected batch. The result
-is revealed only after Iruka receives the assigned inventory record. A GIWA
-pack also shows the request and fulfillment receipts that produced that
-result.
+is revealed only after Iruka receives the assigned inventory record. A configured
+testnet pack also shows the request and fulfillment receipts that produced
+that result on the selected network.
 
 Reveal presents the assigned card; it does not choose the result. A delayed
 fulfillment resumes from the same request instead of creating another paid
@@ -70,13 +71,16 @@ through Privy. Each signed-in account receives a user-controlled Iruka Wallet
 on EVM, including accounts that use MetaMask or another external wallet to sign
 in.
 
-The Iruka Wallet submits the GIWA Sepolia Pull. An external wallet is optional
+The Iruka Wallet submits the Pull on the selected GIWA Sepolia or Monad Testnet
+deployment. An external wallet is optional
 and remains separate: it can fund the Iruka Wallet or receive a same-chain
 withdrawal.
 
-Current Add funds and Withdraw actions transfer GIWA Sepolia test ETH only.
-They are not fiat funding, cross-chain routing, or a GIWA-to-Ethereum bridge.
-Testnet ETH has no monetary value, and Iruka does not currently accept
+Add funds and Withdraw transfer test ETH on GIWA Sepolia or test MON on Monad
+Testnet, between addresses on that same network. They are not fiat funding,
+cross-chain routing, or a bridge. Switching networks reloads the app with
+separate pending requests, transfers and collections; it does not move assets.
+Both test assets have no monetary value, and Iruka does not currently accept
 commercial USDC payments.
 
 ## What Is Available Today
@@ -85,7 +89,7 @@ commercial USDC payments.
 | --- | --- |
 | Account and Iruka Wallet | Live |
 | Debut pack discovery and odds | Live testnet fixture |
-| GIWA request, Keeper fulfillment, and receipt | Live on GIWA Sepolia |
+| Request, Keeper fulfillment, and receipt | Live independently on GIWA Sepolia and Monad Testnet |
 | Pack Reveal and account inventory result | Live |
 | Physical verification and Vault intake | In validation |
 | Fixed-price Marketplace settlement | Planned |
@@ -103,5 +107,6 @@ Iruka's commercial flow is designed to fail closed:
 
 See [Packs and Odds](/packs/pack-information) for the pack model,
 [Vault and Custody](/product/vault) for physical states, and
-[Onchain Architecture](/technical/onchain-architecture) for the GIWA
-responsibility boundary.
+[Onchain Architecture](/technical/onchain-architecture) for the shared testnet
+responsibility boundary. Deployment evidence is published in
+[GIWA Contracts](/technical/giwa-testnet) and [Monad Testnet](/technical/monad-testnet).
