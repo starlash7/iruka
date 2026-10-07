@@ -3,7 +3,7 @@
 This audit checked Iruka source, failure recovery, public HTTP behavior, live
 Monad receipts, dependency advisories and GitHub review paths. CUA was not used.
 
-Tested implementation: [`9f08b0c`](https://github.com/starlash7/iruka/commit/9f08b0c93f72840c59b5f15c924859e0b4271e5b).
+Implementation audited before the tooling follow-up: [`9f08b0c`](https://github.com/starlash7/iruka/commit/9f08b0c93f72840c59b5f15c924859e0b4271e5b).
 Docs-only publication is already merged in [PR #1](https://github.com/starlash7/iruka/pull/1).
 The [judging guide](./JUDGING_GUIDE.md) identifies the submission branch and CI.
 
@@ -56,6 +56,8 @@ moderate findings. Maintainer advisories:
 [Nano ID](https://github.com/advisories/GHSA-2v37-7h3g-55p8),
 [PostCSS](https://github.com/advisories/GHSA-r28c-9q8g-f849),
 [source-map-js](https://github.com/advisories/GHSA-68fv-2mgg-jv7q).
+The development-only patch and its checks are separately reviewable in
+[PR #3](https://github.com/starlash7/iruka/pull/3).
 
 At 04:09 UTC the hardened public verifier found available=95, remaining=95,
 nextDrawIndex=5, nextFulfillIndex=5. These are dated observations and can change.

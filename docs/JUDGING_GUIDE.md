@@ -6,7 +6,7 @@ follow the same result through its explorer receipt and public source.
 | Review step | Where to look |
 | --- | --- |
 | Submitted source | [monad branch](https://github.com/starlash7/iruka/tree/monad) |
-| What changed | [Monad release PR](https://github.com/starlash7/iruka/pull/2) |
+| What changed | [Monad release PR](https://github.com/starlash7/iruka/pull/2) and [development-tool security patch](https://github.com/starlash7/iruka/pull/3) |
 | Current checks and fixes | [October 7 release audit](./RELEASE_AUDIT_2026-10-07.md) |
 | Automated verification | [verify workflow on monad](https://github.com/starlash7/iruka/actions/workflows/verify.yml?query=branch%3Amonad) |
 | Live Pull/recovery evidence | [Monad verification](./MONAD_VERIFICATION.md) and [receipt JSON](./evidence/monad-testnet.json) |

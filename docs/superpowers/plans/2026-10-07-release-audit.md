@@ -13,4 +13,4 @@
 - [x] Record observed results and material decisions; open release PR with CI.
 - [x] Merge reviewed release into main; preserve monad and verify default-branch presentation.
 - [x] Patch the four additional development-tool findings from the full dependency audit.
-- [ ] Reinstall from lockfile, rerun Node/build gates and both audit modes; review and publish the tooling PR.
+- [x] Reinstall from lockfile, rerun Node/build gates and both audit modes; review and publish the tooling PR.
