@@ -3,7 +3,7 @@
 This audit checked Iruka source, failure recovery, public HTTP behavior, live
 Monad receipts, dependency advisories and GitHub review paths. CUA was not used.
 
-Tested implementation: [`9f08b0c`](https://github.com/starlash7/iruka/commit/9f08b0c93f72840c59b5f15c924859e0b4271e5b).
+Implementation audited before the tooling follow-up: [`9f08b0c`](https://github.com/starlash7/iruka/commit/9f08b0c93f72840c59b5f15c924859e0b4271e5b).
 Docs-only publication is already merged in [PR #1](https://github.com/starlash7/iruka/pull/1).
 The [judging guide](./JUDGING_GUIDE.md) identifies the submission branch and CI.
 
@@ -19,6 +19,7 @@ The [judging guide](./JUDGING_GUIDE.md) identifies the submission branch and CI.
 | Verifier accepted unrelated successful setup receipts | Requires setup receipts addressed to the contract, OperatorUpdated and matching BatchCommitted fields, in addition to all Pull checks |
 | Zero Keeper placeholder could pass deploy preflight | Rejected before credential decoding, RPC or deployment |
 | High-severity transitive dependency advisories | Patched socket.io-parser/undici and compatible pinned axios/ws; wallet SDK version retained |
+| Full audit also found four high development-tool findings | Compatible Browserslist, Nano ID, PostCSS and source-map-js patches; all nine changed lockfile entries are development-only |
 
 New failure cases were observed failing before their fixes and passing afterward.
 Wallet/RPC/Blob regression boundaries use controlled adapters; these tests do
@@ -38,11 +39,25 @@ not count as new live transactions or a mounted Privy end-to-end test.
 | Live HTTP/API checks | App 200; invalid method 405; invalid input 400; foreign origin 403; unauthenticated recovery 401; already-fulfilled #1 returned 200 with index 84 |
 | Limited source hygiene check | No tracked private/build paths, no historical .env/.context/.vercel paths, no current private-key/PAT format candidates |
 | `npm audit --omit=dev` | 0 critical, 0 high, 26 moderate package findings |
+| `npm audit` including development tools | 0 critical, 0 high, 26 moderate package findings after the tooling follow-up |
 | `git diff --check` | Passed |
 
 The default shell Forge is 1.7.1; the two reported contract runs explicitly used
 the locally available 1.8.0 binary matching CI. CI pins Node 24.14.0 and Foundry
 1.8.0. Contract modes run locally, not against the deployed contract.
+
+The final tooling follow-up changed Browserslist to 4.29.3, Nano ID to 3.3.20,
+PostCSS to 8.5.29 and source-map-js to 1.2.2, within their parent dependency
+ranges. Five Browserslist data dependencies also updated. No runtime/wallet
+SDK entry or package.json declaration changed. A fresh `npm ci`, all 391 tests
+and both deployment builds were rerun; both audit modes report the same 26
+moderate findings. Maintainer advisories:
+[Browserslist](https://github.com/advisories/GHSA-c83g-rgw3-j3cx),
+[Nano ID](https://github.com/advisories/GHSA-2v37-7h3g-55p8),
+[PostCSS](https://github.com/advisories/GHSA-r28c-9q8g-f849),
+[source-map-js](https://github.com/advisories/GHSA-68fv-2mgg-jv7q).
+The development-only patch and its checks are separately reviewable in
+[PR #3](https://github.com/starlash7/iruka/pull/3).
 
 At 04:09 UTC the hardened public verifier found available=95, remaining=95,
 nextDrawIndex=5, nextFulfillIndex=5. These are dated observations and can change.
