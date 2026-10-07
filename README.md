@@ -109,6 +109,7 @@ Use Node.js `24.14.0` from [.nvmrc](./.nvmrc), npm, and Foundry for contract wor
 Monad contract operations require Foundry **1.8 or later**.
 
 ```bash
+nvm install
 nvm use
 npm ci
 cp .env.example .env.local

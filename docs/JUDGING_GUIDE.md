@@ -18,6 +18,7 @@ follow the same result through its explorer receipt and public source.
 ```bash
 git clone --branch monad https://github.com/starlash7/iruka.git
 cd iruka
+nvm install
 nvm use
 npm ci
 npm test

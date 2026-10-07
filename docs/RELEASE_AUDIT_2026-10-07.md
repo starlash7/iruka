@@ -50,6 +50,10 @@ The first five Pulls and 0.001 test MON withdrawal are October 6 evidence,
 rechecked October 7. One additional real test-wallet Pull (#6) was signed on
 October 7 after deploying these fixes; no browser wallet signing was performed.
 
+The deployed desktop login UI also showed MetaMask, Phantom and OKX Wallet;
+selecting email/social methods opened the email field. This was a login-modal
+smoke check without authentication or browser signing.
+
 Public screenshots from the deployed audit source:
 
 [Desktop 1440×1000](./assets/audit-monad-desktop-2026-10-07.png) ·
@@ -60,6 +64,8 @@ Public screenshots from the deployed audit source:
 - Twenty-six moderate advisories remain in the wallet SDK dependency tree.
   The audit does not report a clean dependency/security scan or an external
   security audit. It avoided the suggested incompatible SDK downgrade.
+- The testnet panel displays initial rarity tiers; remaining per-rarity odds
+  are not yet recalculated, as described in Packs and Odds.
 - Wallet/3D bundle-size warnings remain; no mobile performance benchmark was run.
 - Pending persistence cannot survive reload/component destruction if browser
   storage is denied. Current-view memory recovery is tested.
@@ -77,8 +83,12 @@ Public screenshots from the deployed audit source:
 
 [PR #2](https://github.com/starlash7/iruka/pull/2) exposes the complete Monad
 implementation against the published foundation. Its
-[verification run](https://github.com/starlash7/iruka/actions/runs/37571058300)
-passed both jobs on source `94b1aa7`.
+[verification run](https://github.com/starlash7/iruka/actions/runs/37571664026)
+passed both jobs on final PR source `6ae9aa2`.
+PR #2 merged as `aa3847c` after all checks passed; GitHub now recognizes the
+MIT license on its default `main` branch. `monad` is retained and synchronized
+with the published release. Merged Docs task branches were removed; other
+Conductor workspace branches were preserved.
 
 That source was deployed to the existing Iruka production project as
 `dpl_D74xPyyM2KtBkBLgQCt81qM8E2L8`, Ready and aliased to playiruka.space.
