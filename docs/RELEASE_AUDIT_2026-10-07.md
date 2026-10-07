@@ -33,7 +33,7 @@ not count as new live transactions or a mounted Privy end-to-end test.
 | `VITE_IRUKA_DEPLOYMENT=monad npm run build` | Passed; TypeScript and Vite |
 | Foundry 1.8 `forge test` | 13 passed |
 | Foundry 1.8 `forge test --network monad` | 13 passed |
-| Read-only public receipt verifier | Five Pulls and exact native withdrawal verified; setup event checks pass |
+| Read-only public receipt verifier | Six Pulls and exact native withdrawal verified; setup event checks pass |
 | Anonymous desktop 1440×1000 and mobile 390×844 | Monad-to-GIWA selection verified, no page exceptions or document horizontal overflow; screenshots inspected |
 | Live HTTP/API checks | App 200; invalid method 405; invalid input 400; foreign origin 403; unauthenticated recovery 401; already-fulfilled #1 returned 200 with index 84 |
 | Limited source hygiene check | No tracked private/build paths, no historical .env/.context/.vercel paths, no current private-key/PAT format candidates |
@@ -46,8 +46,14 @@ the locally available 1.8.0 binary matching CI. CI pins Node 24.14.0 and Foundry
 
 At 04:09 UTC the hardened public verifier found available=95, remaining=95,
 nextDrawIndex=5, nextFulfillIndex=5. These are dated observations and can change.
-The five Pull and 0.001 test MON withdrawal receipts are the October 6 evidence,
-rechecked October 7; no new wallet signing was performed for this audit.
+The first five Pulls and 0.001 test MON withdrawal are October 6 evidence,
+rechecked October 7. One additional real test-wallet Pull (#6) was signed on
+October 7 after deploying these fixes; no browser wallet signing was performed.
+
+Public screenshots from the deployed audit source:
+
+[Desktop 1440×1000](./assets/audit-monad-desktop-2026-10-07.png) ·
+[Mobile 390×844](./assets/audit-monad-mobile-2026-10-07.png)
 
 ## Limits and remaining work
 
@@ -69,4 +75,21 @@ rechecked October 7; no new wallet signing was performed for this audit.
 
 ## Publication
 
-Production rollout and release PR CI are recorded after their observed results.
+[PR #2](https://github.com/starlash7/iruka/pull/2) exposes the complete Monad
+implementation against the published foundation. Its
+[verification run](https://github.com/starlash7/iruka/actions/runs/37571058300)
+passed both jobs on source `94b1aa7`.
+
+That source was deployed to the existing Iruka production project as
+`dpl_D74xPyyM2KtBkBLgQCt81qM8E2L8`, Ready and aliased to playiruka.space.
+A dedicated test wallet requested one additional position at 0.00001 test MON.
+The live API returned 200/submitted; the raw Keeper transaction mined
+successfully and exactly one matching fulfillment event assigned index 75.
+
+- [Pull #6 request](https://testnet.monadvision.com/tx/0xd213e6238e815566e800ac8e0b61d76d09c7f7288d89344456c0201d47997ff9)
+- [Pull #6 fulfillment](https://testnet.monadvision.com/tx/0xfe777f3fe51f60b875d3bbf319374cee8188a4f4bf02ec577069146988035d4c)
+- [Public JSON](./evidence/monad-testnet.json), including deployment/source and HTTP observation
+
+At 04:24:11 UTC the batch had 94 available/remaining positions and both draw
+counters were 6. The original five inventory indices and index 75 are unique.
+The read-only verifier now checks all six requests.

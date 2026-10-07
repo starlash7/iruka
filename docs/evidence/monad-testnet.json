@@ -76,6 +76,19 @@
       "inventoryIndex": 37,
       "inventoryId": "0xa36e39aea50a5738806bf277b098b1f5fd843d14cdfc0128215a7e4923ff6fc7",
       "scenario": "concurrent fulfillment API requests"
+    },
+    {
+      "requestId": "6",
+      "requestTransactionHash": "0xd213e6238e815566e800ac8e0b61d76d09c7f7288d89344456c0201d47997ff9",
+      "requestBlock": "68874590",
+      "collector": "0x322953D990b6cBDa7Ad3747d305De4BDa0DeCf10",
+      "drawIndex": 5,
+      "fulfillmentTransactionHash": "0xfe777f3fe51f60b875d3bbf319374cee8188a4f4bf02ec577069146988035d4c",
+      "fulfillmentBlock": "68874602",
+      "inventoryId": "0x1514c93269277fc69cd256139e56e4eff60b05c2e93b93808a58e1d36dc6e475",
+      "inventoryIndex": 75,
+      "scenario": "October 7 release: live prepared/raw Keeper fulfillment on deployed audit fixes",
+      "observedAt": "2026-10-07T04:24:11.610Z"
     }
   ],
   "batchSnapshot": {
@@ -107,5 +120,27 @@
       202
     ],
     "exactlyOneMatchingEventPerRequest": true
+  },
+  "releaseAuditObservation": {
+    "sourceCommit": "94b1aa70ca06d355b09e77cf50d65dd9e95c2ca6",
+    "deploymentId": "dpl_D74xPyyM2KtBkBLgQCt81qM8E2L8",
+    "observedAt": "2026-10-07T04:24:11.610Z",
+    "requestId": "6",
+    "http": {
+      "status": 200,
+      "body": {
+        "status": "submitted",
+        "transactionHash": "0xfe777f3fe51f60b875d3bbf319374cee8188a4f4bf02ec577069146988035d4c",
+        "inventoryId": "0x1514c93269277fc69cd256139e56e4eff60b05c2e93b93808a58e1d36dc6e475",
+        "inventoryIndex": 75
+      }
+    },
+    "matchingFulfillmentCount": 1,
+    "batch": {
+      "available": 94,
+      "remaining": 94,
+      "nextDrawIndex": 6,
+      "nextFulfillIndex": 6
+    }
   }
 }

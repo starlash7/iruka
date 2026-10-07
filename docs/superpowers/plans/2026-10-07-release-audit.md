@@ -10,4 +10,5 @@
 - [x] Reverify live receipt JSON and HTTP API guards without signing.
 - [x] Check desktop/mobile anonymous routes with headless browser, no CUA.
 - [x] Inspect public source/README/license/evidence/history and branch ancestry.
-- [ ] Record observed results and material decisions; open release PR with CI.
+- [x] Record observed results and material decisions; open release PR with CI.
+- [ ] Merge reviewed release into main; preserve monad and verify default-branch presentation.
