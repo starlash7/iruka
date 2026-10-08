@@ -11,6 +11,7 @@ a result collectors can check, save, and revisit.
 [![Iruka — original blue vending machine and collectible pack artwork](./public/brand/iruka-x-banner-vending-rush.png)](https://playiruka.space)
 
 [Product docs](https://docs.playiruka.space/overview) ·
+[Monad pitch deck (PDF)](./docs/pitch/iruka-monad-metropolis-pitch.pdf) ·
 [Monad Contracts](./docs/gitbook/technical/monad-testnet.mdx) ·
 [GIWA Contracts](./docs/gitbook/technical/giwa-testnet.mdx)
 

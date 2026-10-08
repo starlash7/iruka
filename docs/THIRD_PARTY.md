@@ -39,3 +39,10 @@ The testnet list identifies these network/token assets; the
 [Monad brand kit](https://monad.xyz/brand-and-media-kit) documents its visual identity.
 They identify the selected network and asset, imply no partnership, and are
 not relicensed under Iruka's MIT source-code license.
+
+## Pitch deck typography
+
+The [Monad pitch deck](./pitch/iruka-monad-metropolis-pitch.pdf) embeds Oxanium
+from the [Google Fonts source](https://github.com/google/fonts/tree/main/ofl/oxanium),
+under the [SIL Open Font License 1.1](https://github.com/google/fonts/blob/main/ofl/oxanium/OFL.txt).
+The font retains its upstream license; it is not relicensed under Iruka's MIT license.
