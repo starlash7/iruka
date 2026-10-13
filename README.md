@@ -15,6 +15,9 @@ a result collectors can check, save, and revisit.
 [Monad Contracts](./docs/gitbook/technical/monad-testnet.mdx) ·
 [GIWA Contracts](./docs/gitbook/technical/giwa-testnet.mdx)
 
+[Demo video](https://youtu.be/vU_fGKyZ_w0) ·
+[Pitch video](https://youtu.be/V1W3Jo3ayuk)
+
 ## The collectible experience
 
 <p align="center">
@@ -60,6 +63,8 @@ not claim VRF, production randomness assurance or a completed external audit.
 The Monad integration carries the existing collectible flow onto **Monad
 Testnet**, with dedicated configuration, commitments and Keeper operations.
 It is the Metropolis submission build, targeting **Consumer Products & Payments**.
+
+The Metropolis entry was marked **Ready for judging** on October 12, 2026.
 
 | Deployment | Status | Reference |
 | --- | --- | --- |
