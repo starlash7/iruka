@@ -1,5 +1,6 @@
 import { matchRoute, routePages } from './routes';
 import { Page } from './ui';
+import {ReaderAccountMenu} from './features/discover/ReaderAccountMenu';
 
 export default function App({ authEnabled = false }: { authEnabled?: boolean }) {
   const route = matchRoute(window.location.pathname);
@@ -17,6 +18,7 @@ export default function App({ authEnabled = false }: { authEnabled?: boolean }) 
       </a>
       <nav aria-label="주 메뉴">{navigation.map(item => <a key={item.href} href={item.href}
         aria-current={route && item.active.includes(route.id) ? 'page' : undefined}>{item.label}</a>)}</nav>
+      <ReaderAccountMenu/>
     </header>
     <main id="main" tabIndex={-1}>
       {route && RoutePage ? <RoutePage params={route.params} authEnabled={authEnabled} />

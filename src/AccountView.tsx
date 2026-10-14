@@ -1,5 +1,7 @@
 import type { User } from "@privy-io/react-auth";
 
+import {ReaderAvatar,ReaderAccountArt} from "./features/discover/ReaderIdentity";
+
 export type AccountViewProps = {
   ready: boolean;
   authenticated: boolean;
@@ -19,8 +21,10 @@ export function AccountView({
 
   return (
     <div className="account-content">
+      <ReaderAccountArt/>
       {authenticated && user ? (
         <>
+          <ReaderAvatar identity={user.id}/>
           <dl>
             <dt>이름</dt>
             <dd>{user.google?.name?.trim() || "Iruka 사용자"}</dd>

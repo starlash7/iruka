@@ -39,3 +39,16 @@ test('explicit development adapter preserves branches, memo, images and endings;
   assert.deepEqual(await api.getBalance(),before);
  }finally{await server.close();}
 });
+test('restored profile uses stable original avatar, escapes identity and offers wallet linking only without a wallet',async()=>{
+ const server=await createServer({appType:'custom',optimizeDeps:{noDiscovery:true},server:{hmr:false,middlewareMode:true}});
+ try{
+  const {ReaderProfileMenu}=await server.ssrLoadModule('/src/features/discover/ReaderAccountMenu.tsx');
+  const props={identity:'did:privy:test',name:'<script>bad</script>',onLinkWallet(){},onLogout(){}};
+  const html=renderToStaticMarkup(createElement(ReaderProfileMenu,props));
+  assert.match(html,/profile-idol-sprite|reader-profile-avatar-/);
+  assert.match(html,/지갑 연결/);assert.match(html,/aria-expanded="false"/);assert.doesNotMatch(html,/<script>/);
+  const linked=renderToStaticMarkup(createElement(ReaderProfileMenu,{...props,address:'0x1234'}));
+  assert.match(linked,/연결된 지갑/);assert.match(linked,/0x1234/);assert.doesNotMatch(linked,/>지갑 연결</);
+  assert.equal(html.match(/reader-profile-avatar-\d/)[0],linked.match(/reader-profile-avatar-\d/)[0]);
+ }finally{await server.close();}
+});
