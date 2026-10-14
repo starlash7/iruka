@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { createServer } from 'vite';
 import { createElement } from 'react';
@@ -54,11 +54,6 @@ test('only the preserved GIWA definition is available for later chain work', asy
   const { giwaSepolia } = await import('../src/giwaChain.ts');
   assert.equal(giwaSepolia.id, 91342);
   assert.equal(giwaSepolia.testnet, true);
-  for (const dir of ['api', 'server', 'contracts', 'scripts']) {
-    const entries = await readdir(new URL(`../${dir}/`, import.meta.url), { recursive: true }).catch(error => {
-      if (error.code === 'ENOENT') return [];
-      throw error;
-    });
-    assert.equal(entries.length, 0, dir);
-  }
+  // New server infrastructure is authorized in Wave 02; GIWA remains inactive.
+  assert.equal((await read('src/app-main.tsx')).includes('giwaSepolia'), false);
 });

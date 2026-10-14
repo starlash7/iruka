@@ -1,7 +1,8 @@
 # Iruka 피봇 문서
 
-먼저 [최신 범위](CURRENT_SCOPE.md)를 읽는다. 이번 작업은 원문 01에 해당하는
-정리와 로그인·계정 앱 준비다. 원문 02 이후를 일괄 구현하지 않는다.
+먼저 [최신 범위](CURRENT_SCOPE.md)를 읽는다. 01 정리 이후 현재 작업은 축소한 02 공통 기반이다.
+[공통 기반 인계](FOUNDATION_HANDOFF.md)에서 실행법·계약·A–D 소유권을 확인한다.
+원문 02 이후를 일괄 구현하지 않는다.
 
 첨부 conductor.zip의 13개 Markdown 파일을 바이트 변경 없이 보관했다.
 원문의 README만 ORIGINAL-README.md로 이름을 바꿨다.

@@ -101,3 +101,8 @@ Privy의 전이 의존성에는 지갑/Solana 모듈이 남아 있다. 직접 �
 [draft PR #8](https://github.com/starlash7/iruka/pull/8)을 `main` 대상으로 작성했다.
 브랜치 변경/직접 main push/merge/배포는 하지 않았다. PR 생성 시 GitHub verify는
 실행 중이었으며 원격 CI 상태는 PR에서 확인한다. 로컬 검증 결과와 구분한다.
+
+## 후속 공통 기반
+
+01 이후 Wave 02의 별도 인계는 [FOUNDATION_HANDOFF.md](FOUNDATION_HANDOFF.md)다.
+위 01 검증 기록은 유지하며 현재 기능/제한과 구분한다.

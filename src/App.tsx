@@ -1,31 +1,26 @@
-import { AuthActions } from "./AuthActions";
+import { matchRoute, routePages } from './routes';
+import { Page } from './ui';
 
 export default function App({ authEnabled = false }: { authEnabled?: boolean }) {
-  const path = window.location.pathname;
-  const isAccount = path === "/account" || path === "/account/";
-  const isKnownPath = path === "/" || isAccount;
-
-  return (
-    <div className="app-shell">
-      <header className="app-header">
-        <a className="brand" href="/" aria-label="Iruka 홈">
-          <img src="/brand/iruka-logomark.svg" alt="" width="36" height="36" />
-          <span>Iruka</span>
-        </a>
-        <nav aria-label="주 메뉴">
-          <a href="/" aria-current={path === "/" ? "page" : undefined}>홈</a>
-          <a href="/account" aria-current={isAccount ? "page" : undefined}>계정</a>
-        </nav>
-      </header>
-      <main className="account-surface">
-        <h1>{isKnownPath ? (isAccount ? "내 계정" : "Iruka") : "페이지를 찾을 수 없어요"}</h1>
-        {isKnownPath ? (
-          <>
-            {!isAccount && <p>한국어 AI 캐릭터·스토리 채팅</p>}
-            <AuthActions enabled={authEnabled} />
-          </>
-        ) : <a href="/">홈으로</a>}
-      </main>
-    </div>
-  );
+  const route = matchRoute(window.location.pathname);
+  const RoutePage = route ? routePages[route.id] : null;
+  const navigation = [
+    { href: '/', label: '탐색', active: ['home', 'ranking', 'search', 'tag', 'work'] },
+    { href: '/studio', label: '만들기', active: ['studio', 'editor'] },
+    { href: '/account', label: '계정', active: ['account', 'personas', 'credits'] },
+  ];
+  return <div className="app-shell">
+    <a className="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header className="app-header">
+      <a className="brand" href="/" aria-label="Iruka 홈">
+        <img src="/brand/iruka-logomark.svg" alt="" width="36" height="36" /><span>Iruka</span>
+      </a>
+      <nav aria-label="주 메뉴">{navigation.map(item => <a key={item.href} href={item.href}
+        aria-current={route && item.active.includes(route.id) ? 'page' : undefined}>{item.label}</a>)}</nav>
+    </header>
+    <main id="main" tabIndex={-1}>
+      {route && RoutePage ? <RoutePage params={route.params} authEnabled={authEnabled} />
+        : <Page title="페이지를 찾을 수 없어요"><a href="/">홈으로</a></Page>}
+    </main>
+  </div>;
 }
