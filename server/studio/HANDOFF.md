@@ -101,3 +101,10 @@ UI 직접 작성 검증 작품은 독립 중립 fixture이며 원본 원고를 �
 빌드 경고: Privy 전이 dependency annotation 및 652.58 kB app chunk (gzip 198.04 kB).
 실제 Privy Google/OTP, 운영 PostgreSQL 다중 연결, 실제 모델/이미지/배포 검증은 수행하지 않았다.
 체인 호출과 거래 영수증은 이 작업에 해당하지 않는다. main 직접 push/merge 없음.
+
+## 전달
+
+- 구현 커밋: `1264582`.
+- Draft PR: https://github.com/starlash7/iruka/pull/12 (base main).
+- 스튜디오 변경만 검토: `git diff e67418a..HEAD` (선행 #9 공통 기반 포함).
+- 현재 체크아웃 `starlash7/ffkk2` 유지. 후속 문서 커밋은 PR/체크리스트 기록만 갱신한다.
