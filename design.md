@@ -1,107 +1,34 @@
-# DESIGN.md - Iruka
+# Iruka Design
 
-> Direction: **Clean Blue Fintech Collectibles**.
-> If Upbit or Toss built phygital card packs, the app should feel fast, calm, liquid, and trustworthy.
-> No dark luxury mode. No mock dashboard. No sharp fintech-table UI.
+방향: 밝고 차분한 한국어 AI 캐릭터·스토리 채팅. 기존 Iruka 흰색·블루 브랜드를
+유지한다. 현재 단계는 최소 로그인·계정 화면이며 새 제품 화면 설계는 후속 작업이다.
 
----
+## Visual system
+| 역할 | 색상 |
+|---|---|
+| App background | #F4F8FF |
+| Surface / soft surface | #FFFFFF / #F8FBFF |
+| Blue / hover | #1677FF / #0B63F6 |
+| Sky / aqua | #EAF4FF / #20C7DF |
+| Ink / muted / subtle | #101828 / #667085 / #98A2B3 |
+| Line | #E6EEF8 |
+| Success / warning / danger | #12B76A / #F79009 / #F04438 |
 
-## 0. Product Read
+- 큰 surface 22px, control 18px, primary button/chip은 full-pill.
+- 그림자는 부드러운 blue tint. dark luxury, 거친 금융 테이블 형태를 피한다.
+- Pretendard / Inter / system sans. 읽기 쉬운 제목, 숫자는 필요 시 tabular-nums.
+- 현재 로고의 비율/색상을 유지한다. 불필요한 새 이미지나 패키지를 만들지 않는다.
 
-- First screen is a product flow, not a marketing page.
-- The user should understand in 3 seconds: choose pack, open, vault, sell, ship.
-- Use English UI for the MVP judging surface.
-- The brand can use `Iruka`; social/domain can use `playiruka`.
-- Do not add instructional or explanatory UI copy unless the user asks for it.
-- Do not change existing visible copy during design edits unless the request is about copy.
+## Product interaction
+- 한국어를 기본으로 짧은 라벨: 로그인, 계정, 탐색, 만들기, 대화.
+- 탐색/제작/대화는 후속 화면의 방향이며 현재 껍데기에 가짜 콘텐츠를 넣지 않는다.
+- 지갑 연결·서명·입출금 CTA를 넣지 않는다. 빈 수치나 가짜 크레딧을 표시하지 않는다.
+- 현재 상태(준비, 미설정, 오류, 로그인)를 사실대로 보여준다.
+- 로그인/계정은 일반 DOM. 지갑이나 3D가 없어서 사용이 차단되면 안 된다.
+- 키보드 focus와 44px 이상 터치 영역을 유지한다.
+- 모바일은 단일 열, 긴 이름/이메일은 줄바꿈, 가로 넘침/겹침 없음.
+- 새 애니메이션을 추가한다면 reduced-motion을 지원한다.
 
----
-
-## 1. Visual System
-
-### Palette
-
-```text
-App bg:        #F4F8FF
-Surface:       #FFFFFF
-Soft surface:  #F8FBFF
-Blue:          #1677FF
-Blue hover:    #0B63F6
-Sky:           #EAF4FF
-Aqua:          #20C7DF
-Ink:           #101828
-Muted:         #667085
-Subtle:        #98A2B3
-Line:          #E6EEF8
-Success:       #12B76A
-Warning:       #F79009
-Danger:        #F04438
-```
-
-### Shape
-
-- Use a soft radius system: 22px large surfaces, 18px controls, full-pill for primary buttons/chips.
-- No angular cards. No 8px hard dashboard boxes.
-- Shadows must be blue-tinted and very soft, never black-heavy.
-
-### Typography
-
-- Prefer system fintech feel: Pretendard / Inter / system sans.
-- Prices and timers use `tabular-nums`.
-- Big text is simple and readable; avoid decorative display type.
-- No long explanatory copy inside the app.
-
----
-
-## 2. Layout
-
-### Hero
-
-```text
-[Header] Home / Vending / Marketplace / Iruka / Wallet
-[Hero] Left: pack product image
-       Right: selected drop, price, remaining, progress, primary Open button
-[Below] horizontal pack selector
-[Flow] Reveal + settlement details
-[Vault] collection/action surface
-[Footer] Vault / Roadmap / Docs and policy/support links
-```
-
-- Keep the first viewport bright, calm, and product-led.
-- Use white/blue depth, not dark panels.
-- The pack image should feel like a real product thumbnail, not a placeholder.
-- Secondary packs should look selectable and tactile, like finance app product cards.
-- Header stays focused on the primary user path: home, pack pull, marketplace.
-- Vault, roadmap, and docs belong in the footer unless the user asks to promote them.
-
-### App Copy
-
-- Short labels only: `Open pack`, `Vault`, `Sell now`, `Ship`.
-- Avoid `demo`, `mock`, or explanatory investor wording in visible UI.
-- Trust line can be one concise sentence near CTA.
-- Avoid duplicate ideas across hero, cards, and footer.
-
----
-
-## 3. Interaction
-
-- Buttons: hover lift, pressed scale, loading state.
-- Cards: soft hover raise, selected blue ring.
-- Pack open: brief blue wash/reveal, not cinematic dark flash.
-- Progress bar: rounded liquid blue.
-- Mobile: single-column, no text overflow, controls remain thumb-friendly.
-
----
-
-## 4. Definition of Done
-
-```text
-[ ] Page reads white/blue within 3 seconds.
-[ ] No dark luxury remnants.
-[ ] No angular card system.
-[ ] Primary CTA is obvious and interactive.
-[ ] Pack selection feels tappable.
-[ ] Empty zero stats are hidden.
-[ ] Open flow adds a revealed card and vault row.
-[ ] Desktop and mobile screenshots have no overlap.
-```
+## Verification
+흰색·블루 인상, 짧은 한국어, 유효한 CTA, 명시적 disabled/error 상태,
+데스크톱/모바일과 긴 계정 정보 표시를 확인한다.
