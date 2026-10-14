@@ -43,3 +43,15 @@ AuthActions.tsx의 미설정 계정 화면에도 같은 아트를 표시한다.
 계정/지갑 연결/로그아웃 표시, Escape 닫기와 트리거 포커스 복귀 확인.
 실제 Privy 로그인·지갑 연결은 앱 ID 미설정으로 여전히 미검증.
 스크린샷 .context/restored-profile-menu.png는 명시적 UI 검증 상태이며 실제 로그인 증거가 아니다.
+
+## 로그인 복원 반복 새로고침 수정
+2026-10-14 Chrome 실사용 세션에서 확인 중 반복을 재현했다.
+Privy SDK는 세션 초기화 시에도 login.onComplete를 wasAlreadyAuthenticated:true로
+호출한다. 기존 무조건 reload가 초기화를 반복시켰다. 이 경우는 reload하지 않고,
+새 로그인(false)에만 이전 사용자 화면 캐시를 비우기 위한 reload를 유지했다.
+회귀 테스트는 복원 두 번 → 새 로그인 → 복원 순서에서 reload가 정확히 한 번인지 검증한다.
+Chrome에서 실제 기존 로그인 세션의 계정/아바타/연결 지갑 표시를 확인했으며,
+시간 간격을 두고 navigation timeOrigin이 동일함을 확인했다.
+지갑 주소/토큰/사용자 식별자는 진단 문서에 저장하지 않았다.
+인증 미설정 렌더링 테스트는 로컬 .env.local 유무와 독립되도록 빈 앱 ID를 명시했다.
+검증 결과: npm test 72/72 통과, npm run build 통과(기존 번들 크기 경고).
