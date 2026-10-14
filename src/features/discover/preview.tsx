@@ -21,11 +21,11 @@ if(!import.meta.env.DEV)throw new Error('Development preview is unavailable');
 const query=new URLSearchParams(window.location.search);const path=query.get('route')??'/';
 const api=query.get('source')==='api'?createReaderApi({getAccessToken:async()=>import.meta.env.VITE_PRIVY_APP_ID?.trim()?getAccessToken():null}):createDevelopmentApi({storage:sessionStorage});
 const state=query.get('state');
-if(state==='empty')api.listWorks=async()=>[];
-if(state==='error')api.listWorks=async()=>{throw new Error('작품을 불러오지 못했어요. 다시 시도해 주세요.');};
-if(state==='loading')api.listWorks=()=>new Promise(()=>{});
+if(state==='empty'){api.listWorks=async()=>[];api.listChats=async()=>[];}
+if(state==='error'){api.listWorks=async()=>{throw new Error('작품을 불러오지 못했어요. 다시 시도해 주세요.');};api.listChats=async()=>{throw new Error('대화를 불러오지 못했어요. 다시 시도해 주세요.');};}
+if(state==='loading'){api.listWorks=()=>new Promise(()=>{});api.listChats=()=>new Promise(()=>{});}
 if(state==='insufficient')api.getBalance=async()=>({available:0,reserved:0});
-const href=(path:string)=>{const [route,search='']=path.split('?');const params=new URLSearchParams(search);params.set('route',route);if(query.get('source'))params.set('source',query.get('source')!);if(state)params.set('state',state);return `${base}?${params}`;};
+const href=(path:string)=>{const [route,search='']=path.split('?');const params=new URLSearchParams(search);params.set('route',route);if(query.get('network'))params.set('network',query.get('network')!);if(query.get('source'))params.set('source',query.get('source')!);if(state)params.set('state',state);return `${base}?${params}`;};
 const privyAppId=import.meta.env.VITE_PRIVY_APP_ID?.trim();
 const match=/^\/(works|tags|chat)\/([^/]+)$/.exec(path);
 let page:React.ReactNode;
