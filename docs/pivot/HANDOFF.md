@@ -94,3 +94,10 @@ Privy의 전이 의존성에는 지갑/Solana 모듈이 남아 있다. 직접 �
 
 실제 Google OAuth·메일 OTP 완료, 배포된 호스트의 CSP/직접 경로, 서버 인증,
 무료 크레딧, GIWA 앵커링은 검증하지 않았다. 배포/유료 API/체인 쓰기 호출은 하지 않았다.
+
+## 전달
+
+구현 커밋: `d86bb2b`. 현재 브랜치 `starlash7/iruka-ai`에 push하고
+[draft PR #8](https://github.com/starlash7/iruka/pull/8)을 `main` 대상으로 작성했다.
+브랜치 변경/직접 main push/merge/배포는 하지 않았다. PR 생성 시 GitHub verify는
+실행 중이었으며 원격 CI 상태는 PR에서 확인한다. 로컬 검증 결과와 구분한다.

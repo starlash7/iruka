@@ -25,5 +25,5 @@ One owner (primary agent), sequential changes to shared files.
   record decisions, manual eval scenarios and HANDOFF deletion/reuse inventory.
 - [x] Run npm ci, npm test, npm run build, local desktop/mobile path and state checks;
   scan dangling imports, assets, prohibited runtime calls and staged secret patterns.
-- [ ] Review final diff, commit related files, push this branch with hosting deployment
+- [x] Review final diff, commit related files, push this branch with hosting deployment
   disabled, create draft PR targeting main and record remaining verification limits.
