@@ -1,15 +1,17 @@
 # Iruka Feature Map
 
 현재 범위: [CURRENT_SCOPE](pivot/CURRENT_SCOPE.md). 한국어 AI 캐릭터·스토리
-플랫폼의 공통 기반. 실제 탐색/제작/채팅·크레딧/GIWA 업무는 A–D가 구현한다.
+플랫폼의 A–D 통합 단계. [통합 상태](pivot/INTEGRATION.md)를 함께 확인한다.
 
 | 파일 | 역할 |
 |---|---|
 | src/main.tsx | 브랜드 자료 hash 진입점과 앱 lazy 로드 |
-| src/app-main.tsx, privyConfig.ts | Google/이메일 인증 provider, 자동 지갑 생성 off |
+| src/app-main.tsx, privyConfig.ts | Google/이메일/지갑 인증 provider, 자동 지갑 생성 off |
 | src/AuthActions.tsx, PrivyAuthActions.tsx, AccountView.tsx | 지갑에 의존하지 않는 로그인·계정 상태 |
 | src/App.tsx, src/routes | 공통 셸과 11개 feature 페이지 라우트 |
-| src/features | A 채팅, B 스튜디오, C 탐색/사용자, D 크레딧 페이지 자리 |
+| src/features | 채팅, 스튜디오, 탐색/사용자, 크레딧 화면 |
+| server/product | 실제 서비스/마이그레이션 통합, 명시적 로컬 테스트 모델·크레딧 정책 |
+| server/chat/reader.ts | 소유권 확인된 대화 목록·화면 데이터, 진행 중 요청 상태 |
 | src/ui, src/styles.css, public/fonts | 공통 컴포넌트·토큰과 자체 호스팅 Pretendard |
 | src/shared | DTO, API 클라이언트, SSE parser |
 | server/db, migrations | PostgreSQL 스키마, 파일 로컬 DB와 독립 테스트 DB |

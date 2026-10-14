@@ -8,6 +8,7 @@ import {loadChat,loadPath,assertIdle,insertMessage,selectLeaf} from './repositor
 export type EventPayload = ChatEvent extends infer E ? E extends ChatEvent ? Omit<E,'requestId'|'sequence'> : never : never;
 export async function claimTurn(db:Database,credits:CreditsService,input:StreamTurnInput,reserve:number,leaseMs:number) {
   return db.transaction(async tx=>{
+    await tx.query('SELECT id FROM users WHERE id=$1 FOR NO KEY UPDATE',[input.userId]);
     const state=await loadChat(tx,input.userId,input.chatId,true);
     const turn=await beginTurnRequest(tx,input);
     if(turn.state==='replay')return {...turn,...state,path:[] as MessageDto[]};
@@ -30,7 +31,8 @@ export async function claimTurn(db:Database,credits:CreditsService,input:StreamT
 }
 export async function settleTurn(db:Database,credits:CreditsService,input:{userId:string;chatId:string;turnId:string;status:'succeeded'|'failed'|'aborted';events:EventPayload[];content?:string;parentId?:string|null;reuseUser?:boolean;userContent?:string;actualCredits?:number;signal?:AbortSignal}) {
   return db.transaction(async tx=>{
-    // Same lock ordering as claim, conversation edits and recovery.
+    // Credit writers use account -> chat -> turn, including recovery.
+    await tx.query('SELECT id FROM users WHERE id=$1 FOR NO KEY UPDATE',[input.userId]);
     await tx.query('SELECT id FROM chats WHERE id=$1 AND user_id=$2 FOR UPDATE',[input.chatId,input.userId]);
     const {rows}=await tx.query<{status:string;response:EventPayload[]}>('SELECT status,response FROM turn_requests WHERE id=$1 AND user_id=$2 FOR UPDATE',[input.turnId,input.userId]);
     if(!rows[0])throw new ApiError('NOT_FOUND','요청을 찾을 수 없어요.');

@@ -9,6 +9,7 @@ export function createDiscoverHandler(service:ReturnType<typeof createDiscoveryS
   try {
    const url=new URL(request.url);
    if(request.method!=='GET')throw new ApiError('NOT_FOUND','경로를 찾을 수 없어요.');
+   if(url.pathname==='/api/discover/ranking')return jsonResponse(await service.rankWorks(),requestId);
    if(['/api/works','/api/discover/works'].includes(url.pathname)){
     const mode=url.searchParams.get('mode');
     if(mode&&mode!=='character'&&mode!=='story')throw new ApiError('INVALID_REQUEST','작품 유형을 확인해 주세요.');

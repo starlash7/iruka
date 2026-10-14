@@ -24,6 +24,15 @@ export function createDevelopmentApi({storage,delay=70}:{storage?:Storage;delay?
    chats.unshift({chat,title:work.title,messages:[message],memo:'',guide:work.snapshot?.playGuide??'',suggestedReplies:opening.suggestedReplies});persist();return copy(chat);},
   async getChat(id){await wait();return copy(find(id));},
   async saveMemo(id,memo){find(id).memo=memo;persist();},
+  async branchChat(id,messageId){
+   const source=find(id),messages:ChatView['messages']=[];let cursor=source.messages.find(item=>item.id===messageId);
+   if(!cursor)throw new Error('메시지를 찾을 수 없어요.');
+   while(cursor){messages.unshift(copy(cursor));cursor=source.messages.find(item=>item.id===cursor!.parentMessageId);}
+   const view=copy(source);view.chat.id=crypto.randomUUID();view.chat.createdAt=new Date().toISOString();
+   let parentId:string|null=null;
+   view.messages=messages.map(message=>{const next={...message,id:crypto.randomUUID(),chatId:view.chat.id,parentMessageId:parentId};parentId=next.id;return next;});
+   view.chat.activeMessageId=parentId;chats.unshift(view);persist();return copy(view);
+  },
   async selectBranch(id,messageId){const view=find(id);if(messageId&&!view.messages.some(item=>item.id===messageId))throw new Error('메시지를 찾을 수 없어요.');view.chat.activeMessageId=messageId;persist();return copy(view);},
   async editMessage(id,messageId,content){const view=find(id),message=view.messages.find(item=>item.id===messageId);if(!message)throw new Error('메시지를 찾을 수 없어요.');message.content=content;persist();return copy(view);},
   async deleteMessage(id,messageId){const view=find(id);const parent=view.messages.find(item=>item.id===messageId)?.parentMessageId??null;const removed=new Set([messageId]);let changed=true;while(changed){changed=false;for(const message of view.messages)if(message.parentMessageId&&removed.has(message.parentMessageId)&&!removed.has(message.id)){removed.add(message.id);changed=true;}}
@@ -38,7 +47,7 @@ export function createDevelopmentApi({storage,delay=70}:{storage?:Storage;delay?
    yield emit({type:'status',status:'장소: 창가 · 시간: 저녁',requestId,sequence:sequence++});
    if(body.content.includes('이미지'))yield emit({type:'image',url:fixtureWorks[0].coverUrl!,alt:'밤하늘과 창문',requestId,sequence:sequence++});
    if(body.content.includes('엔딩'))yield emit({type:'ending',endingId:'quiet-evening',title:'다시 만날 저녁',requestId,sequence:sequence++});
-   signal?.throwIfAborted();const user=view.messages.find(item=>item.role==='user'&&item.parentMessageId===body.parentMessageId&&item.content===body.content)??{id:crypto.randomUUID(),chatId:id,parentMessageId:body.parentMessageId,role:'user' as const,content:body.content,createdAt:new Date().toISOString()};
+   signal?.throwIfAborted();const user=view.messages.find(item=>item.role==='user'&&item.id===body.parentMessageId&&item.content===body.content)??{id:crypto.randomUUID(),chatId:id,parentMessageId:body.parentMessageId,role:'user' as const,content:body.content,createdAt:new Date().toISOString()};
    if(!view.messages.some(item=>item.id===user.id))view.messages.push(user);
    const message={id:crypto.randomUUID(),chatId:id,parentMessageId:user.id,role:'assistant' as const,content:reply,createdAt:new Date().toISOString(),images:body.content.includes('이미지')?[{url:fixtureWorks[0].coverUrl!,alt:'밤하늘과 창문'}]:[],status:'장소: 창가 · 시간: 저녁',ending:body.content.includes('엔딩')?{id:'quiet-evening',title:'다시 만날 저녁'}:null};view.messages.push(message);view.chat.activeMessageId=message.id;available--;persist();
    yield emit({type:'usage',inputTokens:0,outputTokens:0,credits:1,requestId,sequence:sequence++});

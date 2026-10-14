@@ -9,21 +9,38 @@ import type {StreamService} from '../../server/core/interfaces.ts';
 import {createConversationService} from '../../server/chat/conversations.ts';
 import {createMemoryService} from '../../server/chat/memory.ts';
 import type {SafetyService} from '../../server/chat/safety.ts';
+import {createReaderService} from '../../server/chat/reader.ts';
+import {loadChat,assertIdle} from '../../server/chat/repository.ts';
+import {requireSafeText} from '../../server/chat/safety.ts';
 interface Dependencies {db:Database;verifyToken:TokenVerifier;stream:StreamService;safety?:SafetyService}
 /** Opt-in handler; shared router/dev composition is owned by the integration task. */
 export function createChatApiHandler({db,verifyToken,stream,safety}:Dependencies) {
   const conversations=createConversationService(db,safety),memory=createMemoryService(db,safety);
+  const reader=createReaderService(db,safety);
   return async (request:Request):Promise<Response>=>{
     const requestId=randomUUID();
     try{
       const path=new URL(request.url).pathname.replace(/\/$/,''),method=request.method;
-      const match=/^\/api\/chats(?:\/([^/]+))?(?:\/(turns|messages|memories|branch|select|summaries))?(?:\/([^/]+))?$/.exec(path);
+      const match=/^\/api\/chats(?:\/([^/]+))?(?:\/(turns|messages|memories|branch|select|summaries|view|memo))?(?:\/([^/]+))?$/.exec(path);
       if(!match)throw new ApiError('NOT_FOUND','경로를 찾을 수 없어요.');
       const identity=await authenticateRequest(request,verifyToken),user=await getOrCreateUser(db,identity.privyDid);
       if(!match[1]&&method==='POST')return jsonResponse(await conversations.startChat(user.id,await readJson(request)),requestId,201);
+      if(!match[1]&&method==='GET')return jsonResponse(await reader.listChats(user.id),requestId);
       const chatId=requireId(match[1]),resource=match[2],id=match[3]?requireId(match[3]):undefined;
       // Authenticate and verify ownership before validating any child resource.
       await conversations.getChat(user.id,chatId);
+      if(resource==='view'&&method==='GET'&&!id)return jsonResponse(await reader.getView(user.id,chatId),requestId);
+      if(resource==='memo'&&method==='PUT'&&!id){
+        const {memo}=await readJson(request);
+        if(typeof memo!=='string'||memo.length>2000)throw new ApiError('INVALID_REQUEST','메모는 2000자 이내로 입력해 주세요.');
+        await requireSafeText(safety,memo,'input');
+        await db.transaction(async tx=>{
+          await loadChat(tx,user.id,chatId,true);await assertIdle(tx,chatId);
+          await tx.query("DELETE FROM chat_memories WHERE chat_id=$1 AND kind='pinned'",[chatId]);
+          if(memo.trim())await tx.query("INSERT INTO chat_memories(chat_id,kind,content) VALUES($1,'pinned',$2)",[chatId,memo]);
+        });
+        return jsonResponse(null,requestId);
+      }
       if(!resource){
         if(method==='GET')return jsonResponse(await conversations.getChat(user.id,chatId),requestId);
         if(method==='DELETE'){await conversations.deleteChat(user.id,chatId);return jsonResponse({deleted:true},requestId);}

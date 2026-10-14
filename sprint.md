@@ -1,6 +1,8 @@
 # Iruka Pivot Preparation Sprint
 
-권위 범위: docs/pivot/CURRENT_SCOPE.md. 원문 Wave 01 정리 단계.
+권위 범위: docs/pivot/CURRENT_SCOPE.md. 현재는 A–D 통합 검증 단계다.
+현재 체크리스트와 검증 결과는 docs/pivot/INTEGRATION.md를 따른다.
+아래 Wave 01 산출물/다음 작업은 이전 단계의 기록이다.
 
 ## 이번 산출물
 1. 원문 설계 보존 + 최신 범위 별도 문서.

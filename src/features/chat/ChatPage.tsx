@@ -11,22 +11,25 @@ import {MessageList} from './MessageList';
 import {MemoPanel,MessageDialog} from './ChatPanels';
 import './chat.css';
 export default function ChatPage({params}:RoutePageProps){
- const {api,href}=useReader();const session=useChatSession(api,params.chatId);const models=useResource(()=>api.getModels(),[api]);const balance=useResource(()=>api.getBalance(),[api]);
+ const {api,href,navigate}=useReader();const session=useChatSession(api,params.chatId);const models=useResource(()=>api.getModels(),[api]);const balance=useResource(()=>api.getBalance(),[api]);
  const [model,setModel]=useState('');const [draft,setDraft]=useState('');const [panel,setPanel]=useState(false);const [action,setAction]=useState<{kind:'edit'|'delete';message:MessageDto}|null>(null);const composer=useRef<HTMLTextAreaElement>(null);
  const selected=models.data?.find(item=>item.id===(model||models.data?.find(item=>item.available)?.id));
  const insufficient=selected?.credits!==null&&selected?.credits!==undefined&&balance.data!==null&&balance.data.available<selected.credits;
  const disabled=session.busy||session.locked||!selected?.available||balance.loading||!!balance.error||insufficient;
+ const pendingId=session.view?.pendingTurn?.id;
+ const previousPending=useRef(pendingId);
+ useEffect(()=>{if(previousPending.current&&!pendingId)balance.reload();previousPending.current=pendingId;},[pendingId]);
  useEffect(()=>{const viewport=window.visualViewport;const update=()=>document.documentElement.style.setProperty('--reader-viewport',`${viewport?.height??window.innerHeight}px`);update();viewport?.addEventListener('resize',update);return()=>{viewport?.removeEventListener('resize',update);document.documentElement.style.removeProperty('--reader-viewport');};},[]);
  async function send(){if(disabled||!draft.trim())return;const content=draft;const done=await session.send({content,parentMessageId:session.view?.chat.activeMessageId??null,model:selected!.id});if(done)setDraft('');balance.reload();requestAnimationFrame(()=>composer.current?.focus());}
  function onAction(kind:'edit'|'delete'|'regenerate'|'branch',message:MessageDto){
   if(kind==='edit'||kind==='delete'){setAction({kind,message});return;}
-  if(kind==='branch'){void session.mutate(()=>api.selectBranch(params.chatId,message.id));composer.current?.focus();return;}
+  if(kind==='branch'){if(api.branchChat)void session.mutate(async()=>{const view=await api.branchChat!(params.chatId,message.id);navigate(`/chat/${view.chat.id}`);return view;});return;}
   const parent=session.view?.messages.find(item=>item.id===message.parentMessageId);
-  if(parent?.role==='user'&&selected&&!disabled)void session.send({content:parent.content,parentMessageId:parent.parentMessageId,model:selected.id}).finally(balance.reload);
+  if(parent?.role==='user'&&selected&&!disabled)void session.send({content:parent.content,parentMessageId:parent.id,model:selected.id}).finally(balance.reload);
  }
  return <ReaderLayout active="chats" chat><div className="chat-room">
   <header className="chat-header"><a href={href('/chats')} aria-label="내 대화 목록">←</a><h1>{session.view?.title??'대화'}</h1><Button variant="ghost" onClick={()=>setPanel(value=>!value)} aria-expanded={panel}>대화 설정</Button></header>
-  {session.loading?<ResourceState loading loadingText="대화 준비 중"/>:!session.view?<ResourceState error={session.error} retry={session.reload}/>:<>
+  {session.loading&&!session.view?<ResourceState loading loadingText="대화 준비 중"/>:!session.view?<ResourceState error={session.error} retry={session.reload}/>:<>
   {panel&&<aside className="chat-settings"><h2>대화 설정</h2><MemoPanel key={session.view.chat.id} api={api} view={session.view}/><details><summary>플레이 가이드</summary><p className="reader-prose">{session.view.guide||'등록된 가이드가 없어요.'}</p></details></aside>}
   <MessageList messages={session.view.messages} activeId={session.view.chat.activeMessageId} preview={session.preview} busy={session.busy} actionsDisabled={session.locked} onAction={onAction} onSelect={id=>void session.mutate(()=>api.selectBranch(params.chatId,id))}/>
   <div className="chat-composer"><div className="chat-model-row"><label>모델 <select aria-label="대화 모델" value={selected?.id??''} disabled={session.busy||models.loading} onChange={event=>setModel(event.target.value)}>{models.data?.map(item=><option key={item.id} value={item.id} disabled={!item.available}>{item.name}{item.credits!==null?` · ${item.credits}`:''}</option>)}</select></label>{balance.data&&<span className="reader-balance">테스트 크레딧 {balance.data.available.toLocaleString()} 남음</span>}</div>

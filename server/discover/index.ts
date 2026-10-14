@@ -11,7 +11,7 @@ function mapPublic(row:Row):PublicWorkDto {
  return {id:row.id,creatorId:row.owner_id,mode:row.mode,title:row.title,description:row.description,coverUrl:row.cover_url,tags:row.tags,
   publishedVersionId:row.version_id,createdAt:new Date(row.created_at).toISOString()};
 }
-export function createDiscoveryService({db}:DiscoveryServiceDependencies):DiscoveryService & {searchWorks(query:DiscoverQuery):Promise<PublicWorkDto[]>} {
+export function createDiscoveryService({db}:DiscoveryServiceDependencies) {
  const searchWorks=async ({query='',tag='',mode,offset=0}:DiscoverQuery={})=>{
   // Literal substring search: user '%' and '_' must not become wildcard operators.
   const needle=query.trim().slice(0,200).replace(/[\\%_]/g,'\\$&');
@@ -21,7 +21,14 @@ export function createDiscoveryService({db}:DiscoveryServiceDependencies):Discov
    ORDER BY w.created_at DESC,w.id LIMIT 60 OFFSET $4`,[needle?`%${needle}%`:'',tag.slice(0,80),mode??null,Math.max(0,Math.min(10000,Math.floor(offset)))]);
   return rows.map(mapPublic);
  };
- return {listWorks:()=>searchWorks(),searchWorks,async getWork(id):Promise<PublicWorkDetailDto|null>{
+ return {listWorks:()=>searchWorks(),searchWorks,async rankWorks():Promise<PublicWorkDto[]>{
+  const {rows}=await db.query<Row>(`${selectPublic} AND w.id IN (
+   SELECT c.work_id FROM chats c JOIN turn_requests t ON t.chat_id=c.id
+   WHERE t.status='succeeded' AND t.created_at>now()-interval '7 days')
+   ORDER BY (SELECT COUNT(DISTINCT c.user_id) FROM chats c JOIN turn_requests t ON t.chat_id=c.id
+     WHERE c.work_id=w.id AND t.status='succeeded' AND t.created_at>now()-interval '7 days') DESC,w.id LIMIT 60`);
+  return rows.map(mapPublic);
+ },async getWork(id:string):Promise<PublicWorkDetailDto|null>{
   const {rows}=await db.query<Row>(`${selectPublic} AND w.id=$1`,[id]);
   return rows[0]?{...mapPublic(rows[0]),snapshot:projectPublicSnapshot(rows[0].public_snapshot)}:null;
  }};

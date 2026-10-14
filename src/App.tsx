@@ -7,6 +7,10 @@ export default function App({ authEnabled = false }: { authEnabled?: boolean }) 
   const {href}=useReader();
   const route = matchRoute(window.location.pathname);
   const RoutePage = route ? routePages[route.id] : null;
+  if(route&&RoutePage&&['home','ranking','search','tag','work','chat','chats'].includes(route.id))return <>
+    <a className="skip-link" href="#main">본문으로 건너뛰기</a>
+    <main id="main" tabIndex={-1}><RoutePage params={route.params} authEnabled={authEnabled}/></main>
+  </>;
   const navigation = [
     { href: '/', label: '탐색', active: ['home', 'ranking', 'search', 'tag', 'work'] },
     { href: '/studio', label: '만들기', active: ['studio', 'editor'] },

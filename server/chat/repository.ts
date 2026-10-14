@@ -32,6 +32,6 @@ export async function insertMessage(db:Database,chatId:string,parentId:string|nu
 }
 export async function selectLeaf(db:Database,chatId:string,leafId:string|null) {await db.query('UPDATE chat_state SET active_message_id=$2 WHERE chat_id=$1',[chatId,leafId]);}
 export async function loadVersion(db:Database,chatId:string) {
-  const {rows}=await db.query<{mode:'character'|'story';private_config:Partial<PrivateWorkConfig>;public_snapshot:Partial<PublicWorkSnapshot>}>(`SELECT w.mode,v.private_config,v.public_snapshot FROM chats c JOIN works w ON w.id=c.work_id JOIN work_versions v ON v.id=c.work_version_id WHERE c.id=$1`,[chatId]);
+  const {rows}=await db.query<{mode:'character'|'story';private_config:Partial<PrivateWorkConfig>;public_snapshot:Partial<PublicWorkSnapshot>}>(`SELECT COALESCE(v.private_config->'workMetadata'->>'mode',w.mode) AS mode,v.private_config,v.public_snapshot FROM chats c JOIN works w ON w.id=c.work_id JOIN work_versions v ON v.id=c.work_version_id WHERE c.id=$1`,[chatId]);
   return {mode:rows[0].mode,config:rows[0].private_config,snapshot:rows[0].public_snapshot};
 }

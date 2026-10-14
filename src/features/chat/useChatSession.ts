@@ -27,7 +27,8 @@ export function useChatSession(api:ReaderApi,id:string){
   finally{controller.current=null;lock.current=false;if(mounted.current)setBusy(false);}
   return completed;
  }
- return {view,loading,error,busy,preview,notice,reload,mutate,send,stop:()=>controller.current?.abort(),retry:()=>recovery.current.attempt?send(recovery.current.attempt.body,true):Promise.resolve(false),canRetry:recovery.current.attempt!==null,needsRefresh:recovery.current.needsRefresh,locked:recovery.current.locked};
+ useEffect(()=>{if(!view?.pendingTurn||busy)return;const timer=setTimeout(()=>void reload(),2000);return()=>clearTimeout(timer);},[view,busy]);
+ return {view,loading,error,busy,preview,notice,reload,mutate,send,stop:()=>controller.current?.abort(),retry:()=>recovery.current.attempt?send(recovery.current.attempt.body,true):Promise.resolve(false),canRetry:recovery.current.attempt!==null,needsRefresh:recovery.current.needsRefresh,locked:recovery.current.locked||!!view?.pendingTurn};
 }
 function asError(value:unknown){return value instanceof Error?value:new Error('요청을 처리하지 못했어요.');}
 function applyEvent(previous:StreamPreview,event:ChatEvent):StreamPreview{

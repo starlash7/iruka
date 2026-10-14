@@ -1,4 +1,4 @@
 {
  "compilerOptions": {"target":"ES2022","lib":["ES2022","DOM","DOM.Iterable"],"module":"NodeNext","moduleResolution":"NodeNext","strict":true,"skipLibCheck":true,"allowImportingTsExtensions":true,"noEmit":true,"types":["node"]},
- "include":["server/**/*.ts","src/shared/**/*.ts","tests/helpers/**/*.ts"]
+ "include":["server/**/*.ts","api/**/*.ts","scripts/**/*.ts","src/shared/**/*.ts","tests/helpers/**/*.ts"]
 }

@@ -11,11 +11,11 @@ test('minimal routes render without authentication configuration', async () => {
   const previous = globalThis.window;
   try {
     const { default: App } = await server.ssrLoadModule('/src/App.tsx');
-    for (const [pathname, heading] of [['/', 'Iruka'], ['/account', '내 계정'], ['/account/', '내 계정'], ['/missing', '페이지를 찾을 수 없어요']]) {
+    for (const [pathname, heading] of [['/', '어떤 이야기를 시작할까요?'], ['/account', '내 계정'], ['/account/', '내 계정'], ['/missing', '페이지를 찾을 수 없어요']]) {
       globalThis.window = { location: { pathname } };
       const html = renderToStaticMarkup(createElement(App));
-      assert.match(html, new RegExp(`<h1>${heading}</h1>`));
-      if (pathname !== '/missing') {
+      assert.ok(html.includes(`<h1>${heading}</h1>`));
+      if (pathname.startsWith('/account')) {
         assert.match(html, /로그인 설정이 필요해요/);
         assert.match(html, /disabled/);
       }
