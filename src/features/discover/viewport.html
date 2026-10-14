@@ -1,0 +1,7 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Iruka viewport QA</title><style>body{margin:0;background:#eae5ec;font:14px sans-serif}header{padding:8px}iframe{border:0;display:block;background:white;transform-origin:top left}a{margin-right:16px}</style></head><body><header><a href="?width=360">360px</a><a href="?width=768">768px</a><a href="?width=1440">1440px</a><span id="status"></span></header><iframe title="Iruka 화면 검증"></iframe><script type="module">
+if(!import.meta.env.DEV)throw new Error('Development only');
+const params=new URLSearchParams(location.search),width=Number(params.get('width')||360),height=900;
+const frame=document.querySelector('iframe');frame.width=String(width);frame.height=String(height);params.delete('width');frame.src='./preview.html?'+params;
+const scale=Math.min(1,innerWidth/width,(innerHeight-40)/height);frame.style.transform=`scale(${scale})`;frame.style.position='absolute';frame.style.top='40px';
+setInterval(()=>{const doc=frame.contentDocument;if(!doc)return;document.querySelector('#status').textContent=`${width} × ${height} · overflow ${Math.max(0,doc.documentElement.scrollWidth-doc.documentElement.clientWidth)}px · focus ${doc.activeElement?.getAttribute('aria-label')||doc.activeElement?.tagName||''}`;},400);
+</script></body></html>
