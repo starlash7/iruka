@@ -12,7 +12,7 @@
 - [x] server/credits/README.md: A atomic completion/release wiring, policy injection,
   integration-owner HTTP/route wiring, deferred ledger anchor contract.
 - [x] npm test; npm run build; desktop/mobile screenshots; git diff --check.
-- [ ] Record actual evidence, commit current branch, push current branch, draft PR base main.
+- [x] Record actual evidence, commit current branch, push current branch, draft PR base main.
 
 ## 검증 기록
 
@@ -33,3 +33,6 @@
 미확정 해시/앵커/키퍼 범위는 사용자 요청에 따라 보류. pending/running 프로세스 종료 예약의
 자동 회수는 A 실행 lease/fencing과 후속 합의가 필요하다. 서버 실패/취소의 명시적 복구는 구현했다.
 A 연결 방법과 공통 담당 변경 요청: `server/credits/README.md`.
+
+전달: 구현 커밋 `19b79f2`, [draft PR #10](https://github.com/starlash7/iruka/pull/10).
+현재 브랜치 `starlash7/giwa`, base `main`, draft 상태를 gh pr view로 확인했다.
