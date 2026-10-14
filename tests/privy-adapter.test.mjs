@@ -33,10 +33,10 @@ function render(session) {
   renderToStaticMarkup(createElement(PrivyAuthActions));
   return globalThis.__authTest;
 }
-test('login delegates only Google/email methods to Privy', () => {
+test('login delegates wallet, Google and email methods to Privy', () => {
   const state = render({ready: true, authenticated: false, user: null, logout() {}});
   state.props.onLogin();
-  assert.deepEqual(state.logins, [{loginMethods: ['google', 'email']}]);
+  assert.deepEqual(state.logins, [{loginMethods: ['wallet', 'google', 'email']}]);
   assert.equal(typeof state.callbacks.onError, 'function');
   assert.equal(typeof state.callbacks.onComplete, 'function');
 });

@@ -1,9 +1,9 @@
 import type { PrivyClientConfig } from "@privy-io/react-auth";
 
 export const privyConfig: PrivyClientConfig = {
-  loginMethods: ["google", "email"],
+  loginMethods: ["wallet", "google", "email"],
   appearance: {
-    accentColor: "#1677FF",
+    accentColor: "#F8C9DA",
     theme: "light",
     logo: "/brand/iruka-main-logo.png"
   },

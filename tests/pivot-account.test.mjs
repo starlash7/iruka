@@ -14,8 +14,8 @@ after(async () => { await server?.close(); });
 const render = (props = {}) => renderToStaticMarkup(createElement(AccountView, {
   ready: true, authenticated: false, user: null, onLogin() {}, onLogout() {}, ...props
 }));
-test('offers Google and verified email login without wallet creation', () => {
-  assert.deepEqual(config.loginMethods, ['google', 'email']);
+test('offers wallet, Google and email login without automatic wallet creation', () => {
+  assert.deepEqual(config.loginMethods, ['wallet', 'google', 'email']);
   assert.equal(config.embeddedWallets.ethereum.createOnLogin, 'off');
   assert.equal(config.embeddedWallets.solana.createOnLogin, 'off');
 });
@@ -50,4 +50,12 @@ test('escapes identity content and displays recoverable errors', () => {
 });
 test('logout pending disables repeated account actions', () => {
   assert.match(render({ authenticated: true, user: { id: 'test' }, busy: true }), /disabled/);
+});
+
+test('wallet-only account displays its address without requiring an email', () => {
+ const html = render({ authenticated: true, user: { id: 'did:privy:wallet', wallet: { address: '0x1234567890123456789012345678901234567890' } } });
+ assert.match(html, /연결된 지갑/);
+ assert.match(html, /0x1234567890123456789012345678901234567890/);
+ assert.match(html, /로그아웃/);
+ assert.doesNotMatch(html, /이메일<\/dt>/);
 });

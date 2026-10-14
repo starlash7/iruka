@@ -7,7 +7,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 test('minimal routes render without authentication configuration', async () => {
-  const server = await createServer({ appType: 'custom', optimizeDeps: { noDiscovery: true }, server: { hmr: false, middlewareMode: true } });
+  const server = await createServer({ appType: 'custom', define: { 'import.meta.env.VITE_PRIVY_APP_ID': JSON.stringify('') }, optimizeDeps: { noDiscovery: true }, server: { hmr: false, middlewareMode: true } });
   const previous = globalThis.window;
   try {
     const { default: App } = await server.ssrLoadModule('/src/App.tsx');

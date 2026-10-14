@@ -18,7 +18,7 @@ test('foundation route matcher decodes parameters and rejects malformed or unkno
 });
 
 test('all feature slots render without fabricated work, balance or authenticated state', async () => {
-  const server = await createServer({ appType: 'custom', optimizeDeps: { noDiscovery: true }, server: { hmr: false, middlewareMode: true } });
+  const server = await createServer({ appType: 'custom', define: { 'import.meta.env.VITE_PRIVY_APP_ID': JSON.stringify('') }, optimizeDeps: { noDiscovery: true }, server: { hmr: false, middlewareMode: true } });
   const previous = globalThis.window;
   try {
     const { default: App } = await server.ssrLoadModule('/src/App.tsx');

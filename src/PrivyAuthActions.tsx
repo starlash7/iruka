@@ -1,9 +1,13 @@
 import { useLogin, usePrivy } from "@privy-io/react-auth";
 import { useState } from "react";
+import { privyConfig } from "./privyConfig";
+import {useTransferBusy} from "./features/discover/account/transferActivity";
+import { RestoredWallet } from "./features/discover/account/RestoredWallet";
 import { AccountView } from "./AccountView";
 
 export function PrivyAuthActions() {
   const { authenticated, logout, ready, user } = usePrivy();
+  const transferBusy=useTransferBusy();
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
   const { login } = useLogin({
@@ -13,7 +17,7 @@ export function PrivyAuthActions() {
 
   function signInUser() {
     setError(undefined);
-    login({ loginMethods: ["google", "email"] });
+    login({ loginMethods: privyConfig.loginMethods });
   }
 
   async function signOutUser() {
@@ -31,10 +35,11 @@ export function PrivyAuthActions() {
 
   return (
     <AccountView
+      walletPanel={authenticated ? <RestoredWallet/> : undefined}
       ready={ready}
       authenticated={authenticated}
       user={user}
-      busy={busy}
+      busy={busy||transferBusy}
       error={error}
       onLogin={signInUser}
       onLogout={() => void signOutUser()}
