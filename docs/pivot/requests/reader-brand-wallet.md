@@ -77,3 +77,22 @@ Chrome 최상위 페이지에서 실제 기존 Privy 세션 및 GIWA/Monad 잔�
 지연 상태를 확인했고, 실제 지갑 검증은 최상위 페이지에서 별도 수행했다.
 개발 미리보기의 작품/대화 데이터는 명시적 개발 응답이다. 운영 API의 실패를
 개발 데이터로 대체하지 않는다. 작품/채팅 API 전체 운영 통합은 기존 담당 범위 그대로 남는다.
+
+## 핑크 브랜드/intro 효과 복원
+사용자 요청으로 public/brand/iruka-logomark.svg의 경로는 유지하고 그라데이션
+6색만 핑크로 변경했다. 이 공유 에셋은 앱 헤더와 favicon에 반영된다.
+비트맵 워드마크·바다 배경·Iruka 계정 아이콘은 CSS 표시 필터로 핑크화하며
+원본 파일은 유지한다. 작품 커버/캐릭터/체인과 통화 로고는 재색칠하지 않는다.
+89c4596의 intro scan 4.8초와 glass/hover/active 효과를 핑크로 옮겼다.
+스캔은 주요 CTA에, 보조 버튼은 얕은 표면/눌림에 적용한다. disabled 스캔을
+멈추며 reduced-motion에서는 스캔과 움직임을 제거한다. 새 의존성은 없다.
+primary의 가장 어두운 hover gradient 끝점과 글자 대비는 7.03:1이다.
+
+공통 AccountView의 로그인/로그아웃 버튼에는 기존 iruka-action/secondary 클래스를
+연결해 같은 효과를 적용했다. 별도 글로벌 스타일 파일은 변경하지 않았다.
+검증: npm run build 통과, reader-auth-session 회귀 테스트 1/1 통과,
+git diff --check 통과. Chrome 360/768/1440 overflow 0px.
+실제 computed style: animation iruka-entry-action-scan/4.8s,
+disabled animation none, DevTools reduced-motion reduce에서 animation none/0s.
+에뮬레이션은 검증 후 해제했다. .context/pink-brand-home.png 및
+.context/pink-account-360.png는 로컬 화면 증거다.

@@ -42,14 +42,14 @@ export function AccountView({
             </>}
           </dl>
           {walletPanel}
-          <button disabled={busy} onClick={onLogout} type="button">
+          <button className="iruka-secondary-button" disabled={busy} onClick={onLogout} type="button">
             {busy ? "로그아웃 중…" : "로그아웃"}
           </button>
         </>
       ) : (
         <>
           <p>지갑 · Google · 이메일로 로그인</p>
-          <button onClick={onLogin} type="button">로그인</button>
+          <button className="iruka-action-button" onClick={onLogin} type="button">로그인</button>
         </>
       )}
       {error && <p role="alert">{error}</p>}

@@ -17,7 +17,7 @@ import './restored-account.css';
 function WalletLoading(){
  const [delayed,setDelayed]=useState(false);
  useEffect(()=>{const timer=window.setTimeout(()=>setDelayed(true),15000);return()=>window.clearTimeout(timer);},[]);
- return delayed?<div role="alert"><p>지갑 연결 확인이 지연되고 있어요.</p><button onClick={()=>window.location.reload()}>다시 연결 확인</button></div>:<p role="status">지갑 확인 중…</p>;
+ return delayed?<div role="alert"><p>지갑 연결 확인이 지연되고 있어요.</p><button className="iruka-secondary-button" onClick={()=>window.location.reload()}>다시 연결 확인</button></div>:<p role="status">지갑 확인 중…</p>;
 }
 
 export function RestoredWallet(){
@@ -29,7 +29,7 @@ export function RestoredWallet(){
  const external=wallets.find(w=>w.type==='ethereum'&&!w.walletClientType.startsWith('privy')&&w.address.toLowerCase()!==wallet?.address.toLowerCase());
  if(!authenticated)return null;
 
- return <div className="restored-account" id="account-overview">{!ready?<WalletLoading/>:wallet?<WalletPanel key={wallet.address} wallet={wallet} externalWallet={external} onConnectExternalWallet={()=>connectWallet()}/>:<section className="account-wallet-panel"><h2>Iruka Wallet</h2><button disabled={creating} onClick={async()=>{setCreating(true);setError('');try{await createWallet();}catch{setError('지갑을 만들지 못했어요. 다시 시도해 주세요.');}finally{setCreating(false);}}}>{creating?'지갑 만드는 중…':'Iruka 지갑 만들기'}</button><button onClick={()=>linkWallet()}>기존 지갑 연결</button></section>}{error&&<p role="alert">{error}</p>}<AccountLibrary/></div>;
+ return <div className="restored-account" id="account-overview">{!ready?<WalletLoading/>:wallet?<WalletPanel key={wallet.address} wallet={wallet} externalWallet={external} onConnectExternalWallet={()=>connectWallet()}/>:<section className="account-wallet-panel"><h2>Iruka Wallet</h2><button className="iruka-action-button" disabled={creating} onClick={async()=>{setCreating(true);setError('');try{await createWallet();}catch{setError('지갑을 만들지 못했어요. 다시 시도해 주세요.');}finally{setCreating(false);}}}>{creating?'지갑 만드는 중…':'Iruka 지갑 만들기'}</button><button className="iruka-secondary-button" onClick={()=>linkWallet()}>기존 지갑 연결</button></section>}{error&&<p role="alert">{error}</p>}<AccountLibrary/></div>;
 }
 export function createAccountBalanceLoader(
   readBalance: (address: string) => Promise<bigint> = getGiwaNativeBalance
