@@ -15,5 +15,5 @@ Stack: existing TypeScript, Node test runner, PostgreSQL/PGlite, Web Request/Res
 - [x] tests/chat-api.test.mjs → api/chats/handler.ts: real HTTP envelopes, auth and SSE.
 - [x] Run `node --experimental-strip-types --test --test-concurrency=1 tests/chat-*.test.mjs`.
 - [x] Run `npm test`, `npm run build`, explicit typecheck for owned API modules, diff check.
-- [ ] Record concrete results and common-owner requests in server/chat/HANDOFF.md; commit,
+- [x] Record concrete results and common-owner requests in server/chat/HANDOFF.md; commit,
   push current branch and create draft PR against main. No merge or deployment.

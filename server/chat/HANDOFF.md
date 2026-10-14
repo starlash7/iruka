@@ -139,3 +139,10 @@ UI 담당은 텍스트를 escape하고 raw HTML로 렌더하지 않아야 한다
 
 기존 SDK 전이 의존성 Rollup annotation 경고는 남아 있다. 화면 변경이 없어
 데스크톱/모바일 스크린샷은 해당하지 않는다. 실제 유료 모델/운영 DB/배포/체인 영수증은 없다.
+
+## 전달
+
+- 구현 커밋: `bafd840` (`feat: implement pivot chat runtime and recovery`).
+- Draft PR: https://github.com/starlash7/iruka/pull/11 (base main, head starlash7/gij68).
+- 이번 변경 검토: `git diff e67418a..HEAD`. 선행 #8/#9가 main에 없어서 전체 PR diff에는 기반도 포함된다.
+- 현재 브랜치 유지. main 직접 push/merge 및 배포는 실행하지 않았다.
