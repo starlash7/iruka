@@ -3,7 +3,7 @@ import type { User } from "@privy-io/react-auth";
 export type AccountViewProps = {
   ready: boolean;
   authenticated: boolean;
-  user: Pick<User, "id" | "email" | "google"> | null;
+  user: Pick<User, "id" | "email" | "google" | "wallet"> | null;
   busy?: boolean;
   error?: string;
   onLogin: () => void;
@@ -30,6 +30,10 @@ export function AccountView({
                 <dd>{user.email?.address || user.google?.email}</dd>
               </>
             )}
+            {user.wallet?.address && <>
+              <dt>연결된 지갑</dt>
+              <dd style={{overflowWrap: "anywhere"}}>{user.wallet.address}</dd>
+            </>}
           </dl>
           <button disabled={busy} onClick={onLogout} type="button">
             {busy ? "로그아웃 중…" : "로그아웃"}
@@ -37,7 +41,7 @@ export function AccountView({
         </>
       ) : (
         <>
-          <p>Google 또는 이메일로 로그인</p>
+          <p>지갑 · Google · 이메일로 로그인</p>
           <button onClick={onLogin} type="button">로그인</button>
         </>
       )}

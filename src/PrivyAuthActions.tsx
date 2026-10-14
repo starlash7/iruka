@@ -1,5 +1,6 @@
 import { useLogin, usePrivy } from "@privy-io/react-auth";
 import { useState } from "react";
+import { privyConfig } from "./privyConfig";
 import { AccountView } from "./AccountView";
 
 export function PrivyAuthActions() {
@@ -13,7 +14,7 @@ export function PrivyAuthActions() {
 
   function signInUser() {
     setError(undefined);
-    login({ loginMethods: ["google", "email"] });
+    login({ loginMethods: privyConfig.loginMethods });
   }
 
   async function signOutUser() {
