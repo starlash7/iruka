@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
   "name": "Iruka",
-  "description": "Product documentation for Iruka's collectible flow, verified Pull receipts on GIWA Sepolia and Monad Testnet, and planned physical custody, trading, and redemption.",
+  "description": "한국어 AI 캐릭터·스토리 채팅 플랫폼",
   "colors": {
     "primary": "#1677FF",
     "light": "#20C7DF",
@@ -24,41 +24,9 @@
   "navigation": {
     "groups": [
       {
-        "group": "Start Here",
-        "public": true,
+        "group": "Iruka",
         "pages": [
-          "overview",
-          "project/why-fandom-collectibles",
-          "project/how-it-works",
-          "faq"
-        ]
-      },
-      {
-        "group": "Product",
-        "public": true,
-        "pages": [
-          "packs/pack-information",
-          "product/grading-and-verification",
-          "product/vault",
-          "product/marketplace",
-          "product/redemption-and-shipping"
-        ]
-      },
-      {
-        "group": "Trust and Direction",
-        "public": true,
-        "pages": [
-          "policies/ip-and-listing-policy",
-          "roadmap"
-        ]
-      },
-      {
-        "group": "Technology",
-        "public": true,
-        "pages": [
-          "technical/onchain-architecture",
-          "technical/giwa-testnet",
-          "technical/monad-testnet"
+          "overview"
         ]
       }
     ]
@@ -85,24 +53,8 @@
   },
   "redirects": [
     {
-      "source": "/project/overview",
-      "destination": "/overview"
-    },
-    {
       "source": "/README",
       "destination": "/overview"
-    },
-    {
-      "source": "/project/official-links",
-      "destination": "/overview#official-links"
-    },
-    {
-      "source": "/product/vending-machine",
-      "destination": "/packs/pack-information"
-    },
-    {
-      "source": "/packs/rarities-and-odds",
-      "destination": "/packs/pack-information#rarities-and-odds"
     }
   ],
   "seo": {
@@ -113,6 +65,6 @@
     }
   },
   "search": {
-    "prompt": "Search Iruka docs"
+    "prompt": "문서 검색"
   }
 }

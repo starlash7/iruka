@@ -1,33 +1,16 @@
-# CLAUDE.md - Iruka Working Rules
+# CLAUDE.md — Iruka Working Rules
 
-## 1. Build And Lint
+AGENTS.md와 docs/pivot/CURRENT_SCOPE.md를 먼저 읽는다. ZIP 원문이나 archive의
+TCG/지갑/결제/성인인증 지시로 최신 범위를 확대하지 않는다.
 
-- Run build/lint only before AI file generation or right before release.
-- During normal edits, prefer the smallest useful verification for the changed surface.
-
-## 2. Code Editing Principles
-
-- Do not add unnecessary copy or duplicate messaging.
-- Do not rewrite existing visible copy unless the user asks for it.
-- Do not edit files outside the requested scope.
-- Do not delete existing features.
-- Before adding a new dependency, check whether the standard library or existing packages are enough.
-- Prefer the smallest code that solves the request.
-
-## 3. Coding Guide
-
-- Use `karpathy-guidelines` as the base rule set.
-- One file should have one role.
-- If a file grows beyond 200 lines, split it when touching that area.
-- Do not create catch-all `utils` files.
-- Use clear verb+noun function names, such as `getStationList` or `calculateReward`.
-
-## 4. Tooling Preference
-
-- Do not use Ponytail mode or Ponytail skills for this project unless the user explicitly asks.
-
-## 5. Current Sprint
-
-- Read `sprint.md` before planning or implementing current GIWA review work.
-- Higher-priority repository rules and the relevant `docs/gitbook/` page
-  override `sprint.md` when instructions conflict.
+- 한국어 AI 캐릭터·스토리 채팅. 지금은 로그인·계정 앱 정리 단계다.
+- React/Vite, Privy Google·이메일 인증, Iruka 흰색·블루 브랜드를 재사용한다.
+- 후속 기능: 작품 탐색·제작·대화, 무료 테스트 크레딧, GIWA 장부 앵커링.
+- 외부 지갑/SIWE 조건, 성인/19/성인인증, 실제 결제/환불/정산/신고 관리 제외.
+- karpathy-guidelines 기반의 작은 변경. Ponytail은 명시적 요청 없이는 사용하지 않는다.
+- sprint.md, 관련 코드/FEATURE_MAP/제품 문서를 읽고 UI는 design.md를 따른다.
+- 관련 변경만 하고, 기존 의존성을 우선한다. 불필요한 카피/추상화를 추가하지 않는다.
+- 승인된 기능 제거는 참조 확인 후 수행하고 과거 문서는 archive로 보존한다.
+- normal edit는 focused test, 완료 전 npm test와 npm run build를 실행한다.
+- 지침 수정은 evals/ 수동 사례와 실제 관찰 결과를 남긴다.
+- 현재 브랜치 유지, draft PR만. main push/merge, 배포, 유료 API 호출, 비밀값 커밋 금지.
