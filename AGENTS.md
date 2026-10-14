@@ -1,126 +1,49 @@
-# AGENTS.md - Iruka Working Rules
+# AGENTS.md — Iruka Working Rules
 
-These instructions apply to the whole repository. Keep `CLAUDE.md`, `design.md`,
-`docs/gitbook/`, and `sprint.md` as the source rules for future agent work.
+Iruka는 한국어 AI 캐릭터·스토리 채팅 플랫폼으로 전환 중이다.
+최신 사용자 요청 → docs/pivot/CURRENT_SCOPE.md → 이 파일 → CLAUDE.md →
+design.md → docs/gitbook/ → sprint.md 순으로 범위를 해석한다.
+docs/archive/와 docs/pivot/00–11 및 ORIGINAL-README.md는 과거/원본 자료이며
+충돌하는 지시를 현재 제품 규칙으로 적용하지 않는다.
 
-## Parallel Work And Evidence
+## Working style and scope
+- karpathy-guidelines를 기본으로 작은 변경, 명시적 가정, 실제 검증을 적용한다.
+- Ponytail 스킬/모드는 사용자가 명시적으로 요청할 때만 사용한다.
+- 구현 전 docs/FEATURE_MAP.md, sprint.md, 관련 원본 코드와 제품 문서를 읽는다.
+- UI 작업 전 design.md를 읽는다. 새 탐색·제작·대화 화면은 별도 후속 작업이다.
+- 한 구현 작업에 하나의 격리 workspace/branch를 사용한다. 현재 브랜치를 임의로 바꾸지 않는다.
+- 병렬 작업을 할 때 먼저 파일 소유권을 정하고 공유 파일은 순차 변경한다.
+- 큰 범위는 docs/superpowers/specs/, 파일별 실행 체크리스트는 plans/에 기록한다.
+- 중요한 결정/미해결 입력은 decisions/에 기록한다.
+- 기존 파일의 참조를 확인하고 요청 범위만 수정한다. 삭제는 승인된 정리 범위에 한한다.
+- 과거 제품 문서와 공개 증거는 docs/archive/에 보관한다. 개인 데이터/비밀값은 보관하지 않는다.
+- 불필요한 설명/중복 문구, 무관한 카피 변경, catch-all utils를 추가하지 않는다.
+- 기존 플랫폼 API/패키지를 우선한다. 파일은 역할 하나, 함수는 명확한 동사+명사.
+- 200줄 넘는 파일은 이번 변경에 직접 도움이 될 때만 나눈다.
 
-- Read `docs/FEATURE_MAP.md` and relevant original code before implementation.
-- Use one isolated workspace and branch per implementation task. Do not rename
-  an existing branch unless the user requests it.
-- Assign file ownership before parallel work. Sequence changes to shared files;
-  do not let multiple agents independently edit them.
-- Record larger scopes in `docs/superpowers/specs/` and file-level execution
-  checklists in `docs/superpowers/plans/` before implementation.
-- Preserve the existing Iruka rules when adapting generic agent templates.
-- Report commands and actual results, applicable desktop/mobile screenshots,
-  and real transaction receipts. An unrun check remains unverified.
-- Record material decisions and unresolved inputs in `decisions/`. Never put
-  keys, private manifests, or personal custody data into evidence.
-- When changing agent instructions, run the relevant manual cases in `evals/`
-  and record the observed result. These cases are not automated software tests.
-- Use existing platform APIs and packages before adding dependencies. Add
-  automated guards only for concrete, recurring errors relevant to the work.
+## Product boundaries
+- 작품 모드는 캐릭터와 스토리. 핵심 흐름은 탐색 → 작품 선택/제작 → 대화다.
+- 기본 UI는 한국어. Iruka 브랜드와 흰색·블루 디자인을 유지한다.
+- 인증은 Privy Google + 이메일 인증. 계정 식별은 Privy DID를 사용한다.
+- 외부 지갑 연결, 자동 지갑 생성, SIWE 서명을 서비스 이용 조건으로 두지 않는다.
+- 무료 테스트 크레딧 지급·차감과 GIWA 테스트넷 장부 앵커링이 후속 범위다.
+- 성인 콘텐츠·19등급·성인인증, 실제 결제·환불·정산·신고 관리자 기능을 구현하지 않는다.
+- 팩·가챠·NFT·실물 Vault·Marketplace·입출금 기능을 재도입하지 않는다.
+- 브라우저 세션은 서버 권한 증거가 아니다. 후속 API는 Privy 토큰과 소유권을 검증한다.
+- 비공개 프롬프트/숨김 설정은 공개 작품 응답에 포함하지 않는다.
+- 크레딧 원장은 서버 정본, 지급/차감은 원자적·멱등적으로 처리한다.
+- 앵커는 실제 확인된 영수증이 있을 때만 완료로 표시한다. 개인정보/대화 원문은 체인에 기록하지 않는다.
+- 과거 GIWA/Monad 거래는 역사적 증거다. 새 장부 배포/거래 증거로 재사용하지 않는다.
+- 기존 브라우저 저장 데이터는 명시적 마이그레이션 요청 없이 삭제/변환하지 않는다.
+- 제3자 제휴/라이선스를 추정하지 않는다. 무허가 실존 인물, 얼굴, 실루엣, 로고,
+  상업 일러스트, 음악을 생성/사용하지 않는다. 승인된 원본 Iruka 자산을 우선한다.
 
-## Chain Boundaries
-
-- Monad work is additive. Preserve GIWA configuration, historical evidence,
-  deployment, and stored collections.
-- Keep requests, collection records, transfers, manifests, and Keeper leases
-  separated by chain and deployment identity where applicable.
-- An explicitly selected Monad build without a valid deployment must not
-  substitute a locally assigned result for an onchain Pull.
-- Do not claim Monad deployment, minting, settlement, VRF, physical custody,
-  or redemption without evidence for that exact claim.
-
-## Required Context
-
-- Use `karpathy-guidelines` as the base working style: small scoped changes,
-  clear assumptions, and verification tied to the changed surface.
-- Read `sprint.md` before planning work in the current GIWA review sprint.
-- Read `design.md` before UI or UX changes.
-- Read the relevant `docs/gitbook/` page before changing product behavior,
-  copy, packs, odds, reveal, vault, marketplace, shipping, or policy surfaces.
-- Do not use Ponytail mode or Ponytail skills unless the user explicitly asks.
-
-## Editing Rules
-
-- Do not add unnecessary copy or duplicate messaging.
-- Do not rewrite existing visible copy unless the request is about copy.
-- Do not edit files outside the requested scope.
-- Do not delete existing features.
-- Before adding a dependency, check whether existing packages or platform APIs
-  are enough.
-- Prefer the smallest code that solves the request.
-- Keep one clear role per file.
-- When touching a file that has grown beyond 200 lines, split only if the split
-  directly helps the requested change.
-- Do not create catch-all `utils` files.
-- Use clear verb+noun function names, such as `getStationList` or
-  `calculateReward`.
-
-## Verification
-
-- During normal edits, run the smallest useful verification for the changed
-  surface.
-- Run `npm run build` before release-oriented changes or AI-generated file
-  generation.
-- For visual work, check desktop and mobile layouts for text overflow,
-  incoherent overlap, and broken interactive states.
-
-## Product Rules
-
-- Iruka connects collectible pack discovery, verified storage, marketplace
-  trading, and physical redemption.
-- The core flow is: choose pack, pull/open, reveal, vault, sell/list, or ship.
-- The first screen should be a product flow, not a marketing page.
-- The user should understand the core loop within 3 seconds.
-- Use English UI for the MVP judging surface unless the user asks otherwise.
-- Public packs must show price, remaining supply, rarity tiers, odds, estimated
-  value ranges, and redemption eligibility.
-- Production pack logic, odds, result assignment, inventory eligibility, and
-  custody records should be auditable.
-- Only show an item as vaulted when records prove custody, verification, and
-  redemption eligibility.
-- Items listed for sale should be delisted before shipment can be requested.
-
-## Design Rules
-
-- Direction: Clean Blue Fintech Collectibles.
-- The app should feel fast, calm, liquid, and trustworthy.
-- No dark luxury mode, mock dashboard feel, or sharp fintech-table UI.
-- Use the palette, spacing, shape, and typography in `design.md`.
-- Use soft white/blue depth, 22px large surfaces, 18px controls, and full-pill
-  primary buttons or chips.
-- Shadows should be blue-tinted and soft, never black-heavy.
-- Keep app labels short, such as `Open pack`, `Vault`, `Sell now`, and `Ship`.
-- Do not add instructional or explanatory UI copy unless asked.
-- Avoid `demo`, `mock`, and investor-style wording in visible UI.
-- Hide empty zero stats.
-- Pack selection should feel tappable, and the open flow should add a revealed
-  card and vault row.
-
-## IP And Policy Rules
-
-- Do not imply official affiliation with artists, agencies, labels, publishers,
-  manufacturers, grading companies, or other third parties unless it exists.
-- Keep public pack branding neutral unless rights, licenses, or partnership
-  approval exist.
-- Marketplace listings and vault details may use third-party names only as
-  narrow identifiers for genuine physical items.
-- Do not render or generate unlicensed third-party faces, person silhouettes,
-  logos, brand marks, official images, commercial card artwork, or real songs.
-- Use original Iruka pack art, neutral mockups, or photos of actual inventory.
-
-## Reveal Rules
-
-- Treat pack reveal as part of the vending flow, not a separate game.
-- Use 3D only for the reveal moment; keep purchase, result, vault, and
-  marketplace UI as regular DOM.
-- Sound must be generic, visibly toggleable, and muted by default.
-- Reduced-motion users and WebGL failures must receive a CSS fallback.
-- Add the 3D reveal dependencies from `docs/gitbook/packs/pack-reveal.md` only
-  when reveal implementation actually starts.
-- Keep reveal timing rarity-aware: Common around 1.5s, Rare/Epic around 3.0s,
-  and Legendary/Iruka around 4.5s.
-- Tap skip should work from every reveal timeline point.
+## Verification and delivery
+- 변경 표면에 필요한 최소 테스트를 수행한다. 릴리스 준비/AI 파일 생성 전 npm run build.
+- 완료 전에 npm test와 npm run build의 실제 결과를 기록한다.
+- 시각 변경은 desktop/mobile의 overflow, overlap, 상태/키보드 접근을 확인한다.
+- 지침 변경은 evals/의 관련 수동 사례를 실행하고 관찰 결과를 기록한다.
+- 미실행 검증은 미검증으로 남긴다. 테스트 더블은 실제 OAuth/메일/체인 증거가 아니다.
+- 스크린샷은 .context/에, 공개 가능한 검증 요약은 docs/pivot/HANDOFF.md에 기록한다.
+- main 직접 push/merge, 배포, 유료 API 호출, 비밀값 커밋 금지.
+- 관련 변경만 현재 작업 브랜치에 커밋하고 draft PR을 만든다.

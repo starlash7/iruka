@@ -9,3 +9,5 @@ node_modules
 npm-debug.log*
 GASOK_PHASE4.md
 docs/internal/
+docs/archive/
+evals/
