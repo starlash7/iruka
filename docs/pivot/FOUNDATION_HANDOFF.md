@@ -131,3 +131,13 @@ SDK 전이 의존성 Rollup annotation 경고가 남는다. SDK 설정 포함 �
 `foundation-desktop-chat.png`, `foundation-mobile-chat.png`, `foundation-desktop-studio.png`,
 `foundation-mobile-studio.png`, `foundation-desktop-components.png`, `foundation-mobile-components.png`.
 UI 컴포넌트 검증 화면은 로컬 테스트 전용이며 제품 작품/실제 사용자 데이터가 아니다.
+
+## 전달 기준
+
+- 공통 구현 기준 커밋: `743e01f` (`feat: establish pivot shared development foundation`).
+- A–D는 이 커밋을 포함한 각자의 격리 workspace/branch에서 시작한다. 동일 공유 파일을 직접 병렬 수정하지 않는다.
+- 현재 브랜치: `starlash7/docs/pivot` (이름 유지).
+- [draft PR #9](https://github.com/starlash7/iruka/pull/9), base `main`.
+- 선행 [01 draft PR #8](https://github.com/starlash7/iruka/pull/8)이 아직 main에 없으므로 PR 전체 diff에는 01도 포함된다.
+  이번 공통 기반만 검토하려면 `git diff 7c9dad2..743e01f`를 사용한다.
+- 이 후속 인계 기록 커밋은 실행 코드를 바꾸지 않는다. main 직접 push/merge와 배포는 하지 않았다.

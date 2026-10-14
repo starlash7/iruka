@@ -12,4 +12,4 @@
 - [x] src/routes 및 src/features의 default page exports, src/ui 컴포넌트 구현. desktop/mobile 및 상호작용 검증.
 - [x] scripts/dev.mjs로 Vite/API 동시 실행, /api proxy, DB migrate/test commands 및 .env.example 조율.
 - [x] 전체 test/build/typecheck, 결정/인계/파일 소유권 문서.
-- [ ] 관련 변경 commit 및 main 대상 draft PR.
+- [x] 관련 변경 commit `743e01f` 및 main 대상 draft PR #9.
