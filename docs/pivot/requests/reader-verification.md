@@ -60,3 +60,7 @@ fixture 작품/표지는 자체 작성 테스트 자료이며 실서비스 재�
 이번 클라이언트 recovery guard는 현재 페이지 안의 중단/네트워크 실패/재조회 동작을 보호한다.
 
 main 직접 push/merge, 배포, 실제 모델 호출, 체인 쓰기는 수행하지 않았다.
+
+## 전달
+구현 커밋 `1d79abc`, [draft PR #13](https://github.com/starlash7/iruka/pull/13).
+현재 checkout `starlash7/iruka-ui`, base `main`. 운영 연결은 위 요청서 반영 대기.
