@@ -27,3 +27,10 @@
 - [x] 변경 범위 확인 후 커밋, 현재 브랜치 push, clone-repo 대상 Draft PR.
 
 구현 커밋 ff07fb3, Draft PR #15: https://github.com/starlash7/iruka/pull/15
+
+## 후속 Docs 방향 반영
+
+- [x] 소개/quickstart/탐색/FAQ/메타데이터를 작품·이야기 중심으로 정리.
+- [x] reading/modes 원문 archive, reading/stories로 메뉴·링크·리디렉션 갱신.
+- [x] 스튜디오/발행/세계관/로드맵에서 현재 mode 구현과 후속 통합 UI를 구분.
+- [x] npm test/build, Mintlify validate/broken-links, 새 페이지 200/이전 주소 307 확인. 기존 Draft PR #15에 반영.

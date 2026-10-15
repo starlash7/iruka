@@ -120,3 +120,8 @@ Privy의 전이 의존성에는 지갑/Solana 모듈이 남아 있다. 직접 �
 
 Docs 구현 커밋 `ff07fb3`, [Draft PR #15](https://github.com/starlash7/iruka/pull/15).
 대상은 `starlash7/clone-repo`이며 현재 체크아웃은 `starlash7/iruka-docs`다.
+
+후속 승인으로 스토리 중심 소개·통합 작품 탐색·캐릭터 대화 지원 방향을 Docs에 반영했다.
+`캐릭터·스토리 모드` 메뉴를 `캐릭터와 이야기`로 교체하고 이전 주소를 리디렉션한다.
+앱의 모드 필터/선택/발행 조건은 현재 동작으로 남기고 화면 정리는 계획으로 구분했다.
+재검증: 테스트 128/128, 빌드, Mintlify validate/broken-links 통과. 시각 검증은 재실행하지 않음.

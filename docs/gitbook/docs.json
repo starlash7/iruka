@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
   "name": "Iruka",
-  "description": "한국어 AI 캐릭터·스토리 채팅 플랫폼",
+  "description": "캐릭터와 대화하며 나만의 이야기를 이어가는 한국어 스토리 플랫폼",
   "colors": {
     "primary": "#684652",
     "light": "#F8C9DA",
@@ -35,7 +35,7 @@
         "group": "이야기 즐기기",
         "pages": [
           "reading/discovery",
-          "reading/modes",
+          "reading/stories",
           "reading/conversations",
           "reading/persona-memory"
         ]
@@ -138,6 +138,10 @@
     {
       "source": "/packs/pack-reveal",
       "destination": "/product-transition"
+    },
+    {
+      "source": "/reading/modes",
+      "destination": "/reading/stories"
     }
   ],
   "seo": {

@@ -81,3 +81,20 @@ Mintlify 검색 모달에서 aria-hidden 포커스 관련 브라우저 경고도
 
 Mintlify CLI/검색 범위 확인 참고: [공식 개발 안내](https://github.com/mintlify/mintlify-docs/blob/main/development.mdx),
 [메뉴 밖 페이지와 검색](https://mintlify.com/docs/guides/hidden-pages).
+
+## 후속 수정: 스토리 중심·통합 작품
+
+사용자 승인에 따라 소개·메타데이터·탐색·제작·FAQ·로드맵을 작품 중심으로 정리했다.
+`reading/modes`는 `reading/stories`로 교체하고 이전 원문을 archive에 보존했다.
+앱의 SearchPage/EditorFields 및 스튜디오 발행 검증을 다시 읽어, 아직 남은 모드
+필터·선택·캐릭터 예시 필수 조건을 현재 구현으로 명시했다. 통합 UI는 계획으로 구분한다.
+
+재실행: `npm test` 128 passed / 0 failed, `npm run build` 종료 0 (기존 chunk 경고),
+Mintlify validate/broken-links 종료 0. 정적 검사에서 16개 메뉴 파일·내부 링크·14개
+리디렉션 목적지 정상, SEO 설정 동일, archive 원문과 이전 커밋 내용 일치 확인.
+이번 후속 수정의 desktop/mobile 스크린샷 검증은 재실행하지 않았다.
+앞선 스크린샷은 이전 문구 기준이며 새 문구의 시각 검증 증거로 사용하지 않는다.
+검색 결과 및 원격 접근 제한 관련 미검증 범위는 위와 동일하다.
+
+로컬 Mintlify에서 `/reading/stories` HTTP 200, `/reading/modes` HTTP 307 및
+`Location: /reading/stories`를 확인했다.
