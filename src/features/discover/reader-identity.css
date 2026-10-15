@@ -1,0 +1,25 @@
+.reader-profile-avatar{display:block;flex-shrink:0;width:42px;height:42px;border-radius:50%;background-image:url('./assets/profile-idol-sprite.png');background-size:200% 200%;background-repeat:no-repeat;image-rendering:pixelated}
+.reader-profile-avatar-0{background-position:0 0}.reader-profile-avatar-1{background-position:100% 0}.reader-profile-avatar-2{background-position:0 100%}.reader-profile-avatar-3{background-position:100% 100%}
+.reader-profile{position:relative;z-index:10}
+.reader-profile-trigger{display:grid;place-items:center;width:46px;height:46px;padding:2px;border:1px solid #F2B8CE;border-radius:50%;background:white;cursor:pointer}
+.reader-profile-trigger:hover,.reader-profile-trigger[aria-expanded=true]{box-shadow:0 0 0 4px #FFF0F5}
+.reader-profile-popover{position:absolute;right:0;top:calc(100% + 12px);width:min(288px,calc(100vw - 32px));padding:12px;border:1px solid #EEE7EB;border-radius:22px;background:white;box-shadow:0 16px 44px #3d52651a;color:#25232A}
+.reader-profile-popover[hidden]{display:none}
+.reader-profile-identity{display:flex;align-items:center;gap:12px;padding:6px 4px 16px;border-bottom:1px solid #EEE7EB}
+.reader-profile-identity strong{font-size:14px;overflow-wrap:anywhere;min-width:0}
+.reader-profile-popover a,.reader-profile-popover button,.reader-profile-wallet{display:flex;align-items:center;gap:12px;padding:10px 8px;width:100%;min-height:48px;text-align:left;border:0;border-radius:14px;background:white;color:#25232A;font-size:14px;justify-content:flex-start!important}
+.reader-profile-popover a:hover,.reader-profile-popover button:hover{background:#FFF0F5;cursor:pointer}
+.reader-profile-popover img{width:28px;height:28px;object-fit:contain}
+.reader-profile-wallet span{min-width:0}.reader-profile-wallet small{display:block;overflow-wrap:anywhere;font-size:12px;color:#716A76}
+.reader-profile-popover p{font-size:13px;color:#A52332}
+.reader-login{border:0;border-radius:999px;background:#F8C9DA;color:#25232A;padding:8px 14px;min-height:44px;font-size:14px;white-space:nowrap;cursor:pointer}
+.reader-account-art{height:160px;position:relative;overflow:hidden;border-radius:18px;margin-bottom:24px;background:#EAF4FF}
+.reader-account-ocean{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.reader-account-characters{position:absolute;right:12px;bottom:-8px;height:160px;width:auto;object-fit:contain}
+.account-content>.reader-profile-avatar{width:64px;height:64px;margin-bottom:16px}
+.reader-login:hover:not(:disabled){background:#F2B8CE}
+.reader-profile-trigger:hover:not(:disabled){background:white}
+@media(max-width:480px){.app-header:has(.reader-login) .brand span,.app-header:has(.reader-profile) .brand span{display:none}}
+
+.reader-profile-network{display:block;font-size:12px;color:#716A76;margin-top:3px}.reader-profile-settings{padding-left:32px;background:#FFF0F5;border-radius:14px}.reader-profile-settings a{background:transparent}
+@media(max-width:800px){.reader-top{height:auto;min-height:110px;flex-wrap:wrap;padding-block:8px}.reader-top>nav{order:3;flex-basis:100%;justify-content:center}.reader-top-actions{margin-left:auto}.reader-top-actions .network-selector-trigger span{display:none}.reader-top-actions .network-selector-trigger .account-asset-mark{display:grid}.reader-top-actions .network-selector-trigger{padding:6px;gap:2px}.reader-top-actions .network-selector-menu span{display:inline}}

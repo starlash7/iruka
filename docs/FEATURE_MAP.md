@@ -1,60 +1,31 @@
 # Iruka Feature Map
 
-Iruka connects pack discovery, committed testnet pulls and Reveal with a
-collection interface and planned physical collectible operations.
+현재 범위: [CURRENT_SCOPE](pivot/CURRENT_SCOPE.md). 한국어 AI 캐릭터·스토리
+플랫폼의 A–D 통합 단계. [통합 상태](pivot/INTEGRATION.md)를 함께 확인한다.
 
-## Structure
+| 파일 | 역할 |
+|---|---|
+| src/main.tsx | 브랜드 자료 hash 진입점과 앱 lazy 로드 |
+| src/app-main.tsx, privyConfig.ts | Google/이메일/지갑 인증 provider, 자동 지갑 생성 off |
+| src/AuthActions.tsx, PrivyAuthActions.tsx, AccountView.tsx | 지갑에 의존하지 않는 로그인·계정 상태 |
+| src/App.tsx, src/routes | 공통 셸과 11개 feature 페이지 라우트 |
+| src/features | 채팅, 스튜디오, 탐색/사용자, 크레딧 화면 |
+| server/product | 실제 서비스/마이그레이션 통합, 명시적 로컬 테스트 모델·크레딧 정책 |
+| server/chat/reader.ts | 소유권 확인된 대화 목록·화면 데이터, 진행 중 요청 상태 |
+| src/ui, src/styles.css, public/fonts | 공통 컴포넌트·토큰과 자체 호스팅 Pretendard |
+| src/shared | DTO, API 클라이언트, SSE parser |
+| server/db, migrations | PostgreSQL 스키마, 파일 로컬 DB와 독립 테스트 DB |
+| server/core | Privy 검증, 계정/소유권, 작품 공개 경계, 버전 고정, 턴 멱등성, SSE/서비스 계약 |
+| server/app.ts, nodeServer.ts, dev.ts | 주입형 HTTP 라우터, Node 스트림 브리지, 로컬 구성 |
+| scripts/dev.mjs, migrate.ts | Vite/API 함께 실행, 실제 DB 마이그레이션 |
+| tests/core-* | DB/인증/권한/API/SSE/UI/멱등성 검증 |
+| src/BrandKitView.tsx, brand-kit.css, public/brand | 기존 브랜드 자료 |
+| src/giwaChain.ts | 독립 GIWA 정의. 현재 앱에서 호출하지 않음 |
+| docs/archive/tcg | 과거 자료; 현행 제품 규칙 아님 |
 
-- `src/`: React product, Privy wallets, EVM reads/transfers, pending requests,
-  local collections, Vending, Reveal, Vault and Marketplace interfaces.
-- `api/giwa/` and `server/giwa/`: GIWA Keeper trigger, scheduled recovery,
-  encrypted manifest loading and atomic fulfillment leases.
-- `api/monad/`, `server/monad/`, `scripts/monad/`: independent Monad
-  Keeper and deployment tooling; deployment, browser recovery and cron recovery
-  verified in [Monad verification](./MONAD_VERIFICATION.md).
-- `scripts/giwa/`: prepare, encrypt, commit and fulfill test batches.
-- `contracts/`: chain-neutral `IrukaPackBatch`, deployment script and Foundry tests.
-- `tests/`: Node tests for product wiring, runtime behavior and server operations.
-- `docs/gitbook/`: authoritative product status, custody, policy and network docs.
-- `docs/superpowers/`: approved scopes and task checklists.
-- `.github/`: CI and PR evidence format.
-- `decisions/`: material choices with evidence; `evals/`: manual agent-rule checks.
-- `.context/`: gitignored logs, screenshots and private coordination artifacts.
+패키지/env/lockfile, 공통 파일은 단일 공통 담당이 조율한다. 파일 소유권·공개 함수·
+route export는 [공통 인계](pivot/FOUNDATION_HANDOFF.md), [API](pivot/API_CONTRACT.md),
+[UI](pivot/UI_FOUNDATION.md)를 따른다.
 
-## Core Flow
-
-1. Privy authenticates the user and provisions a separate embedded EVM wallet.
-2. Vending reads the configured batch and requests one committed position.
-3. Keeper fulfills it; the browser verifies the contract result before Reveal.
-4. A pulled card enters the account collection. This does not establish custody.
-5. Commercial ownership, USDC settlement and physical redemption remain planned.
-
-## Files And Ownership
-
-- `src/App.tsx`: product state and Pull/resume/Reveal orchestration.
-- `src/app-main.tsx`: Privy configuration and application entry.
-- `src/giwaPull.ts`, `src/giwaFulfillment.ts`: request and proof-confirmation flow.
-- `src/giwaPendingPull.ts`, `src/cardCollectionStorage.ts`: persisted account state.
-- `server/giwa/fulfillRequest.mjs`: dependency-injected Keeper logic reusable by adapters.
-- `server/giwa/recoverPendingPull.mjs`: single-batch request-order recovery.
-- `vercel.json`: API packaging, cron and CSP; integration owner only.
-- `.env.example`, `.nvmrc`, `package.json`, lockfile: integration owner only.
-
-Frontend owns `src/` and its focused tests. Backend owns Monad APIs, server
-adapters, scripts and its focused tests. Coordinator owns shared configuration,
-rules, submission documents and integration. Freeze API, batch label, inventory
-ordering and environment names before dependent work starts.
-
-## Verification
-
-```sh
-nvm use
-npm ci
-npm test
-npm run test:contracts
-npm run build
-```
-
-Normal edits use focused tests; release verification also checks both deployment
-builds and desktop/mobile layouts. CI success is not proof of a live deployment.
-Never commit private manifests, credentials, `dist/`, or generated contract output.
+검증: `npm ci`, `npm run db:migrate`, `npm test`, `npm run build`.
+로컬 실행: `npm run dev`. 실제 OAuth/OTP·운영 DB·유료 모델·체인 배포는 별도 검증 대상이다.

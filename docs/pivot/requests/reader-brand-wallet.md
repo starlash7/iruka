@@ -1,0 +1,98 @@
+# 사용자 피드백 반영: 밝은 핑크와 Privy 지갑 로그인
+
+2026-10-14 사용자 요청은 기존 Google/이메일만 허용한 규정보다 우선한다.
+Privy 지갑 로그인 + Google + 이메일을 제공한다. 계정 키는 계속 Privy DID이며
+자동 지갑 생성, 결제, 입출금은 이 요청에 포함되지 않는다.
+
+공통 파일 변경 요청/반영 범위: src/privyConfig.ts, src/PrivyAuthActions.tsx,
+src/AccountView.tsx. 최신 명시적 로그인 요청을 구현하기 위한 최소 변경이다.
+공통 담당은 CURRENT_SCOPE, UI_FOUNDATION, design.md에 이를 병합해 반영해야 한다.
+
+브랜드는 기존 파란 돌고래 로고를 보존하고 밝은 핑크 #F8C9DA와
+hover #F2B8CE, 선택 배경 #FFF0F5, 본문 #25232A를 사용한다.
+버튼에는 어두운 본문색을 사용해 연한 핑크에서도 읽히도록 한다.
+기존 22px 표면, 18px 입력, pill 버튼을 재사용한다.
+
+검증: npm test 70/70, npm run build 통과. 기존 인증 테스트의 허용 수단을
+사용자 요청에 맞게 갱신하고 지갑 단독 계정 표시를 검증했다.
+Safari 360/768/1440 홈 가로 넘침 0px, 360 로딩/빈 결과/오류 표시 확인.
+계정 화면은 로컬 Privy 앱 ID 미설정 상태와 비활성 로그인 표시를 확인했다.
+실제 OAuth/OTP/지갑 서명 완료는 미검증이다. 채팅 재방문은 현재 브라우저 세션에
+대화가 없어 오류 상태를 확인했으며 이번 수정에서 정상 대화 흐름을 재검증하지 않았다.
+본문 #25232A / 기본 버튼 #F8C9DA 대비 10.62:1, hover 대비 9.26:1,
+선택 글자 #684652 / #FFF0F5 대비 7.36:1.
+리뷰에서 발견한 API 미리보기 인증 토큰 누락을 수정했다.
+스크린샷: .context/reader-refined-{360,768,1440}.png.
+
+## 기존 에셋·프로필 메뉴 복원
+최신 사용자 요청에 따라 89c4596의 픽셀 얼굴 4종, 계정 캐릭터 일러스트,
+바다 배경, 입체 계정·지갑 아이콘을 discover/assets로 복원했다.
+기존 public/brand 로고·워드마크·브랜드 배너는 그대로 보존한다.
+팩·마켓 상품 이미지와 옛 입출금 기능은 현재 캐릭터챗 화면의 재사용 대상이 아니다.
+
+공통 변경 추가: App.tsx 우측 인증 메뉴, AccountView.tsx 기존 계정 아트와
+아바타 표시. ReaderAccountMenu는 실제 Privy 상태를 사용하며 Google/이메일
+로그인 후 지갑이 없으면 SDK linkWallet로 계정에 연결한다. 자동 생성은 하지 않는다.
+아바타는 계정 DID에서 안정적으로 선택하여 새로고침할 때 바뀌지 않는다.
+AuthActions.tsx의 미설정 계정 화면에도 같은 아트를 표시한다.
+리뷰에서 인라인 로그아웃 후 기존 대화 캐시가 남는 문제를 발견해 성공 시 계정
+페이지로 이동하고, 로그인 완료 시 페이지를 다시 불러와 이전 사용자 화면을 비운다.
+
+검증: 71 tests pass. 복원 계정 화면 360/768/1440 가로 넘침 0px,
+공통 앱 /account 360px 가로 넘침 0px. 별도 개발 UI에서 아바타 메뉴 열기,
+계정/지갑 연결/로그아웃 표시, Escape 닫기와 트리거 포커스 복귀 확인.
+실제 Privy 로그인·지갑 연결은 앱 ID 미설정으로 여전히 미검증.
+스크린샷 .context/restored-profile-menu.png는 명시적 UI 검증 상태이며 실제 로그인 증거가 아니다.
+
+## 로그인 복원 반복 새로고침 수정
+2026-10-14 Chrome 실사용 세션에서 확인 중 반복을 재현했다.
+Privy SDK는 세션 초기화 시에도 login.onComplete를 wasAlreadyAuthenticated:true로
+호출한다. 기존 무조건 reload가 초기화를 반복시켰다. 이 경우는 reload하지 않고,
+새 로그인(false)에만 이전 사용자 화면 캐시를 비우기 위한 reload를 유지했다.
+회귀 테스트는 복원 두 번 → 새 로그인 → 복원 순서에서 reload가 정확히 한 번인지 검증한다.
+Chrome에서 실제 기존 로그인 세션의 계정/아바타/연결 지갑 표시를 확인했으며,
+시간 간격을 두고 navigation timeOrigin이 동일함을 확인했다.
+지갑 주소/토큰/사용자 식별자는 진단 문서에 저장하지 않았다.
+인증 미설정 렌더링 테스트는 로컬 .env.local 유무와 독립되도록 빈 앱 ID를 명시했다.
+검증 결과: npm test 72/72 통과, npm run build 통과(기존 번들 크기 경고).
+
+## 기존 계정/지갑 복원 및 AI 보관함 (사용자 후속 승인)
+첨부 화면 기준으로 89c4596의 계정 배너, 네트워크 선택, 잔액/주소 복사,
+입출금 다이얼로그와 로고를 재사용한다. 사용자 확정에 따라 카드 인벤토리는
+대화 목록 기반 AI 작품·대화 보관함으로 변경했다. 기존 카드 저장소는 건드리지 않는다.
+공통 파일 변경: AccountView.tsx는 optional walletPanel 슬롯과 기존 배너,
+PrivyAuthActions.tsx는 실제 인증 시 RestoredWallet 연결,
+App.tsx는 네트워크를 유지하는 href를 사용한다. 공유 소유자의 통합 검토 대상이다.
+주 지갑 연결은 Privy linkWallet, 입금 출처의 외부 지갑 연결은 connectWallet이다.
+지갑 생성은 명시적 버튼으로만 수행하며 세션 복원 시 생성/송금하지 않는다.
+네트워크별 pending 기록과 잔액을 분리한다. cancelled/replaced 영수증은 송금 완료로
+표시하지 않는다. SDK 준비가 오래 걸리면 재확인 버튼을 제공한다.
+
+검증: npm test 89/89 통과, 추가 account-library.test.mjs 1/1 통과,
+npm run build 통과(기존 번들 크기 경고), git diff --check 통과.
+Chrome 최상위 페이지에서 실제 기존 Privy 세션 및 GIWA/Monad 잔액 조회 확인.
+출금 다이얼로그 열기/닫기 확인. 실제 전송/서명/지갑 신규 생성은 수행하지 않았다.
+360/768/1440 viewport 가로 넘침 0px. 빈 보관함, 오류/재시도, 로딩,
+보관함 앵커와 키보드 포커스 확인. iframe에서는 SDK 지갑 준비가 지연되어
+지연 상태를 확인했고, 실제 지갑 검증은 최상위 페이지에서 별도 수행했다.
+개발 미리보기의 작품/대화 데이터는 명시적 개발 응답이다. 운영 API의 실패를
+개발 데이터로 대체하지 않는다. 작품/채팅 API 전체 운영 통합은 기존 담당 범위 그대로 남는다.
+
+## 핑크 브랜드/intro 효과 복원
+사용자 요청으로 public/brand/iruka-logomark.svg의 경로는 유지하고 그라데이션
+6색만 핑크로 변경했다. 이 공유 에셋은 앱 헤더와 favicon에 반영된다.
+비트맵 워드마크·바다 배경·Iruka 계정 아이콘은 CSS 표시 필터로 핑크화하며
+원본 파일은 유지한다. 작품 커버/캐릭터/체인과 통화 로고는 재색칠하지 않는다.
+89c4596의 intro scan 4.8초와 glass/hover/active 효과를 핑크로 옮겼다.
+스캔은 주요 CTA에, 보조 버튼은 얕은 표면/눌림에 적용한다. disabled 스캔을
+멈추며 reduced-motion에서는 스캔과 움직임을 제거한다. 새 의존성은 없다.
+primary의 가장 어두운 hover gradient 끝점과 글자 대비는 7.03:1이다.
+
+공통 AccountView의 로그인/로그아웃 버튼에는 기존 iruka-action/secondary 클래스를
+연결해 같은 효과를 적용했다. 별도 글로벌 스타일 파일은 변경하지 않았다.
+검증: npm run build 통과, reader-auth-session 회귀 테스트 1/1 통과,
+git diff --check 통과. Chrome 360/768/1440 overflow 0px.
+실제 computed style: animation iruka-entry-action-scan/4.8s,
+disabled animation none, DevTools reduced-motion reduce에서 animation none/0s.
+에뮬레이션은 검증 후 해제했다. .context/pink-brand-home.png 및
+.context/pink-account-360.png는 로컬 화면 증거다.
