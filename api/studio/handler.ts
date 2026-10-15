@@ -5,21 +5,38 @@ import {getOrCreateUser} from '../../server/core/accounts.ts';
 import {ApiError} from '../../server/core/errors.ts';
 import {jsonResponse,errorResponse,requireId} from '../../server/core/http.ts';
 import {createStudioService} from '../../server/studio/index.ts';
+import type {ImageStorage} from '../../server/media/storage.ts';
+import {createMediaService} from '../../server/media/index.ts';
+import {readImageBody} from '../../server/media/png.ts';
 import {validateDraft} from '../../server/studio/validate.ts';
 /** Mount before the common handler for /api/studio/* only. Not a deployment adapter. */
-export function createStudioHandler({db,verifyToken}:{db:Database;verifyToken:TokenVerifier}) {
+export function createStudioHandler({db,verifyToken,imageStorage}:{db:Database;verifyToken:TokenVerifier;imageStorage?:ImageStorage}) {
  const service=createStudioService({db});
+ const media=imageStorage?createMediaService({db,storage:imageStorage}):null;
  return async(request:Request)=>{
   const requestId=randomUUID();
   try {
    const path=new URL(request.url).pathname.replace(/\/$/,'');
-   const match=/^\/api\/studio\/works(?:\/([^/]+)(?:\/(publish|assets))?)?$/.exec(path);
+   const imageMatch=/^\/api\/studio\/media\/([^/]+)\/([a-f0-9]{64})$/.exec(path);
+   if(imageMatch&&request.method==='GET'){
+    if(!media)throw new ApiError('SERVICE_UNAVAILABLE','이미지 저장소가 연결되지 않았어요.');
+    const identity=request.headers.has('authorization')?await authenticateRequest(request,verifyToken):null;
+    const user=identity?await getOrCreateUser(db,identity.privyDid):null;
+    const bytes=await media.readImage(user?.id??null,imageMatch[1],imageMatch[2]);
+    return new Response(new Uint8Array(bytes),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});
+   }
+   const match=/^\/api\/studio\/works(?:\/([^/]+)(?:\/(publish|assets|images))?)?$/.exec(path);
    if(!match)throw new ApiError('NOT_FOUND','경로를 찾을 수 없어요.');
    const identity=await authenticateRequest(request,verifyToken);
    const user=await getOrCreateUser(db,identity.privyDid);
    const id=match[1]?requireId(match[1]):undefined;const action=match[2];
    if(request.method==='GET'&&!action)return jsonResponse(id?await service.getWork(user.id,id):await service.listWorks(user.id),requestId);
    if(!['POST','PUT'].includes(request.method))throw new ApiError('NOT_FOUND','경로를 찾을 수 없어요.');
+   if(id&&action==='images'&&request.method==='POST'){
+    await service.getWork(user.id,id);
+    if(!media)throw new ApiError('SERVICE_UNAVAILABLE','이미지 저장소가 연결되지 않았어요. 작성한 내용은 유지돼요.');
+    return jsonResponse(await media.uploadImage(user.id,id,await readImageBody(request)),requestId,201);
+   }
    const body=await readStudioJson(request);
    if(!id&&request.method==='POST'){
     if('id' in body||'revision' in body)throw new ApiError('INVALID_REQUEST','새 작품 요청을 확인해 주세요.');

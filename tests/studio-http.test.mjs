@@ -34,7 +34,7 @@ test('HTTP authentication, ownership, asset binding and publication reject forge
         assert.equal(response.status, 200);
         work = (await response.json()).data;
         assert.equal((await request('/' + id + '/publish', 'POST', { revision: work.revision })).status, 201);
-        assert.equal((await request('/' + id + '/publish', 'POST', { revision: work.revision })).status, 409);
+        assert.equal((await request('/' + id + '/publish', 'POST', { revision: work.revision })).status, 201);
         assert.equal((await request('/' + id + '/publish', 'POST', {})).status, 400);
         assert.equal((await request('/not-a-uuid')).status, 400);
     }

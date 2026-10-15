@@ -1,8 +1,20 @@
-import { Page, EmptyState } from '../../ui';
-import type { RoutePageProps } from '../../routes/paths';
+import {useMemo} from 'react';
+import {getAccessToken, usePrivy} from '@privy-io/react-auth';
+import {Page} from '../../ui';
+import {AuthActions} from '../../AuthActions';
+import type {RoutePageProps} from '../../routes/paths';
+import {createPersonaClient} from './personas/client';
+import {PersonaManager} from './personas/PersonaManager';
 
-export default function PersonasPage(_props: RoutePageProps) {
+export default function PersonasPage({authEnabled = false}: RoutePageProps) {
   return <Page title="내 페르소나" description="이야기 속 나의 모습을 관리하는 곳이에요.">
-    <EmptyState title="페르소나를 준비하고 있어요" description="대화에 사용할 프로필을 관리할 수 있도록 준비하고 있어요." />
+    {authEnabled ? <AuthenticatedPersonas /> : <AuthActions enabled={false} />}
   </Page>;
+}
+function AuthenticatedPersonas() {
+  const {ready, authenticated, user} = usePrivy();
+  const client = useMemo(() => createPersonaClient({getAccessToken}), []);
+  if (!ready) return <p role="status">로그인 확인 중…</p>;
+  if (!authenticated || !user) return <AuthActions enabled />;
+  return <PersonaManager key={user.id} client={client} />;
 }

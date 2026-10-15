@@ -1,12 +1,16 @@
+import type {ReactNode} from 'react';
+import type {ImageTarget} from './ImageField';
 import {Button} from '../../ui';
 import {Text,Line,Group,Check} from './Fields';
 import type {StudioDraft} from './types';
-export function EditorFields({tab,draft:d,change}:{tab:string;draft:StudioDraft;change:(fn:(d:StudioDraft)=>void)=>void}) {
+export function EditorFields({tab,draft:d,change,renderImage}:{tab:string;draft:StudioDraft;change:(fn:(d:StudioDraft)=>void)=>void;renderImage?:(target:ImageTarget,label:string,url:string|null)=>ReactNode}) {
  const s=d.publicSnapshot,p=d.privateConfig;
  const edit=(fn:(d:StudioDraft)=>void)=>change(fn);
  if(tab==='basic')return <>
   <Line label="작품 이름" value={d.title} max={30} onChange={v=>edit(d=>{d.title=v;})}/>
-  <label className="studio-field">작품 모드<select value={d.mode} onChange={e=>edit(d=>{d.mode=e.target.value as StudioDraft['mode'];})}><option value="story">스토리</option><option value="character">캐릭터</option></select></label>
+  {renderImage?.({kind:'cover'},'표지 이미지',d.coverUrl)}
+  <label className="studio-field">이야기 구성<select value={d.mode} onChange={e=>edit(d=>{d.mode=e.target.value as StudioDraft['mode'];})}><option value="story">스토리</option><option value="character">한 인물과 대화</option></select></label>
+  <Text label="이야기 방향 (비공개)" value={p.systemPrompt} max={8000} onChange={v=>edit(d=>{d.privateConfig.systemPrompt=v;})}/>
   <Line label="한 줄 소개" value={s.tagline} onChange={v=>edit(d=>{d.publicSnapshot.tagline=v;})}/>
   <Text label="상세 소개" value={d.description} max={2000} onChange={v=>edit(d=>{d.description=v;})}/>
   <Line label="태그 (쉼표로 구분)" value={d.tags.join(',')} max={500} onChange={v=>edit(d=>{d.tags=v.split(',');})}/>
@@ -16,6 +20,7 @@ export function EditorFields({tab,draft:d,change}:{tab:string;draft:StudioDraft;
  if(tab==='characters')return <>
   {s.characters.map((c,i)=>{const cfg=p.characterSettings.find(x=>x.characterId===c.id)??{description:'',speechStyle:''};return <Group key={c.id} title={`인물 ${i+1}`} onRemove={()=>edit(d=>{d.publicSnapshot.characters.splice(i,1);d.privateConfig.characterSettings=d.privateConfig.characterSettings.filter(x=>x.characterId!==c.id);})}>
    <Line label="이름" value={c.name} max={50} onChange={v=>edit(d=>{d.publicSnapshot.characters[i].name=v;})}/>
+   {renderImage?.({kind:'character',id:c.id},`${c.name||'등장인물'} 이미지`,c.imageUrl)}
    <Text label="소개 (비공개)" value={cfg.description} max={1500} onChange={v=>edit(d=>{const settings=d.privateConfig.characterSettings;let row=settings.find(x=>x.characterId===c.id);if(!row){row={characterId:c.id,description:'',speechStyle:''};settings.push(row);}row.description=v;})}/>
    <Text label="말투" value={cfg.speechStyle} max={1500} onChange={v=>edit(d=>{const settings=d.privateConfig.characterSettings;let row=settings.find(x=>x.characterId===c.id);if(!row){row={characterId:c.id,description:'',speechStyle:''};settings.push(row);}row.speechStyle=v;})}/>
   </Group>;})}<Button disabled={s.characters.length>=50} onClick={()=>edit(d=>{const id=crypto.randomUUID();d.publicSnapshot.characters.push({id,name:'',imageUrl:null});d.privateConfig.characterSettings.push({characterId:id,description:'',speechStyle:''});})}>인물 추가</Button>
