@@ -21,6 +21,20 @@ JSON 성공은 `{data: T, requestId: string}`, 실패는
 
 ## 데이터와 공개 경계
 
+### 마이페이지 프로필 (2026-10-15)
+
+`GET /api/me/profile`, `PUT /api/me/profile`는 검증된 로그인 사용자 본인의
+`ProfileDto { nickname, bio, avatar }`만 읽고 저장한다. PUT은 세 필드를 함께
+저장하며 다른 키(userId 포함)는 거부한다. nickname은 1~30자, bio는 300자 이하,
+avatar는 null 또는 512px 이하의 검증·정규화된 PNG data URL이다(최대 1,500,000자).
+전체 JSON 요청 상한은 해당 경로에서만 1,510,000바이트다. 기존 JSON 상한은 유지한다.
+브라우저는 5MB 이하 PNG/JPEG/WebP를 정사각형 512px PNG로 변환한다.
+이미지는 별도 공개 URL 없이 user_profiles에 저장하며 응답은 no-store다.
+이메일·지갑·Privy DID를 프로필 DTO에 넣지 않으며 공개 프로필 API는 없다.
+저장은 서버 DB 정본이며 브라우저 저장소에 프로필을 저장하지 않는다.
+
+### 기존 데이터
+
 - `UserDto`: 내부 id, privyDid, displayName, createdAt. 본인 응답 전용이며 공개 작품에 포함하지 않는다.
 - `PublicWorkDto`: id, creatorId, mode(character/story), title, description,
   coverUrl, tags, publishedVersionId, createdAt. 서버는 이 필드만 명시적으로 선택한다.

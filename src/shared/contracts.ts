@@ -1,5 +1,6 @@
 /** Wire contracts shared by browser and server. Dates are ISO-8601 strings. */
 export interface UserDto { id: string; privyDid: string; displayName: string | null; createdAt: string }
+export interface ProfileDto { nickname: string; bio: string; avatar: string | null }
 export interface PersonaDto { id: string; userId: string; name: string; description: string; createdAt: string }
 export interface PublicWorkDto {
   id: string; creatorId: string; mode: 'character' | 'story'; title: string;

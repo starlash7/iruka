@@ -12,6 +12,7 @@
 | src/AuthActions.tsx, PrivyAuthActions.tsx, AccountView.tsx | 지갑에 의존하지 않는 로그인·계정 상태 |
 | src/App.tsx, src/routes | 공통 셸과 11개 feature 페이지 라우트 |
 | src/features | 채팅, 스튜디오, 탐색/사용자, 크레딧 화면 |
+| src/features/user/profile, server/core/profile.ts | 마이페이지 프로필 편집, 서버 저장, 헤더 동기화. 본인 전용 API |
 | server/product | 실제 서비스/마이그레이션 통합, 명시적 로컬 테스트 모델·크레딧 정책 |
 | server/chat/reader.ts | 소유권 확인된 대화 목록·화면 데이터, 진행 중 요청 상태 |
 | src/ui, src/styles.css, public/fonts | 공통 컴포넌트·토큰과 자체 호스팅 Pretendard |

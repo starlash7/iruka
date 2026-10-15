@@ -11,7 +11,7 @@ test('minimal routes render without authentication configuration', async () => {
   const previous = globalThis.window;
   try {
     const { default: App } = await server.ssrLoadModule('/src/App.tsx');
-    for (const [pathname, heading] of [['/', '어떤 이야기를 시작할까요?'], ['/account', '내 계정'], ['/account/', '내 계정'], ['/missing', '페이지를 찾을 수 없어요']]) {
+    for (const [pathname, heading] of [['/', '어떤 이야기를 시작할까요?'], ['/account', '마이페이지'], ['/account/', '마이페이지'], ['/missing', '페이지를 찾을 수 없어요']]) {
       globalThis.window = { location: { pathname } };
       const html = renderToStaticMarkup(createElement(App));
       assert.ok(html.includes(`<h1>${heading}</h1>`));

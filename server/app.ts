@@ -5,6 +5,7 @@ import {ApiError} from './core/errors.ts';
 import {jsonResponse,errorResponse,readJson,requireText,requireId} from './core/http.ts';
 import {getOrCreateUser,listPersonas} from './core/accounts.ts';
 import {parsePersonaInput,updatePersona,deletePersona} from './core/personas.ts';
+import {getProfile,saveProfile} from './core/profile.ts';
 import {getPublicWork,getCreatorWork,projectPublicWork} from './core/works.ts';
 import {getOwnedChat,createChat} from './core/chats.ts';
 import {createEventResponse} from './core/sse.ts';
@@ -26,6 +27,10 @@ export function createApiHandler({db,verifyToken,stream,credits,discovery}:ApiDe
    const identity=await authenticateRequest(request,verifyToken);
    const user=await getOrCreateUser(db,identity.privyDid);
    if((path==='/api/auth/session'||path==='/api/me')&&method==='GET')return jsonResponse(user,requestId);
+   if(path==='/api/me/profile'){
+    if(method==='GET')return jsonResponse(await getProfile(db,user.id),requestId);
+    if(method==='PUT')return jsonResponse(await saveProfile(db,user.id,await readJson(request,1510000)),requestId);
+   }
    if(path==='/api/me/personas'){
     if(method==='GET')return jsonResponse(await listPersonas(db,user.id),requestId);
     if(method==='POST'){

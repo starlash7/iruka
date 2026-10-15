@@ -2,7 +2,8 @@ import characters from './assets/account-idols-transparent.png';
 import ocean from './assets/iruka-entry-sky-ocean.png';
 import './reader-identity.css';
 import './reader-brand-effects.css';
-export function ReaderAvatar({identity}:{identity:string}) {
+export function ReaderAvatar({identity,image}:{identity:string;image?:string|null}) {
+ if(image)return <img className="reader-profile-avatar reader-profile-avatar-custom" src={image} alt=""/>;
  const index=Array.from(identity).reduce((sum,char)=>(sum+char.codePointAt(0)!)%4,0);
  return <span aria-hidden="true" className={`reader-profile-avatar reader-profile-avatar-${index}`}/>;
 }
