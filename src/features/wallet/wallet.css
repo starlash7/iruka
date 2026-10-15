@@ -1,0 +1,11 @@
+.credit-toolbar { display: flex; justify-content: flex-end; margin-bottom: var(--space-4); }
+.credit-balance { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.credit-balance > div { padding: var(--space-6); border-radius: var(--radius-xl); background: var(--soft); }
+.credit-balance dt { margin: 0; }
+.credit-balance dd { font-size: var(--text-xl); font-weight: 700; font-variant-numeric: tabular-nums; }
+.credit-history { list-style: none; padding: 0; margin: 0 0 var(--space-6); }
+.credit-history li { display: flex; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) 0; border-bottom: 1px solid var(--line); }
+.credit-history li > div { min-width: 0; overflow-wrap: anywhere; }
+.credit-history time { display: block; margin-top: var(--space-2); color: var(--muted); font-size: var(--text-sm); }
+.credit-entry-value { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-2); font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .credit-balance { grid-template-columns: 1fr; } }

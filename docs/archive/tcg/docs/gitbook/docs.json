@@ -1,0 +1,118 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Iruka",
+  "description": "Product documentation for Iruka's collectible flow, verified Pull receipts on GIWA Sepolia and Monad Testnet, and planned physical custody, trading, and redemption.",
+  "colors": {
+    "primary": "#1677FF",
+    "light": "#20C7DF",
+    "dark": "#0B63F6"
+  },
+  "logo": {
+    "light": "/images/iruka-logomark.svg",
+    "dark": "/images/iruka-logomark.svg",
+    "href": "https://playiruka.space"
+  },
+  "favicon": "/images/iruka-logomark.svg",
+  "appearance": {
+    "default": "light",
+    "strict": true
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start Here",
+        "public": true,
+        "pages": [
+          "overview",
+          "project/why-fandom-collectibles",
+          "project/how-it-works",
+          "faq"
+        ]
+      },
+      {
+        "group": "Product",
+        "public": true,
+        "pages": [
+          "packs/pack-information",
+          "product/grading-and-verification",
+          "product/vault",
+          "product/marketplace",
+          "product/redemption-and-shipping"
+        ]
+      },
+      {
+        "group": "Trust and Direction",
+        "public": true,
+        "pages": [
+          "policies/ip-and-listing-policy",
+          "roadmap"
+        ]
+      },
+      {
+        "group": "Technology",
+        "public": true,
+        "pages": [
+          "technical/onchain-architecture",
+          "technical/giwa-testnet",
+          "technical/monad-testnet"
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Open Iruka",
+      "href": "https://playiruka.space"
+    }
+  },
+  "footer": {
+    "links": [
+      {
+        "header": "Iruka",
+        "items": [
+          {
+            "label": "Website",
+            "href": "https://playiruka.space"
+          }
+        ]
+      }
+    ]
+  },
+  "redirects": [
+    {
+      "source": "/project/overview",
+      "destination": "/overview"
+    },
+    {
+      "source": "/README",
+      "destination": "/overview"
+    },
+    {
+      "source": "/project/official-links",
+      "destination": "/overview#official-links"
+    },
+    {
+      "source": "/product/vending-machine",
+      "destination": "/packs/pack-information"
+    },
+    {
+      "source": "/packs/rarities-and-odds",
+      "destination": "/packs/pack-information#rarities-and-odds"
+    }
+  ],
+  "seo": {
+    "indexing": "navigable",
+    "metatags": {
+      "canonical": "https://docs.playiruka.space",
+      "robots": "index, follow"
+    }
+  },
+  "search": {
+    "prompt": "Search Iruka docs"
+  }
+}
