@@ -157,7 +157,7 @@ export function BrandKitView() {
             <p className="brand-kit-kicker">03</p>
             <h2 id="brand-usage-title">Use it cleanly</h2>
           </div>
-          <p>The mark stays simple so the collectible stays in focus.</p>
+          <p>The mark stays simple so the story stays in focus.</p>
         </div>
 
         <div className="brand-kit-guidance-grid">

@@ -1,0 +1,24 @@
+@import './account-profile.css';
+@import './account-balance.css';
+@import './account-assets.css';
+@import './account-funds.css';
+@import './account-deposit.css';
+@import './account-transfer.css';
+.restored-account{--account-action:#684652;--blue-hover:#684652;--ink:#25232A;--muted:#716A76;--line:#EEE7EB;--line-strong:#C9B9C2;--surface:white;--soft:#FCFAFB;--sky:#FFF0F5;--radius-lg:22px;--radius-xl:22px;--radius-md:18px;--radius-pill:999px;--font-sans:Pretendard,sans-serif;--shadow-sm:0 6px 20px #59749e0d;--shadow-lg:0 18px 50px #59749e1a;--danger:#A52332;margin-top:24px}
+.restored-account .account-wallet-panel{background:white;border-color:var(--line);max-width:680px}
+.restored-account .iruka-action-button{background:#F8C9DA;color:#25232A;border:0;border-radius:999px;min-height:44px;padding:10px 16px;display:inline-flex;align-items:center;gap:8px}
+.restored-account .iruka-action-button:hover{background:#F2B8CE}
+.restored-account .iruka-secondary-button{background:#FFF0F5;color:#684652;border:1px solid #EEE7EB;border-radius:999px;min-height:44px;padding:10px 16px;display:inline-flex;align-items:center;gap:8px}
+.restored-account button:disabled{opacity:.55;cursor:not-allowed}
+.restored-account .account-wallet-address code{overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.restored-account .network-selector{margin-bottom:16px}
+.reader-account-panel:has(.restored-account){max-width:none}
+.reader-account-panel:has(.restored-account) .reader-account-art{height:240px}
+.reader-account-panel:has(.restored-account) .reader-account-characters{height:220px}
+@media(max-width:600px){.reader-account-panel:has(.restored-account){padding:16px}.reader-account-panel:has(.restored-account) .reader-account-art{height:180px}.reader-account-panel:has(.restored-account) .reader-account-characters{height:170px}}
+
+.restored-collection{margin-top:32px}.restored-collection h2{display:flex;gap:12px;align-items:center}.restored-collection h2 img{width:32px;height:32px}.restored-collection-stats{display:flex;flex-wrap:wrap;gap:16px;margin:20px 0}.restored-collection-stats>span{display:grid;gap:12px;background:white;border:1px solid var(--line);border-radius:22px;padding:20px;min-width:160px}.restored-collection-stats strong{font-size:24px}
+
+.account-surface:has(.restored-account){max-width:none}.account-content:has(.restored-account)>.account-profile-hero{margin-bottom:24px}.account-content:has(.restored-account)>dl{margin-bottom:20px}.account-profile-nav a{min-height:44px}
+.account-library-tabs{display:flex;gap:8px;margin:16px 0}.account-library-tabs button[aria-pressed=true]{background:#fcebf3;color:#95395f;border-color:#e6afc5}.account-library-chats{list-style:none;padding:0;display:grid;gap:12px}.account-library-chats a{display:flex;align-items:center;gap:14px;color:inherit;text-decoration:none}.account-library-chats .reader-cover{width:56px;flex-shrink:0;aspect-ratio:3/4}.account-library-chats span{min-width:0}.account-library-chats small{display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.restored-collection article a{color:inherit;text-decoration:none}
+.reader .account-profile-nav a{color:#fff;font-size:13px}.reader .account-library-tabs button[aria-pressed=true]{background:#fcebf3;color:#95395f;box-shadow:inset 0 0 0 1px #e6afc5}.reader .account-library-tabs button[aria-pressed=false]{background:white;color:#716a76;box-shadow:inset 0 0 0 1px #eee7eb}
