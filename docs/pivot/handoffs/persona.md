@@ -84,3 +84,7 @@
 - 리뷰와 실패한 브라우저 테스트로 삭제 후 focus가 body로 빠지는 문제를 찾았고,
   모달 닫힘 후 다음 frame에서 새 버튼으로 이동하도록 수정 후 재검증 통과.
 - `git diff --check`: passed.
+
+Draft PR: https://github.com/starlash7/iruka/pull/16
+구현 커밋: `ba578da`. main 대상 PR에는 선행 기준 변경이 포함되므로 담당 변경 리뷰는
+`git diff 8ada036...HEAD` 사용. 현재 작업 브랜치 유지.
