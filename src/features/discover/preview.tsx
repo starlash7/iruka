@@ -1,0 +1,36 @@
+import React from 'react';
+import {PrivyProvider,getAccessToken} from '@privy-io/react-auth';
+import {privyConfig} from '../../privyConfig';
+import {AuthActions} from '../../AuthActions';
+import {createRoot} from 'react-dom/client';
+import '../../styles.css';
+import {ReaderProvider} from './ReaderProvider';
+import {createDevelopmentApi} from './__fixtures__/createDevelopmentApi';
+import HomePage from './HomePage';
+import SearchPage from './SearchPage';
+import RankingPage from './RankingPage';
+import TagPage from './TagPage';
+import WorkPage from './WorkPage';
+import ChatPage from '../chat/ChatPage';
+import ChatListPage from '../chat/ChatList';
+import {ReaderLayout} from './ReaderLayout';
+import {createReaderApi} from './readerApi';
+const base='/src/features/discover/preview.html';
+// Vite-only development entry, absent from the production HTML entry graph.
+if(!import.meta.env.DEV)throw new Error('Development preview is unavailable');
+const query=new URLSearchParams(window.location.search);const path=query.get('route')??'/';
+const api=query.get('source')==='api'?createReaderApi({getAccessToken:async()=>import.meta.env.VITE_PRIVY_APP_ID?.trim()?getAccessToken():null}):createDevelopmentApi({storage:sessionStorage});
+const state=query.get('state');
+if(state==='empty'){api.listWorks=async()=>[];api.listChats=async()=>[];}
+if(state==='error'){api.listWorks=async()=>{throw new Error('작품을 불러오지 못했어요. 다시 시도해 주세요.');};api.listChats=async()=>{throw new Error('대화를 불러오지 못했어요. 다시 시도해 주세요.');};}
+if(state==='loading'){api.listWorks=()=>new Promise(()=>{});api.listChats=()=>new Promise(()=>{});}
+if(state==='insufficient')api.getBalance=async()=>({available:0,reserved:0});
+const href=(path:string)=>{const [route,search='']=path.split('?');const params=new URLSearchParams(search);params.set('route',route);if(query.get('network'))params.set('network',query.get('network')!);if(query.get('source'))params.set('source',query.get('source')!);if(state)params.set('state',state);return `${base}?${params}`;};
+const privyAppId=import.meta.env.VITE_PRIVY_APP_ID?.trim();
+const match=/^\/(works|tags|chat)\/([^/]+)$/.exec(path);
+let page:React.ReactNode;
+if(match){const value=decodeURIComponent(match[2]);page=match[1]==='works'?<WorkPage params={{id:value}}/>:match[1]==='tags'?<TagPage params={{tag:value}}/>:<ChatPage params={{chatId:value}}/>;}
+else if(path==='/account')page=<ReaderLayout><div className="reader-content"><h1>내 계정</h1><section className="reader-account-panel"><AuthActions enabled={!!privyAppId}/></section></div></ReaderLayout>;
+else page=path==='/'?<HomePage params={{}}/>:path==='/search'?<SearchPage params={{}}/>:path==='/ranking'?<RankingPage params={{}}/>:path==='/chats'?<ChatListPage/>:<ReaderLayout><div className="reader-content"><h1>{path==='/studio'?'작품 만들기':path==='/credits'?'테스트 크레딧':'내 계정'}</h1><p>이 화면은 공통 앱의 담당 기능으로 연결됩니다.</p></div></ReaderLayout>;
+const preview=<ReaderProvider api={api} development href={href}>{page}</ReaderProvider>;
+createRoot(document.getElementById('reader-preview')!).render(privyAppId?<PrivyProvider appId={privyAppId} clientId={import.meta.env.VITE_PRIVY_CLIENT_ID?.trim()||undefined} config={privyConfig}>{preview}</PrivyProvider>:preview);
