@@ -131,3 +131,21 @@ C 페르소나의 새 원격 PR도 확인되지 않았다. 로컬 진행 여부�
 ## 2026-10-15 작품 중심 탐색 후속
 8ada036 통합 기반의 홈/검색/태그/랭킹/상세 변경과 실제 API/fixture 검증을
 [탐색 UI 인계](handoffs/discovery-ui.md)에 기록했다. 전체 테스트 134/134 및 빌드 통과.
+## Docs 개편 — 2026-10-15
+
+8ada036을 starlash7/iruka-docs에 fast-forward한 뒤 한국어 16페이지/5개 메뉴,
+핑크 로고·모바일 표, 이전 URL 13개 전환 안내를 작성했다. 앱/공통 지침은 수정하지 않았다.
+`npm test` 128/128, `npm run build`, Mintlify validate/broken-links 통과.
+로컬 17경로 200, 13리디렉션 307, archive 404; desktop/390px 표·코드·메뉴 확인.
+검색 결과는 CLI 로그인 요구로 미검증. SEO/robots 및 원격 공개/인증 설정을 변경하지 않았다.
+상세 근거·제한: [DOCS_VERIFICATION.md](DOCS_VERIFICATION.md).
+공통 규칙의 옛 블루/인증/지갑/크레딧 범위 모순은
+[Docs 결정 기록](../../decisions/2026-10-15-docs.md)에 통합 담당용으로 남겼다.
+
+Docs 구현 커밋 `ff07fb3`, [Draft PR #15](https://github.com/starlash7/iruka/pull/15).
+대상은 `starlash7/clone-repo`이며 현재 체크아웃은 `starlash7/iruka-docs`다.
+
+후속 승인으로 스토리 중심 소개·통합 작품 탐색·캐릭터 대화 지원 방향을 Docs에 반영했다.
+`캐릭터·스토리 모드` 메뉴를 `캐릭터와 이야기`로 교체하고 이전 주소를 리디렉션한다.
+앱의 모드 필터/선택/발행 조건은 현재 동작으로 남기고 화면 정리는 계획으로 구분했다.
+재검증: 테스트 128/128, 빌드, Mintlify validate/broken-links 통과. 시각 검증은 재실행하지 않음.
