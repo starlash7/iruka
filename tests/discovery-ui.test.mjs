@@ -17,6 +17,13 @@ test('home keeps both modes discoverable without mode badges or duplicate recomm
  assert.match(html,/aria-label="작품 탐색"/);assert.doesNotMatch(html,/reader-work-type|태그별 추천|작품 유형/);
  assert.equal((html.match(/class="reader-work"/g)||[]).length,2);
 });
+test('discovery restores one brand footer using only current product destinations',()=>{
+ const html=render('HomePage',{},[]);
+ assert.equal((html.match(/<footer/g)||[]).length,1);
+ for(const link of ['/studio','/chats','/#brand-kit','https://docs.playiruka.space/overview','mailto:hello@playiruka.space'])assert.ok(html.includes(`href="${link}"`));
+ assert.doesNotMatch(html,/href="(?:\/vending|\/marketplace|\/vault)/);
+ assert.match(html,/2026 Iruka Labs, Inc. All rights reserved/);
+});
 test('legacy mode filters preserve query and tag; removing tag preserves mode and query',()=>{
  globalThis.__discoveryState={data:[],error:null,loading:false};
  const html=renderToStaticMarkup(createElement(modules.SearchPage.SearchResults,{query:'달빛 & 별',tag:'판타지',mode:'character'}));

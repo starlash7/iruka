@@ -185,3 +185,15 @@ Docs 메뉴 16개, 리디렉션 14개, 내부 링크 목적지 정적 검사 통
 main push/merge·배포·유료 호출 없음. 다른 작업자 workspace는 편집하지 않았다.
 Docs 담당 반영 목록은 handoffs/integration.md와 plans/integration-next.md에
 남겼으며 별도 메시지가 전달됐다고 가정하지 않는다.
+
+## 2026-10-15 버튼·푸터 후속
+
+사용자 요청으로 핑크 버튼의 흰색 상단 경계와 중복 호버 그림자를 정리했다.
+기본·호버에서 같은 1px 테두리를 유지하고 키보드 포커스와 disabled 상태를 보존한다.
+과거 89c4596의 푸터 로고/링크 열/파도 구도를 복원하되 현재 서비스 링크만 사용한다.
+파도 SVG의 기존 경로는 유지하고 색상만 #F2B8CE로 변경했다. 채팅에는 넣지 않는다.
+
+검증: npm test 170/170, npm run build 종료 0, git diff --check 통과.
+390/768/1440px에서 버튼 기본·hover·focus, reduced-motion, 푸터 1개,
+가로 넘침 없음·브라우저 오류 없음 확인. .context/footer-*.png와 buttons-hover-*.png.
+기존 Privy 번들 경고는 남아 있다. 로그인·API·배포 설정은 변경하지 않았다.

@@ -24,22 +24,22 @@
  transition:box-shadow 170ms ease,transform 170ms ease,background-color 170ms ease;
 }
 :is(.reader.reader,.app-shell.app-shell) :is(.ui-button--secondary,.iruka-secondary-button,.network-selector-trigger,.account-library-tabs button,.reader-chips a,.reader-chips button) {
- border:1px solid #edcdda;border-top-color:#fff;
+ border:1px solid #dfb2c5;
  background:linear-gradient(180deg,#fff,#fff3f8);color:#684652;
  box-shadow:inset 0 1px 0 #fff,0 5px 12px #b96d9010;
 }
 :is(.reader.reader,.app-shell.app-shell) .account-library-tabs button[aria-pressed=true],
 .reader.reader .reader-chips .is-selected,
 .reader.reader .reader-chips [aria-pressed=true] {
- background:#fce3ee;color:#79394f;box-shadow:inset 0 1px 0 #fff,0 0 0 1px #e9abc4;
+ border-color:#d98eac;background:#fce3ee;color:#79394f;box-shadow:inset 0 1px 0 #ffffff80;
 }
 /* The intro's 4.8s light scan is reserved for primary actions. */
 :is(.reader.reader,.app-shell.app-shell) :is(.ui-button--primary,.reader-login,.iruka-action-button) {
  position:relative;isolation:isolate;overflow:hidden;
  color:#442a36;font-weight:600;text-shadow:none;
- border:1px solid #e5a5bf;border-top-color:#fff4f9;
+ border:1px solid #d98eac;
  background:linear-gradient(135deg,#f5b9d0 0%,#f9ccdf 52%,#ffe5ef 100%);
- box-shadow:inset 0 1px 0 #ffffffe6,inset 0 -2px 0 #bd648527,0 0 18px #e89eb51a,0 8px 18px #b668851f;
+ box-shadow:inset 0 1px 0 #ffffff80,0 3px 9px #b6688514;
 }
 :is(.reader,.app-shell) :is(.ui-button--primary,.reader-login,.iruka-action-button)::before {
  content:"";position:absolute;top:-50%;bottom:-50%;left:0;width:42%;z-index:-1;
@@ -52,9 +52,8 @@
  86%,100%{transform:translateX(340%) skewX(-18deg)}
 }
 @media(hover:hover){
- :is(.reader.reader,.app-shell.app-shell) button:not(:disabled):not([aria-disabled=true]):hover,
- .reader.reader .reader-login:hover,.reader.reader .reader-chips a:hover {
-  transform:translateY(-1px);box-shadow:inset 0 1px 0 #ffffffcc,0 8px 18px #b6688526;
+ :is(.reader.reader,.app-shell.app-shell) :is(.ui-button--primary,.ui-button--secondary,.iruka-action-button,.iruka-secondary-button,.network-selector-trigger,.reader-login,.reader-chips a,.reader-chips button):not(:disabled):not([aria-disabled=true]):hover {
+  border-color:#c66d94;box-shadow:inset 0 1px 0 #ffffff80,0 4px 12px #b668851c;
  }
  :is(.reader.reader,.app-shell.app-shell) :is(.ui-button--primary,.reader-login,.iruka-action-button):not(:disabled):hover {
   background:linear-gradient(135deg,#f3abc7,#f8c3d9 52%,#ffdfec);color:#442a36;
@@ -67,6 +66,9 @@
 :is(.reader.reader,.app-shell.app-shell) button:disabled,
 :is(.reader.reader,.app-shell.app-shell) [aria-disabled=true] {
  transform:none;box-shadow:none;cursor:not-allowed;
+}
+:is(.reader.reader,.app-shell.app-shell) :is(.ui-button--primary,.ui-button--secondary,.iruka-action-button):disabled {
+ border-color:#e4d7dd;background:#f4edf0;color:#978d99;opacity:1;
 }
 :is(.reader,.app-shell) :disabled::before,
 :is(.reader,.app-shell) [aria-disabled=true]::before {animation:none;opacity:0;}

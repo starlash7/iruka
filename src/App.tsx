@@ -2,6 +2,7 @@ import { matchRoute, routePages } from './routes';
 import { Page } from './ui';
 import {useReader} from './features/discover/ReaderProvider';
 import {ReaderAccountMenu} from './features/discover/ReaderAccountMenu';
+import {SiteFooter} from './ui/SiteFooter';
 
 export default function App({ authEnabled = false }: { authEnabled?: boolean }) {
   const {href}=useReader();
@@ -30,5 +31,6 @@ export default function App({ authEnabled = false }: { authEnabled?: boolean }) 
       {route && RoutePage ? <RoutePage params={route.params} authEnabled={authEnabled} />
         : <Page title="페이지를 찾을 수 없어요"><a href={href("/")}>홈으로</a></Page>}
     </main>
+    <SiteFooter/>
   </div>;
 }
