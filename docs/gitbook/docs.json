@@ -4,9 +4,9 @@
   "name": "Iruka",
   "description": "한국어 AI 캐릭터·스토리 채팅 플랫폼",
   "colors": {
-    "primary": "#1677FF",
-    "light": "#20C7DF",
-    "dark": "#0B63F6"
+    "primary": "#684652",
+    "light": "#F8C9DA",
+    "dark": "#F2B8CE"
   },
   "logo": {
     "light": "/images/iruka-logomark.svg",
@@ -24,9 +24,44 @@
   "navigation": {
     "groups": [
       {
-        "group": "Iruka",
+        "group": "시작하기",
         "pages": [
-          "overview"
+          "overview",
+          "quickstart",
+          "faq"
+        ]
+      },
+      {
+        "group": "이야기 즐기기",
+        "pages": [
+          "reading/discovery",
+          "reading/modes",
+          "reading/conversations",
+          "reading/persona-memory"
+        ]
+      },
+      {
+        "group": "작품 만들기",
+        "pages": [
+          "creating/studio",
+          "creating/visibility",
+          "creating/worldbuilding",
+          "creating/publishing"
+        ]
+      },
+      {
+        "group": "계정과 크레딧",
+        "pages": [
+          "account/login",
+          "account/credits"
+        ]
+      },
+      {
+        "group": "기술과 방향",
+        "pages": [
+          "technical/architecture",
+          "technical/giwa",
+          "roadmap"
         ]
       }
     ]
@@ -34,7 +69,7 @@
   "navbar": {
     "primary": {
       "type": "button",
-      "label": "Open Iruka",
+      "label": "Iruka 열기",
       "href": "https://playiruka.space"
     }
   },
@@ -44,7 +79,7 @@
         "header": "Iruka",
         "items": [
           {
-            "label": "Website",
+            "label": "Iruka 앱",
             "href": "https://playiruka.space"
           }
         ]
@@ -55,6 +90,54 @@
     {
       "source": "/README",
       "destination": "/overview"
+    },
+    {
+      "source": "/packs/pack-information",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/policies/ip-and-listing-policy",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/product/grading-and-verification",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/product/marketplace",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/product/redemption-and-shipping",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/product/vault",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/project/how-it-works",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/project/why-fandom-collectibles",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/technical/giwa-testnet",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/technical/monad-testnet",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/technical/onchain-architecture",
+      "destination": "/product-transition"
+    },
+    {
+      "source": "/packs/pack-reveal",
+      "destination": "/product-transition"
     }
   ],
   "seo": {
@@ -66,5 +149,11 @@
   },
   "search": {
     "prompt": "문서 검색"
+  },
+  "background": {
+    "color": {
+      "light": "#FCFAFB",
+      "dark": "#FCFAFB"
+    }
   }
 }

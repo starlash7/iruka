@@ -106,3 +106,14 @@ Privy의 전이 의존성에는 지갑/Solana 모듈이 남아 있다. 직접 �
 
 01 이후 Wave 02의 별도 인계는 [FOUNDATION_HANDOFF.md](FOUNDATION_HANDOFF.md)다.
 위 01 검증 기록은 유지하며 현재 기능/제한과 구분한다.
+
+## Docs 개편 — 2026-10-15
+
+8ada036을 starlash7/iruka-docs에 fast-forward한 뒤 한국어 16페이지/5개 메뉴,
+핑크 로고·모바일 표, 이전 URL 13개 전환 안내를 작성했다. 앱/공통 지침은 수정하지 않았다.
+`npm test` 128/128, `npm run build`, Mintlify validate/broken-links 통과.
+로컬 17경로 200, 13리디렉션 307, archive 404; desktop/390px 표·코드·메뉴 확인.
+검색 결과는 CLI 로그인 요구로 미검증. SEO/robots 및 원격 공개/인증 설정을 변경하지 않았다.
+상세 근거·제한: [DOCS_VERIFICATION.md](DOCS_VERIFICATION.md).
+공통 규칙의 옛 블루/인증/지갑/크레딧 범위 모순은
+[Docs 결정 기록](../../decisions/2026-10-15-docs.md)에 통합 담당용으로 남겼다.
