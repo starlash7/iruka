@@ -117,3 +117,6 @@ Privy의 전이 의존성에는 지갑/Solana 모듈이 남아 있다. 직접 �
 상세 근거·제한: [DOCS_VERIFICATION.md](DOCS_VERIFICATION.md).
 공통 규칙의 옛 블루/인증/지갑/크레딧 범위 모순은
 [Docs 결정 기록](../../decisions/2026-10-15-docs.md)에 통합 담당용으로 남겼다.
+
+Docs 구현 커밋 `ff07fb3`, [Draft PR #15](https://github.com/starlash7/iruka/pull/15).
+대상은 `starlash7/clone-repo`이며 현재 체크아웃은 `starlash7/iruka-docs`다.

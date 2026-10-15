@@ -24,4 +24,6 @@
 - [x] 로컬 desktop/mobile 내비게이션·표·코드 표시 및 스크린샷 확인.
 - [x] npm test, npm run build, git diff --check 실제 결과 기록.
 - [x] docs/pivot/DOCS_VERIFICATION.md, decisions/2026-10-15-docs.md, HANDOFF.md 갱신.
-- [ ] 변경 범위 확인 후 커밋, 현재 브랜치 push, clone-repo 대상 Draft PR.
+- [x] 변경 범위 확인 후 커밋, 현재 브랜치 push, clone-repo 대상 Draft PR.
+
+구현 커밋 ff07fb3, Draft PR #15: https://github.com/starlash7/iruka/pull/15
