@@ -37,6 +37,12 @@ export function createApiClient(options: ApiClientOptions) {
     return response;
   };
   return {
+    async image(path: string, signal?: AbortSignal): Promise<Blob> {
+      if (!/^\/api\/studio\/media\/[0-9a-f-]+\/[0-9a-f]{64}$/.test(path)) throw new Error('등록 이미지 주소를 확인해 주세요.');
+      const response = await send(path, {signal});
+      if (response.headers.get('Content-Type')?.split(';')[0] !== 'image/png') throw new Error('이미지를 불러오지 못했어요.');
+      return response.blob();
+    },
     async request<T>(path: string, init: RequestInit = {}): Promise<ApiEnvelope<T>> {
       const response = await send(path, init);
       const envelope = await response.json();

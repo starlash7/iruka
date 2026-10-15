@@ -1,7 +1,7 @@
 # Common integration handoff — 2026-10-15
 
-Code baseline remains 8ada036 until a reviewed common runtime change is published.
-The accompanying rule commit does not change APIs, migrations or environments.
+The initial rule-only intake was based on 8ada036. Current integration includes
+A 4fb5391, B a1eca8d, C ecba192, D 7a0ae58 and Docs b7f750e.
 
 ## Existing contracts to reuse
 - server/core/interfaces.ts: ModelService.stream accepts messages/signal and emits
@@ -10,8 +10,9 @@ The accompanying rule commit does not change APIs, migrations or environments.
 - server/product/index.ts: composition point; chat and credits share scoped DB.
 - api/server core: existing authentication and ApiEnvelope/error conventions.
 - Models fail unavailable without a policy/provider. Local model/grants are opt-in.
-- Persona list exists; mutation needs must be checked against actual router before
-  C assumes CRUD is available. No new mutation endpoints are announced here.
+- Persona PATCH/DELETE /api/me/personas/:id now use bearer ownership and the existing
+  envelope. PATCH returns PersonaDto; DELETE returns null. Invalid input is 400,
+  missing auth 401, other-owner/deleted IDs 404. Existing chat snapshots survive.
 
 ## Request format for A–D
 Each handoff should contain baseline/head commit, owned files, requested shared
@@ -20,12 +21,14 @@ ownership checks, compatibility/migration needs, tests and unresolved decisions.
 Do not include secrets or production personal records.
 
 ## Integration status
-A/B/D remote heads still represent the already-integrated work; C has no remote
-handoff at intake. New requests are pending, not approved by omission.
-See plans/integration-next.md for owners/gates and decisions/2026-10-15-integration.md
-for operating inputs. Shared contracts will be implemented only after intake.
+All received heads were reviewed and merged. Common changes add persona soft delete,
+local image storage injection, authenticated Reader images and summary-call opt-in.
+See plans/integration-next.md and decisions/2026-10-15-integration.md for remaining
+live-service approval/validation gates. No live model or remote services were created.
 
 ## Docs follow-up
-Confirmed now: consistent pink/story-led scope, optional wallets, implemented
-test credits, deferred anchor. Not yet confirmed: new model, upload, persona CRUD,
-new discovery UI or operating readiness. Docs must not mark those complete.
+Confirmed in code/local tests: story-led discovery, guided Studio, persona CRUD,
+local uploads and private media retrieval, adapter contract with injected transport.
+Repository Docs updated for those changes. Not confirmed: live OAuth/OTP, real model
+quality/moderation, remote storage/DB, deployed API/workers or production readiness.
+Historical per-owner handoffs retain their original pre-integration limitations.

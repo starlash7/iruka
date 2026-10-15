@@ -4,6 +4,7 @@ import {authenticateRequest,type TokenVerifier} from './core/auth.ts';
 import {ApiError} from './core/errors.ts';
 import {jsonResponse,errorResponse,readJson,requireText,requireId} from './core/http.ts';
 import {getOrCreateUser,listPersonas} from './core/accounts.ts';
+import {parsePersonaInput,updatePersona,deletePersona} from './core/personas.ts';
 import {getPublicWork,getCreatorWork,projectPublicWork} from './core/works.ts';
 import {getOwnedChat,createChat} from './core/chats.ts';
 import {createEventResponse} from './core/sse.ts';
@@ -28,12 +29,16 @@ export function createApiHandler({db,verifyToken,stream,credits,discovery}:ApiDe
    if(path==='/api/me/personas'){
     if(method==='GET')return jsonResponse(await listPersonas(db,user.id),requestId);
     if(method==='POST'){
-     const body=await readJson(request);const name=requireText(body.name,50);
-     const description=body.description===undefined?'':body.description;
-     if(typeof description!=='string'||description.length>500)throw new ApiError('INVALID_REQUEST','소개는 500자 이내로 입력해 주세요.');
+     const {name,description}=parsePersonaInput(await readJson(request));
      const {rows}=await db.query<{id:string}>('INSERT INTO personas(user_id,name,profile) VALUES($1,$2,$3) RETURNING id',[user.id,name,JSON.stringify({description})]);
      return jsonResponse((await listPersonas(db,user.id)).find(p=>p.id===rows[0].id),requestId,201);
     }
+   }
+   const personaMatch=/^\/api\/me\/personas\/([^/]+)$/.exec(path);
+   if(personaMatch){
+    const id=requireId(personaMatch[1]);
+    if(method==='PATCH')return jsonResponse(await updatePersona(db,user.id,id,await readJson(request)),requestId);
+    if(method==='DELETE'){await deletePersona(db,user.id,id);return jsonResponse(null,requestId);}
    }
    const creatorMatch=/^\/api\/studio\/works\/([^/]+)$/.exec(path);
    if(creatorMatch&&method==='GET')return jsonResponse(await getCreatorWork(db,requireId(creatorMatch[1]),user.id),requestId);

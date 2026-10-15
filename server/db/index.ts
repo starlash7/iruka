@@ -91,7 +91,7 @@ export async function openDatabase(options: { dataDir?: string; databaseUrl?: st
 }
 
 export async function migrateDatabase(db: Database): Promise<void> {
-  const migrations = ['0001_foundation.sql', '0002_ledger_operations.sql', '0003_work_metadata.sql']
+  const migrations = ['0001_foundation.sql', '0002_ledger_operations.sql', '0003_work_metadata.sql', '0004_persona_deletion.sql']
   await db.transaction(async tx => {
     // Serializes concurrent migration runners on the same PostgreSQL database.
     await tx.query('SELECT pg_advisory_xact_lock(20261014)')

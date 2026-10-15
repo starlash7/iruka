@@ -64,11 +64,12 @@ test('explicit local storage survives reopen, is immutable and rejects traversal
 });
 import {createStudioHandler} from '../api/studio/handler.ts';
 import {ApiError} from '../server/core/errors.ts';
+import {createProduct} from '../server/product/index.ts';
 test('HTTP upload is authenticated, bounded and unavailable without explicit storage',async()=>{
  const db=await createTestDatabase();try{
   await migrateStudio(db);const verifyToken=async token=>{if(token!=='media-owner')throw new ApiError('UNAUTHORIZED','로그인 필요');return {privyDid:'did:privy:http-media'};};
   const files=new Map();const imageStorage={async put(k,b){files.set(k,b);},async get(k){return files.get(k)??null;}};
-  const handler=createStudioHandler({db,verifyToken,imageStorage});
+  const handler=createProduct({db,verifyToken,imageStorage}).handler;
   const req=(path,method='GET',body,auth=true,contentType='image/png')=>new Request('http://local'+path,{method,headers:{...(auth?{Authorization:'Bearer media-owner'}:{}),'Content-Type':contentType},body});
   const created=await handler(req('/api/studio/works','POST',JSON.stringify(makeDraft()),true,'application/json'));const work=(await created.json()).data;const path=`/api/studio/works/${work.work.id}/images`;
   assert.equal((await handler(req(path,'POST',png(),false))).status,401);

@@ -24,7 +24,7 @@ export default function App({ authEnabled = false }: { authEnabled?: boolean }) 
       </a>
       <nav aria-label="주 메뉴">{navigation.map(item => <a key={item.href} href={href(item.href)}
         aria-current={route && item.active.includes(route.id) ? 'page' : undefined}>{item.label}</a>)}</nav>
-      <ReaderAccountMenu/>
+      <div className="app-header-actions"><ReaderAccountMenu/></div>
     </header>
     <main id="main" tabIndex={-1}>
       {route && RoutePage ? <RoutePage params={route.params} authEnabled={authEnabled} />

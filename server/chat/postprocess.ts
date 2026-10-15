@@ -1,6 +1,7 @@
 import type {PrivateWorkConfig} from '../../src/shared/contracts.ts';
 export interface ChatAsset {code:string;url:string;alt:string}
 export function isSafeImageUrl(value:string):boolean {
+  if(/^\/api\/studio\/media\/[0-9a-f-]{36}\/[0-9a-f]{64}$/.test(value))return true;
   try {const url=new URL(value);return url.protocol==='https:'&&!url.username&&!url.password;}catch{return false;}
 }
 export function postprocessOutput(raw:string, options:{personaName?:string;characterName?:string;assets?:ChatAsset[];endings?:PrivateWorkConfig['endings']}={}) {

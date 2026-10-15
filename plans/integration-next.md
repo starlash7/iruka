@@ -8,12 +8,12 @@ Unrelated .superpowers/ and output/ are excluded.
 
 | Owner | Files | Remote state at intake |
 |---|---|---|
-| A model | server/models/**; scoped chat changes by agreement | PR11 9ff5b19, previous work already integrated; no new handoff |
-| B studio/media | features/studio, server/studio, api/studio, server/media | PR12 627bb4a, previous work already integrated; no new handoff |
-| C persona | PersonasPage, features/user/personas/** | No new remote PR/handoff found |
-| D discovery | discover pages/layout and their styles; not auth/API provider | PR13 6909ff8, previous work already integrated; no new handoff |
+| A model | server/models/**; scoped chat changes by agreement | PR11 4fb5391 reviewed and integrated |
+| B studio/media | features/studio, server/studio, api/studio, server/media | PR12 a1eca8d reviewed and integrated |
+| C persona | PersonasPage, features/user/personas/** | PR16 ecba192 reviewed and integrated |
+| D discovery | discover pages/layout and their styles; not auth/API provider | PR17 7a0ae58 reviewed and integrated |
 | Integration | product/core, shared contracts, API routing, migrations, env/packages, common UI/routes, necessary chat glue | PR14 |
-| Docs | docs/gitbook/** | PR15; separate review, not automatically merged |
+| Docs | docs/gitbook/** | PR15 b7f750e reviewed, merged as e025f3f |
 
 ## File checklist
 
@@ -21,15 +21,25 @@ Unrelated .superpowers/ and output/ are excluded.
 - [x] AGENTS/CLAUDE/CURRENT_SCOPE/sprint: separate current rules from history.
 - [x] decisions/2026-10-15-integration.md: record unresolved operating inputs.
 - [x] docs/pivot/handoffs/integration.md: record existing contracts and intake format.
-- [ ] Receive A provider decision, adapter contract, usage/safety policy and tests.
-- [ ] Receive B storage decision, media contract, ownership/lifecycle and migration needs.
-- [ ] Receive C persona mutation API requirements and snapshot tests.
-- [ ] Receive D discovery API gaps, route compatibility and visual results.
-- [ ] Implement only received/approved common changes sequentially; publish commit IDs.
-- [ ] Review and merge completed work in dependency order onto this branch only.
-- [ ] Review Docs PR15 diff before separate integration; retain both handoff histories.
+- [x] Receive A adapter contract/tests: OpenAI gpt-5.4-mini; safety/rate/budget remain unapproved.
+- [x] Receive B local storage, media contract and ownership/lifecycle tests; remote storage undecided.
+- [x] Receive C persona mutation API requirements and snapshot tests.
+- [x] Receive D discovery API gaps, route compatibility and visual results; no new DTO needed.
+- [x] Implement persona mutations, local media wiring/private image auth and summary opt-in.
+- [x] Review and merge completed work in dependency order onto this branch only.
+- [x] Review Docs PR15 diff before separate integration; retain both handoff histories.
 - [ ] Run full integrated journeys with real services when credentials/approvals exist.
-- [ ] Supply final implementation delta to Docs owner; no automatic message delivery.
+- [x] Record final implementation delta for Docs owner below and in HANDOFF; no automatic message delivery.
+
+## Integration delta
+
+- 0004 soft-deletes personas; list/start excludes them while pinned chats survive.
+- ProductOptions accepts ImageStorage; local dev uses LOCAL_IMAGE_DIRECTORY.
+- Reader and Studio share authenticated image loading; tokens never go to external image URLs.
+- Recovery always runs; summary calls require explicit runSummaries and are off by default.
+- Mobile common header groups network/account controls; no A-D active worktree edits.
+- Docs reflect delivered UI/CRUD/local images and adapter-only model status.
+- No taxonomy, pagination, deployment or live moderation policy invented ahead of owner requests.
 
 ## Merge gates
 

@@ -18,7 +18,6 @@ export function createPersonaClient(options: ApiClientOptions) {
   return {
     list: async () => (await api.request<PersonaDto[]>(path)).data,
     create: (input: PersonaInput) => save(path, 'POST', input),
-    // Integration request: PATCH/DELETE do not exist in baseline 8ada036.
     update: (id: string, input: PersonaInput) => save(`${path}/${encodeURIComponent(id)}`, 'PATCH', input),
     remove: async (id: string) => { await api.request<null>(`${path}/${encodeURIComponent(id)}`, {method: 'DELETE'}); },
   };

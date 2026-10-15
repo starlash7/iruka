@@ -5,6 +5,6 @@ export async function getOrCreateUser(db:Database,privyDid:string):Promise<UserD
  const row=rows[0]; return {id:row.id,privyDid:row.privy_did,displayName:null,createdAt:new Date(row.created_at).toISOString()};
 }
 export async function listPersonas(db:Database,userId:string):Promise<PersonaDto[]> {
- const {rows}=await db.query<{id:string;name:string;profile:{description?:string};created_at:Date}>(`SELECT id,name,profile,created_at FROM personas WHERE user_id=$1 ORDER BY created_at,id`,[userId]);
+ const {rows}=await db.query<{id:string;name:string;profile:{description?:string};created_at:Date}>(`SELECT id,name,profile,created_at FROM personas WHERE user_id=$1 AND deleted_at IS NULL ORDER BY created_at,id`,[userId]);
  return rows.map(row=>({id:row.id,userId,name:row.name,description:row.profile.description??'',createdAt:new Date(row.created_at).toISOString()}));
 }

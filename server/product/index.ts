@@ -15,9 +15,13 @@ import {createChatApiHandler} from '../../api/chats/handler.ts';
 import {createUnavailableServices,type ModelService} from '../core/interfaces.ts';
 import {recoverExpiredTurns} from '../chat/recovery.ts';
 import {runSummaryJobs} from '../chat/summarize.ts';
+import type {ImageStorage} from '../media/storage.ts';
 
 export interface ProductOptions extends ChatOptions {
  db:Database;verifyToken:TokenVerifier;model?:ModelService;
+ imageStorage?:ImageStorage;
+ /** Summary model calls need separate operator approval; lease recovery is always enabled. */
+ runSummaries?:boolean;
  /** Explicit local/test fixture policy. Never read grant values from a request. */
  testGrant?:{amount:number;key:string};
 }
@@ -31,7 +35,7 @@ export function createProduct(options:ProductOptions) {
  const discovery=createDiscoveryService({db});
  const shared={db,verifyToken:options.verifyToken};
  const chat=createChatApiHandler({...shared,stream,safety:options.safety});
- const studio=createStudioHandler(shared),discover=createDiscoverHandler(discovery);
+ const studio=createStudioHandler({...shared,imageStorage:options.imageStorage}),discover=createDiscoverHandler(discovery);
  const creditHandler=createCreditsHandler({...shared,credits});
  const core=createApiHandler({...shared,stream,credits,discovery});
  return {db,credits,async handler(request:Request):Promise<Response>{
@@ -52,6 +56,6 @@ export function createProduct(options:ProductOptions) {
   }catch(error){return errorResponse(error,randomUUID());}
  },async maintain(){
   await recoverExpiredTurns(db,credits);
-  if(options.model&&options.safety)await runSummaryJobs({db,model:options.model,safety:options.safety});
+  if(options.runSummaries&&options.model&&options.safety)await runSummaryJobs({db,model:options.model,safety:options.safety});
  }};
 }

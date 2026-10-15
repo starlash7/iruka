@@ -6,6 +6,7 @@ export interface ReaderMessage extends MessageDto {images?:{url:string;alt:strin
 export interface ChatView {chat:ChatDto;title:string;messages:ReaderMessage[];memo:string;guide:string;suggestedReplies:string[];pendingTurn?:{id:string;status:string}|null}
 export interface ModelOption {id:string;name:string;credits:number|null;available:boolean}
 export interface ReaderApi {
+ loadImage?(url:string,signal?:AbortSignal):Promise<Blob>;
  listWorks(query?:WorkQuery):Promise<PublicWorkDto[]>;
  getWork(id:string):Promise<PublicWorkDetailDto>;
  getRanking():Promise<PublicWorkDto[]>;
@@ -29,6 +30,7 @@ export function createReaderApi(options:ApiClientOptions):ReaderApi{
  const json=(method:string,body:unknown):RequestInit=>({method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
  const chatPath=(id:string)=>`/api/chats/${encodeURIComponent(id)}`;
  return {
+  loadImage:client.image,
   listWorks(query={}){const params=new URLSearchParams();if(query.query)params.set('q',query.query);if(query.tag)params.set('tag',query.tag);if(query.mode)params.set('mode',query.mode);if(query.offset)params.set('offset',String(query.offset));return read(`/api/discover/works?${params}`);},
   getWork:id=>read(`/api/works/${encodeURIComponent(id)}`),getRanking:()=>read('/api/discover/ranking'),
   listChats:()=>read('/api/chats'),listPersonas:()=>read('/api/me/personas'),getModels:()=>read('/api/models'),getBalance:()=>read('/api/me/credits'),

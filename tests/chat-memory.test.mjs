@@ -6,7 +6,21 @@ import {runSummaryJobs} from '../server/chat/summarize.ts';
 import {createChatService} from '../server/chat/index.ts';
 import {createConversationService} from '../server/chat/conversations.ts';
 import {TestModelService} from '../server/core/testAdapters.ts';
+import {createProduct} from '../server/product/index.ts';
 const model=text=>new TestModelService([text],{inputTokens:1,outputTokens:1});
+test('product maintenance recovers leases without implicitly running model summary jobs',async()=>{
+ const f=await fixture();try{
+  const service=createChatService({...f,model:model('answer')},f.options);
+  const leaf=(await collect(service.streamTurn(f.input()))).at(-1).messageId;
+  await createMemoryService(f.db,f.safety).enqueueSummary(f.user.id,f.chat.id,leaf);
+  let calls=0;
+  const options={db:f.db,verifyToken:async()=>({privyDid:'did:privy:test'}),safety:f.safety,model:{async *stream(){calls++;yield {type:'delta',text:'safe summary'};yield {type:'usage',inputTokens:1,outputTokens:1};}}};
+  await createProduct(options).maintain();assert.equal(calls,0);
+  assert.equal((await f.db.query('SELECT state FROM chat_summary_jobs')).rows[0].state,'queued');
+  await createProduct({...options,runSummaries:true}).maintain();assert.equal(calls,1);
+  assert.equal((await f.db.query('SELECT state FROM chat_summary_jobs')).rows[0].state,'done');
+ }finally{await f.db.close();}
+});
 test('pinned notes enforce ownership, safety and update/delete',async()=>{
  const f=await fixture();try{
  const memory=createMemoryService(f.db,f.safety);

@@ -3,6 +3,7 @@ import {Button} from '../../ui';
 import type {ReaderMessage as MessageDto} from '../discover/readerApi';
 import {getMessageBranch,getSiblingMessages} from './messageTree';
 import type {StreamPreview} from './useChatSession';
+import {ChatImage} from './ChatImage';
 export function MessageList({messages,activeId,preview,busy,actionsDisabled=false,onAction,onSelect}:{messages:MessageDto[];activeId:string|null;preview:StreamPreview;busy:boolean;actionsDisabled?:boolean;onAction:(kind:'edit'|'delete'|'regenerate'|'branch',message:MessageDto)=>void;onSelect:(id:string)=>void}){
  const viewport=useRef<HTMLDivElement>(null);const follow=useRef(true);const [below,setBelow]=useState(false);const branch=getMessageBranch(messages,activeId);
  function scrollToLatest(){viewport.current?.scrollTo({top:viewport.current.scrollHeight,behavior:'instant'});follow.current=true;setBelow(false);}
@@ -22,4 +23,3 @@ export function MessageList({messages,activeId,preview,busy,actionsDisabled=fals
  </div>{below&&<Button className="chat-latest" variant="secondary" onClick={scrollToLatest}>새 응답 ↓</Button>}</div>;
 }
 export function Narrative({content}:{content:string}){return <div className="chat-narrative">{content.split('\n').map((line,index)=>{const dialogue=/^@([^@\n]{1,50})@\s*(.*)$/.exec(line);return dialogue?<p key={index}><strong className="chat-character">{dialogue[1]}</strong>{dialogue[2]}</p>:<p key={index}>{line.startsWith('*')&&line.endsWith('*')?<em>{line.slice(1,-1)}</em>:line||'\u00a0'}</p>;})}</div>;}
-function ChatImage({url,alt}:{url:string;alt:string}){const [failed,setFailed]=useState(false);return /^(https?:\/\/|\/[^/])/.test(url)&&!failed?<img className="chat-image" src={url} alt={alt} onError={()=>setFailed(true)}/>:<p role="status">이미지를 불러오지 못했어요.</p>;}
