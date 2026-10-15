@@ -2,6 +2,8 @@
 
 현재 범위: [CURRENT_SCOPE](pivot/CURRENT_SCOPE.md). 한국어 AI 캐릭터·스토리
 플랫폼의 A–D 통합 단계. [통합 상태](pivot/INTEGRATION.md)를 함께 확인한다.
+후속 모델·스튜디오·페르소나·탐색 담당의 소유권과 공통 요청은
+[다음 통합 계획](../plans/integration-next.md)을 따른다. 이전 A–D 이름과 구분한다.
 
 | 파일 | 역할 |
 |---|---|
