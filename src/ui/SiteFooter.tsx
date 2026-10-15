@@ -1,9 +1,11 @@
 import {useReader} from '../features/discover/ReaderProvider';
 import './site-footer.css';
+import {FooterMascot} from './FooterMascot';
 
 export function SiteFooter() {
  const {href}=useReader();
  return <footer className="site-footer">
+  <FooterMascot/>
   <div className="footer-brand">
    <a className="footer-brand-link" href={href('/')} aria-label="Iruka 홈">
     <img src="/brand/iruka-logomark.svg" alt="" width="36" height="36"/>
