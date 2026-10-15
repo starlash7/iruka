@@ -197,3 +197,15 @@ Docs 담당 반영 목록은 handoffs/integration.md와 plans/integration-next.m
 390/768/1440px에서 버튼 기본·hover·focus, reduced-motion, 푸터 1개,
 가로 넘침 없음·브라우저 오류 없음 확인. .context/footer-*.png와 buttons-hover-*.png.
 기존 Privy 번들 경고는 남아 있다. 로그인·API·배포 설정은 변경하지 않았다.
+
+## 2026-10-15 계정·제작 공통 레이아웃
+
+App의 이전 app-shell 분기를 ReaderLayout으로 연결했다. 계정, 스튜디오/편집,
+페르소나, 크레딧, 404에서도 기존 탐색 헤더·최근 대화 사이드바·핑크 푸터를 사용한다.
+페이지 외곽의 중복 카드 테두리와 여백만 제거했으며 내부 기능과 인증은 변경하지 않았다.
+대화방의 전용 헤더 및 푸터 없는 구성은 유지한다.
+
+회귀 테스트에서 기존 분기의 실패를 확인한 뒤 수정했다. 전체 라우트의 단일 main,
+단일 사이드바, 헤더/푸터 수를 검증했다. npm test 170/170, npm run build 종료 0,
+git diff --check 통과. 기존 번들 크기 경고 유지. 사용자의 브라우저 탭 전환과
+검수 조작이 겹쳐 desktop/mobile 시각·키보드 검수는 미완료다. 배포하지 않았다.

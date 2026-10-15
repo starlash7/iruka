@@ -30,7 +30,10 @@ test('all feature slots render without fabricated work, balance or authenticated
       assert.doesNotMatch(html, /페이지를 찾을 수 없어요/);
       if (route.id === 'account' || route.id === 'credits') assert.match(html, /로그인 설정이 필요해요/);
       assert.equal((html.match(/<main\b/g)??[]).length,1,'one main landmark');
-      if (['home','ranking','search','tag','work','chat','chats'].includes(route.id)) assert.doesNotMatch(html,/class="app-header"/);
+      assert.doesNotMatch(html,/class="app-header"/);
+      assert.equal((html.match(/class="reader-sidebar"/g) ?? []).length, 1, `${route.id}: shared sidebar`);
+      assert.equal((html.match(/class="reader-top"/g) ?? []).length, route.id === 'chat' ? 0 : 1, `${route.id}: shared header`);
+      assert.equal((html.match(/<footer\b/g) ?? []).length, route.id === 'chat' ? 0 : 1, `${route.id}: shared footer`);
     }
     const { Input, Tabs, WorkCard, Modal } = await server.ssrLoadModule('/src/ui/index.ts');
     const field = renderToStaticMarkup(createElement(Input, { id: 'title', label: '작품 이름', error: '이름을 입력해 주세요.' }));

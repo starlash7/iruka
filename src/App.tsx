@@ -1,8 +1,7 @@
 import { matchRoute, routePages } from './routes';
 import { Page } from './ui';
 import {useReader} from './features/discover/ReaderProvider';
-import {ReaderAccountMenu} from './features/discover/ReaderAccountMenu';
-import {SiteFooter} from './ui/SiteFooter';
+import {ReaderLayout} from './features/discover/ReaderLayout';
 
 export default function App({ authEnabled = false }: { authEnabled?: boolean }) {
   const {href}=useReader();
@@ -12,25 +11,14 @@ export default function App({ authEnabled = false }: { authEnabled?: boolean }) 
     <a className="skip-link" href="#main">본문으로 건너뛰기</a>
     <main id="main" tabIndex={-1}><RoutePage params={route.params} authEnabled={authEnabled}/></main>
   </>;
-  const navigation = [
-    { href: '/', label: '탐색', active: ['home', 'ranking', 'search', 'tag', 'work'] },
-    { href: '/studio', label: '만들기', active: ['studio', 'editor'] },
-    { href: '/account', label: '계정', active: ['account', 'personas', 'credits'] },
-  ];
-  return <div className="app-shell">
+  const active = route && ['studio', 'editor'].includes(route.id) ? 'studio' : 'account';
+  return <>
     <a className="skip-link" href="#main">본문으로 건너뛰기</a>
-    <header className="app-header">
-      <a className="brand" href={href("/")} aria-label="Iruka 홈">
-        <img src="/brand/iruka-logomark.svg" alt="" width="36" height="36" /><span>Iruka</span>
-      </a>
-      <nav aria-label="주 메뉴">{navigation.map(item => <a key={item.href} href={href(item.href)}
-        aria-current={route && item.active.includes(route.id) ? 'page' : undefined}>{item.label}</a>)}</nav>
-      <div className="app-header-actions"><ReaderAccountMenu/></div>
-    </header>
     <main id="main" tabIndex={-1}>
+      <ReaderLayout active={route ? active : 'none'}><div className="reader-content reader-feature-content">
       {route && RoutePage ? <RoutePage params={route.params} authEnabled={authEnabled} />
         : <Page title="페이지를 찾을 수 없어요"><a href={href("/")}>홈으로</a></Page>}
+      </div></ReaderLayout>
     </main>
-    <SiteFooter/>
-  </div>;
+  </>;
 }
