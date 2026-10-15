@@ -106,3 +106,7 @@ Privy의 전이 의존성에는 지갑/Solana 모듈이 남아 있다. 직접 �
 
 01 이후 Wave 02의 별도 인계는 [FOUNDATION_HANDOFF.md](FOUNDATION_HANDOFF.md)다.
 위 01 검증 기록은 유지하며 현재 기능/제한과 구분한다.
+
+## 2026-10-15 작품 중심 탐색 후속
+8ada036 통합 기반의 홈/검색/태그/랭킹/상세 변경과 실제 API/fixture 검증을
+[탐색 UI 인계](handoffs/discovery-ui.md)에 기록했다. 전체 테스트 134/134 및 빌드 통과.
