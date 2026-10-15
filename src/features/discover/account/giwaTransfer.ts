@@ -1,0 +1,136 @@
+import {
+  createPublicClient,
+  getAddress,
+  http,
+  isAddress,
+  parseEther,
+  toHex,
+  zeroAddress,
+  type Hex
+} from "viem";
+import { activeChain as giwaSepolia } from "./activeDeployment.ts";
+import type { GiwaWallet } from "./walletTypes";
+
+type GiwaTransfer = {
+  from: string;
+  to: string;
+  value: Hex;
+};
+
+export type GiwaTransferReceipt = {
+  explorerUrl: string;
+  transactionHash: Hex;
+};
+
+type GiwaTransferOptions = {
+  onSubmitted?: (transactionHash: Hex) => void;
+};
+
+export class GiwaTransferRevertedError extends Error {
+  constructor() {
+    super("GIWA transfer reverted");
+    this.name = "GiwaTransferRevertedError";
+  }
+}
+
+const publicClient = createPublicClient({
+  chain: giwaSepolia,
+  pollingInterval: 500,
+  transport: http(giwaSepolia.rpcUrls.default.http[0])
+});
+
+export function parseGiwaTransferAmount(amount: string) {
+  try {
+    const normalized = amount.trim();
+    if (!/^(?:\d+(?:\.\d{0,18})?|\.\d{1,18})$/.test(normalized)) throw new Error();
+    const value = parseEther(normalized);
+    if (value <= 0n) throw new Error();
+    return value;
+  } catch {
+    throw new TypeError("Enter a valid amount");
+  }
+}
+
+export function getGiwaTransferInputState(destination: string, amount: string) {
+  if (!isAddress(destination.trim()) || destination.trim().toLowerCase() === zeroAddress) {
+    return "recipient";
+  }
+  try {
+    parseGiwaTransferAmount(amount);
+    return "ready";
+  } catch {
+    return "amount";
+  }
+}
+
+export function createGiwaTransfer(
+  from: string,
+  to: string,
+  amount: string
+): GiwaTransfer {
+  if (!isAddress(from) || !isAddress(to)) {
+    throw new TypeError("Enter a valid address");
+  }
+
+  const sender = getAddress(from);
+  const recipient = getAddress(to);
+  if (recipient === zeroAddress) {
+    throw new TypeError("Enter a valid address");
+  }
+  if (sender === recipient) {
+    throw new TypeError("Use a different address");
+  }
+
+  return {
+    from: sender,
+    to: recipient,
+    value: toHex(parseGiwaTransferAmount(amount))
+  };
+}
+
+export function getSuccessfulGiwaTransferHash(receipt: {
+  status: "success" | "reverted";
+  transactionHash: Hex;
+}, replacementReason?: "repriced" | "cancelled" | "replaced") {
+  if (receipt.status !== "success" || (replacementReason && replacementReason !== "repriced")) {
+    throw new GiwaTransferRevertedError();
+  }
+  return receipt.transactionHash;
+}
+
+export async function waitForGiwaNativeTransfer(transactionHash: Hex) {
+  let replacementReason: "repriced" | "cancelled" | "replaced" | undefined;
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: transactionHash,
+    onReplaced: ({reason}) => { if (replacementReason !== "cancelled" && replacementReason !== "replaced") replacementReason = reason; }
+  });
+  const confirmedTransactionHash = getSuccessfulGiwaTransferHash(receipt, replacementReason);
+
+  return {
+    explorerUrl: `${giwaSepolia.blockExplorers.default.url}/tx/${confirmedTransactionHash}`,
+    transactionHash: confirmedTransactionHash
+  };
+}
+
+export async function sendGiwaNativeTransfer(
+  wallet: GiwaWallet,
+  destination: string,
+  amount: string,
+  options: GiwaTransferOptions = {}
+): Promise<GiwaTransferReceipt> {
+  const transaction = createGiwaTransfer(wallet.address, destination, amount);
+  await wallet.switchChain(giwaSepolia.id);
+  const provider = await wallet.getEthereumProvider();
+  const result = await provider.request({
+    method: "eth_sendTransaction",
+    params: [transaction]
+  } as never);
+
+  if (typeof result !== "string" || !result.startsWith("0x")) {
+    throw new Error("Wallet did not return a transaction hash");
+  }
+
+  const transactionHash = result as Hex;
+  options.onSubmitted?.(transactionHash);
+  return waitForGiwaNativeTransfer(transactionHash);
+}

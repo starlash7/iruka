@@ -1,0 +1,15 @@
+import {openDatabase} from './db/index.ts';
+import {migrateProductDatabase} from './product/migrate.ts';
+import {createProduct} from './product/index.ts';
+import {getLocalPolicy} from './product/localPolicy.ts';
+import {createTokenVerifier} from './core/auth.ts';
+import {createNodeServer} from './nodeServer.ts';
+const db=await openDatabase(process.env.DATABASE_URL?{databaseUrl:process.env.DATABASE_URL}:{dataDir:process.env.LOCAL_DATABASE_DIR??'.context/local-db'});
+await migrateProductDatabase(db);
+const product=createProduct({...getLocalPolicy(process.env),db,verifyToken:createTokenVerifier({appId:process.env.PRIVY_APP_ID,verificationKey:process.env.PRIVY_VERIFICATION_KEY})});
+const server=createNodeServer(product.handler);
+let maintenance:Promise<void>|undefined;
+const maintain=()=>{if(!maintenance)maintenance=product.maintain().catch(()=>console.error('Local maintenance failed; retrying next cycle')).finally(()=>{maintenance=undefined;});};
+maintain();const timer=setInterval(maintain,15000);timer.unref();
+server.listen(Number(process.env.API_PORT??8787),'127.0.0.1',()=>console.log(`Local API listening on http://127.0.0.1:${process.env.API_PORT??8787}`));
+for(const signal of ['SIGINT','SIGTERM'] as const)process.once(signal,()=>{clearInterval(timer);server.close(()=>void Promise.resolve(maintenance).then(()=>db.close()).then(()=>process.exit(0)));server.closeAllConnections();});

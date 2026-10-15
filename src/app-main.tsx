@@ -1,71 +1,18 @@
-import { PrivyProvider, type PrivyClientConfig } from "@privy-io/react-auth";
+import { PrivyProvider } from "@privy-io/react-auth";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { activeChain as giwaSepolia, supportedDeployments } from "./activeDeployment.ts";
-import "./account.css";
-import "./account-profile.css";
-import "./account-balance.css";
-import "./account-inventory.css";
-import "./account-funds.css";
-import "./account-assets.css";
-import "./account-deposit.css";
-import "./account-transfer.css";
-import "./account-stats.css";
+import { privyConfig } from "./privyConfig";
 import "./styles.css";
-import "./pack-reveal.css";
-import "./pack-reveal-tear.css";
-import "./pack-reveal-vending-product.css";
-import "./pack-reveal-gesture.css";
-import "./pack-reveal-card.css";
-import "./pack-reveal-summary.css";
-import "./pack-reveal-motion.css";
-import "./pack-reveal-responsive.css";
-import "./profile-menu.css";
-import "./vending-layout.css";
-import "./vending-purchase.css";
-import "./vending-odds.css";
-import "./vending-sections.css";
-import "./vending-inventory.css";
-import "./vending-responsive.css";
-import "./brand-kit.css";
-
-const privyConfig: PrivyClientConfig = {
-  loginMethods: ["wallet", "email", "google"],
-  appearance: {
-    accentColor: "#1677FF",
-    showWalletLoginFirst: true,
-    theme: "light",
-    walletChainType: "ethereum-only",
-    walletList: ["metamask", "phantom", "okx_wallet"]
-  },
-  embeddedWallets: {
-    ethereum: {
-      createOnLogin: "all-users"
-    }
-  },
-  defaultChain: giwaSepolia,
-  supportedChains: supportedDeployments.map(({ chain }) => chain)
-};
 
 export function renderApplication(root: HTMLElement) {
-  const privyAppId = import.meta.env.VITE_PRIVY_APP_ID;
-  const privyClientId = import.meta.env.VITE_PRIVY_CLIENT_ID;
+  const privyAppId = import.meta.env.VITE_PRIVY_APP_ID?.trim();
+  const privyClientId = import.meta.env.VITE_PRIVY_CLIENT_ID?.trim();
   const app = privyAppId ? (
-    <PrivyProvider
-      appId={privyAppId}
-      clientId={privyClientId || undefined}
-      config={privyConfig}
-    >
-      <App walletAuth="privy" />
+    <PrivyProvider appId={privyAppId} clientId={privyClientId || undefined} config={privyConfig}>
+      <App authEnabled />
     </PrivyProvider>
-  ) : (
-    <App walletAuth="disabled" />
-  );
+  ) : <App />;
 
-  ReactDOM.createRoot(root).render(
-    <React.StrictMode>
-      {app}
-    </React.StrictMode>
-  );
+  ReactDOM.createRoot(root).render(<React.StrictMode>{app}</React.StrictMode>);
 }
