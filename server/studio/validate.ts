@@ -18,7 +18,7 @@ function array(value:unknown,max:number,field:string):unknown[] {
 function bool(value:unknown,field:string):boolean {if(typeof value!=='boolean')return fail(field);return value;}
 function url(value:unknown,field:string):string|null {
  if(value===null)return null; const result=text(value,2048,field);
- if(!/^https:\/\/[^\s]+$/.test(result))fail(field);return result;
+ if(!/^https:\/\/[^\s]+$/.test(result)&&!/^\/api\/studio\/media\/[0-9a-f-]{36}\/[a-f0-9]{64}$/.test(result))fail(field);return result;
 }
 function unique(values:string[],field:string){if(new Set(values).size!==values.length)fail(field);}
 /** Runtime validation rejects unknown fields, including fields outside the shared contract. */

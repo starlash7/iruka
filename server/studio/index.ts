@@ -61,11 +61,18 @@ export function createStudioService({db}:{db:Database}) {
   async publishVersion(userId:string,id:string,revision?:number) {
    return db.transaction(async tx=>{
     await lockWork(tx,userId,id);const row=await readDraft(tx,id);
-    if(revision!==undefined)checkRevision(revision,row.revision);
+    if(revision!==undefined){
+     const replay=(await tx.query<{id:string}>("SELECT id FROM work_versions WHERE work_id=$1 AND published_at IS NOT NULL AND private_config->>'studioRevision'=$2",[id,String(revision)])).rows[0];
+     if(replay)return (await getCreatorWork(tx,id,userId)).versions.find(v=>v.id===replay.id)!;
+     checkRevision(revision,row.revision);
+    }
+    // Publishing only increments revision; with no intervening save, reuse that version after reload.
+    const unchanged=(await tx.query<{id:string}>("SELECT id FROM work_versions WHERE work_id=$1 AND published_at IS NOT NULL AND private_config->>'studioRevision'=$2",[id,String(row.revision-1)])).rows[0];
+    if(unchanged)return (await getCreatorWork(tx,id,userId)).versions.find(v=>v.id===unchanged.id)!;
     const draft=validateDraft(row.body,true);const assets=await checkAssets(tx,userId,id,draft);
     const version=(await tx.query<{version:number}>('SELECT COALESCE(MAX(version),0)+1 AS version FROM work_versions WHERE work_id=$1',[id])).rows[0].version;
     const created=(await tx.query<{id:string}>(`INSERT INTO work_versions(work_id,version,public_snapshot,private_config,published_at)
-     VALUES($1,$2,$3,$4,now()) RETURNING id`,[id,version,JSON.stringify(draft.publicSnapshot),JSON.stringify({...draft.privateConfig,assets,workMetadata:{mode:draft.mode,title:draft.title,description:draft.description,coverUrl:draft.coverUrl,tags:draft.tags}})])).rows[0];
+     VALUES($1,$2,$3,$4,now()) RETURNING id`,[id,version,JSON.stringify(draft.publicSnapshot),JSON.stringify({...draft.privateConfig,studioRevision:row.revision,assets,workMetadata:{mode:draft.mode,title:draft.title,description:draft.description,coverUrl:draft.coverUrl,tags:draft.tags}})])).rows[0];
     await tx.query("UPDATE works SET mode=$2,title=$3,description=$4,cover_url=$5,tags=$6,visibility='public' WHERE id=$1",[id,draft.mode,draft.title,draft.description,draft.coverUrl,draft.tags]);
     await tx.query('UPDATE studio_drafts SET revision=revision+1 WHERE work_id=$1',[id]);
     return (await getCreatorWork(tx,id,userId)).versions.find(v=>v.id===created.id)!;
