@@ -21,7 +21,7 @@ No dependencies, main changes, deployment or paid requests.
 - [x] Review worker patches and focused tests; P2 section-only focus fixed and re-reviewed.
 - [x] Run npm test (192/192), npm run build (exit 0), git diff --check.
 - [x] Ego lite local visual checks; distinguish fixture from authenticated behavior.
-- [ ] Record limitations in HANDOFF; commit current branch and update Draft PR.
+- [x] Record limitations in HANDOFF; commit 1668553 on current branch and update Draft PR #14.
 
 Final validation: full test log .context/ux-tests-final.log; build log
 .context/ux-build-final.log (existing bundle-size warning). Exact-field focus has
