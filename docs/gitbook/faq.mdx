@@ -1,138 +1,31 @@
 ---
 title: "FAQ"
-description: "Answers about Iruka accounts, cards, odds, grading, GIWA and Monad, custody, and licensing."
-icon: "circle-help"
+description: "이용 전에 자주 묻는 질문"
 ---
 
-> **Status: Live documentation** - These answers describe the current public
-> testnet product and identify which commercial features are still in
-> validation or planned.
+## 한 캐릭터와만 대화하는 작품도 만들 수 있나요?
+네. 한 인물과의 관계를 중심으로 한 작품도, 여러 인물과 사건을 담은 작품도 만들 수 있습니다. Iruka는 이를 모두 이야기로 다룹니다. 현재 앱에 남아 있는 모드 선택과 후속 정리 방향은 [캐릭터와 이야기](/reading/stories)에서 확인하세요.
 
-## Why Does Iruka Start With K-pop Instead Of TCG?
+## 지갑이 있어야 대화할 수 있나요?
+아니요. Google·이메일·지갑 로그인이 구성되어 있지만, 지갑 생성이나 충전·송금은 대화 조건이 아닙니다. 계정과 권한은 Privy DID 및 서버 토큰 검증을 기준으로 합니다.
 
-Iruka is built for physical fandom collectibles rather than gameplay-led
-cards. K-pop photocards are identified by artist, member, release, event or
-benefit, official source, condition, and grade. Iruka keeps that identity
-connected to transparent packs, verification, custody, trading, and physical
-Redemption.
+## 답변이 반복되는 이유는 무엇인가요?
+현재 로컬 환경은 정해진 응답을 주는 테스트 모델을 사용합니다. 실제 LLM의 성격 유지, 문맥 이해, 이야기 품질을 보여 주는 결과가 아닙니다.
 
-K-pop is the initial category because published consumer and commerce data
-shows meaningful demand for physical fandom goods. See
-[Why Fandom Collectibles](/project/why-fandom-collectibles).
+## 크레딧은 구매하거나 현금으로 바꿀 수 있나요?
+아니요. 현재는 무료 테스트 크레딧이며 구매·양도·환전·출금 대상이 아닙니다. 로컬 지급량과 차감값은 확정 요금제가 아닙니다.
 
-## Do All Photocards Gain Value?
+## 재생성도 크레딧을 사용하나요?
+재생성은 새 응답 생성 요청이므로 예약·정산 대상입니다. 이미 완료한 같은 요청을 재조회하는 것과는 다릅니다. [처리 방식](/account/credits)을 확인하세요.
 
-No. Category demand does not guarantee that an individual photocard will
-appreciate or remain liquid. Official issuance, exact variant, member demand,
-distribution scarcity, condition, grade, and comparable completed sales can
-all affect observed value.
+## 비공개 설정을 다른 독자가 볼 수 있나요?
+공개 작품 API에서 비공개 필드를 제외하고 편집 권한은 서버에서 확인합니다. 다만 모델 출력으로 설정이 추론되거나 유출될 가능성까지 없다고 보장하지는 않습니다. [공개 범위](/creating/visibility)를 확인하세요.
 
-Iruka will omit an estimate when sufficiently matched market evidence is not
-available. Any displayed estimate is dated reference data, not a return or
-repurchase promise.
+## 작품을 수정하면 진행하던 대화도 바뀌나요?
+진행 중인 대화는 시작할 때의 발행 버전을 유지합니다. 새 발행 내용은 이후 시작하는 대화에 적용됩니다.
 
-## Does Every Card Need Professional Grading?
+## 성인 기능이나 크리에이터 정산이 있나요?
+성인 기능, 실제 상품 결제·정산, NFT·팩·실물 Vault는 현재 제품 범위에 포함하지 않습니다.
 
-No. Professional grading adds cost and turnaround time and may not be
-economical for an accessible card. Iruka plans a documented identity,
-authentication, condition, photography, and custody track for eligible
-lower-price inventory.
-
-Eligible premium inventory may use certificate-verifiable third-party grading
-in addition to the same physical intake and custody controls.
-
-## How Does Iruka Expand Beyond K-pop?
-
-Iruka plans to reuse the same Vending, Vault, Marketplace, and Redemption
-infrastructure for officially issued trot, cheerleader, and sports
-collectibles. Each category launches only after its physical supply,
-authentication, grading acceptance, metadata, value evidence, storage, and
-shipping controls are documented.
-
-New artwork or branded drops remain a separate licensed-IP process.
-
-## Do I Need A Wallet?
-
-No wallet extension is required to browse or sign in. Privy assigns every
-signed-in account a user-controlled Iruka Wallet, whether the collector uses
-email, Google, MetaMask, or another supported EVM login method. The Iruka
-Wallet submits test Pulls on the selected GIWA Sepolia or Monad Testnet network.
-
-An external wallet is optional. It can fund the Iruka Wallet or receive a
-same-chain withdrawal. Current transfers use GIWA Sepolia test ETH or Monad
-Testnet MON according to the selected network;
-commercial payment support is planned and will be documented separately.
-
-## Which Networks Are Available?
-
-GIWA Sepolia (`91342`, test ETH) is the default. Monad Testnet (`10143`, test
-MON) is available from the header or [Monad Vending](https://playiruka.space/?network=monad#pull).
-Switching reloads the selected deployment; balances, pending requests,
-transfers and collections stay separate. It is not a bridge.
-
-[GIWA Contracts](/technical/giwa-testnet) and [Monad Testnet](/technical/monad-testnet)
-publish each contract and its real receipts. An explicitly selected Monad
-flow without a valid contract cannot substitute a locally assigned result.
-
-## Are Iruka Cards Authentic?
-
-No commercial inventory is live today. Before launch, Iruka intends to list
-only physical cards that have completed the applicable authentication,
-photography, intake, and custody checks. A card is not marked `Vaulted` from a
-seller claim or certificate number alone.
-
-## How Can I Verify Pack Odds?
-
-Each production batch will publish its inventory snapshot, total supply,
-individual card odds, rarity-tier odds, and commitments on its selected network. The current
-testnet contract records the batch root, odds commitment, draw-seed root,
-requests, fulfillments, and remaining supply.
-
-The testnet design is commit-reveal, not VRF. Its limitations are documented in
-[Onchain Architecture](/technical/onchain-architecture).
-
-## Is Rarity The Same As A Grade?
-
-No. `Common`, `Rare`, `Epic`, `Legendary`, and `Iruka` describe allocation
-within a pack. A physical grade describes card condition under an
-authentication or grading process. One label cannot substitute for the other.
-
-## Which Grading Companies Does Iruka Use?
-
-BRG and CGC are under evaluation for eligible premium inventory. Iruka has not
-announced a partnership with either company. Lower-price inventory may use
-Iruka's documented authentication and condition-record track instead of
-third-party grading.
-
-See [Grading and Verification](/product/grading-and-verification).
-
-## What Do GIWA And Monad Record?
-
-The independent GIWA Sepolia and Monad Testnet contracts record pack-batch commitments, pull
-requests, fulfillment proofs, assigned inventory commitments, and remaining
-supply. Card images, grading evidence, storage locations, personal data, and
-shipping addresses stay offchain.
-
-Neither testnet contract mints ERC-721 ownership or settles USDC.
-
-The [Monad verification report](https://github.com/starlash7/iruka/blob/monad/docs/MONAD_VERIFICATION.md)
-includes actual Pull and withdrawal receipts and a read-only verification
-command that needs no wallet or private manifest.
-
-## Can I Receive The Physical Card?
-
-Not yet. Redemption and shipping are planned. Before launch, Iruka will publish
-supported regions, identity and address checks, fees, handling targets,
-tracking, and loss or damage procedures.
-
-## Are Packs Official Artist Or Agency Collaborations?
-
-Not unless Iruka publishes a signed collaboration announcement. Resale records
-may use names only to identify genuine physical items. New artwork, branded
-packs, or licensed drops require rights-holder approval before release.
-
-## Is Estimated Value Guaranteed?
-
-No. Any future estimated value will be a dated reference based on disclosed
-market evidence. It is not a guaranteed sale price, return, or repurchase
-offer.
+## 대화 삭제는 영구 삭제인가요?
+현재 코드의 대화·메시지 삭제는 삭제 상태를 기록하는 방식입니다. 보존기간과 영구 삭제 정책은 확정되지 않았으므로 즉시 완전 삭제된다고 안내하지 않습니다.

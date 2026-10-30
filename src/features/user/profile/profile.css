@@ -1,0 +1,13 @@
+.my-profile{padding:28px 0 32px;border-bottom:1px solid var(--reader-line)}
+.profile-heading{display:flex;gap:24px;align-items:center;min-width:0}
+.profile-heading>.reader-profile-avatar,.profile-photo-row>.reader-profile-avatar{width:88px;height:88px}
+.profile-copy{min-width:0;flex:1}.profile-copy h2{font-size:24px;font-weight:650;margin:0 0 8px;letter-spacing:0}.profile-copy p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;max-width:640px}
+.profile-heading button,.profile-photo-row button{display:inline-flex;gap:8px;align-items:center;justify-content:center;flex-shrink:0}
+.profile-activity{padding:32px 0}.profile-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px}
+.profile-links a{display:flex;gap:12px;align-items:center;min-height:64px;padding:12px;border-radius:8px}.profile-links a:hover{background:var(--reader-selected)}.profile-links a>span{flex:1}.profile-links svg{color:var(--reader-action)}
+.profile-editor{max-width:640px}.profile-editor fieldset{border:0;padding:0;margin:0;min-width:0}.profile-photo-row{display:flex;gap:20px;align-items:center;margin:24px 0}.profile-photo-row p{font-size:13px;margin:8px 0 0}
+.profile-field{display:grid;gap:8px;margin-top:20px;font-weight:500}.profile-field input,.profile-field textarea{width:100%;min-width:0;border:1px solid var(--reader-line);border-radius:12px;padding:12px 14px;background:white;color:var(--reader-ink);resize:vertical}.profile-field small{text-align:right;color:var(--reader-muted);font-weight:400;font-size:12px}.profile-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+.profile-refresh{font-size:12px;color:var(--reader-muted)}.profile-account-settings{border-top:1px solid var(--reader-line);padding:20px 0}.profile-account-settings>summary{font-size:18px}.profile-account-settings .account-content{margin-top:16px}
+img.reader-profile-avatar.reader-profile-avatar-custom{object-fit:cover;image-rendering:auto;background:none;width:42px;height:42px}
+.profile-heading>img.reader-profile-avatar,.profile-photo-row>img.reader-profile-avatar{width:88px;height:88px}
+@media(max-width:600px){.profile-heading{flex-wrap:wrap;gap:16px}.profile-heading .profile-copy{flex-basis:calc(100% - 104px)}.profile-heading>button{margin-left:104px}.profile-copy h2{font-size:22px}.profile-links{grid-template-columns:1fr}.profile-photo-row{align-items:flex-start;gap:12px}.profile-photo-row>.reader-profile-avatar{width:64px;height:64px}.profile-photo-row>img.reader-profile-avatar{width:64px;height:64px}}
