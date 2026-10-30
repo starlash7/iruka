@@ -3,7 +3,7 @@ import {ReaderLayout} from './ReaderLayout';
 import {useReader} from './ReaderProvider';
 import {useResource} from './useResource';
 import {ResourceState} from './ResourceState';
-import {WorkGrid} from './WorkGrid';
+import {WorkGrid,WorkGridLoading} from './WorkGrid';
 import {ChatList} from '../chat/ChatList';
 import {SearchForm} from './SearchPage';
 export default function HomePage(_props:RoutePageProps){
@@ -12,7 +12,7 @@ export default function HomePage(_props:RoutePageProps){
   <div className="reader-chips" aria-label="장르와 태그"><a className="is-selected" href={href('/')}>전체</a>{tags.map(tag=><a key={tag} href={href(`/tags/${encodeURIComponent(tag)}`)}>{tag}</a>)}</div>
   <div className="reader-mobile-continue"><ChatList/></div>
   <section><div className="reader-section-heading"><h2>공개 작품</h2><a href={href('/search')}>전체 보기 →</a></div>
-   {works.loading||works.error?<ResourceState {...works} retry={works.reload}/>:works.data?.length?<WorkGrid works={works.data}/>:<ResourceState empty="공개된 작품이 아직 없어요."/>}
+   {works.loading?<WorkGridLoading/>:works.error?<ResourceState {...works} retry={works.reload}/>:works.data?.length?<WorkGrid works={works.data}/>:<ResourceState empty="공개된 작품이 아직 없어요."/>}
   </section>
  </div></ReaderLayout>;
 }

@@ -2,6 +2,9 @@ import {BookOpen} from 'lucide-react';
 import type {PublicWorkDto} from '../../shared/contracts';
 import {useReader} from './ReaderProvider';
 import {useState} from 'react';
+export function WorkGridLoading(){
+ return <div role="status" aria-live="polite" aria-label="작품을 불러오는 중"><div className="reader-work-grid discovery-grid" aria-hidden="true">{Array.from({length:6},(_,index)=><div className="reader-work-skeleton" key={index}><div/><span/><span/></div>)}</div></div>;
+}
 export function WorkCover({url,title}:{url:string|null;title:string}){
  const [failedUrl,setFailedUrl]=useState<string|null>(null);
  const safe=!!url&&(/^(https?:\/\/|\/[^/])/.test(url));

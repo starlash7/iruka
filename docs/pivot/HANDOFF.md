@@ -227,3 +227,30 @@ git diff --check 통과. 기존 번들 크기 경고 유지. 사용자의 브라
 실제 Privy 로그인 상태의 프로필 저장/재로그인, 업로드·취소·키보드 및
 390/768/1440px 시각 검수는 공유 브라우저 사용과 겹쳐 미완료다.
 원격 DB 마이그레이션·배포·유료 호출은 하지 않았다.
+
+## 2026-10-30 Reader UX first batch
+
+- Approved reference audit: plans/reader-ux-reference-audit.md. Existing white/pink
+  tokens and shared navigation retained; no competitor assets copied.
+- Discovery adds filter reset, noninteractive loading grid and an unavailable-work
+  explanation. Mobile work detail uses a single column.
+- Chat explains pending/model/credit conditions, aligns regenerate eligibility with
+  the handler and displays edit/delete failures inside the active modal.
+- Studio exposes missing publish requirements and distinguishes the current draft
+  from the confirmed public version; public-work link uses the published work ID.
+- No API contracts, database, payment, model policy or authentication bypass changed.
+
+Verification: focused tests first failed for the missing behavior, then passed.
+Final integrated npm test: 192/192; npm run build: exit 0 with existing chunk-size
+warning; git diff --check passed. Review caught section-only readiness focus;
+exact-control focus was added, tested and re-reviewed. Its authenticated browser
+flow remains unverified.
+Ego lite TaskSpace 32 used isolated local fixture components for search, chat model
+unavailability and publication notices at 390/768/1440px: no horizontal overflow.
+Search reset keyboard focus was visible. Screenshots/harness stay in .context only.
+The fixture is not proof of live auth, model calls, save/publish or credit settlement.
+
+Local app: http://localhost:5173, API 8791 with the existing integration-dev-db.
+Actual signed-in API requests currently report missing server Privy configuration;
+real OAuth-to-publish/chat remains unverified. No credentials were changed or bypassed.
+Deferred contract/identity work is listed in plans/reader-ux-first-batch.md.

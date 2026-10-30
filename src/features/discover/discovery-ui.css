@@ -25,10 +25,18 @@
 .discovery-page .reader-characters strong{display:block;font-size:14px;overflow-wrap:anywhere}
 .discovery-page .reader-detail-section details+details{margin-top:8px}
 .discovery-page .reader-detail-section summary{line-height:1.6}
+.discovery-empty{text-align:center;padding-bottom:32px}
+.discovery-empty .reader-state{padding-bottom:16px}
+.reader-work-skeleton{min-width:0}
+.reader-work-skeleton>div{aspect-ratio:3/4;border-radius:8px;background:var(--reader-selected)}
+.reader-work-skeleton>span{display:block;height:14px;width:80%;margin-top:14px;border-radius:4px;background:var(--reader-line)}
+.reader-work-skeleton>span:last-child{width:55%;height:12px}
+.reader-start-note{font-size:14px;line-height:1.6;color:var(--reader-muted);margin-top:12px}
 @media(max-width:480px){
  .discovery-grid .reader-work h3{font-size:15px}
  .discovery-grid .reader-work p{font-size:13px}
- .discovery-page .reader-work-detail{grid-template-columns:100px minmax(0,1fr);gap:18px}
+ .discovery-page .reader-work-detail{grid-template-columns:minmax(0,1fr);gap:20px}
+ .discovery-page .reader-detail-cover{width:min(180px,60%);justify-self:center}
  .discovery-page .reader-work-detail h1{font-size:23px;line-height:1.4}
  .discovery-page .reader-tagline{font-size:14px}
  .discovery-page .reader-work-detail .ui-button{width:100%}

@@ -28,12 +28,24 @@ test('legacy mode filters preserve query and tag; removing tag preserves mode an
  globalThis.__discoveryState={data:[],error:null,loading:false};
  const html=renderToStaticMarkup(createElement(modules.SearchPage.SearchResults,{query:'달빛 & 별',tag:'판타지',mode:'character'}));
  const links=[...html.matchAll(/href="([^"]+)"/g)].map(match=>new URL(match[1].replaceAll('&amp;','&'),'https://local'));
- assert.equal(links.length,4);
- for(const link of links)assert.equal(link.searchParams.get('q'),'달빛 & 별');
+ assert.equal(links.length,5);
+ for(const link of links.slice(0,4))assert.equal(link.searchParams.get('q'),'달빛 & 별');
  assert.equal(links[0].searchParams.get('mode'),'character');assert.equal(links[0].searchParams.has('tag'),false);
- assert.deepEqual(links.slice(1).map(link=>link.searchParams.get('mode')),['','story','character']);
- assert(links.slice(1).every(link=>link.searchParams.get('tag')==='판타지'));
+ assert.deepEqual(links.slice(1,4).map(link=>link.searchParams.get('mode')),['','story','character']);
+ assert(links.slice(1,4).every(link=>link.searchParams.get('tag')==='판타지'));
+ assert.equal(links[4].pathname,'/search');assert.equal(links[4].search,'');
  assert.match(html,/<details[^>]*open/);assert.match(html,/조건에 맞는 작품이 없어요/);
+});
+test('unpublished work explains why starting a conversation is unavailable',()=>{
+ const html=render('WorkPage',{params:{id:'draft'}},{...work('story','draft'),publishedVersionId:null});
+ assert.match(html,/아직 발행되지 않은 작품이에요/);
+ assert.match(html,/aria-describedby="work-start-unavailable"/);
+});
+test('search loading keeps a noninteractive cover grid and accessible status',()=>{
+ globalThis.__discoveryState={data:null,loading:true,error:null,reload(){}};
+ const html=renderToStaticMarkup(createElement(modules.SearchPage.SearchResults));
+ assert.match(html,/role="status"/);assert.match(html,/작품을 불러오는 중/);
+ assert.match(html,/reader-work-skeleton/);assert.doesNotMatch(html,/href="\/works\//);
 });
 test('detail presents public introduction and first opening for either mode',()=>{
  for(const mode of ['story','character']){
