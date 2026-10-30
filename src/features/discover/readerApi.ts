@@ -26,13 +26,15 @@ export interface ReaderApi {
 /** Unavailable endpoints fail explicitly until A/D and the common owner mount them. */
 export function createReaderApi(options:ApiClientOptions):ReaderApi{
  const client=createApiClient(options);
+ const publicClient=createApiClient({...options,getAccessToken:async()=>null});
  const read=async<T,>(path:string,init?:RequestInit)=>(await client.request<T>(path,init)).data;
+ const readPublic=async<T,>(path:string)=>(await publicClient.request<T>(path)).data;
  const json=(method:string,body:unknown):RequestInit=>({method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
  const chatPath=(id:string)=>`/api/chats/${encodeURIComponent(id)}`;
  return {
   loadImage:client.image,
-  listWorks(query={}){const params=new URLSearchParams();if(query.query)params.set('q',query.query);if(query.tag)params.set('tag',query.tag);if(query.mode)params.set('mode',query.mode);if(query.offset)params.set('offset',String(query.offset));return read(`/api/discover/works?${params}`);},
-  getWork:id=>read(`/api/works/${encodeURIComponent(id)}`),getRanking:()=>read('/api/discover/ranking'),
+  listWorks(query={}){const params=new URLSearchParams();if(query.query)params.set('q',query.query);if(query.tag)params.set('tag',query.tag);if(query.mode)params.set('mode',query.mode);if(query.offset)params.set('offset',String(query.offset));return readPublic(`/api/discover/works?${params}`);},
+  getWork:id=>readPublic(`/api/works/${encodeURIComponent(id)}`),getRanking:()=>readPublic('/api/discover/ranking'),
   listChats:()=>read('/api/chats'),listPersonas:()=>read('/api/me/personas'),getModels:()=>read('/api/models'),getBalance:()=>read('/api/me/credits'),
   startChat:async input=>(await read<{chat:ChatDto}>('/api/chats',json('POST',input))).chat,getChat:id=>read(`${chatPath(id)}/view`),
   saveMemo:async(id,memo)=>{await read(`${chatPath(id)}/memo`,json('PUT',{memo}));},

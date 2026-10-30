@@ -8,7 +8,7 @@ export function WorkGridLoading(){
 export function WorkCover({url,title}:{url:string|null;title:string}){
  const [failedUrl,setFailedUrl]=useState<string|null>(null);
  const safe=!!url&&(/^(https?:\/\/|\/[^/])/.test(url));
- return safe&&failedUrl!==url?<img src={url} alt="" loading="lazy" onError={()=>setFailedUrl(url)}/>:<div className="reader-cover-fallback" role="img" aria-label={`${title} 표지 없음`}><BookOpen size={30}/></div>;
+ return safe&&failedUrl!==url?<img src={url} alt="" loading="lazy" onError={()=>setFailedUrl(url)}/>:<div className="reader-cover-fallback" role="img" aria-label={`${title} 표지 없음`}><BookOpen size={30}/><span className="home-cover-title" aria-hidden="true">{title}</span><small className="home-cover-note" aria-hidden="true">표지 준비 중</small></div>;
 }
 export function WorkGrid({works,ranked=false}:{works:PublicWorkDto[];ranked?:boolean}){
  const {href}=useReader();return <div className="reader-work-grid discovery-grid">{works.map((work,index)=><article className="reader-work" key={work.id}>

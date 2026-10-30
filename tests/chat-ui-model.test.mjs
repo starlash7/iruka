@@ -9,13 +9,13 @@ test('selected branch retains ancestors and siblings without mixing histories',(
  assert.throws(()=>getMessageBranch([{id:'a',parentMessageId:'b'},{id:'b',parentMessageId:'a'}],'a'));
  assert.throws(()=>getMessageBranch(messages,'missing'));
 });
-test('real API errors remain errors; credentials refreshed for each request',async()=>{
+test('real API errors remain errors; credentials refresh only for private requests',async()=>{
  let calls=0;
- const api=createReaderApi({getAccessToken:async()=>{calls++;return 'token';},fetch:async(_url,init)=>{
-  assert.equal(new Headers(init.headers).get('authorization'),'Bearer token');
+ const api=createReaderApi({getAccessToken:async()=>{calls++;return 'token';},fetch:async(url,init)=>{
+  assert.equal(new Headers(init.headers).get('authorization'),url.startsWith('/api/discover/')?null:'Bearer token');
   return Response.json({error:{code:'SERVICE_UNAVAILABLE',message:'준비 중'},requestId:'r'},{status:503});
  }});
  await assert.rejects(api.listWorks(),{code:'SERVICE_UNAVAILABLE'});
  await assert.rejects(api.getBalance(),{code:'SERVICE_UNAVAILABLE'});
- assert.equal(calls,2);
+ assert.equal(calls,1);
 });

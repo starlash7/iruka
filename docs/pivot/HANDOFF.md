@@ -254,3 +254,25 @@ Local app: http://localhost:5173, API 8791 with the existing integration-dev-db.
 Actual signed-in API requests currently report missing server Privy configuration;
 real OAuth-to-publish/chat remains unverified. No credentials were changed or bypassed.
 Deferred contract/identity work is listed in plans/reader-ux-first-batch.md.
+
+## 2026-10-30 Visible homepage redesign
+
+- Home now uses a compact sidebar/header search, original Iruka image masthead,
+  discovery/ranking/search navigation, real work tags and a responsive poster grid.
+  White/pink controls, account actions and the existing footer are preserved.
+- Manual featured slides accept published works with usable covers only. The
+  current local database contains two published works with no covers: explicit
+  missing-cover tiles appear instead of fabricated artwork or activity.
+- Public list/ranking/detail reads no longer request a private access token.
+  All private calls still require authentication; server public projections and
+  unpublished-work isolation are covered by regression tests.
+- npm test: 202/202 passed. npm run build: exit 0, existing bundle-size warning.
+  git diff --check passed. Independent static review reported no scoped findings.
+- Ego lite TaskSpace 35 checked the actual localhost:5173 homepage at
+  390/768/1440/2560px without horizontal overflow, visible keyboard search focus,
+  and a real Korean search returning the matching work. Screenshots are in
+  .context/home-final-*.png. Multi-slide behavior is component-tested only because
+  the actual works have no covers. No autoplay or motion was added.
+- Local private recent chats still report missing server Privy configuration.
+  Real OAuth-to-chat/publish is not validated; no authentication bypass, remote
+  service changes, paid calls, main merge or deployment were performed.

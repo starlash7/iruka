@@ -7,7 +7,7 @@ let server,modules={};
 const work=(mode,id)=>({id,mode,title:`${mode} 제목`,description:'긴 소개 '.repeat(80),tags:['판타지','아주긴태그'.repeat(10)],coverUrl:null,publishedVersionId:'v',snapshot:{tagline:'한 줄 소개',characters:[{id:'c',name:'등장인물',imageUrl:null}],openings:[{id:'o',title:'첫 만남',prologue:'공개 프롤로그'}],playGuide:'안내'}});
 before(async()=>{
  server=await createServer({appType:'custom',cacheDir:'.context/discovery-ui-test',define:{'import.meta.env.VITE_PRIVY_APP_ID':JSON.stringify('')},optimizeDeps:{noDiscovery:true},server:{hmr:false,middlewareMode:true},plugins:[{name:'discovery-resource-test',enforce:'pre',resolveId(source){if(source==='./useResource')return '\0discovery-resource';if(source==='../chat/ChatList')return '\0discovery-chat-list';if(source==='../chat/StartChatSheet')return '\0discovery-start';},load(id){if(id==='\0discovery-resource')return 'export const useResource=()=>globalThis.__discoveryState;';if(id==='\0discovery-chat-list')return 'export const ChatList=()=>null;';if(id==='\0discovery-start')return 'export const StartChatSheet=()=>null;';}}]});
- for(const name of ['HomePage','SearchPage','TagPage','RankingPage','WorkPage','WorkGrid'])modules[name]=await server.ssrLoadModule(`/src/features/discover/${name}.tsx`);
+ for(const name of ['HomePage','SearchPage','TagPage','RankingPage','WorkPage','WorkGrid','HomeMasthead'])modules[name]=await server.ssrLoadModule(`/src/features/discover/${name}.tsx`);
 });
 after(async()=>{await server.close();delete globalThis.__discoveryState;});
 function render(name,props={},data=[]){globalThis.__discoveryState={data,error:null,loading:false,reload(){}};return renderToStaticMarkup(createElement(modules[name].default,props));}
@@ -16,6 +16,18 @@ test('home keeps both modes discoverable without mode badges or duplicate recomm
  assert.match(html,/\/works\/story/);assert.match(html,/\/works\/character/);
  assert.match(html,/aria-label="작품 탐색"/);assert.doesNotMatch(html,/reader-work-type|태그별 추천|작품 유형/);
  assert.equal((html.match(/class="reader-work"/g)||[]).length,2);
+});
+test('home uses one header search, branded masthead and public work collection',()=>{
+ const html=render('HomePage',{},[work('story','story')]);
+ assert.match(html,/home-masthead/);assert.match(html,/iruka-x-banner-ocean-formation/);
+ assert.equal((html.match(/role="search"/g)||[]).length,1);
+ assert.ok(html.indexOf('role="search"')<html.indexOf('home-masthead'));
+ assert.match(html,/home-work-collection/);assert.doesNotMatch(html,/인기 급상승|만 회|맞춤 추천/);
+});
+test('masthead only features actual usable covers and never adds unavailable work slides',()=>{
+ const html=renderToStaticMarkup(createElement(modules.HomeMasthead.HomeMasthead,{works:[work('story','none'),{...work('story','cover'),coverUrl:'/brand/iruka-logomark.png'},{...work('story','unsafe'),coverUrl:'javascript:alert(1)'}]}));
+ assert.match(html,/aria-label="2번째 배너"/);assert.doesNotMatch(html,/3번째 배너/);
+ assert.match(html,/aria-label="다음 배너"/);assert.doesNotMatch(html,/javascript:/);
 });
 test('discovery restores one brand footer using only current product destinations',()=>{
  const html=render('HomePage',{},[]);

@@ -14,7 +14,8 @@ test('minimal routes render without authentication configuration', async () => {
     for (const [pathname, heading] of [['/', '어떤 이야기를 시작할까요?'], ['/account', '마이페이지'], ['/account/', '마이페이지'], ['/missing', '페이지를 찾을 수 없어요']]) {
       globalThis.window = { location: { pathname } };
       const html = renderToStaticMarkup(createElement(App));
-      assert.ok(html.includes(`<h1>${heading}</h1>`));
+      const headings = [...html.matchAll(/<h1\b[^>]*>(.*?)<\/h1>/g)].map(([, content]) => content.replace(/<br\s*\/?\s*>/g, ' ').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim());
+      assert.ok(headings.includes(heading), `${pathname}: expected heading ${heading}`);
       if (pathname.startsWith('/account')) {
         assert.match(html, /로그인 설정이 필요해요/);
         assert.match(html, /disabled/);
