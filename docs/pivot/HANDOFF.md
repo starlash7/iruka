@@ -320,3 +320,67 @@ Private artifacts: `.context/reader-{mypage,work}-{390,768,1440}.png`,
 and say so. These checks do not prove real Privy OAuth/OTP, production profile
 persistence, remote DB, model output or paid credit settlement. No production
 authentication bypass, paid call, chain transaction, main merge or deployment.
+## 2026-10-31 Reader library, search and image-code expansion
+
+- Work detail separates Continue (latest activity for that exact work) and New
+  conversation. New retains opening/persona/model selection. Auth restoration and
+  signed-out states do not mount private conversation/favorite requests.
+- Private library supports custom titles, 50-row pages, folder create/rename/delete,
+  moving chats and confirmed chat deletion. Deleting a folder keeps its chats
+  unfiled. Mutations preserve the pinned version/persona; pending chat deletion
+  remains 409. Errors stay in the dialog, retry preserves input, and Escape/save
+  restore useful keyboard focus.
+- Search highlights literal text on the selected loaded message path, navigates
+  matching messages and never generates a response. Font size (14–24px) and line
+  spacing are bounded device preferences; denied storage remains usable.
+- Home/search/tag retain filters while loading another 60 works, prevent duplicate
+  requests/rows, ignore obsolete responses, and keep previous cards on failure.
+  Private favorites have an authenticated `/favorites` destination from My Page
+  and the profile menu. Only publicly published works appear there.
+- `showCreator` is an explicit Studio publishing choice, false for existing works.
+  Public DTOs expose the saved nickname only when opted in; private profile fields
+  and hidden prompts remain excluded.
+- Named image-code slots now upload/replace real files and bind the returned
+  immutable asset revision to the draft. Existing published and pinned images
+  survive replacements; hash-equal retries reuse the latest asset. Different
+  stale uploads fail with 409. The existing 200-record work cap includes history.
+- Additive migrations: foundation `0006_reader_library.sql`, Studio
+  `0201_asset_versions.sql`. Product migrations, clients, explicit development
+  adapters, feature/API map and user documentation are updated together.
+
+Verification (Node 24.14.0 through npm exec):
+
+- Final `npm test`: **216 passed, 0 failed/skipped**. `npm run build`: **exit 0**;
+  existing Privy annotation and large-chunk warnings remain. `git diff --check`
+  passed. Logs: `.context/reader-expansion-{tests,build}-final.log`.
+- Real local handler/DB tests cover anonymous/cross-user rejection, invalid names,
+  folder uniqueness/moves/deletion, recent activity and exact-work filtering,
+  pending deletion, opt-in/withdrawn author disclosure, private/hidden favorites,
+  60+ paging, repeatable upgrades and immutable code image access/replacement.
+  UI regressions cover literal/XSS-safe search, reading/storage denial, dialogs,
+  private-client tokens and auth readiness. Earlier failures from migration counts
+  and an incorrect test MIME assumption were corrected before the final run.
+- Ego lite TaskSpace 17 used the real product handlers and local PGlite database,
+  injected test authentication and the deterministic local model. Six routes at
+  **390/768/1440px** had no horizontal overflow or runtime errors; work CTAs did
+  not overlap mobile navigation. Responsive measurements are in
+  `.context/reader-expansion-responsive.json`.
+- Browser: rename/move/folder CRUD and confirmed chat deletion; failed save retains
+  input and retry succeeds; folder deletion preserves conversations; Escape and
+  successful save restore focus. Signed-out work detail issued only its public
+  work read, and signed-out chat did not mount the private chat room.
+- Search moved between two matching messages, font/spacing survived reload, and
+  the mobile composer stayed within the 844px viewport. Discovery retained 60
+  cards after an injected failure and reached **65 distinct cards** on retry.
+  Saved works displayed the opted-in creator name. Code upload/replacement saved
+  immutable revisions while retaining the original published version; interrupted
+  upload retains its local file/preview for retry.
+
+Inspected private screenshots: `.context/reader-library-{desktop,mobile}.png`,
+`reader-work-continue-mobile.png`, `reader-search-mobile.png`,
+`reader-code-upload-{desktop,mobile}.png`, `reader-favorites-desktop.png`.
+These contain synthetic local data and approved original Iruka image assets.
+Real Privy OAuth/OTP, remote PostgreSQL, production image storage and live LLM
+generation remain unverified. No paid provider call, chain transaction,
+deployment or main merge was performed. Draft delivery remains PR #19 against
+the story-platform integration branch, since `main` is still the historical tree.

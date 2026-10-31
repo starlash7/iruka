@@ -12,11 +12,13 @@ import type {SafetyService} from '../../server/chat/safety.ts';
 import {createReaderService} from '../../server/chat/reader.ts';
 import {loadChat,assertIdle} from '../../server/chat/repository.ts';
 import {requireSafeText} from '../../server/chat/safety.ts';
+import {createChatLibrary,parseChatQuery} from '../../server/chat/library.ts';
 interface Dependencies {db:Database;verifyToken:TokenVerifier;stream:StreamService;safety?:SafetyService}
 /** Opt-in handler; shared router/dev composition is owned by the integration task. */
 export function createChatApiHandler({db,verifyToken,stream,safety}:Dependencies) {
   const conversations=createConversationService(db,safety),memory=createMemoryService(db,safety);
   const reader=createReaderService(db,safety);
+  const library=createChatLibrary(db);
   return async (request:Request):Promise<Response>=>{
     const requestId=randomUUID();
     try{
@@ -25,7 +27,7 @@ export function createChatApiHandler({db,verifyToken,stream,safety}:Dependencies
       if(!match)throw new ApiError('NOT_FOUND','경로를 찾을 수 없어요.');
       const identity=await authenticateRequest(request,verifyToken),user=await getOrCreateUser(db,identity.privyDid);
       if(!match[1]&&method==='POST')return jsonResponse(await conversations.startChat(user.id,await readJson(request)),requestId,201);
-      if(!match[1]&&method==='GET')return jsonResponse(await reader.listChats(user.id),requestId);
+      if(!match[1]&&method==='GET')return jsonResponse(await reader.listChats(user.id,parseChatQuery(new URL(request.url).searchParams)),requestId);
       const chatId=requireId(match[1]),resource=match[2],id=match[3]?requireId(match[3]):undefined;
       // Authenticate and verify ownership before validating any child resource.
       await conversations.getChat(user.id,chatId);
@@ -42,6 +44,7 @@ export function createChatApiHandler({db,verifyToken,stream,safety}:Dependencies
         return jsonResponse(null,requestId);
       }
       if(!resource){
+        if(method==='PATCH'){await library.updateChat(user.id,chatId,await readJson(request));return jsonResponse(await reader.getView(user.id,chatId),requestId);}
         if(method==='GET')return jsonResponse(await conversations.getChat(user.id,chatId),requestId);
         if(method==='DELETE'){await conversations.deleteChat(user.id,chatId);return jsonResponse({deleted:true},requestId);}
       }

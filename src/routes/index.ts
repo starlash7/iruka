@@ -12,6 +12,7 @@ import EditorPage from '../features/studio/EditorPage';
 import PersonasPage from '../features/user/PersonasPage';
 import CreditsPage from '../features/wallet/index';
 import AccountPage from '../features/user/AccountPage';
+import FavoritesPage from '../features/discover/FavoritesPage';
 
 export { matchRoute, routes, type RoutePageProps } from './paths';
 export const routePages: Record<typeof routes[number]['id'], ComponentType<RoutePageProps>> = {
@@ -22,6 +23,7 @@ export const routePages: Record<typeof routes[number]['id'], ComponentType<Route
   work: WorkPage,
   chat: ChatPage,
   chats: ChatListPage,
+  favorites: FavoritesPage,
   studio: StudioPage,
   editor: EditorPage,
   personas: PersonasPage,

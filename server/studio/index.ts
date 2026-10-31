@@ -16,7 +16,7 @@ async function readDraft(db:Database,id:string) {
  if(!row)throw new ApiError('NOT_FOUND','편집 초안이 없어요.');return row;
 }
 async function readAssets(db:Database,id:string):Promise<StudioAsset[]> {
- return (await db.query<StudioAsset>('SELECT id,code,label,url FROM studio_assets WHERE work_id=$1 ORDER BY code',[id])).rows;
+ return (await db.query<StudioAsset>('SELECT id,code,label,url,revision FROM studio_assets WHERE work_id=$1 ORDER BY code,revision DESC',[id])).rows;
 }
 async function checkAssets(db:Database,userId:string,id:string,draft:StudioDraft) {
  const owned=(await db.query<StudioAsset>('SELECT id,code,label,url FROM studio_assets WHERE work_id=$1 AND owner_id=$2',[id,userId])).rows;
@@ -73,7 +73,7 @@ export function createStudioService({db}:{db:Database}) {
     const version=(await tx.query<{version:number}>('SELECT COALESCE(MAX(version),0)+1 AS version FROM work_versions WHERE work_id=$1',[id])).rows[0].version;
     const created=(await tx.query<{id:string}>(`INSERT INTO work_versions(work_id,version,public_snapshot,private_config,published_at)
      VALUES($1,$2,$3,$4,now()) RETURNING id`,[id,version,JSON.stringify(draft.publicSnapshot),JSON.stringify({...draft.privateConfig,studioRevision:row.revision,assets,workMetadata:{mode:draft.mode,title:draft.title,description:draft.description,coverUrl:draft.coverUrl,tags:draft.tags}})])).rows[0];
-    await tx.query("UPDATE works SET mode=$2,title=$3,description=$4,cover_url=$5,tags=$6,visibility='public' WHERE id=$1",[id,draft.mode,draft.title,draft.description,draft.coverUrl,draft.tags]);
+    await tx.query("UPDATE works SET mode=$2,title=$3,description=$4,cover_url=$5,tags=$6,show_creator=$7,visibility='public' WHERE id=$1",[id,draft.mode,draft.title,draft.description,draft.coverUrl,draft.tags,draft.showCreator===true]);
     await tx.query('UPDATE studio_drafts SET revision=revision+1 WHERE work_id=$1',[id]);
     return (await getCreatorWork(tx,id,userId)).versions.find(v=>v.id===created.id)!;
    });

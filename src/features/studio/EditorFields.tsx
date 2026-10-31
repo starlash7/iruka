@@ -14,6 +14,7 @@ export function EditorFields({tab,draft:d,change,renderImage}:{tab:string;draft:
   <Line label="한 줄 소개" value={s.tagline} onChange={v=>edit(d=>{d.publicSnapshot.tagline=v;})}/>
   <Text label="상세 소개" value={d.description} max={2000} onChange={v=>edit(d=>{d.description=v;})}/>
   <Line label="태그 (쉼표로 구분)" value={d.tags.join(',')} max={500} onChange={v=>edit(d=>{d.tags=v.split(',');})}/>
+  <Check label="작품에 내 프로필 닉네임 표시" value={d.showCreator===true} onChange={value=>edit(d=>{d.showCreator=value;})}/>
   <Text label="플레이 가이드" value={s.playGuide} max={1500} onChange={v=>edit(d=>{d.publicSnapshot.playGuide=v;})}/>
  </>;
  if(tab==='prompt')return <Text label="메인 프롬프트" value={p.systemPrompt} max={8000} onChange={v=>edit(d=>{d.privateConfig.systemPrompt=v;})}/>;

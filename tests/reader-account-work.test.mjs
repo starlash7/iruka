@@ -4,7 +4,7 @@ import {createElement as h} from 'react';
 import {renderToStaticMarkup as render} from 'react-dom/server';
 import {createServer} from 'vite';
 
-let server,MyProfile,WorkPage,StartChatSheet,AccountView,ReaderProvider;
+let server,MyProfile,WorkPage,StartChatSheet,AccountView,ReaderProvider,WorkConversationActions;
 const work={id:'work-test',title:'테스트 작품',description:'공개 소개',tags:['판타지'],coverUrl:null,publishedVersionId:'version-test',snapshot:{tagline:'짧은 소개',characters:[{id:'character',name:'안내자',imageUrl:null}],openings:[{id:'opening',title:'첫 만남',prologue:'공개 프롤로그',firstMessage:'어서 오세요.',suggestedReplies:[]}],playGuide:'공개 가이드'}};
 
 before(async()=>{
@@ -19,7 +19,7 @@ before(async()=>{
   },
   load(id){
    if(id==='\0test-profile')return 'export function useProfile(){return {...globalThis.__accountWorkTest.profile,reload(){},save:async()=>{}};}';
-   if(id==='\0test-resource')return 'export function useResource(){globalThis.__accountWorkTest.resourceReads++;return globalThis.__accountWorkTest.resource;}';
+   if(id==='\0test-resource')return 'export function useResource(load){globalThis.__accountWorkTest.resourceReads++;globalThis.__accountWorkTest.resourceLoads?.push(load);return globalThis.__accountWorkTest.resource;}';
    if(id==='\0test-chat-list')return 'export function ChatList(){return null;}';
    if(id==='\0test-privy')return 'export const getAccessToken=async()=>null;export const usePrivy=()=>globalThis.__accountWorkTest.session;export const useLogin=callbacks=>{globalThis.__accountWorkTest.loginCallbacks=callbacks;return {login(){globalThis.__accountWorkTest.loginCalls=(globalThis.__accountWorkTest.loginCalls||0)+1;}}};';
   }
@@ -29,6 +29,7 @@ before(async()=>{
  ({StartChatSheet}=await server.ssrLoadModule('/src/features/chat/StartChatSheet.tsx'));
  ({AccountView}=await server.ssrLoadModule('/src/AccountView.tsx'));
  ({ReaderProvider}=await server.ssrLoadModule('/src/features/discover/ReaderProvider.tsx'));
+ ({WorkConversationActions}=await server.ssrLoadModule('/src/features/discover/WorkConversationActions.tsx'));
 });
 after(async()=>{await server?.close();delete globalThis.__accountWorkTest;});
 
@@ -82,4 +83,17 @@ test('missing production auth configuration fails closed before private options'
  globalThis.__accountWorkTest.resourceReads=0;
  const html=render(h(StartChatSheet,{open:true,authEnabled:false,work,onClose(){}}));
  assert.equal(globalThis.__accountWorkTest.resourceReads,0);assert.match(html,/로그인 설정/);
+});
+
+test('continue uses an exact-work latest-chat query and leaves new-conversation available',async()=>{
+ const state=globalThis.__accountWorkTest;state.session={ready:true,authenticated:true,user:{id:'did:privy:test'}};
+ state.resource={data:[{chat:{id:'latest-chat'}}],loading:false,error:null};state.resourceLoads=[];
+ let query;const html=render(h(ReaderProvider,{api:{listChats:async value=>{query=value;return [];}}},h(WorkConversationActions,{workId:'exact-work',published:true,authEnabled:true,onStart(){}})));
+ assert.match(html,/href="\/chat\/latest-chat"[^>]*>이어하기/);assert.match(html,/>새 대화</);
+ await state.resourceLoads[0]();assert.deepEqual(query,{workId:'exact-work',limit:1});
+ for(const session of [{ready:false,authenticated:true,user:{id:'did:privy:old'}},{ready:true,authenticated:false,user:null}]){
+  state.session=session;state.resourceReads=0;
+  const signedOut=render(h(WorkConversationActions,{workId:'exact-work',published:true,authEnabled:true,onStart(){}}));
+  assert.equal(state.resourceReads,0);assert.doesNotMatch(signedOut,/이어하기/);assert.match(signedOut,/대화 시작/);
+ }
 });

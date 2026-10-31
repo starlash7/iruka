@@ -3,6 +3,7 @@ export interface UserDto { id: string; privyDid: string; displayName: string | n
 export interface ProfileDto { nickname: string; bio: string; avatar: string | null }
 export interface PersonaDto { id: string; userId: string; name: string; description: string; createdAt: string }
 export interface PublicWorkDto {
+  creatorName?: string;
   id: string; creatorId: string; mode: 'character' | 'story'; title: string;
   description: string; coverUrl: string | null; tags: string[];
   publishedVersionId: string | null; createdAt: string;
@@ -64,6 +65,7 @@ export interface PrivateWorkConfig {
 }
 /** Creation omits id; editing identifies an owned draft. Publishing is a separate operation. */
 export interface WorkDraftInput {
+  showCreator?: boolean;
   id?: string;
   mode: 'character' | 'story';
   title: string;
@@ -73,3 +75,4 @@ export interface WorkDraftInput {
   publicSnapshot: PublicWorkSnapshot;
   privateConfig: PrivateWorkConfig;
 }
+export interface ChatFolderDto {id:string;name:string}

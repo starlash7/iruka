@@ -1,6 +1,4 @@
 import {useRef,useState} from 'react';
-import {MessageCircle} from 'lucide-react';
-import {Button} from '../../ui';
 import type {RoutePageProps} from '../../routes/paths';
 import {ReaderLayout} from './ReaderLayout';
 import {useReader} from './ReaderProvider';
@@ -8,6 +6,8 @@ import {useResource} from './useResource';
 import {ResourceState} from './ResourceState';
 import {WorkCover} from './WorkGrid';
 import {StartChatSheet} from '../chat/StartChatSheet';
+import {WorkConversationActions} from './WorkConversationActions';
+import {WorkFavorite} from './WorkFavorite';
 import './work-detail.css';
 
 export default function WorkPage({params,authEnabled=false}:RoutePageProps){
@@ -32,10 +32,12 @@ export default function WorkPage({params,authEnabled=false}:RoutePageProps){
      <div className="reader-detail-cover"><WorkCover key={work.coverUrl} url={work.coverUrl} title={work.title}/></div>
      <div className="work-overview">
       <h1>{work.title}</h1>
+      {work.creatorName&&<p className="work-creator">제작 · {work.creatorName}</p>}
       {work.snapshot?.tagline&&<p className="reader-tagline">{work.snapshot.tagline}</p>}
       <div className="reader-chips">{work.tags.map(tag=><a key={tag} href={href(`/tags/${encodeURIComponent(tag)}`)}>#{tag}</a>)}</div>
+      <WorkFavorite workId={work.id} authEnabled={authEnabled}/>
       <div className="work-start-action">
-       <Button onClick={event=>{startButton.current=event.currentTarget;event.currentTarget.focus();setStarting(true);}} disabled={!work.publishedVersionId} aria-describedby={!work.publishedVersionId?'work-start-unavailable':undefined}><MessageCircle size={18} aria-hidden="true"/>대화 시작</Button>
+       <WorkConversationActions workId={work.id} published={!!work.publishedVersionId} authEnabled={authEnabled} onStart={button=>{startButton.current=button;setStarting(true);}}/>
        {!work.publishedVersionId&&<p id="work-start-unavailable" className="reader-start-note">아직 발행되지 않은 작품이에요.</p>}
       </div>
      </div>

@@ -16,6 +16,7 @@ import {createUnavailableServices,type ModelService} from '../core/interfaces.ts
 import {recoverExpiredTurns} from '../chat/recovery.ts';
 import {runSummaryJobs} from '../chat/summarize.ts';
 import type {ImageStorage} from '../media/storage.ts';
+import {createLibraryHandler} from '../library/http.ts';
 
 export interface ProductOptions extends ChatOptions {
  db:Database;verifyToken:TokenVerifier;model?:ModelService;
@@ -38,6 +39,7 @@ export function createProduct(options:ProductOptions) {
  const studio=createStudioHandler({...shared,imageStorage:options.imageStorage}),discover=createDiscoverHandler(discovery);
  const creditHandler=createCreditsHandler({...shared,credits});
  const core=createApiHandler({...shared,stream,credits,discovery});
+ const library=createLibraryHandler(shared);
  return {db,credits,async handler(request:Request):Promise<Response>{
   const path=new URL(request.url).pathname.replace(/\/$/,'');
   try{
@@ -52,6 +54,7 @@ export function createProduct(options:ProductOptions) {
    if(path.startsWith('/api/studio/'))return studio(request);
    if(path==='/api/works'||path.startsWith('/api/works/')||path.startsWith('/api/discover/'))return discover(request);
    if(path.startsWith('/api/credits/'))return creditHandler(request);
+   if(/^\/api\/me\/(chat-folders|favorites)(\/|$)/.test(path))return library(request);
    return core(request);
   }catch(error){return errorResponse(error,randomUUID());}
  },async maintain(){

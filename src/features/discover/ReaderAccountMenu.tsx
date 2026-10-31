@@ -42,7 +42,7 @@ export function ReaderProfileMenu({identity,name,image,address,error,busy,onLink
    <a href={href('/account')}><img src={accountIcon} alt=""/>마이페이지</a>
    {address?<div className="reader-profile-wallet"><img src={walletIcon} alt=""/><span>연결된 지갑<small>{address}</small></span></div>:<button disabled={busy} onClick={onLinkWallet}><img src={walletIcon} alt=""/>지갑 연결</button>}
    <button aria-expanded={settings} onClick={()=>setSettings(!settings)}><img src="/assets/iruka-icon-settings.png" alt=""/>설정<ChevronDown size={16}/></button>
-   {settings&&<div className="reader-profile-settings"><a href={href('/personas')}>페르소나 관리</a><a href={href('/credits')}>테스트 크레딧</a></div>}
+   {settings&&<div className="reader-profile-settings"><a href={href('/favorites')}>찜한 작품</a><a href={href('/personas')}>페르소나 관리</a><a href={href('/credits')}>테스트 크레딧</a></div>}
    <button disabled={busy||transferBusy} onClick={onLogout}><LogOut size={20}/>{busy?'로그아웃 중…':'로그아웃'}</button>
    {error&&<p role="alert">{error}</p>}
   </div>

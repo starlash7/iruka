@@ -25,6 +25,14 @@ export function createStudioHandler({db,verifyToken,imageStorage}:{db:Database;v
     const bytes=await media.readImage(user?.id??null,imageMatch[1],imageMatch[2]);
     return new Response(new Uint8Array(bytes),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});
    }
+   const slotMatch=/^\/api\/studio\/works\/([^/]+)\/assets\/([^/]+)\/image$/.exec(path);
+   if(slotMatch&&request.method==='POST'){
+    const identity=await authenticateRequest(request,verifyToken),user=await getOrCreateUser(db,identity.privyDid);
+    const workId=requireId(slotMatch[1]),assetId=requireId(slotMatch[2]);
+    await service.getWork(user.id,workId);
+    if(!media)throw new ApiError('SERVICE_UNAVAILABLE','이미지 저장소가 연결되지 않았어요. 작성한 내용은 유지돼요.');
+    return jsonResponse(await media.uploadAssetImage(user.id,workId,assetId,await readImageBody(request)),requestId,201);
+   }
    const match=/^\/api\/studio\/works(?:\/([^/]+)(?:\/(publish|assets|images))?)?$/.exec(path);
    if(!match)throw new ApiError('NOT_FOUND','경로를 찾을 수 없어요.');
    const identity=await authenticateRequest(request,verifyToken);

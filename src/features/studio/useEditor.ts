@@ -58,12 +58,12 @@ export function useEditor(client:StudioClient,id:string) {
  async function uploadImage(file:File,target:ImageTarget){
   if(working.current)throw new Error('진행 중인 작업이 끝난 뒤 다시 시도해 주세요.');working.current=true;setBusy(true);setError('');
   try {
-   const blob=await prepareImage(file);const asset=await client.upload(id,blob);
+   const blob=await prepareImage(file);const asset=target.kind==='asset'?await client.uploadAsset(id,target.id,blob):await client.upload(id,blob);
    setWork(w=>w?{...w,assets:[...w.assets.filter(a=>a.id!==asset.id),asset]}:w);
-   change(d=>{d.assets=[...(d.assets??[]).filter(a=>a.id!==asset.id),{id:asset.id,code:asset.code}];if(target.kind==='cover')d.coverUrl=asset.url;else{const c=d.publicSnapshot.characters.find(c=>c.id===target.id);if(c)c.imageUrl=asset.url;}});
+   change(d=>{d.assets=[...(d.assets??[]).filter(a=>a.code!==asset.code),{id:asset.id,code:asset.code}];if(target.kind==='cover')d.coverUrl=asset.url;else if(target.kind==='character'){const c=d.publicSnapshot.characters.find(c=>c.id===target.id);if(c)c.imageUrl=asset.url;}});
    await save();
   }catch(e){setError((e as Error).message);persist();throw e;}finally{working.current=false;setBusy(false);}
  }
- async function addAsset(code:string,label:string){if(working.current)return;working.current=true;setBusy(true);setError('');try{await save();const asset=await client.asset(id,code,label);setWork(w=>w?{...w,assets:[...w.assets,asset]}:w);change(d=>{d.assets??=[];d.assets.push({id:asset.id,code:asset.code});});await save();}catch(e){setError((e as Error).message);persist();}finally{working.current=false;setBusy(false);}}
+ async function addAsset(code:string,label:string){if(working.current)throw new Error('진행 중인 작업이 끝난 뒤 다시 시도해 주세요.');working.current=true;setBusy(true);setError('');try{await save();const asset=await client.asset(id,code,label);setWork(w=>w?{...w,assets:[...w.assets,asset]}:w);change(d=>{d.assets??=[];d.assets.push({id:asset.id,code:asset.code});});await save();}catch(e){setError((e as Error).message);persist();throw e;}finally{working.current=false;setBusy(false);}}
  return {work,draft,status,error,busy,recovery,change,save,publish,addAsset,uploadImage,restoreRecovery,discardRecovery,reload,download};
 }

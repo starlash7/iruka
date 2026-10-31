@@ -38,3 +38,7 @@
 .studio-preview-cast { display:flex; flex-wrap:wrap; gap:16px; }.studio-preview-cast figure { width:140px; margin:0; }.studio-preview-cast img { width:100%; height:140px; object-fit:cover; }
 .studio-recovery { background:var(--soft); }.studio-recovery button { margin:4px; }
 @media(max-width:600px) { .studio-editor [role=tab] { padding:10px 12px; font-size:14px; } }
+.studio-code-slot {min-width:0;}
+.studio-code-slot .studio-check {flex-wrap:wrap;overflow-wrap:anywhere;}
+.studio-code-slot code {white-space:normal;overflow-wrap:anywhere;min-width:0;max-width:calc(100% - 34px);}
+.studio-code-slot .studio-image-field>label {overflow-wrap:anywhere;}

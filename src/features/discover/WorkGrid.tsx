@@ -13,7 +13,7 @@ export function WorkCover({url,title}:{url:string|null;title:string}){
 export function WorkGrid({works,ranked=false}:{works:PublicWorkDto[];ranked?:boolean}){
  const {href}=useReader();return <div className="reader-work-grid discovery-grid">{works.map((work,index)=><article className="reader-work" key={work.id}>
   <a className="reader-cover" href={href(`/works/${encodeURIComponent(work.id)}`)} aria-label={work.title}><WorkCover key={work.coverUrl} url={work.coverUrl} title={work.title}/>{ranked&&<span className="reader-rank">{index+1}</span>}</a>
-  <h3><a href={href(`/works/${encodeURIComponent(work.id)}`)}>{work.title}</a></h3><p>{work.description}</p>
+  <h3><a href={href(`/works/${encodeURIComponent(work.id)}`)}>{work.title}</a></h3>{work.creatorName&&<span className="reader-work-creator">{work.creatorName}</span>}<p>{work.description}</p>
   <div className="reader-card-tags">{work.tags.slice(0,2).map(tag=><a key={tag} href={href(`/tags/${encodeURIComponent(tag)}`)}>#{tag}</a>)}</div>
  </article>)}</div>;
 }

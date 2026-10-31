@@ -33,11 +33,22 @@ avatar는 null 또는 512px 이하의 검증·정규화된 PNG data URL이다(�
 이메일·지갑·Privy DID를 프로필 DTO에 넣지 않으며 공개 프로필 API는 없다.
 저장은 서버 DB 정본이며 브라우저 저장소에 프로필을 저장하지 않는다.
 
+### 대화 보관함과 찜 (2026-10-31)
+
+- `GET /api/chats?workId=&folderId=&offset=&limit=`: 본인 대화만 최근 메시지 활동순으로 반환한다. workId/folderId는 UUID, folderId=`unfiled`는 미분류다. offset 0~10000, limit 1~100(기본 50). 각 항목은 chat/title/preview/coverUrl/folderId/updatedAt이다. 작품 상세의 이어하기는 workId와 limit=1을 사용한다.
+- `PATCH /api/chats/:id`: `{title?:string|null, folderId?:string|null}`. 이름 1~80자, null은 원작 제목 복원이다. 폴더는 본인 소유만 허용하고 null은 미분류로 이동한다. 성공은 갱신한 ChatView이며 고정된 작품·버전·페르소나는 바꾸지 않는다. 기존 DELETE는 진행 중 요청에 409를 유지한다.
+- `GET/POST /api/me/chat-folders`, `PATCH/DELETE /api/me/chat-folders/:id`: 본인 폴더만 조회·변경한다. 쓰기 본문은 `{name}`(1~50자), 응답은 `{id,name}`. 동일 이름은 409, 삭제는 소속 대화의 폴더만 해제하고 대화를 보존한다.
+- `GET /api/me/favorites?offset=`: 공개 발행 작품을 60개씩 반환한다. `GET /api/me/favorites/:workId`와 `PUT`의 `{saved:boolean}`은 찜 상태를 반환한다. 저장·해제는 멱등적이며 다른 사용자 ID를 받지 않는다. 비공개·미발행 작품은 새로 찜할 수 없고 목록에 노출하지 않는다.
+
+위 API는 모두 Privy 토큰을 검증하고 서버 사용자 ID로 범위를 제한한다. 프로필 본인 조회 계약은 유지하며, 별도 공개 작품 DTO의 선택적 `creatorName`만 추가한다. Studio 초안의 `showCreator`를 명시적으로 켜고 발행한 작품만 현재 프로필 닉네임을 공개한다. 기존 작품은 false이며 이메일·DID·아바타·소개는 공개하지 않는다.
+
+`POST /api/studio/works/:workId/assets/:assetId/image`는 소유한 코드 슬롯에 기존과 같은 검증·정규화된 PNG 바이트를 업로드한다. 응답은 새 `{id,code,label,url,revision}`(201)이며 같은 최신 파일 재시도는 기존 행을 반환한다. 최신 슬롯이 바뀐 뒤 다른 파일을 올리면 409다. 이전 행·URL은 발행본과 고정 대화를 위해 보존한다. 브라우저는 반환한 새 ID를 초안에 연결하고 기존 revision 저장·복구 흐름을 사용한다. URL 조회는 기존 공개 참조/소유권/고정 대화 권한을 검증한다. 교체 이력까지 작품별 200개 한도를 적용한다.
+
 ### 기존 데이터
 
 - `UserDto`: 내부 id, privyDid, displayName, createdAt. 본인 응답 전용이며 공개 작품에 포함하지 않는다.
 - `PublicWorkDto`: id, creatorId, mode(character/story), title, description,
-  coverUrl, tags, publishedVersionId, createdAt. 서버는 이 필드만 명시적으로 선택한다.
+  coverUrl, tags, publishedVersionId, createdAt 및 선택적 creatorName. 서버는 이 필드만 명시적으로 선택한다.
 - `PublicWorkDetailDto`: PublicWorkDto + snapshot(PublicWorkSnapshot/null). 공개 상세는 발행 버전의 중첩 필드를 whitelist로 반환한다.
 - `PrivateWorkVersionDto`: id, workId, version, systemPrompt, hiddenSettings, publicSnapshot,
   createdAt. publicSnapshot은 초안의 부분 입력도 반환한다. 작성자 소유권 확인 이후만 반환한다.

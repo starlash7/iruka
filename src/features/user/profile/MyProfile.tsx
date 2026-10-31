@@ -1,5 +1,5 @@
 import {useRef,useState} from 'react';
-import {BookOpen,MessageCircle,Users,Coins,ChevronRight,Pencil} from 'lucide-react';
+import {BookOpen,MessageCircle,Users,Coins,Heart,ChevronRight,Pencil} from 'lucide-react';
 import {Button} from '../../../ui';
 import {ReaderAvatar} from '../../discover/ReaderIdentity';
 import {useReader} from '../../discover/ReaderProvider';
@@ -21,7 +21,7 @@ export function MyProfile({identity}:{identity:string}){
    {loading&&data&&<span className="profile-refresh" role="status">프로필 동기화 중…</span>}
   </section>
   <section className="profile-activity" aria-labelledby="profile-activity-title"><h2 id="profile-activity-title">내 활동</h2><div className="profile-links">
-   {[{path:'/studio',label:'내 작품',Icon:BookOpen},{path:'/chats',label:'최근 대화',Icon:MessageCircle},{path:'/personas',label:'페르소나',Icon:Users},{path:'/credits',label:'테스트 크레딧',Icon:Coins}].map(({path,label,Icon})=><a key={path} href={href(path)}><Icon size={20}/><span>{label}</span><ChevronRight size={18}/></a>)}
+   {[{path:'/studio',label:'내 작품',Icon:BookOpen},{path:'/chats',label:'최근 대화',Icon:MessageCircle},{path:'/favorites',label:'찜한 작품',Icon:Heart},{path:'/personas',label:'페르소나',Icon:Users},{path:'/credits',label:'테스트 크레딧',Icon:Coins}].map(({path,label,Icon})=><a key={path} href={href(path)}><Icon size={20}/><span>{label}</span><ChevronRight size={18}/></a>)}
   </div></section>
  </>;
 }

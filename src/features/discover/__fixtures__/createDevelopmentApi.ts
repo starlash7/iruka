@@ -1,5 +1,5 @@
 import type {ReaderApi,ChatView} from '../readerApi';
-import type {ChatDto,ChatEvent,MessageDto} from '../../../shared/contracts';
+import type {ChatDto,ChatEvent,ChatFolderDto,MessageDto} from '../../../shared/contracts';
 import {fixtureWorks} from './works';
 export function createDevelopmentApi({storage,delay=70}:{storage?:Storage;delay?:number}={}):ReaderApi{
  const key='iruka-reader-development-v1';let chats:ChatView[]=[];
@@ -10,11 +10,30 @@ export function createDevelopmentApi({storage,delay=70}:{storage?:Storage;delay?
  const find=(id:string)=>{const view=chats.find(item=>item.chat.id===id);if(!view)throw new Error('대화를 찾을 수 없어요.');return view;};
  const wait=(signal?:AbortSignal)=>new Promise<void>((resolve,reject)=>{signal?.throwIfAborted();const abort=()=>{clearTimeout(timer);reject(new DOMException('중단됨','AbortError'));};const timer=setTimeout(()=>{signal?.removeEventListener('abort',abort);resolve();},delay);signal?.addEventListener('abort',abort,{once:true});});
  const responses=new Map<string,{body:string;events:ChatEvent[]}>();
+ const folders:ChatFolderDto[]=[];const favorites=new Set<string>();
+ const titles=new Map<string,string>(),chatFolders=new Map<string,string|null>();
+ const libraryKey=`${key}-library`;
+ try{const value=JSON.parse(storage?.getItem(libraryKey)??'{}');
+  if(Array.isArray(value.folders))folders.push(...value.folders.filter((item:ChatFolderDto)=>typeof item?.id==='string'&&typeof item?.name==='string'));
+  if(Array.isArray(value.favorites))for(const id of value.favorites)if(typeof id==='string')favorites.add(id);
+  if(Array.isArray(value.titles))for(const entry of value.titles)if(Array.isArray(entry)&&typeof entry[0]==='string'&&typeof entry[1]==='string')titles.set(entry[0],entry[1]);
+  if(Array.isArray(value.chatFolders))for(const entry of value.chatFolders)if(Array.isArray(entry)&&typeof entry[0]==='string'&&(typeof entry[1]==='string'||entry[1]===null))chatFolders.set(entry[0],entry[1]);
+ }catch{/* Existing development conversation storage remains untouched. */}
+ const persistLibrary=()=>storage?.setItem(libraryKey,JSON.stringify({folders,favorites:[...favorites],titles:[...titles],chatFolders:[...chatFolders]}));
+ const activity=(view:ChatView)=>view.messages.at(-1)?.createdAt??view.chat.createdAt;
  return {
-  async listWorks({query='',tag='',mode='',offset=0}={}){await wait();return copy(fixtureWorks.filter(work=>(!query||`${work.title} ${work.description}`.includes(query))&&(!tag||work.tags.includes(tag))&&(!mode||work.mode===mode)).slice(offset));},
+  async listWorks({query='',tag='',mode='',offset=0}={}){await wait();return copy(fixtureWorks.filter(work=>(!query||`${work.title} ${work.description}`.includes(query))&&(!tag||work.tags.includes(tag))&&(!mode||work.mode===mode)).slice(offset,offset+60));},
   async getWork(id){await wait();const work=fixtureWorks.find(item=>item.id===id);if(!work)throw new Error('작품을 찾을 수 없어요.');return copy(work);},
   async getRanking(){await wait();return [];},
-  async listChats(){await wait();return copy(chats.map(view=>({chat:view.chat,title:view.title,preview:view.messages.at(-1)?.content??'',coverUrl:null})));},
+  async listChats({workId,folderId,offset=0,limit=50}={}){await wait();return copy(chats.filter(view=>(!workId||view.chat.workId===workId)&&(!folderId||(folderId==='unfiled'?!chatFolders.get(view.chat.id):chatFolders.get(view.chat.id)===folderId))).sort((a,b)=>Date.parse(activity(b))-Date.parse(activity(a))).slice(offset,offset+limit).map(view=>({chat:view.chat,title:titles.get(view.chat.id)??view.title,folderId:chatFolders.get(view.chat.id)??null,updatedAt:activity(view),preview:view.messages.at(-1)?.content??'',coverUrl:null})));},
+  async listFolders(){return copy(folders);},
+  async saveFolder(name,id){const folder=id?folders.find(item=>item.id===id):undefined;if(id&&!folder)throw new Error('폴더를 찾을 수 없어요.');if(folder)folder.name=name;else folders.push({id:crypto.randomUUID(),name});persistLibrary();return copy(folder??folders.at(-1)!);},
+  async deleteFolder(id){const index=folders.findIndex(item=>item.id===id);if(index>=0)folders.splice(index,1);for(const [chatId,folder] of chatFolders)if(folder===id)chatFolders.set(chatId,null);persistLibrary();},
+  async updateChat(id,input){const view=find(id);if(input.title!==undefined){if(input.title===null)titles.delete(id);else titles.set(id,input.title);}if(input.folderId!==undefined)chatFolders.set(id,input.folderId);persistLibrary();return {...copy(view),title:titles.get(id)??view.title};},
+  async deleteChat(id){find(id);chats=chats.filter(item=>item.chat.id!==id);titles.delete(id);chatFolders.delete(id);persistLibrary();persist();},
+  async listFavorites(offset=0){return copy(fixtureWorks.filter(work=>favorites.has(work.id)).slice(offset,offset+60));},
+  async getFavorite(id){return {saved:favorites.has(id)};},
+  async setFavorite(id,saved){saved?favorites.add(id):favorites.delete(id);persistLibrary();return {saved};},
   async listPersonas(){return [{id:'persona-1',userId:'fixture-user',name:'여행자',description:'처음 찾아온 여행자',createdAt:new Date().toISOString()}];},
   async getModels(){return [{id:'test',name:'테스트 모델',credits:1,available:true}];},
   async getBalance(){return {available,reserved:0};},
@@ -22,7 +41,7 @@ export function createDevelopmentApi({storage,delay=70}:{storage?:Storage;delay?
    const chat:ChatDto={id:crypto.randomUUID(),userId:'fixture-user',workId:work.id,workVersionId:work.publishedVersionId!,personaSnapshot:input.personaId?{name:'여행자',description:'처음 찾아온 여행자'}:null,activeMessageId:null,createdAt:new Date().toISOString()};
    const message:MessageDto={id:crypto.randomUUID(),chatId:chat.id,parentMessageId:null,role:'assistant',content:opening.firstMessage,createdAt:chat.createdAt};chat.activeMessageId=message.id;
    chats.unshift({chat,title:work.title,messages:[message],memo:'',guide:work.snapshot?.playGuide??'',suggestedReplies:opening.suggestedReplies});persist();return copy(chat);},
-  async getChat(id){await wait();return copy(find(id));},
+  async getChat(id){await wait();const view=find(id);return {...copy(view),title:titles.get(id)??view.title};},
   async saveMemo(id,memo){find(id).memo=memo;persist();},
   async branchChat(id,messageId){
    const source=find(id),messages:ChatView['messages']=[];let cursor=source.messages.find(item=>item.id===messageId);

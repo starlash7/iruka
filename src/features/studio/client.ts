@@ -8,6 +8,7 @@ export function createStudioClient(enabled:boolean) {
  return {
   image:api.image,
   upload:(id:string,file:Blob)=>api.request<StudioAsset>(`/api/studio/works/${id}/images`,{method:'POST',headers:{'Content-Type':'image/png'},body:file}).then(r=>r.data),
+  uploadAsset:(id:string,assetId:string,file:Blob)=>api.request<StudioAsset>(`/api/studio/works/${id}/assets/${assetId}/image`,{method:'POST',headers:{'Content-Type':'image/png'},body:file}).then(r=>r.data),
   list:()=>api.request<Array<{id:string;title:string;mode:string;published:boolean}>>('/api/studio/works').then(r=>r.data),
   get:(id:string)=>api.request<StudioWork>(`/api/studio/works/${encodeURIComponent(id)}`).then(r=>r.data),
   save:(draft:StudioDraft)=>write<StudioWork>(`/api/studio/works${draft.id?`/${draft.id}`:''}`,draft.id?'PUT':'POST',draft),

@@ -23,7 +23,8 @@ function url(value:unknown,field:string):string|null {
 function unique(values:string[],field:string){if(new Set(values).size!==values.length)fail(field);}
 /** Runtime validation rejects unknown fields, including fields outside the shared contract. */
 export function validateDraft(value:unknown,publish=false):StudioDraft {
- const d=object(value,['id','revision','mode','title','description','coverUrl','tags','publicSnapshot','privateConfig','assets'],'작품');
+ const d=object(value,['id','revision','mode','title','description','coverUrl','tags','publicSnapshot','privateConfig','assets','showCreator'],'작품');
+ if(d.showCreator!==undefined)bool(d.showCreator,'제작자 표시');
  if(d.id!==undefined)requireId(d.id);
  if(d.revision!==undefined&&(!Number.isSafeInteger(d.revision)||Number(d.revision)<1))fail('저장 버전');
  if(d.mode!=='story'&&d.mode!=='character')fail('모드');

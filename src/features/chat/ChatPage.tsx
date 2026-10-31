@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import {Button} from '../../ui';
 import type {RoutePageProps} from '../../routes/paths';
 import type {MessageDto} from '../../shared/contracts';
@@ -9,11 +9,23 @@ import {ResourceState} from '../discover/ResourceState';
 import {useChatSession} from './useChatSession';
 import {MessageList} from './MessageList';
 import {MemoPanel,MessageDialog} from './ChatPanels';
+import {MessageSearch} from './MessageSearch';
+import {ReadingSettings} from './ReadingSettings';
+import {defaultReading,readReading,findMessages} from './reading';
+import {getMessageBranch} from './messageTree';
+import {ReaderSession} from '../discover/ReaderSession';
+import {SignInNotice} from '../discover/SignInNotice';
 import './chat.css';
-export default function ChatPage({params}:RoutePageProps){
+export default function ChatPage(props:RoutePageProps){return <ReaderSession enabled={props.authEnabled}>{session=>session.identity?<ChatRoom key={`${session.identity}:${props.params.chatId}`} {...props}/>:<ReaderLayout active="chats" chat><div className="reader-content"><h1>대화</h1><SignInNotice {...session}/></div></ReaderLayout>}</ReaderSession>;}
+export function ChatRoom({params}:RoutePageProps){
  const {api,href,navigate}=useReader();const session=useChatSession(api,params.chatId);const models=useResource(()=>api.getModels(),[api]);const balance=useResource(()=>api.getBalance(),[api]);
  const [model,setModel]=useState('');const [draft,setDraft]=useState('');const [panel,setPanel]=useState(false);const [action,setAction]=useState<{kind:'edit'|'delete';message:MessageDto}|null>(null);const composer=useRef<HTMLTextAreaElement>(null);
  const [mutationError,setMutationError]=useState<Error|null>(null);
+ const [reading,setReading]=useState(()=>{try{return readReading(window.localStorage);}catch{return {...defaultReading};}});
+ const [searchOpen,setSearchOpen]=useState(false),[query,setQuery]=useState(''),[hit,setHit]=useState(0);const searchButton=useRef<HTMLButtonElement>(null);
+ const hits=session.view?findMessages(getMessageBranch(session.view.messages,session.view.chat.activeMessageId),query):[];
+ const hitIndex=hits.length?hit%hits.length:0;
+ function closeSearch(){setSearchOpen(false);setQuery('');setHit(0);searchButton.current?.focus();}
  const selected=models.data?.find(item=>item.id===(model||models.data?.find(item=>item.available)?.id));
  const insufficient=selected?.credits!==null&&selected?.credits!==undefined&&balance.data!==null&&balance.data.available<selected.credits;
  const pendingId=session.view?.pendingTurn?.id;
@@ -29,11 +41,12 @@ export default function ChatPage({params}:RoutePageProps){
   const parent=session.view?.messages.find(item=>item.id===message.parentMessageId);
   if(parent?.role==='user'&&selected&&!disabled)void session.send({content:parent.content,parentMessageId:parent.id,model:selected.id}).finally(balance.reload);
  }
- return <ReaderLayout active="chats" chat><div className="chat-room">
-  <header className="chat-header"><a href={href('/chats')} aria-label="내 대화 목록">←</a><h1>{session.view?.title??'대화'}</h1><Button variant="ghost" onClick={()=>setPanel(value=>!value)} aria-expanded={panel}>대화 설정</Button></header>
+ return <ReaderLayout active="chats" chat><div className="chat-room" style={{'--chat-font-size':`${reading.fontSize}px`,'--chat-line-height':reading.lineHeight} as CSSProperties}>
+  <header className="chat-header"><a href={href('/chats')} aria-label="내 대화 목록">←</a><h1>{session.view?.title??'대화'}</h1><button ref={searchButton} type="button" className="ui-button ui-button--ghost" aria-expanded={searchOpen} onClick={()=>searchOpen?closeSearch():setSearchOpen(true)}>검색</button><Button variant="ghost" onClick={()=>setPanel(value=>!value)} aria-expanded={panel}>대화 설정</Button></header>
   {session.loading&&!session.view?<ResourceState loading loadingText="대화 준비 중"/>:!session.view?<ResourceState error={session.error} retry={session.reload}/>:<>
-  {panel&&<aside className="chat-settings"><h2>대화 설정</h2><MemoPanel key={session.view.chat.id} api={api} view={session.view}/><details><summary>플레이 가이드</summary><p className="reader-prose">{session.view.guide||'등록된 가이드가 없어요.'}</p></details></aside>}
-  <MessageList messages={session.view.messages} activeId={session.view.chat.activeMessageId} preview={session.preview} busy={session.busy} actionsDisabled={session.locked} regenerateDisabledReason={generationDisabledReason} onAction={onAction} onSelect={id=>void session.mutate(()=>api.selectBranch(params.chatId,id))}/>
+  {panel&&<aside className="chat-settings"><h2>대화 설정</h2><ReadingSettings value={reading} onChange={setReading}/><MemoPanel key={session.view.chat.id} api={api} view={session.view}/><details><summary>플레이 가이드</summary><p className="reader-prose">{session.view.guide||'등록된 가이드가 없어요.'}</p></details></aside>}
+  {searchOpen&&<MessageSearch query={query} onQuery={value=>{setQuery(value);setHit(0);}} index={hitIndex} count={hits.length} onStep={step=>{if(hits.length)setHit((hitIndex+step+hits.length)%hits.length);}} onClose={closeSearch}/>}
+  <MessageList messages={session.view.messages} activeId={session.view.chat.activeMessageId} preview={session.preview} busy={session.busy} actionsDisabled={session.locked} regenerateDisabledReason={generationDisabledReason} onAction={onAction} onSelect={id=>void session.mutate(()=>api.selectBranch(params.chatId,id))} search={searchOpen?query:''} searchId={searchOpen?hits[hitIndex]??null:null}/>
   <div className="chat-composer"><div className="chat-model-row"><label>모델 <select aria-label="대화 모델" value={selected?.id??''} disabled={session.busy||models.loading} onChange={event=>setModel(event.target.value)}>{models.data?.map(item=><option key={item.id} value={item.id} disabled={!item.available}>{item.name}{item.credits!==null?` · ${item.credits}`:''}</option>)}</select></label>{balance.data&&<span className="reader-balance">테스트 크레딧 {balance.data.available.toLocaleString()} 남음</span>}</div>
   {(models.error||balance.error)&&<ResourceState error={models.error||balance.error} retry={()=>{models.reload();balance.reload();}}/>}
   {generationDisabledReason&&<p id="chat-generation-status" role="status">{generationDisabledReason}{insufficient&&<> <a href={href('/credits')}>크레딧 확인</a></>}</p>}

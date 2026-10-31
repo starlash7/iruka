@@ -72,6 +72,9 @@ test('non-public reader operations still refresh and send session tokens',async(
  const image=`/api/studio/media/12345678-1234-1234-1234-123456789abc/${'a'.repeat(64)}`;
  const calls=[
   ()=>api.listChats(),()=>api.listPersonas(),()=>api.getModels(),()=>api.getBalance(),
+  ()=>api.listFolders(),()=>api.saveFolder('이름'),()=>api.saveFolder('이름','folder'),()=>api.deleteFolder('folder'),
+  ()=>api.updateChat('c',{title:'이름',folderId:null}),()=>api.deleteChat('c'),
+  ()=>api.listFavorites(),()=>api.getFavorite('w'),()=>api.setFavorite('w',true),
   ()=>api.startChat({workId:'w',openingId:'o',personaId:null,model:'test'}),
   ()=>api.getChat('c'),()=>api.saveMemo('c','memo'),()=>api.editMessage('c','m','text'),
   ()=>api.deleteMessage('c','m'),()=>api.selectBranch('c','m'),()=>api.branchChat('c','m'),
