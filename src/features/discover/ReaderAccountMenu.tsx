@@ -1,10 +1,10 @@
 import {useEffect,useId,useRef,useState} from 'react';
-import {usePrivy,useLogin,useLinkAccount} from '@privy-io/react-auth';
+import {usePrivy,useLinkAccount} from '@privy-io/react-auth';
 import {LogOut,ChevronDown} from 'lucide-react';
 import {NetworkSelector} from './account/NetworkSelector';
 import {activeDeployment} from './account/activeDeployment';
 import {useTransferBusy} from './account/transferActivity';
-import {privyConfig} from '../../privyConfig';
+import {useReaderLogin} from './useReaderLogin';
 import {useReader} from './ReaderProvider';
 import {ReaderAvatar} from './ReaderIdentity';
 import {useProfile} from '../user/profile/useProfile';
@@ -20,12 +20,11 @@ function PrivyReaderAccount(){
  const {ready,authenticated,user,logout}=usePrivy();
  const {data:profile}=useProfile(authenticated?user?.id:undefined);
  const [error,setError]=useState('');const [busy,setBusy]=useState(false);
- // Privy also fires onComplete when restoring an existing session. Reloading then loops forever.
- const {login}=useLogin({onComplete:({wasAlreadyAuthenticated})=>{setError('');if(!wasAlreadyAuthenticated)window.location.reload();},onError:()=>setError('로그인하지 못했어요. 다시 시도해 주세요.')});
+ const login=useReaderLogin({reloadOnLogin:true,onComplete:()=>setError(''),onError:()=>setError('로그인하지 못했어요. 다시 시도해 주세요.')});
  const {linkWallet}=useLinkAccount({onSuccess:()=>setError(''),onError:()=>setError('지갑을 연결하지 못했어요. 다시 시도해 주세요.')});
  async function signOut(){setBusy(true);setError('');try{await logout();window.location.assign(href('/account'));}catch{setError('로그아웃하지 못했어요. 다시 시도해 주세요.');}finally{setBusy(false);}}
  if(!ready||(authenticated&&!user))return <button className="reader-login" disabled>확인 중</button>;
- if(!authenticated||!user)return <div><button className="reader-login" onClick={()=>login({loginMethods:privyConfig.loginMethods})}>로그인</button>{error&&<span role="alert">{error}</span>}</div>;
+ if(!authenticated||!user)return <div><button className="reader-login" onClick={login}>로그인</button>{error&&<span role="alert">{error}</span>}</div>;
  return <ReaderProfileMenu identity={user.id} name={profile?.nickname||'Iruka 사용자'} image={profile?.avatar} address={user.wallet?.address} error={error} busy={busy} onLinkWallet={()=>{setError('');linkWallet();}} onLogout={()=>void signOut()}/>;
 }
 export function ReaderProfileMenu({identity,name,image,address,error,busy,onLinkWallet,onLogout}:{identity:string;name:string;image?:string|null;address?:string;error?:string;busy?:boolean;onLinkWallet:()=>void;onLogout:()=>void}){

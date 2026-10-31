@@ -4,11 +4,13 @@ import type {PublicWorkDetailDto} from '../../shared/contracts';
 import {useReader} from '../discover/ReaderProvider';
 import {useResource} from '../discover/useResource';
 import {ResourceState} from '../discover/ResourceState';
-export function StartChatSheet({open,onClose,work}:{open:boolean;onClose:()=>void;work:PublicWorkDetailDto}){
- return <Modal open={open} title="이야기 시작하기" onClose={onClose}>{open&&<StartChatForm work={work}/>}</Modal>;
+import {StartChatAccess} from './StartChatAccess';
+export function StartChatSheet({open,onClose,work,authEnabled=false}:{open:boolean;onClose:()=>void;work:PublicWorkDetailDto;authEnabled?:boolean}){
+ const [loginPending,setLoginPending]=useState(false);
+ return <Modal open={open&&!loginPending} title="이야기 시작하기" onClose={onClose}>{open&&<StartChatAccess authEnabled={authEnabled} onLoginPending={setLoginPending}><StartChatForm work={work}/></StartChatAccess>}</Modal>;
 }
 function StartChatForm({work}:{work:PublicWorkDetailDto}){
- const {api,navigate}=useReader();const options=useResource(async()=>({personas:await api.listPersonas(),models:await api.getModels(),balance:await api.getBalance()}),[api]);
+ const {api,navigate}=useReader();const options=useResource(async()=>{const [personas,models,balance]=await Promise.all([api.listPersonas(),api.getModels(),api.getBalance()]);return {personas,models,balance};},[api]);
  const [opening,setOpening]=useState(work.snapshot?.openings[0]?.id??'');const [persona,setPersona]=useState('');const [model,setModel]=useState('');const [busy,setBusy]=useState(false);const [error,setError]=useState<Error|null>(null);
  const models=options.data?.models.filter(item=>item.available)??[];const selected=models.find(item=>item.id===(model||models[0]?.id));
  const insufficient=!!selected&&selected.credits!==null&&!!options.data&&options.data.balance.available<selected.credits;

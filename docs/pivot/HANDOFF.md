@@ -276,3 +276,47 @@ Deferred contract/identity work is listed in plans/reader-ux-first-batch.md.
 - Local private recent chats still report missing server Privy configuration.
   Real OAuth-to-chat/publish is not validated; no authentication bypass, remote
   service changes, paid calls, main merge or deployment were performed.
+
+## 2026-10-31 Account and work-detail reference follow-up
+
+- Baseline is integration `061c630` from PR #14. The new feature branch retains
+  that complete story-platform history; `main` remains the historical TCG tree.
+- Reused the approved reference audit and read-only signed-in Crack profile/menu
+  and Uummai menu observations. No competitor account data, artwork or content
+  was copied; restricted detail views were not unlocked or configured.
+- My Page uses a compact responsive profile card and activity destinations.
+  Profile failures retain those links, and a refresh failure retains the same
+  user's last loaded profile. Login identity/settings are separated from the
+  saved profile; optional wallets and conversation library remain available.
+- Work detail adds anchors for existing public sections and one mobile start
+  action above the navigation. Missing artwork remains explicitly absent.
+- Start options wait for authenticated readiness. Login cancellation/retry
+  returns to the same sheet/work without header-triggered reloads. The native
+  dialog releases its top layer for the SDK portal; closing the sheet restores
+  focus to the original start button. Existing development fixtures stay explicit.
+
+Verification (Node 24.14.0 via `npm exec --package=node@24.14.0`):
+
+- Existing-lockfile `npm ci --no-audit --no-fund`: passed.
+- Baseline `npm test`: 202/202. New focused tests first failed in five cases.
+- Final `npm test`: 208 passed, 0 failed/skipped; `npm run build`: exit 0.
+  Existing Privy annotation and large-chunk warnings remain. `git diff --check`
+  passed. No dependency, API, database or model-policy changes.
+- Ego lite TaskSpace 4: original components with a labelled local auth/HTTP
+  fixture, profile and work detail at 390/768/1440px, measured horizontal
+  overflow 0 and no mobile CTA/navigation overlap. Screenshots inspected.
+- Profile: failed save retains draft, successful save updates header, refresh
+  error retains saved data, initial error retains four activity destinations,
+  retry recovers, cancel restores focus. Long 30-character nickname and long
+  bio fit at 390px; editor actions are usable after normal vertical scrolling.
+- Start sheet: no private option reads before login/cancellation; SDK portal
+  is not blocked by a native modal; retry and success keep the same page/work.
+  390px options dialog has no horizontal overflow; Tab stays inside and Escape
+  restores the start button. Fixture pages reported no runtime errors.
+
+Private artifacts: `.context/reader-{mypage,work}-{390,768,1440}.png`,
+`reader-start-390.png`, `reader-profile-editor-390.png`, and
+`reader-account-work-{tests,build}-final.log`. The screenshots use synthetic data
+and say so. These checks do not prove real Privy OAuth/OTP, production profile
+persistence, remote DB, model output or paid credit settlement. No production
+authentication bypass, paid call, chain transaction, main merge or deployment.

@@ -1,0 +1,27 @@
+.work-page .reader-work-detail{grid-template-columns:minmax(180px,240px) minmax(0,1fr);gap:36px;align-items:center}
+.work-overview h1{font-size:clamp(28px,3vw,38px);line-height:1.35;overflow-wrap:anywhere}
+.work-overview .reader-tagline{margin:12px 0;color:var(--reader-muted)}
+.work-overview .reader-chips{gap:8px;margin:18px 0 24px}
+.work-start-action .ui-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:200px}
+.work-section-nav{display:flex;gap:24px;flex-wrap:wrap;margin-top:36px;padding:0 0 8px;border-bottom:1px solid var(--reader-line)}
+.work-section-nav a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;font-size:14px;color:var(--reader-muted)}
+.work-section-nav a:hover{color:var(--reader-action)}
+.work-page .reader-detail-section{scroll-margin-top:24px}
+.work-page #work-openings details{padding:4px 18px 16px;border:1px solid var(--reader-line);border-radius:18px;background:var(--reader-surface)}
+.work-page #work-openings details:not([open]){padding-bottom:4px}
+.work-page #work-openings .reader-prose{margin-top:4px}
+@media(max-width:800px){
+ .work-page{padding-bottom:160px}
+ .work-page .reader-work-detail{grid-template-columns:150px minmax(0,1fr);gap:24px}
+ .work-start-action{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom));left:16px;right:16px;z-index:4;padding:12px;border:1px solid var(--reader-line);border-radius:22px;background:var(--reader-surface);box-shadow:0 8px 28px rgb(104 70 82 / 10%)}
+ .work-start-action .ui-button{width:100%;min-width:0}
+ .work-start-action .reader-start-note{margin:8px 0 0;text-align:center;font-size:12px}
+}
+@media(max-width:480px){
+ .work-page .reader-work-detail{grid-template-columns:108px minmax(0,1fr);gap:18px;align-items:start}
+ .work-page .reader-detail-cover{width:100%;justify-self:stretch}
+ .work-page .reader-work-detail h1{font-size:23px;line-height:1.4}
+ .work-overview .reader-chips{margin:12px 0 0;gap:4px}
+ .work-section-nav{gap:4px 18px;margin-top:24px}
+ .work-section-nav a{font-size:13px}
+}
