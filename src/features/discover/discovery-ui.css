@@ -48,3 +48,5 @@
 .discovery-grid .reader-card-tags a:only-child{max-width:100%}
 .reader-load-more {display:flex;justify-content:center;margin:28px 0;}
 .reader-work-creator {display:block;font-size:12px;color:var(--reader-muted);overflow-wrap:anywhere;}
+.discovery-grid .reader-cover {aspect-ratio:2/3;}
+.discovery-grid .reader-cover img {object-fit:contain;background:var(--reader-selected);}

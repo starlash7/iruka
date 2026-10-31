@@ -18,7 +18,7 @@ export function createReaderService(db:Database,safety?:SafetyService) {
     const presentations=await getPresentations(db,messages.map(m=>m.id));
     const memories=await createMemoryService(db,safety).listMemories(userId,chatId);
     const pending=(await db.query<{id:string;status:string}>('SELECT t.id,t.status FROM turn_requests t JOIN chat_turn_leases l ON l.turn_id=t.id WHERE t.chat_id=$1',[chatId])).rows[0];
-    return {chat,title:rows[0].title,messages:messages.map(message=>{
+    return {chat,title:rows[0].title,characters:snapshot.characters,messages:messages.map(message=>{
       const presentation=presentations.find(p=>p.messageId===message.id);
       const ending=presentation?.endings[0];
       return {...message,images:presentation?.images??[],status:presentation?.statuses.join('\n')??'',ending:ending?{id:ending.endingId,title:ending.title}:null};

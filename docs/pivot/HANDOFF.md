@@ -384,3 +384,71 @@ Real Privy OAuth/OTP, remote PostgreSQL, production image storage and live LLM
 generation remain unverified. No paid provider call, chain transaction,
 deployment or main merge was performed. Draft delivery remains PR #19 against
 the story-platform integration branch, since `main` is still the historical tree.
+## 2026-10-31 Visual story experience and original artwork
+
+User explicitly excluded actual DB and real login verification. This change uses
+automatic isolated tests and a labelled, in-memory HTTP/auth UI fixture. No user
+DB, real OAuth flow, remote storage, paid model or deployment was exercised.
+
+- Reviewed the reference audit and original `starlash7/crack` artwork at
+  `58545d092ffef20d1b44e6d8ada6ee5e001fd310`. Deliver 24 byte-identical public
+  covers/portraits/intro/opening files and five adopted private Chaeri reactions.
+  Manifests record source, role, bytes and SHA-256. Unadopted cards/reactions and
+  spoiler scenes are excluded. Evidence: seed/ARTWORK.md and the archived
+  reference selection record. Source worktrees were not changed.
+- Public introduction/gallery/opening artwork, public character captions, safe
+  inline image-code rendering and accessible enlargement are shared with Studio
+  preview. A duplicate opening thumbnail is suppressed when the same image is
+  already present inline. Public image reads do not depend on login tokens.
+- Discovery preserves full poster artwork with a separate featured poster and
+  ambient banner. Detail tags collapse after four items, and long copy wraps.
+- Chat uses portraits from its pinned work version, image enlargement and parsed
+  status cards with a complete text fallback. Private reactions stay outside
+  public/ and pass normal media authorization. Hash-verified bundled WebP is
+  served as image/webp; ordinary uploads retain normalized PNG validation.
+- Studio list has cover thumbnails, published/draft filters, name search and
+  modification dates. Removed the duplicate full account/wallet screen from its
+  toolbar. Compact readiness/sign-in guidance prevents mounting private editor
+  state for restoring or anonymous sessions; optional wallet/account destinations
+  remain intact. This is code/fixture coverage, not actual login verification.
+- Image management includes thumbnail overview, code/description search, usage
+  filters, per-file batch progress/retry (20 files), public gallery selection,
+  cover/character/opening placement and gallery ordering/descriptions/removal.
+  Replacement updates current draft references while preserving earlier versions.
+  Hidden tabs/offscreen private images defer their network requests.
+- JSON presentation contracts are validated/projected and owned-image bindings
+  checked. No new DB schema migration or package dependency is required.
+- Existing seed work.json files/hashes are untouched. The explicit local
+  `scripts/seed/attach-artwork.ts --development` command refuses source mismatch
+  or edited drafts, adds new publications and is repeatable. It was tested only
+  against temporary test databases, and was **not run on the user's actual DB**.
+
+Verification:
+
+- Node 24.14.0: npm test **226 passed, 0 failed/skipped**; npm run build **exit 0**.
+  Existing Privy annotation and chunk-size warnings remain. git diff --check
+  passed. Final logs: `.context/visual-story-{tests,build}-final.log`.
+- New regressions cover all 29 hashes, safe public projection, private WebP MIME
+  and pinned access, seed attachment/rollback/idempotency, XSS-safe previews,
+  name-matched portraits, structured/text status, current-draft asset rebinding,
+  compact Studio auth gating and tokenless public image reads.
+- Ego lite TaskSpace 19: six routes at **390/768/1440px**, 18 measurements, zero
+  horizontal overflow, CTA/nav overlap or runtime errors. Mobile composer bottom
+  was 844px at an 844px viewport. See visual-story-responsive.json in .context.
+- Native enlargement and original-size scrolling stayed within the page;
+  Escape restored the triggering image control. Work detail had six gallery
+  images/six portraits and one opening image, without raw image codes or private
+  reaction codes. The 24 public files and five private reactions were inspected.
+- Studio filters/search, two-file batch success, injected second-file failure and
+  failed-file-only retry, gallery/intro selection and image replacement succeeded.
+  Replacement retained the earlier published gallery. Hidden editor tabs issued
+  zero private-media requests; selecting a reaction loaded its 1536x1024 WebP.
+- Screenshots inspected under .context: visual-home-{390,1440}, visual-work-
+  {390,1440}, visual-gallery-390, visual-chat-{390,1440}, visual-studio-list-1440,
+  visual-studio-images-{390,1440}, visual-original-assets-review and
+  visual-private-reactions-1440 (all .png). They use approved story art and an
+  explicitly synthetic session. No competitor account screenshot is delivered.
+
+Separate later planning items remain the drama/video/BGM engine and executable
+creator JSX/HTML. This delivery completes the normal reader/creator visual flow;
+it does not claim those separate runtime systems or operational readiness.

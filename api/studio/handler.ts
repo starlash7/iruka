@@ -8,6 +8,7 @@ import {createStudioService} from '../../server/studio/index.ts';
 import type {ImageStorage} from '../../server/media/storage.ts';
 import {createMediaService} from '../../server/media/index.ts';
 import {readImageBody} from '../../server/media/png.ts';
+import {imageMime} from '../../server/media/bundled.ts';
 import {validateDraft} from '../../server/studio/validate.ts';
 /** Mount before the common handler for /api/studio/* only. Not a deployment adapter. */
 export function createStudioHandler({db,verifyToken,imageStorage}:{db:Database;verifyToken:TokenVerifier;imageStorage?:ImageStorage}) {
@@ -23,7 +24,7 @@ export function createStudioHandler({db,verifyToken,imageStorage}:{db:Database;v
     const identity=request.headers.has('authorization')?await authenticateRequest(request,verifyToken):null;
     const user=identity?await getOrCreateUser(db,identity.privyDid):null;
     const bytes=await media.readImage(user?.id??null,imageMatch[1],imageMatch[2]);
-    return new Response(new Uint8Array(bytes),{headers:{'Content-Type':'image/png','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});
+    return new Response(new Uint8Array(bytes),{headers:{'Content-Type':imageMime(bytes),'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});
    }
    const slotMatch=/^\/api\/studio\/works\/([^/]+)\/assets\/([^/]+)\/image$/.exec(path);
    if(slotMatch&&request.method==='POST'){
@@ -43,7 +44,8 @@ export function createStudioHandler({db,verifyToken,imageStorage}:{db:Database;v
    if(id&&action==='images'&&request.method==='POST'){
     await service.getWork(user.id,id);
     if(!media)throw new ApiError('SERVICE_UNAVAILABLE','이미지 저장소가 연결되지 않았어요. 작성한 내용은 유지돼요.');
-    return jsonResponse(await media.uploadImage(user.id,id,await readImageBody(request)),requestId,201);
+    let label='등록 이미지';try{label=decodeURIComponent(request.headers.get('X-Image-Label')??'등록 이미지');}catch{throw new ApiError('INVALID_REQUEST','이미지 설명을 확인해 주세요.');}
+    return jsonResponse(await media.uploadImage(user.id,id,await readImageBody(request),label),requestId,201);
    }
    const body=await readStudioJson(request);
    if(!id&&request.method==='POST'){

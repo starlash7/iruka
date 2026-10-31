@@ -1,0 +1,212 @@
+{
+  "repository": "starlash7/crack",
+  "revision": "58545d092ffef20d1b44e6d8ada6ee5e001fd310",
+  "assets": [
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/cover.webp",
+      "source": "assets/사내연애-조작단/art/romance-v2/webp/cover-D.webp",
+      "sha256": "a99916c571cc33be756c71af3aace75d19c15e00343039875c3c3bae7bd57fcd",
+      "bytes": 359998,
+      "role": "cover"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/profile-yuna.png",
+      "source": "assets/사내연애-조작단/art/production-v1/ready/profile-yuna.png",
+      "sha256": "f236d7447e7cc999bb581b642fc9860b22e2b02d3c0a14a552e53b3e2fed552a",
+      "bytes": 339521,
+      "role": "portrait",
+      "characterId": "character-1"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/intro-yuna.webp",
+      "source": "assets/사내연애-조작단/art/intro-v2/webp/intro-yuna.webp",
+      "sha256": "2db855bb7ad5517d28a38b547fe00d3ddb6233db5ef7e60658aa56eb177fdfbf",
+      "bytes": 218544,
+      "role": "introduction"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/profile-haerin.png",
+      "source": "assets/사내연애-조작단/art/production-v1/ready/profile-haerin.png",
+      "sha256": "776596226b8391860c36e2cb9cfa2da9094772d2fe25d4c98c5e05b6e860ce12",
+      "bytes": 348358,
+      "role": "portrait",
+      "characterId": "character-2"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/intro-haerin.webp",
+      "source": "assets/사내연애-조작단/art/intro-v2/webp/intro-haerin.webp",
+      "sha256": "547d9eb5c17f294ce4e1713dc555c5f2ec3e1f384218e42ed40952b75913a45c",
+      "bytes": 209296,
+      "role": "introduction"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/profile-doha.png",
+      "source": "assets/사내연애-조작단/art/production-v1/ready/profile-doha.png",
+      "sha256": "63bb895f8a82b3a1d2db5779d3da9f128fe3e1f83c2825e94adceb033db2002d",
+      "bytes": 332165,
+      "role": "portrait",
+      "characterId": "character-3"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/intro-doha.webp",
+      "source": "assets/사내연애-조작단/art/intro-v2/webp/intro-doha.webp",
+      "sha256": "8206f8cf491adcbeca3d8025865f8b0169015314eeda75af9e04bf6a3c05aca3",
+      "bytes": 222486,
+      "role": "introduction"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/profile-chaeri.png",
+      "source": "assets/사내연애-조작단/art/production-v1/ready/profile-chaeri.png",
+      "sha256": "852f0e9879fa4223774babf79be8b782c6960608e0301b08abe27747a6d8f4bb",
+      "bytes": 348612,
+      "role": "portrait",
+      "characterId": "character-4"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/intro-chaeri.webp",
+      "source": "assets/사내연애-조작단/art/intro-v2/webp/intro-chaeri.webp",
+      "sha256": "cab5030910db4535d7272bb6fdbae334c6345903ff8d10da53455a7ca27a5153",
+      "bytes": 243208,
+      "role": "introduction"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/profile-seorin.png",
+      "source": "assets/사내연애-조작단/art/production-v1/ready/profile-seorin.png",
+      "sha256": "ce7192ee9436dcb37ebe8c388d16c42cc76c4875c73d3cd43df8559381f825de",
+      "bytes": 350431,
+      "role": "portrait",
+      "characterId": "character-5"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/intro-seorin.webp",
+      "source": "assets/사내연애-조작단/art/intro-v2/webp/intro-seorin.webp",
+      "sha256": "eab39faa01e95cb7a0a1c721878efaf123753f5247c936e2f251f78bd09a3ac9",
+      "bytes": 204680,
+      "role": "introduction"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/profile-naeun.png",
+      "source": "assets/사내연애-조작단/art/production-v1/ready/profile-naeun.png",
+      "sha256": "6ffe30fcc323cb45c7580deb16043f2cddf5262b29506f7144a9ca4b70ed3460",
+      "bytes": 329424,
+      "role": "portrait",
+      "characterId": "character-6"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/intro-naeun.webp",
+      "source": "assets/사내연애-조작단/art/intro-v2/webp/intro-naeun.webp",
+      "sha256": "6a98715e3b4417631862bc2389fec41875ee26087d9f28c0211c6b239ce80e70",
+      "bytes": 199930,
+      "role": "introduction"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/synopsis.webp",
+      "source": "assets/사내연애-조작단/art/intro-v2/webp/synopsis-chat.webp",
+      "sha256": "2b3f524b00309391c5f5a28a8f23b25a8f2fbad0de05730c96588275ffab4987",
+      "bytes": 254176,
+      "role": "introduction"
+    },
+    {
+      "slug": "office-romance",
+      "url": "/stories/office-romance/opening.png",
+      "source": "assets/사내연애-조작단/art/production-v1/ready/O03-table.png",
+      "sha256": "49cf0b0d95a361ef33bdba931165aa5d47428c1c4c1ee88afcfe024162ab98d7",
+      "bytes": 1864425,
+      "role": "opening",
+      "code": "UaDW2t"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/cover.png",
+      "source": "assets/2096-삭제예정자/visuals/cover-yellow-v2/delivery/poster-spine-first-2x3.png",
+      "sha256": "4edb68adf32fb39ce962a3de3aeac24ad8992f419cd989ea3be4c383c76fb97e",
+      "bytes": 1906381,
+      "role": "cover"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/profile-1.png",
+      "source": "assets/2096-삭제예정자/characters/yeojin/candidates/yeojin-mint-ponytail-blush-v8.png",
+      "sha256": "4551fcda7f7623c4750d2c96c634abdec836b822e775af40e8cd342b0ba888d2",
+      "bytes": 1893595,
+      "role": "portrait",
+      "characterId": "character-1"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/profile-2.png",
+      "source": "assets/2096-삭제예정자/characters/sora/candidates/sora-clinic-front-v6.png",
+      "sha256": "7076cd0a5a55a102795e62f786a70359636266e28fa1eedefce35d7c51a1123b",
+      "bytes": 1857829,
+      "role": "portrait",
+      "characterId": "character-2"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/profile-3.png",
+      "source": "assets/2096-삭제예정자/characters/sekyung/candidates/sekyung-archive-front-v3.png",
+      "sha256": "66f9a02e7c46d68ec3ffba338fb6394d6e48b339ecebe068e7cb777f23bf0d41",
+      "bytes": 2192833,
+      "role": "portrait",
+      "characterId": "character-3"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/profile-4.png",
+      "source": "assets/2096-삭제예정자/characters/jinwook/candidates/jinwook-archive-v3.png",
+      "sha256": "ec2d6764d4cf0388451cf30f676e997e7a13aa3fa9b60d46ca101c8cbc8d6483",
+      "bytes": 1832989,
+      "role": "portrait",
+      "characterId": "character-4"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/profile-5.png",
+      "source": "assets/2096-삭제예정자/characters/dogyeom/candidates/dogyeom-executive-v3.png",
+      "sha256": "21f5352cd141c474a7174002e070f636eefb66344b938ccfc6ad8ccd1e91012c",
+      "bytes": 1832111,
+      "role": "portrait",
+      "characterId": "character-5"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/profile-6.png",
+      "source": "assets/2096-삭제예정자/characters/noise/candidates/noise-goggles-v2.png",
+      "sha256": "70bba71c82bfe966e7ab4da3045dea6e5879df1b05dd20006d6ba4685a197f14",
+      "bytes": 2096043,
+      "role": "portrait",
+      "characterId": "character-6"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/profile-7.png",
+      "source": "assets/2096-삭제예정자/characters/loop/candidates/loop-pink-eyepatch-v1.png",
+      "sha256": "fcffa52ac5b03ff11f9cc530c023cba9c73810cfce768a36f5acbd00b1bec7f9",
+      "bytes": 2244095,
+      "role": "portrait",
+      "characterId": "character-7"
+    },
+    {
+      "slug": "2096-deletion",
+      "url": "/stories/2096-deletion/intro-cherry.png",
+      "source": "assets/2096-삭제예정자/visuals/character-splashes-v5/pilot/01-cherry-card.png",
+      "sha256": "a4f24340098939d867714e4b4d2c754d0e18fa99456f6c09482769d9a2f947fa",
+      "bytes": 2927132,
+      "role": "introduction"
+    }
+  ]
+}

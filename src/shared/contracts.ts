@@ -42,11 +42,15 @@ export interface CreditReservation { turnId: string; reserved: number; state: 'r
 
 /** Public version content; character details and opening contexts live only in privateConfig. */
 export interface PublicWorkSnapshot {
+  gallery?: Array<{id:string;title:string;imageUrl:string;introduction?:boolean}>;
+  /** Resolved public opening references, never the complete private asset list. */
+  images?: Array<{code:string;label:string;url:string}>;
   tagline: string;
   playGuide: string;
-  characters: Array<{ id: string; name: string; imageUrl: string | null }>;
+  characters: Array<{ id: string; name: string; imageUrl: string | null;caption?:string }>;
   openings: Array<{
     id: string; title: string; prologue: string; firstMessage: string;
+    imageUrl?:string|null;
     suggestedReplies: string[];
   }>;
 }

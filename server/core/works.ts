@@ -7,8 +7,8 @@ export async function getPublicWork(db:Database,id:string):Promise<PublicWorkDet
  const {rows}=await db.query<WorkRow>(`SELECT id,owner_id,show_creator,mode,title,description,cover_url,tags,created_at FROM works WHERE id=$1 AND visibility='public'`,[id]);
  if(!rows[0]) throw new ApiError('NOT_FOUND','작품을 찾을 수 없어요.');
  const work=await mapWork(db,rows[0]);
- const version=work.publishedVersionId?await db.query<{public_snapshot:Record<string,unknown>}>("SELECT public_snapshot FROM work_versions WHERE id=$1",[work.publishedVersionId]):null;
- return {...work,snapshot:version?.rows[0]?projectPublicSnapshot(version.rows[0].public_snapshot):null};
+ const version=work.publishedVersionId?await db.query<{public_snapshot:Record<string,unknown>;assets:Array<{code:string;label:string;url:string|null}>}>("SELECT public_snapshot,private_config->'assets' AS assets FROM work_versions WHERE id=$1",[work.publishedVersionId]):null;
+ return {...work,snapshot:version?.rows[0]?projectPublicSnapshot(version.rows[0].public_snapshot,version.rows[0].assets??[]):null};
 }
 async function mapWork(db:Database,row:WorkRow):Promise<PublicWorkDto> {
  const versions=await db.query<{id:string}>(`SELECT id FROM work_versions WHERE work_id=$1 AND published_at IS NOT NULL ORDER BY version DESC LIMIT 1`,[row.id]);

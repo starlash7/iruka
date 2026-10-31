@@ -1,11 +1,8 @@
-import {usePrivy} from '@privy-io/react-auth';
 import type {ReactNode} from 'react';
+import {Page} from '../../ui';
+import {ReaderSession} from '../discover/ReaderSession';
+import {SignInNotice} from '../discover/SignInNotice';
 /** Remount private state when identity changes; never reuse another account's drafts. */
 export function StudioSession({enabled,children}:{enabled:boolean;children:(identity:string)=>ReactNode}) {
- return enabled?<AuthenticatedSession>{children}</AuthenticatedSession>:children('unconfigured');
-}
-function AuthenticatedSession({children}:{children:(identity:string)=>ReactNode}) {
- const {ready,authenticated,user}=usePrivy();
- if(!ready)return <p role="status">로그인 확인 중…</p>;
- return children(authenticated&&user?user.id:'anonymous');
+ return <ReaderSession enabled={enabled}>{session=>session.identity?children(session.identity):<Page title="작품 만들기">{!enabled?<p role="status">로그인 설정이 필요해요.</p>:<SignInNotice {...session} message="로그인 후 내 작품을 만들고 관리할 수 있어요."/>}</Page>}</ReaderSession>;
 }

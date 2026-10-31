@@ -4,7 +4,7 @@ import {createElement as h} from 'react';
 import {renderToStaticMarkup as render} from 'react-dom/server';
 import {createServer} from 'vite';
 
-let server,MyProfile,WorkPage,StartChatSheet,AccountView,ReaderProvider,WorkConversationActions;
+let server,MyProfile,WorkPage,StartChatSheet,AccountView,ReaderProvider,WorkConversationActions,StudioSession;
 const work={id:'work-test',title:'테스트 작품',description:'공개 소개',tags:['판타지'],coverUrl:null,publishedVersionId:'version-test',snapshot:{tagline:'짧은 소개',characters:[{id:'character',name:'안내자',imageUrl:null}],openings:[{id:'opening',title:'첫 만남',prologue:'공개 프롤로그',firstMessage:'어서 오세요.',suggestedReplies:[]}],playGuide:'공개 가이드'}};
 
 before(async()=>{
@@ -30,6 +30,7 @@ before(async()=>{
  ({AccountView}=await server.ssrLoadModule('/src/AccountView.tsx'));
  ({ReaderProvider}=await server.ssrLoadModule('/src/features/discover/ReaderProvider.tsx'));
  ({WorkConversationActions}=await server.ssrLoadModule('/src/features/discover/WorkConversationActions.tsx'));
+ ({StudioSession}=await server.ssrLoadModule('/src/features/studio/StudioSession.tsx'));
 });
 after(async()=>{await server?.close();delete globalThis.__accountWorkTest;});
 
@@ -95,5 +96,13 @@ test('continue uses an exact-work latest-chat query and leaves new-conversation 
   state.session=session;state.resourceReads=0;
   const signedOut=render(h(WorkConversationActions,{workId:'exact-work',published:true,authEnabled:true,onStart(){}}));
   assert.equal(state.resourceReads,0);assert.doesNotMatch(signedOut,/이어하기/);assert.match(signedOut,/대화 시작/);
+ }
+});
+
+test('studio presents compact sign-in guidance without mounting anonymous private children',()=>{
+ const state=globalThis.__accountWorkTest;
+ for(const session of [{ready:false,authenticated:true,user:{id:'did:privy:old'}},{ready:true,authenticated:false,user:null}]){
+  state.session=session;let mounted=0;const html=render(h(StudioSession,{enabled:true,children:()=>{mounted++;return h('div',null,'private');}}));
+  assert.equal(mounted,0);assert.doesNotMatch(html,/private|지갑|출금/);assert.match(html,/작품 만들기/);
  }
 });

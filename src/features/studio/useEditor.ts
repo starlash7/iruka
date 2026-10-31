@@ -4,6 +4,7 @@ import type {StudioDraft,StudioWork} from './types';
 import {readRecovery,recoveryKey,sameDraft,writeRecovery,type DraftRecovery} from './recovery';
 import {prepareImage} from './prepareImage';
 import type {ImageTarget} from './ImageField';
+import {bindDraftAsset} from './assetSlots';
 export function useEditor(client:StudioClient,id:string) {
  const [work,setWork]=useState<StudioWork|null>(null),[draft,setDraft]=useState<StudioDraft|null>(null);
  const [status,setStatus]=useState('불러오는 중…'),[error,setError]=useState(''),[busy,setBusy]=useState(false);
@@ -58,9 +59,9 @@ export function useEditor(client:StudioClient,id:string) {
  async function uploadImage(file:File,target:ImageTarget){
   if(working.current)throw new Error('진행 중인 작업이 끝난 뒤 다시 시도해 주세요.');working.current=true;setBusy(true);setError('');
   try {
-   const blob=await prepareImage(file);const asset=target.kind==='asset'?await client.uploadAsset(id,target.id,blob):await client.upload(id,blob);
+   const blob=await prepareImage(file);const asset=target.kind==='asset'?await client.uploadAsset(id,target.id,blob):await client.upload(id,blob,file.name);
    setWork(w=>w?{...w,assets:[...w.assets.filter(a=>a.id!==asset.id),asset]}:w);
-   change(d=>{d.assets=[...(d.assets??[]).filter(a=>a.code!==asset.code),{id:asset.id,code:asset.code}];if(target.kind==='cover')d.coverUrl=asset.url;else if(target.kind==='character'){const c=d.publicSnapshot.characters.find(c=>c.id===target.id);if(c)c.imageUrl=asset.url;}});
+   change(d=>{bindDraftAsset(d,asset,target.kind==='asset'?work?.assets.find(item=>item.id===target.id)?.url:null);if(target.kind==='cover')d.coverUrl=asset.url;else if(target.kind==='character'){const c=d.publicSnapshot.characters.find(c=>c.id===target.id);if(c)c.imageUrl=asset.url;}else if(target.kind==='opening'){const opening=d.publicSnapshot.openings.find(item=>item.id===target.id);if(opening)opening.imageUrl=asset.url;}});
    await save();
   }catch(e){setError((e as Error).message);persist();throw e;}finally{working.current=false;setBusy(false);}
  }

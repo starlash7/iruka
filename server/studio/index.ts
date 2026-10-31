@@ -5,6 +5,7 @@ import {requireId} from '../core/http.ts';
 import {getCreatorWork} from '../core/works.ts';
 import type {StudioDraft,StudioWork,StudioAsset} from '../../src/features/studio/types.ts';
 import {validateDraft} from './validate.ts';
+import {isBundledStoryImage} from '../media/bundled.ts';
 async function lockWork(db:Database,userId:string,id:string) {
  requireId(id);requireId(userId);
  const {rows}=await db.query<{owner_id:string}>('SELECT owner_id FROM works WHERE id=$1 FOR UPDATE',[id]);
@@ -24,8 +25,8 @@ async function checkAssets(db:Database,userId:string,id:string,draft:StudioDraft
   const asset=owned.find(o=>o.id===a.id&&o.code===a.code);
   if(!asset)throw new ApiError('FORBIDDEN','이 작품이 소유한 이미지만 사용할 수 있어요.');return asset;
  });
- const urls=[draft.coverUrl,...draft.publicSnapshot.characters.map(c=>c.imageUrl),...draft.privateConfig.endings.map(e=>e.imageUrl)];
- if(urls.some(url=>url!==null&&!selected.some(a=>a.url===url)))throw new ApiError('FORBIDDEN','등록된 소유 이미지만 사용할 수 있어요.');
+ const urls=[draft.coverUrl,...draft.publicSnapshot.characters.map(c=>c.imageUrl),...draft.publicSnapshot.openings.map(o=>o.imageUrl??null),...(draft.publicSnapshot.gallery??[]).map(item=>item.imageUrl),...draft.privateConfig.endings.map(e=>e.imageUrl)];
+ if(urls.some(url=>url!==null&&!isBundledStoryImage(url)&&!selected.some(a=>a.url===url)))throw new ApiError('FORBIDDEN','등록된 소유 이미지만 사용할 수 있어요.');
  return selected;
 }
 async function getWork(db:Database,userId:string,id:string):Promise<StudioWork> {
@@ -41,9 +42,10 @@ export function createStudioService({db}:{db:Database}) {
   getWork(userId:string,id:string){return db.transaction(tx=>getWork(tx,userId,id));},
   async listWorks(userId:string) {
    requireId(userId);
-   return (await db.query<{id:string;title:string;mode:string;revision:number;published:boolean}>(`SELECT w.id,d.body->>'title' AS title,d.body->>'mode' AS mode,d.revision,
+   const rows=(await db.query<{id:string;title:string;mode:string;revision:number;published:boolean;cover_url:string|null;updated_at:Date}>(`SELECT w.id,d.body->>'title' AS title,d.body->>'mode' AS mode,d.body->>'coverUrl' AS cover_url,d.updated_at,d.revision,
     EXISTS(SELECT 1 FROM work_versions v WHERE v.work_id=w.id AND published_at IS NOT NULL) AS published
     FROM works w JOIN studio_drafts d ON d.work_id=w.id WHERE w.owner_id=$1 ORDER BY d.updated_at DESC,w.id`,[userId])).rows;
+   return rows.map(({cover_url,updated_at,...row})=>({...row,coverUrl:cover_url,updatedAt:new Date(updated_at).toISOString()}));
   },
   async saveDraft(userId:string,input:StudioDraft):Promise<StudioWork> {
    const draft=validateDraft(input);requireId(userId);

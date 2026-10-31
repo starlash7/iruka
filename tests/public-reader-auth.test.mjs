@@ -4,12 +4,19 @@ import {createReaderApi} from '../src/features/discover/readerApi.ts';
 import {createTokenVerifier} from '../server/core/auth.ts';
 import {createProduct} from '../server/product/index.ts';
 import {createTestDatabase,seedChat} from './helpers/db.ts';
+import {loadPublicImage} from '../src/features/media/publicImages.ts';
 
 const publicReads=[
  ['listWorks',api=>api.listWorks({query:'hello & world',tag:'a/b',mode:'story',offset:60}),'/api/discover/works?q=hello+%26+world&tag=a%2Fb&mode=story&offset=60'],
  ['getRanking',api=>api.getRanking(),'/api/discover/ranking'],
  ['getWork',api=>api.getWork('id/with space'),'/api/works/id%2Fwith%20space'],
 ];
+
+test('public work images load without a session token while preserving media type checks',async()=>{
+ const original=globalThis.fetch;let calls=0;
+ globalThis.fetch=async(_url,init)=>{calls++;assert.equal(new Headers(init.headers).has('authorization'),false);return new Response(new Uint8Array([1]),{headers:{'Content-Type':'image/webp'}});};
+ try{const path=`/api/studio/media/11111111-1111-4111-8111-111111111111/${'a'.repeat(64)}`;assert.equal((await loadPublicImage(path)).type,'image/webp');assert.equal(calls,1);}finally{globalThis.fetch=original;}
+});
 
 for(const [name,read,path] of publicReads){
  test(`${name} skips the session token provider and preserves transport options`,async()=>{

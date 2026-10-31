@@ -40,7 +40,7 @@ export function createDevelopmentApi({storage,delay=70}:{storage?:Storage;delay?
   async startChat(input){const work=fixtureWorks.find(item=>item.id===input.workId);const opening=work?.snapshot?.openings.find(item=>item.id===input.openingId);if(!work||!opening)throw new Error('시작 상황을 확인해 주세요.');
    const chat:ChatDto={id:crypto.randomUUID(),userId:'fixture-user',workId:work.id,workVersionId:work.publishedVersionId!,personaSnapshot:input.personaId?{name:'여행자',description:'처음 찾아온 여행자'}:null,activeMessageId:null,createdAt:new Date().toISOString()};
    const message:MessageDto={id:crypto.randomUUID(),chatId:chat.id,parentMessageId:null,role:'assistant',content:opening.firstMessage,createdAt:chat.createdAt};chat.activeMessageId=message.id;
-   chats.unshift({chat,title:work.title,messages:[message],memo:'',guide:work.snapshot?.playGuide??'',suggestedReplies:opening.suggestedReplies});persist();return copy(chat);},
+   chats.unshift({chat,title:work.title,characters:copy(work.snapshot?.characters??[]),messages:[message],memo:'',guide:work.snapshot?.playGuide??'',suggestedReplies:opening.suggestedReplies});persist();return copy(chat);},
   async getChat(id){await wait();const view=find(id);return {...copy(view),title:titles.get(id)??view.title};},
   async saveMemo(id,memo){find(id).memo=memo;persist();},
   async branchChat(id,messageId){

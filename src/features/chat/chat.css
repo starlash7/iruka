@@ -54,3 +54,14 @@
 
 .chat-composer form:focus-within{border-color:var(--reader-action);box-shadow:0 0 0 4px var(--reader-selected)}
 .chat-status{border-radius:22px}
+.chat-character-heading {display:flex;gap:10px;align-items:center;margin:14px 0 8px;}
+.chat-character-heading .chat-character {margin:0;}
+.chat-character-portrait {width:42px;height:42px;flex-shrink:0;}
+.chat-character-portrait>img {height:42px;width:42px;border-radius:50%;object-fit:cover;object-position:center 24%;}
+.chat-character-portrait .story-image-state {min-height:42px;padding:0;max-height:42px;overflow:hidden;font-size:0;border-radius:50%;}
+.chat-scene-image {margin:18px 0;}
+.chat-scene-image>.story-image-trigger>img {max-height:520px;background:var(--reader-selected);}
+.chat-status dl {display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0 0;}
+.chat-status dl>div {min-width:0;overflow-wrap:anywhere;padding:12px;background:var(--reader-bg);border-radius:12px;}
+.chat-status dt {font-size:12px;color:var(--reader-muted);}
+.chat-status dd {margin:4px 0 0;font-size:14px;color:var(--reader-ink);white-space:pre-wrap;}

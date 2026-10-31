@@ -4,7 +4,7 @@ export interface WorkQuery {query?:string;tag?:string;mode?:string;offset?:numbe
 export interface ChatSummary {chat:ChatDto;title:string;preview:string;coverUrl:string|null;folderId?:string|null;updatedAt?:string}
 export interface ChatQuery {workId?:string;folderId?:string;offset?:number;limit?:number}
 export interface ReaderMessage extends MessageDto {images?:{url:string;alt:string}[];status?:string;ending?:{id:string;title:string}|null}
-export interface ChatView {chat:ChatDto;title:string;messages:ReaderMessage[];memo:string;guide:string;suggestedReplies:string[];pendingTurn?:{id:string;status:string}|null}
+export interface ChatView {chat:ChatDto;title:string;characters?:Array<{id:string;name:string;imageUrl:string|null;caption?:string}>;messages:ReaderMessage[];memo:string;guide:string;suggestedReplies:string[];pendingTurn?:{id:string;status:string}|null}
 export interface ModelOption {id:string;name:string;credits:number|null;available:boolean}
 export interface ReaderApi {
  loadImage?(url:string,signal?:AbortSignal):Promise<Blob>;

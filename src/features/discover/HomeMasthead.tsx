@@ -10,6 +10,7 @@ export function HomeMasthead({works}:{works:PublicWorkDto[]}){
  return <section className={`home-masthead ${work?'home-masthead--work':''}`} aria-label="Iruka와 작품 둘러보기" aria-roledescription="캐러셀">
   <img className="home-masthead-art" src={work?.coverUrl??'/brand/iruka-x-banner-ocean-formation.png'} alt="" key={work?.coverUrl??'brand'} onError={()=>{if(work?.coverUrl){setFailed(items=>[...items,work.coverUrl!]);setIndex(0);}}}/>
   <div className="home-masthead-shade"/>
+  {work&&<a className="home-featured-cover" href={href(`/works/${encodeURIComponent(work.id)}`)} aria-label={`${work.title} 표지와 상세`}><img src={work.coverUrl!} alt=""/></a>}
   <div className="home-masthead-copy" aria-live="polite">
    <span className="home-masthead-label">{work?work.tags.slice(0,2).join(' · '):'IRUKA'}</span>
    {work?<h1 title={work.title}>{work.title}</h1>:<h1>어떤 이야기를<br/>시작할까요?</h1>}

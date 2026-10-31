@@ -5,6 +5,8 @@ import {useReader} from '../discover/ReaderProvider';
 import {useResource} from '../discover/useResource';
 import {ResourceState} from '../discover/ResourceState';
 import {StartChatAccess} from './StartChatAccess';
+import {plainStoryText,StoryText,hasInlineStoryImage} from '../media/StoryText';
+import {StoryImage} from '../media/StoryImage';
 export function StartChatSheet({open,onClose,work,authEnabled=false}:{open:boolean;onClose:()=>void;work:PublicWorkDetailDto;authEnabled?:boolean}){
  const [loginPending,setLoginPending]=useState(false);
  return <Modal open={open&&!loginPending} title="이야기 시작하기" onClose={onClose}>{open&&<StartChatAccess authEnabled={authEnabled} onLoginPending={setLoginPending}><StartChatForm work={work}/></StartChatAccess>}</Modal>;
@@ -15,7 +17,9 @@ function StartChatForm({work}:{work:PublicWorkDetailDto}){
  const models=options.data?.models.filter(item=>item.available)??[];const selected=models.find(item=>item.id===(model||models[0]?.id));
  const insufficient=!!selected&&selected.credits!==null&&!!options.data&&options.data.balance.available<selected.credits;
  async function start(){if(!selected||busy)return;setBusy(true);setError(null);try{const chat=await api.startChat({workId:work.id,openingId:opening,personaId:persona||null,model:selected.id});navigate(`/chat/${encodeURIComponent(chat.id)}`);}catch(error){setError(error instanceof Error?error:new Error('대화를 시작하지 못했어요.'));setBusy(false);}}
- return <div className="reader reader-start"><p>{work.title}</p><fieldset disabled={busy}><legend>시작 상황</legend>{work.snapshot?.openings.map(item=><label className="reader-opening" key={item.id}><input type="radio" name="opening" value={item.id} checked={opening===item.id} onChange={()=>setOpening(item.id)}/><span><strong>{item.title}</strong><small>{item.prologue}</small></span></label>)}</fieldset>
+ const chosen=work.snapshot?.openings.find(item=>item.id===opening);
+ return <div className="reader reader-start"><p>{work.title}</p><fieldset disabled={busy}><legend>시작 상황</legend>{work.snapshot?.openings.map(item=><label className="reader-opening" key={item.id}><input type="radio" name="opening" value={item.id} checked={opening===item.id} onChange={()=>setOpening(item.id)}/><span><strong>{item.title}</strong><small>{plainStoryText(item.prologue).slice(0,120)}</small></span></label>)}</fieldset>
+ {chosen&&<details className="reader-opening-preview"><summary>첫 장면 미리보기</summary>{chosen.imageUrl&&!hasInlineStoryImage(chosen.prologue,chosen.imageUrl,work.snapshot?.images)&&<StoryImage url={chosen.imageUrl} alt={`${chosen.title} 장면`}/>}<StoryText text={chosen.prologue} images={work.snapshot?.images}/></details>}
  {options.loading||options.error?<ResourceState {...options} retry={options.reload}/>:<>
  <label className="reader-field">페르소나<select value={persona} onChange={event=>setPersona(event.target.value)} disabled={busy}><option value="">기본 페르소나</option>{options.data?.personas.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
  <label className="reader-field">모델<select value={selected?.id??''} onChange={event=>setModel(event.target.value)} disabled={busy||!models.length}>{models.map(item=><option key={item.id} value={item.id}>{item.name}{item.credits!==null?` · ${item.credits} 크레딧`:''}</option>)}</select></label>

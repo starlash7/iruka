@@ -22,12 +22,14 @@ export function EditorFields({tab,draft:d,change,renderImage}:{tab:string;draft:
   {s.characters.map((c,i)=>{const cfg=p.characterSettings.find(x=>x.characterId===c.id)??{description:'',speechStyle:''};return <Group key={c.id} title={`인물 ${i+1}`} onRemove={()=>edit(d=>{d.publicSnapshot.characters.splice(i,1);d.privateConfig.characterSettings=d.privateConfig.characterSettings.filter(x=>x.characterId!==c.id);})}>
    <Line field={`characters.${i}.name`} label="이름" value={c.name} max={50} onChange={v=>edit(d=>{d.publicSnapshot.characters[i].name=v;})}/>
    {renderImage?.({kind:'character',id:c.id},`${c.name||'등장인물'} 이미지`,c.imageUrl)}
+   <Line label="한 줄 소개 (공개)" value={c.caption??''} max={200} onChange={value=>edit(d=>{d.publicSnapshot.characters[i].caption=value;})}/>
    <Text label="소개 (비공개)" value={cfg.description} max={1500} onChange={v=>edit(d=>{const settings=d.privateConfig.characterSettings;let row=settings.find(x=>x.characterId===c.id);if(!row){row={characterId:c.id,description:'',speechStyle:''};settings.push(row);}row.description=v;})}/>
    <Text label="말투" value={cfg.speechStyle} max={1500} onChange={v=>edit(d=>{const settings=d.privateConfig.characterSettings;let row=settings.find(x=>x.characterId===c.id);if(!row){row={characterId:c.id,description:'',speechStyle:''};settings.push(row);}row.speechStyle=v;})}/>
   </Group>;})}<Button disabled={s.characters.length>=50} onClick={()=>edit(d=>{const id=crypto.randomUUID();d.publicSnapshot.characters.push({id,name:'',imageUrl:null});d.privateConfig.characterSettings.push({characterId:id,description:'',speechStyle:''});})}>인물 추가</Button>
  </>;
  if(tab==='openings')return <>{s.openings.map((o,i)=><Group key={o.id} title={`시작 ${i+1}`} onRemove={()=>edit(d=>{d.publicSnapshot.openings.splice(i,1);d.privateConfig.openingContexts=d.privateConfig.openingContexts.filter(x=>x.openingId!==o.id);})}>
   <Line field={`openings.${i}.title`} label="시작 이름" value={o.title} onChange={v=>edit(d=>{d.publicSnapshot.openings[i].title=v;})}/>
+  {renderImage?.({kind:'opening',id:o.id},`${o.title||'시작 상황'} 이미지`,o.imageUrl??null)}
   <Text field={`openings.${i}.prologue`} label="프롤로그 (공개)" value={o.prologue} max={1500} onChange={v=>edit(d=>{d.publicSnapshot.openings[i].prologue=v;})}/>
   <Text label="숨김 시작 상황" value={p.openingContexts.find(x=>x.openingId===o.id)?.hiddenContext??''} max={2000} onChange={v=>edit(d=>{const existing=d.privateConfig.openingContexts.find(x=>x.openingId===o.id);if(existing)existing.hiddenContext=v;else d.privateConfig.openingContexts.push({openingId:o.id,hiddenContext:v});})}/>
   <Text label="첫 대사" value={o.firstMessage} max={500} onChange={v=>edit(d=>{d.publicSnapshot.openings[i].firstMessage=v;})}/>

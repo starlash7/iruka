@@ -31,6 +31,8 @@ export function createDiscoveryService({db}:DiscoveryServiceDependencies) {
   return rows.map(mapPublic);
  },async getWork(id:string):Promise<PublicWorkDetailDto|null>{
   const {rows}=await db.query<Row>(`${selectPublic} AND w.id=$1`,[id]);
-  return rows[0]?{...mapPublic(rows[0]),snapshot:projectPublicSnapshot(rows[0].public_snapshot)}:null;
+  if(!rows[0])return null;
+  const assets=(await db.query<{assets:Array<{code:string;label:string;url:string|null}>}>("SELECT private_config->'assets' AS assets FROM work_versions WHERE id=$1",[rows[0].version_id])).rows[0]?.assets??[];
+  return {...mapPublic(rows[0]),snapshot:projectPublicSnapshot(rows[0].public_snapshot,assets)};
  }};
 }

@@ -1,6 +1,8 @@
 import type {PrivateWorkConfig} from '../../src/shared/contracts.ts';
+import {isBundledStoryImage} from '../media/bundled.ts';
 export interface ChatAsset {code:string;url:string;alt:string}
 export function isSafeImageUrl(value:string):boolean {
+  if(isBundledStoryImage(value))return true;
   if(/^\/api\/studio\/media\/[0-9a-f-]{36}\/[0-9a-f]{64}$/.test(value))return true;
   try {const url=new URL(value);return url.protocol==='https:'&&!url.username&&!url.password;}catch{return false;}
 }
