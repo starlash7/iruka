@@ -17,3 +17,6 @@
 - UI inspection found a whole account/wallet screen duplicated inside the Studio
   toolbar. Remove that duplicate; keep compact sign-in guidance and private-state
   readiness gating. Wallet/account functions remain at their existing destinations.
+- Final HTTP inspection reproduced raw seed files being served by Vite outside
+  public/. Block seed/** in development fs.deny and retain Vite's default secret
+  exclusions; protected API media and intentionally public artwork remain usable.

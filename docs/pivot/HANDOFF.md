@@ -425,13 +425,17 @@ DB, real OAuth flow, remote storage, paid model or deployment was exercised.
 
 Verification:
 
-- Node 24.14.0: npm test **226 passed, 0 failed/skipped**; npm run build **exit 0**.
+- Node 24.14.0: npm test **227 passed, 0 failed/skipped**; npm run build **exit 0**.
   Existing Privy annotation and chunk-size warnings remain. git diff --check
   passed. Final logs: `.context/visual-story-{tests,build}-final.log`.
 - New regressions cover all 29 hashes, safe public projection, private WebP MIME
   and pinned access, seed attachment/rollback/idempotency, XSS-safe previews,
   name-matched portraits, structured/text status, current-draft asset rebinding,
   compact Studio auth gating and tokenless public image reads.
+- Final static-path review reproduced a Vite development-server bypass: raw seed
+  images/manuscripts were directly served. Vite fs.deny now blocks seed/** while
+  preserving its default secret/key exclusions. A red/green HTTP regression
+  verifies public artwork 200 and both raw and /@fs private seed paths 403.
 - Ego lite TaskSpace 19: six routes at **390/768/1440px**, 18 measurements, zero
   horizontal overflow, CTA/nav overlap or runtime errors. Mobile composer bottom
   was 844px at an 844px viewport. See visual-story-responsive.json in .context.

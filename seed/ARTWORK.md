@@ -21,6 +21,10 @@ owner/public-reference/pinned-chat authorization. Their WebP bytes are preserved
 and served as `image/webp`; ordinary uploads remain normalized PNGs. No storage
 write is needed for this immutable, hash-verified bundled set.
 
+The Vite development server denies raw seed/ paths (including /@fs aliases), so
+private image files and manuscript JSON cannot bypass the media API through its
+static file server. Intentionally public files under public/stories remain served.
+
 `work.json` manuscripts and existing seed hashes are preserved. Each
 `presentation.json` declares explicit public images and captions. After a local
 seed import, artwork can be deliberately attached with Node 24:
