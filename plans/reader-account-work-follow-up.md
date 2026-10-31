@@ -19,4 +19,5 @@ Owner: current agent, `starlash7/fix-logged-in-pages`, based on integration
 - [x] Browser 390/768/1440px: profile/detail without overflow; editor/error/retry,
   same-work login cancellation/continuation and keyboard focus checked.
 - [x] Full tests 208/208, build exit 0, diff review; record HANDOFF and decisions.
-- [ ] Commit and open draft PR against the integration branch; no main merge/deploy.
+- [x] Implementation `7a76e09`; draft [PR #19](https://github.com/starlash7/iruka/pull/19)
+  targets `starlash7/clone-repo`. Current feature branch retained; no main merge/deploy.
