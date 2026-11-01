@@ -530,3 +530,15 @@ it does not claim those separate runtime systems or operational readiness.
 - Ego TaskSpace9, 인메모리 UI fixture에서 홈/탐색/ONLY/스튜디오 클릭·이동·선택 상태를 확인했다.
   활성 항목의 box-shadow none / border-left 0px / 핑크 배경을 측정했고 desktop1440/mobile390
   가로 넘침 없음. 스크린샷 `.context/sidebar-labels-1440.png`, `sidebar-only-390.png`.
+
+## 2026-11-01 랭킹·찜한 작품 탭 제거
+
+- 요청에 따라 왼쪽 카테고리에서 랭킹·찜한 작품을 제거했다. 현재 순서는
+  홈 → 탐색 → Iruka ONLY → 내 대화 → 스튜디오가기다.
+- 모바일 하단과 홈 본문의 랭킹 탭도 제거했다. 기존 작품 찜 데이터·API·마이페이지
+  활동 링크와 직접 경로는 변경하지 않았다.
+- `npm test`: **227 passed, 0 failed/skipped**, `npm run build`: **exit0**,
+  `git diff --check` 통과. `.context/sidebar-remove-tabs-{tests,build}.log`.
+- Ego TaskSpace10, DB 없는 UI fixture에서1440/390px 메뉴 항목·탭 부재·가로 넘침
+  없음을 확인했다. `.context/sidebar-removed-tabs-{1440,390}.png`에 기록했다.
+  실제 DB/로그인 검증·배포는 수행하지 않았다.
