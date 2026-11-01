@@ -1,5 +1,7 @@
 import {useEffect,useMemo,useRef,useState} from 'react'
 import {usePrivy} from '@privy-io/react-auth'
+import {ReaderSession} from '../discover/ReaderSession'
+import {SignInNotice} from '../discover/SignInNotice'
 import type {RoutePageProps} from '../../routes/paths'
 import type {CreditBalanceDto} from '../../shared/contracts'
 import {ApiClientError,createApiClient} from '../../shared/apiClient'
@@ -14,7 +16,7 @@ export default function WalletPage({authEnabled}:RoutePageProps) {
 function AuthenticatedWallet() {
  const {ready,authenticated,user,getAccessToken}=usePrivy()
  if(!ready)return <Page title="무료 테스트 크레딧"><p role="status">로그인을 확인하는 중…</p></Page>
- if(!authenticated||!user)return <Page title="무료 테스트 크레딧"><p>로그인 후 확인할 수 있어요.</p></Page>
+ if(!authenticated||!user)return <Page title="무료 테스트 크레딧"><ReaderSession>{session=><SignInNotice {...session} message="로그인 후 내 테스트 크레딧을 확인할 수 있어요."/>}</ReaderSession></Page>
  // Changing account unmounts the prior account's balance and cancels in-flight requests.
  return <WalletData key={user.id} getAccessToken={getAccessToken}/>
 }

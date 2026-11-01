@@ -65,3 +65,26 @@
 .chat-status dl>div {min-width:0;overflow-wrap:anywhere;padding:12px;background:var(--reader-bg);border-radius:12px;}
 .chat-status dt {font-size:12px;color:var(--reader-muted);}
 .chat-status dd {margin:4px 0 0;font-size:14px;color:var(--reader-ink);white-space:pre-wrap;}
+.chat-room {background:#fcfafb;}
+.chat-header {padding-block:12px;}
+.chat-header h1 {font-weight:600;font-size:16px;}
+.chat-header .ui-button {font-size:12px;}
+.chat-header>a {border:1px solid var(--reader-line);border-radius:50%;font-size:18px;}
+.chat-character-heading {gap:12px;margin-top:20px;}
+.chat-character-heading .chat-character {font-size:13px;}
+.chat-status {padding:16px 18px;border-radius:16px;background:#fff;}
+.chat-status summary {font-size:12px;padding:4px 0;}
+.chat-status dt {margin-top:0;font-size:10px;}
+.chat-status dd {font-size:12px;}
+.chat-status dl>div {border:1px solid #f1eaf0;background:#fdfbfc;}
+.chat-composer {background:#fff;border-top-color:#f1eaf0;}
+.chat-model-row {margin-bottom:2px;}
+.chat-model-row label {font-size:11px;color:var(--reader-muted);}
+.chat-model-row select {font-size:12px;}
+.chat-composer>p[role=status] {font-size:11px;line-height:1.6;margin:0 0 10px;color:var(--reader-muted);}
+.chat-composer form {border-radius:20px;border-color:#e4d6de;box-shadow:0 4px 20px #68465206;}
+.chat-composer textarea {font-size:14px;min-height:48px;}
+.chat-composer form>.ui-button {font-size:12px;display:inline-flex;align-items:center;justify-content:center;min-width:72px;}
+.chat-settings {box-shadow:0 12px 40px #68465214;}
+.chat-message-tools .ui-button {font-size:11px;}
+@media(max-width:480px){.chat-header h1{font-size:14px;max-height:60px}.chat-header .ui-button{font-size:11px;padding:8px}.chat-header{gap:6px}.chat-messages{padding-inline:18px}.chat-model-row .reader-balance{font-size:10px}.chat-composer{padding-inline:12px}.chat-composer form>.ui-button{min-width:60px;padding:8px 12px}}

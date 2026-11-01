@@ -1,12 +1,14 @@
-import { useId, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 
 export type TabItem = { id: string; label: string; content: ReactNode };
 export function Tabs({ label, items, value, onChange }: {
   label: string; items: readonly TabItem[]; value: string; onChange: (id: string) => void;
 }) {
   const id = useId();
+  const tablist=useRef<HTMLDivElement>(null);
+  useEffect(()=>{const selected=tablist.current?.querySelector<HTMLElement>('[aria-selected="true"]');if(selected&&tablist.current){const {offsetLeft,offsetWidth}=selected;tablist.current.scrollLeft=Math.max(0,offsetLeft-(tablist.current.clientWidth-offsetWidth)/2);}},[value]);
   return <div className="ui-tabs">
-    <div role="tablist" aria-label={label}>
+    <div ref={tablist} role="tablist" aria-label={label}>
       {items.map((item, index) => <button key={item.id} type="button" role="tab"
         id={`${id}-tab-${item.id}`} aria-controls={`${id}-panel-${item.id}`}
         aria-selected={item.id === value} tabIndex={item.id === value ? 0 : -1}

@@ -19,7 +19,7 @@ export function LibraryDialog({action,folders,api,onClose,onSaved}:{action:Libra
    case 'folder-delete':await api.deleteFolder(action.folder.id);break;
   }form.current?.closest('dialog')?.close();onSaved();
  }catch(error){setError(error instanceof Error?error.message:'저장하지 못했어요.');}finally{lock.current=false;setBusy(false);}}
- return <Modal open title={title} onClose={()=>{if(!lock.current)onClose();}}><form ref={form} className="reader library-dialog" onSubmit={event=>{event.preventDefault();void save();}}>
+ return <Modal initialFocus={removing?undefined:"input"} open title={title} onClose={()=>{if(!lock.current)onClose();}}><form ref={form} className="reader library-dialog" onSubmit={event=>{event.preventDefault();void save();}}>
  {removing?<p>{isChat?'대화를 삭제하면 보관함에서 다시 이어갈 수 없어요. 삭제할까요?':'폴더를 삭제해도 대화는 지워지지 않고 미분류로 옮겨져요.'}</p>:<label className="reader-field">{isChat?'대화 이름':'폴더 이름'}<input autoFocus value={name} maxLength={isChat?80:50} required disabled={busy} onChange={event=>setName(event.target.value)}/></label>}
  {action.kind==='chat-edit'&&<label className="reader-field">폴더<select value={folderId} disabled={busy} onChange={event=>setFolderId(event.target.value)}><option value="">미분류</option>{folders.map(folder=><option key={folder.id} value={folder.id}>{folder.name}</option>)}</select></label>}
  {error&&<p role="alert" className="reader-error">{error}</p>}

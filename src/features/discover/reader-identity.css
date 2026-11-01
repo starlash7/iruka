@@ -22,4 +22,4 @@
 @media(max-width:480px){.app-header:has(.reader-login) .brand span,.app-header:has(.reader-profile) .brand span{display:none}}
 
 .reader-profile-network{display:block;font-size:12px;color:#716A76;margin-top:3px}.reader-profile-settings{padding-left:32px;background:#FFF0F5;border-radius:14px}.reader-profile-settings a{background:transparent}
-@media(max-width:800px){.reader-top{height:auto;min-height:110px;flex-wrap:wrap;padding-block:8px}.reader-top>nav{order:3;flex-basis:100%;justify-content:center}.reader-top-actions{margin-left:auto}.reader-top-actions .network-selector-trigger span{display:none}.reader-top-actions .network-selector-trigger .account-asset-mark{display:grid}.reader-top-actions .network-selector-trigger{padding:6px;gap:2px}.reader-top-actions .network-selector-menu span{display:inline}}
+@media(max-width:800px){.reader-top-actions{margin-left:auto}.reader-top-actions .network-selector-trigger span{display:none}.reader-top-actions .network-selector-trigger .account-asset-mark{display:grid}.reader-top-actions .network-selector-trigger{padding:6px;gap:2px}.reader-top-actions .network-selector-menu span{display:inline}}

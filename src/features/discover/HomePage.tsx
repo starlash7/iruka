@@ -1,5 +1,5 @@
 import type {RoutePageProps} from '../../routes/paths';
-import {ArrowRight,Compass,Search,Trophy} from 'lucide-react';
+import {ArrowRight,Compass,Search,Trophy,PenLine} from 'lucide-react';
 import {ReaderLayout} from './ReaderLayout';
 import {useReader} from './ReaderProvider';
 import {usePages} from './usePages';
@@ -17,6 +17,7 @@ export default function HomePage(_props:RoutePageProps){
   <section className="home-work-collection" id="home-works" aria-labelledby="home-works-title"><div className="reader-section-heading"><h2 id="home-works-title">이야기 둘러보기</h2><a href={href('/search')}>전체 보기<ArrowRight size={16} aria-hidden="true"/></a></div>
    <WorkPages state={works} empty="공개된 작품이 아직 없어요."/>
   </section>
-  <div className="reader-mobile-continue home-continue"><ChatList/></div>
+  <div className="home-continue"><ChatList hideWhenSignedOut/></div>
+  <a className="home-create-link" href={href('/studio')}><span><PenLine size={22}/></span><span><strong>상상 속 이야기를 작품으로</strong><small>인물과 첫 장면을 만들고, 나만의 세계를 열어보세요.</small></span><ArrowRight size={18} aria-hidden="true"/></a>
  </div></ReaderLayout>;
 }

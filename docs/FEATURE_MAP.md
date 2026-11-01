@@ -26,6 +26,7 @@
 | seed/approved-*-assets.json, public/stories, seed/media | 출처·해시가 고정된 채택 원본, 공개/비공개 이미지 구분 |
 | scripts/seed/attach-artwork.ts | 기존 원고·고정 대화를 보존하는 명시적 로컬 에셋 연결 |
 | server/media, server/studio/migrations/0201_asset_versions.sql | 이름 있는 이미지 코드 업로드, 불변 이미지 버전과 공개·대화 접근 경계 |
+| src/features/discover/CollectionHeading.tsx, src/ui/StateArtwork.tsx, public/illustrations | 공통 화면 제목·상태 그래픽과 원본 홈 일러스트; 출처는 docs/assets/ui-illustrations.md |
 | src/ui, src/styles.css, public/fonts | 공통 컴포넌트·토큰과 자체 호스팅 Pretendard |
 | src/shared | DTO, API 클라이언트, SSE parser |
 | server/db, migrations | PostgreSQL 스키마, 파일 로컬 DB와 독립 테스트 DB |

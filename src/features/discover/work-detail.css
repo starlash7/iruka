@@ -48,3 +48,45 @@
 .work-page blockquote {margin:16px 0;padding:16px 20px;border-left:3px solid var(--reader-pink);background:var(--reader-selected);border-radius:0 16px 16px 0;}
 .work-page .reader-detail-cover img {object-fit:contain;background:white;}
 .work-overview .reader-chips>button {min-height:44px;padding:8px 14px;border:1px solid var(--reader-line);border-radius:24px;background:#fff;color:var(--reader-muted);font-size:12px;}
+.work-page .reader-back {font-size:12px;min-height:44px;padding:4px 0 20px;}
+.work-page .reader-work-detail {padding:24px;background:#fdfbfc;border:1px solid var(--reader-line);border-radius:24px;gap:32px;grid-template-columns:200px minmax(0,1fr);align-items:center;}
+.work-page .reader-detail-cover {aspect-ratio:2/3;border-radius:12px;box-shadow:0 8px 22px #68465214;}
+.work-overview h1 {font-size:32px;margin-bottom:8px;}
+.work-overview .work-creator {margin:0;font-size:12px;}
+.work-overview .reader-tagline {font-size:15px;line-height:1.7;}
+.work-overview .reader-chips {margin:16px 0;gap:6px;}
+.work-overview .reader-chips a {font-size:11px;padding:8px 12px;min-height:44px;}
+.work-overview .work-favorite .ui-button {font-size:12px;}
+.work-section-nav {gap:24px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:24px;padding-bottom:0;}
+.work-section-nav::-webkit-scrollbar {display:none;}
+.work-section-nav a {flex-shrink:0;min-height:54px;font-size:13px;}
+.work-section-nav a:hover {box-shadow:inset 0 -2px #c58aa5;}
+.work-page .reader-detail-section {padding:32px 0;}
+.work-page .reader-detail-section h2 {font-size:19px;}
+.work-page .reader-prose {font-size:14px;line-height:1.95;}
+.work-introduction-images {max-width:720px;}
+.work-introduction-images .story-image-trigger {background:#faf7f9;border:1px solid var(--reader-line);padding:12px;}
+.work-introduction-images .story-image-trigger>img {max-height:420px;border-radius:10px;}
+.work-cast {grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:20px;}
+.work-cast-portrait {border:1px solid var(--reader-line);border-radius:16px;}
+.work-cast-portrait .story-image-trigger {border-radius:16px;}
+.work-cast-portrait .story-image-trigger>img {border-radius:16px;}
+.work-cast strong {font-size:14px;}
+.work-cast p {font-size:12px;}
+.work-gallery>div {padding:12px;border:1px solid var(--reader-line);border-radius:18px;background:#fdfbfc;}
+.work-gallery .story-image-trigger>img {border-radius:10px;}
+.work-gallery p {margin:12px 2px 2px;font-size:12px;}
+.work-page #work-openings details {padding-inline:20px;background:#fdfbfc;}
+.work-page #work-openings summary {font-size:14px;padding-block:14px;}
+.work-page #work-openings .story-text {font-size:14px;}
+.reader-start>p:first-child {font-weight:600;margin-top:0;}
+.reader-start legend {font-size:13px;font-weight:600;}
+.reader-start .reader-field {font-size:13px;}
+.reader-opening strong {font-size:14px;}
+.reader-opening small {font-size:12px;line-height:1.7;}
+.reader-opening-preview {padding:4px 14px;border:1px solid var(--reader-line);border-radius:14px;background:#fdfbfc;}
+.reader-opening-preview summary {font-size:12px;}
+.reader-opening-preview .story-text {font-size:13px;}
+.reader-start>.ui-button {width:100%;}
+@media(max-width:800px){.work-page .reader-work-detail{grid-template-columns:140px minmax(0,1fr);padding:20px;gap:24px}.work-overview h1{font-size:26px}.work-start-action{bottom:calc(76px + env(safe-area-inset-bottom));}.work-page{padding-bottom:120px!important}}
+@media(max-width:480px){.work-page .reader-work-detail{grid-template-columns:92px minmax(0,1fr);gap:16px;padding:16px;border-radius:20px;align-items:start}.work-page .reader-work-detail h1{font-size:21px}.work-overview .reader-tagline{font-size:12px;margin-block:10px}.work-overview .reader-chips{grid-column:1/-1;margin-bottom:12px}.work-overview .reader-chips a{font-size:11px;padding-inline:9px}.work-overview .work-creator{font-size:11px}.work-section-nav{gap:20px}.work-cast{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 12px}.work-cast strong{font-size:13px}.work-cast p{font-size:11px}.work-page .reader-detail-section{padding-block:26px}.work-page .reader-detail-section h2{font-size:18px}.work-introduction-images .story-image-trigger>img{max-height:300px}.work-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.work-gallery>div{padding:8px;border-radius:12px}.work-gallery p{font-size:11px}.work-gallery .story-image-trigger>img{aspect-ratio:1;}.work-start-action{left:12px;right:12px;padding:10px;border-radius:18px}}

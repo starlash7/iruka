@@ -19,7 +19,7 @@ test('home keeps both modes discoverable without mode badges or duplicate recomm
 });
 test('home uses one header search, branded masthead and public work collection',()=>{
  const html=render('HomePage',{},[work('story','story')]);
- assert.match(html,/home-masthead/);assert.match(html,/iruka-x-banner-ocean-formation/);
+ assert.match(html,/home-masthead/);assert.match(html,/illustrations\/story-portal-v1\.jpg/);
  assert.equal((html.match(/role="search"/g)||[]).length,1);
  assert.ok(html.indexOf('role="search"')<html.indexOf('home-masthead'));
  assert.match(html,/home-work-collection/);assert.doesNotMatch(html,/인기 급상승|만 회|맞춤 추천/);

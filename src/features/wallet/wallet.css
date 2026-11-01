@@ -9,3 +9,16 @@
 .credit-history time { display: block; margin-top: var(--space-2); color: var(--muted); font-size: var(--text-sm); }
 .credit-entry-value { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-2); font-variant-numeric: tabular-nums; }
 @media (max-width: 480px) { .credit-balance { grid-template-columns: 1fr; } }
+.credit-balance {gap:18px;margin-bottom:32px;}
+.credit-balance>div {padding:24px 28px;border:1px solid var(--line);background:#fdfbfc;}
+.credit-balance>div:first-child {background:linear-gradient(135deg,#fff7fa,#fcecf3);border-color:#edd4e0;}
+.credit-balance dt {display:flex;align-items:center;gap:10px;font-size:13px;color:var(--reader-action);}
+.credit-balance dd {font-size:42px;line-height:1.2;font-weight:650;margin-top:24px;letter-spacing:-.03em;}
+.credit-balance>div:last-child dd {color:var(--reader-muted);}
+.credit-history {border:1px solid var(--line);border-radius:18px;padding:0 20px;}
+.credit-history li {padding:18px 0;}
+.credit-history li:last-child {border-bottom:0;}
+.credit-history strong {font-size:14px;font-weight:550;}
+.credit-history time {font-size:11px;}
+.credit-entry-value .ui-chip {font-size:10px;background:#f7f2f5;}
+@media(max-width:480px){.credit-balance{grid-template-columns:1fr 1fr;gap:12px}.credit-balance>div{padding:20px 16px}.credit-balance dd{font-size:32px;margin-top:18px}.credit-balance dt{font-size:12px}.credit-history{padding-inline:16px}}

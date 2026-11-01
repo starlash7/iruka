@@ -11,7 +11,7 @@ export default function App({ authEnabled = false }: { authEnabled?: boolean }) 
     <a className="skip-link" href="#main">본문으로 건너뛰기</a>
     <main id="main" tabIndex={-1}><RoutePage params={route.params} authEnabled={authEnabled}/></main>
   </>;
-  const active = route && ['studio', 'editor'].includes(route.id) ? 'studio' : 'account';
+  const active = route?.id==='favorites'?'favorites':route && ['studio', 'editor'].includes(route.id) ? 'studio' : 'account';
   return <>
     <a className="skip-link" href="#main">본문으로 건너뛰기</a>
     <main id="main" tabIndex={-1}>

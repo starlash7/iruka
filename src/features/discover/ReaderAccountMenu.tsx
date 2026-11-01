@@ -11,9 +11,9 @@ import {useProfile} from '../user/profile/useProfile';
 import accountIcon from './assets/iruka-icon-account.png';
 import walletIcon from './assets/iruka-icon-wallet.png';
 
-export function ReaderAccountMenu(){
+export function ReaderAccountMenu({showNetwork=false}:{showNetwork?:boolean}){
  const {href}=useReader();const transferBusy=useTransferBusy();
- return <><NetworkSelector disabled={transferBusy} locale="ko"/>{import.meta.env.VITE_PRIVY_APP_ID?.trim()?<PrivyReaderAccount/>:<a className="reader-login" href={href('/account')}>로그인</a>}</>;
+ return <>{showNetwork&&<NetworkSelector disabled={transferBusy} locale="ko"/>}{import.meta.env.VITE_PRIVY_APP_ID?.trim()?<PrivyReaderAccount/>:<a className="reader-login" href={href('/account')}>로그인</a>}</>;
 }
 function PrivyReaderAccount(){
  const {href}=useReader();
