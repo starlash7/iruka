@@ -24,7 +24,7 @@ before(async()=>{
    if(id.endsWith('/discover/ReaderLayout.tsx'))return 'export const ReaderLayout=({children})=>children;';
   },
  }]});
- ({default:ChatPage}=await server.ssrLoadModule('/src/features/chat/ChatPage.tsx'));
+ ({ChatRoom:ChatPage}=await server.ssrLoadModule('/src/features/chat/ChatPage.tsx'));
  ({MessageDialog}=await server.ssrLoadModule('/src/features/chat/ChatPanels.tsx'));
 });
 after(async()=>{delete globalThis.__chatUx;await server?.close();});

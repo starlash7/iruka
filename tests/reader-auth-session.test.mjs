@@ -4,7 +4,7 @@ import {createServer} from 'vite';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 
-test('restoring a Privy session does not reload; a new login refreshes private view data once',async()=>{
+test('only an initiated header login reloads; session restore and other surfaces do not',async()=>{
  let reloads=0;
  const originalWindow=globalThis.window;
  globalThis.window={location:{reload(){reloads++;}}};
@@ -17,15 +17,26 @@ test('restoring a Privy session does not reload; a new login refreshes private v
    export const useLinkAccount=()=>({linkWallet(){}});
   `;}}]});
  try{
-  const {ReaderAccountMenu}=await server.ssrLoadModule('/src/features/discover/ReaderAccountMenu.tsx');
-  assert.match(renderToStaticMarkup(createElement(ReaderAccountMenu)),/내 계정/);
+  const {useReaderLogin}=await server.ssrLoadModule('/src/features/discover/useReaderLogin.ts');
+  let beginLogin;
+  function HeaderLogin(){beginLogin=useReaderLogin({reloadOnLogin:true,onError(){}});return null;}
+  renderToStaticMarkup(createElement(HeaderLogin));
   const {onComplete}=globalThis.__readerAuthTest.callbacks;
   onComplete({wasAlreadyAuthenticated:true});
   onComplete({wasAlreadyAuthenticated:true});
   assert.equal(reloads,0,'restoration must never restart SDK initialization');
   onComplete({wasAlreadyAuthenticated:false});
+  assert.equal(reloads,0,'a login initiated in the start sheet must not be reloaded by the header');
+  beginLogin();
+  onComplete({wasAlreadyAuthenticated:false});
   assert.equal(reloads,1,'new login clears the previous user view');
   onComplete({wasAlreadyAuthenticated:true});
   assert.equal(reloads,1,'restoring after that refresh must stop');
+  let complete=0;
+  function SheetLogin(){beginLogin=useReaderLogin({onComplete(){complete++;},onError(){}});return null;}
+  renderToStaticMarkup(createElement(SheetLogin));
+  beginLogin();globalThis.__readerAuthTest.callbacks.onComplete({wasAlreadyAuthenticated:false});
+  assert.equal(reloads,1,'the sheet must continue without a page reload');
+  assert.equal(complete,1);
  }finally{await server.close();delete globalThis.__readerAuthTest;if(originalWindow===undefined)delete globalThis.window;else globalThis.window=originalWindow;}
 });

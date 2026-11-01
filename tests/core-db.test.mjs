@@ -12,7 +12,7 @@ test('migration is repeatable and databases are isolated', async () => {
     await migrateDatabase(first)
     await first.query("INSERT INTO users(privy_did) VALUES ('did:privy:one')")
     assert.equal((await second.query('SELECT * FROM users')).rows.length,0)
-    assert.equal((await first.query('SELECT * FROM schema_migrations')).rows.length,5)
+    assert.equal((await first.query('SELECT * FROM schema_migrations')).rows.length,6)
   } finally { await first.close(); await second.close() }
 })
 
@@ -134,7 +134,7 @@ test('existing 0001 databases upgrade once and reject duplicate turn operations 
     await db.query("INSERT INTO credit_ledger(user_id,turn_request_id,kind,amount,idempotency_key) VALUES ($1,$2,'reserve',-5,'reserve-original')",[userId,turn])
     await migrateDatabase(db)
     await migrateDatabase(db)
-    assert.deepEqual((await db.query('SELECT version FROM schema_migrations ORDER BY version')).rows,[{version:'0001'},{version:'0002'},{version:'0003'},{version:'0004'},{version:'0005'}])
+    assert.deepEqual((await db.query('SELECT version FROM schema_migrations ORDER BY version')).rows,[{version:'0001'},{version:'0002'},{version:'0003'},{version:'0004'},{version:'0005'},{version:'0006'}])
     assert.equal((await db.query('SELECT * FROM credit_ledger')).rows.length,1)
     const insert="INSERT INTO credit_ledger(user_id,turn_request_id,kind,amount,idempotency_key) VALUES ($1,$2,$3,$4,$5)"
     await assert.rejects(db.query(insert,[userId,turn,'reserve',-5,'reserve-duplicate']),/unique/)

@@ -5,6 +5,7 @@ import {requireId} from '../core/http.ts';
 import {getCreatorWork} from '../core/works.ts';
 import type {StudioDraft,StudioWork,StudioAsset} from '../../src/features/studio/types.ts';
 import {validateDraft} from './validate.ts';
+import {isBundledStoryImage} from '../media/bundled.ts';
 async function lockWork(db:Database,userId:string,id:string) {
  requireId(id);requireId(userId);
  const {rows}=await db.query<{owner_id:string}>('SELECT owner_id FROM works WHERE id=$1 FOR UPDATE',[id]);
@@ -16,7 +17,7 @@ async function readDraft(db:Database,id:string) {
  if(!row)throw new ApiError('NOT_FOUND','편집 초안이 없어요.');return row;
 }
 async function readAssets(db:Database,id:string):Promise<StudioAsset[]> {
- return (await db.query<StudioAsset>('SELECT id,code,label,url FROM studio_assets WHERE work_id=$1 ORDER BY code',[id])).rows;
+ return (await db.query<StudioAsset>('SELECT id,code,label,url,revision FROM studio_assets WHERE work_id=$1 ORDER BY code,revision DESC',[id])).rows;
 }
 async function checkAssets(db:Database,userId:string,id:string,draft:StudioDraft) {
  const owned=(await db.query<StudioAsset>('SELECT id,code,label,url FROM studio_assets WHERE work_id=$1 AND owner_id=$2',[id,userId])).rows;
@@ -24,8 +25,8 @@ async function checkAssets(db:Database,userId:string,id:string,draft:StudioDraft
   const asset=owned.find(o=>o.id===a.id&&o.code===a.code);
   if(!asset)throw new ApiError('FORBIDDEN','이 작품이 소유한 이미지만 사용할 수 있어요.');return asset;
  });
- const urls=[draft.coverUrl,...draft.publicSnapshot.characters.map(c=>c.imageUrl),...draft.privateConfig.endings.map(e=>e.imageUrl)];
- if(urls.some(url=>url!==null&&!selected.some(a=>a.url===url)))throw new ApiError('FORBIDDEN','등록된 소유 이미지만 사용할 수 있어요.');
+ const urls=[draft.coverUrl,...draft.publicSnapshot.characters.map(c=>c.imageUrl),...draft.publicSnapshot.openings.map(o=>o.imageUrl??null),...(draft.publicSnapshot.gallery??[]).map(item=>item.imageUrl),...draft.privateConfig.endings.map(e=>e.imageUrl)];
+ if(urls.some(url=>url!==null&&!isBundledStoryImage(url)&&!selected.some(a=>a.url===url)))throw new ApiError('FORBIDDEN','등록된 소유 이미지만 사용할 수 있어요.');
  return selected;
 }
 async function getWork(db:Database,userId:string,id:string):Promise<StudioWork> {
@@ -41,9 +42,10 @@ export function createStudioService({db}:{db:Database}) {
   getWork(userId:string,id:string){return db.transaction(tx=>getWork(tx,userId,id));},
   async listWorks(userId:string) {
    requireId(userId);
-   return (await db.query<{id:string;title:string;mode:string;revision:number;published:boolean}>(`SELECT w.id,d.body->>'title' AS title,d.body->>'mode' AS mode,d.revision,
+   const rows=(await db.query<{id:string;title:string;mode:string;revision:number;published:boolean;cover_url:string|null;updated_at:Date}>(`SELECT w.id,d.body->>'title' AS title,d.body->>'mode' AS mode,d.body->>'coverUrl' AS cover_url,d.updated_at,d.revision,
     EXISTS(SELECT 1 FROM work_versions v WHERE v.work_id=w.id AND published_at IS NOT NULL) AS published
     FROM works w JOIN studio_drafts d ON d.work_id=w.id WHERE w.owner_id=$1 ORDER BY d.updated_at DESC,w.id`,[userId])).rows;
+   return rows.map(({cover_url,updated_at,...row})=>({...row,coverUrl:cover_url,updatedAt:new Date(updated_at).toISOString()}));
   },
   async saveDraft(userId:string,input:StudioDraft):Promise<StudioWork> {
    const draft=validateDraft(input);requireId(userId);
@@ -73,7 +75,7 @@ export function createStudioService({db}:{db:Database}) {
     const version=(await tx.query<{version:number}>('SELECT COALESCE(MAX(version),0)+1 AS version FROM work_versions WHERE work_id=$1',[id])).rows[0].version;
     const created=(await tx.query<{id:string}>(`INSERT INTO work_versions(work_id,version,public_snapshot,private_config,published_at)
      VALUES($1,$2,$3,$4,now()) RETURNING id`,[id,version,JSON.stringify(draft.publicSnapshot),JSON.stringify({...draft.privateConfig,studioRevision:row.revision,assets,workMetadata:{mode:draft.mode,title:draft.title,description:draft.description,coverUrl:draft.coverUrl,tags:draft.tags}})])).rows[0];
-    await tx.query("UPDATE works SET mode=$2,title=$3,description=$4,cover_url=$5,tags=$6,visibility='public' WHERE id=$1",[id,draft.mode,draft.title,draft.description,draft.coverUrl,draft.tags]);
+    await tx.query("UPDATE works SET mode=$2,title=$3,description=$4,cover_url=$5,tags=$6,show_creator=$7,visibility='public' WHERE id=$1",[id,draft.mode,draft.title,draft.description,draft.coverUrl,draft.tags,draft.showCreator===true]);
     await tx.query('UPDATE studio_drafts SET revision=revision+1 WHERE work_id=$1',[id]);
     return (await getCreatorWork(tx,id,userId)).versions.find(v=>v.id===created.id)!;
    });

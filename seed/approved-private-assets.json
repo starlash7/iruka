@@ -1,0 +1,51 @@
+{
+  "repository": "starlash7/crack",
+  "revision": "58545d092ffef20d1b44e6d8ada6ee5e001fd310",
+  "assets": [
+    {
+      "slug": "office-romance",
+      "code": "XJuxTl",
+      "path": "seed/media/office-romance/chaeri-smile.webp",
+      "source": "assets/사내연애-조작단/art/expressions-v1/webp/chaeri-smile.webp",
+      "sha256": "052c64a3330826b18598fa252288c6975462839f55f3f05db674f9eb61f3b765",
+      "bytes": 231486,
+      "mime": "image/webp"
+    },
+    {
+      "slug": "office-romance",
+      "code": "bcouUW",
+      "path": "seed/media/office-romance/chaeri-flustered.webp",
+      "source": "assets/사내연애-조작단/art/expressions-v1/webp/chaeri-flustered.webp",
+      "sha256": "42071137a79244fa36a5a80f9373d046b3113f56f93c898b1b7e48b021a8c5db",
+      "bytes": 219834,
+      "mime": "image/webp"
+    },
+    {
+      "slug": "office-romance",
+      "code": "uNOgC1",
+      "path": "seed/media/office-romance/chaeri-thinking.webp",
+      "source": "assets/사내연애-조작단/art/expressions-v1/webp/chaeri-thinking.webp",
+      "sha256": "2e833b858569eab621799927d12a0108b5bd1f3cfc607fdbcd63fa6732f0e26a",
+      "bytes": 210688,
+      "mime": "image/webp"
+    },
+    {
+      "slug": "office-romance",
+      "code": "xYRJ9m",
+      "path": "seed/media/office-romance/chaeri-firm.webp",
+      "source": "assets/사내연애-조작단/art/expressions-v1/webp/chaeri-firm.webp",
+      "sha256": "4f26c9e2c134f273e2fd2d2a136ce595a8c20bef2402713235bf4795079f743a",
+      "bytes": 195086,
+      "mime": "image/webp"
+    },
+    {
+      "slug": "office-romance",
+      "code": "ynRjgq",
+      "path": "seed/media/office-romance/chaeri-shy.webp",
+      "source": "assets/사내연애-조작단/art/expressions-v1/webp/chaeri-shy.webp",
+      "sha256": "be625546e568a0bc65f0b9a1698a87d403afe07c29682dd8bbf4f377879d067a",
+      "bytes": 206688,
+      "mime": "image/webp"
+    }
+  ]
+}

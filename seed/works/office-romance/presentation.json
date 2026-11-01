@@ -1,0 +1,119 @@
+{
+  "coverUrl": "/stories/office-romance/cover.webp",
+  "characters": [
+    {
+      "id": "character-1",
+      "imageUrl": "/stories/office-romance/profile-yuna.png",
+      "caption": "프로젝트 매니저"
+    },
+    {
+      "id": "character-2",
+      "imageUrl": "/stories/office-romance/profile-haerin.png",
+      "caption": "UX 디자이너"
+    },
+    {
+      "id": "character-3",
+      "imageUrl": "/stories/office-romance/profile-doha.png",
+      "caption": "개발자"
+    },
+    {
+      "id": "character-4",
+      "imageUrl": "/stories/office-romance/profile-chaeri.png",
+      "caption": "콘텐츠 담당"
+    },
+    {
+      "id": "character-5",
+      "imageUrl": "/stories/office-romance/profile-seorin.png",
+      "caption": "아트 디렉터"
+    },
+    {
+      "id": "character-6",
+      "imageUrl": "/stories/office-romance/profile-naeun.png",
+      "caption": "파트너십 담당"
+    }
+  ],
+  "gallery": [
+    {
+      "id": "synopsis",
+      "title": "사내연애 조작단 시놉시스",
+      "imageUrl": "/stories/office-romance/synopsis.webp",
+      "introduction": true
+    },
+    {
+      "id": "intro-yuna",
+      "title": "서유나 소개",
+      "imageUrl": "/stories/office-romance/intro-yuna.webp",
+      "introduction": false
+    },
+    {
+      "id": "intro-haerin",
+      "title": "강해린 소개",
+      "imageUrl": "/stories/office-romance/intro-haerin.webp",
+      "introduction": false
+    },
+    {
+      "id": "intro-doha",
+      "title": "윤도하 소개",
+      "imageUrl": "/stories/office-romance/intro-doha.webp",
+      "introduction": false
+    },
+    {
+      "id": "intro-chaeri",
+      "title": "오채리 소개",
+      "imageUrl": "/stories/office-romance/intro-chaeri.webp",
+      "introduction": false
+    },
+    {
+      "id": "intro-seorin",
+      "title": "백서린 소개",
+      "imageUrl": "/stories/office-romance/intro-seorin.webp",
+      "introduction": false
+    },
+    {
+      "id": "intro-naeun",
+      "title": "정나은 소개",
+      "imageUrl": "/stories/office-romance/intro-naeun.webp",
+      "introduction": false
+    }
+  ],
+  "openings": [
+    {
+      "id": "start",
+      "imageUrl": "/stories/office-romance/opening.png"
+    }
+  ],
+  "codeImages": [
+    {
+      "code": "UaDW2t",
+      "url": "/stories/office-romance/opening.png",
+      "label": "공용 테이블의 첫 장면"
+    }
+  ],
+  "privateImages": [
+    {
+      "code": "XJuxTl",
+      "hash": "052c64a3330826b18598fa252288c6975462839f55f3f05db674f9eb61f3b765",
+      "label": "채리 반응 · 웃음"
+    },
+    {
+      "code": "bcouUW",
+      "hash": "42071137a79244fa36a5a80f9373d046b3113f56f93c898b1b7e48b021a8c5db",
+      "label": "채리 반응 · 당황"
+    },
+    {
+      "code": "uNOgC1",
+      "hash": "2e833b858569eab621799927d12a0108b5bd1f3cfc607fdbcd63fa6732f0e26a",
+      "label": "채리 반응 · 생각"
+    },
+    {
+      "code": "xYRJ9m",
+      "hash": "4f26c9e2c134f273e2fd2d2a136ce595a8c20bef2402713235bf4795079f743a",
+      "label": "채리 반응 · 단호"
+    },
+    {
+      "code": "ynRjgq",
+      "hash": "be625546e568a0bc65f0b9a1698a87d403afe07c29682dd8bbf4f377879d067a",
+      "label": "채리 반응 · 부끄러움"
+    }
+  ]
+}

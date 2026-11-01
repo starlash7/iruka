@@ -33,11 +33,33 @@ avatar는 null 또는 512px 이하의 검증·정규화된 PNG data URL이다(�
 이메일·지갑·Privy DID를 프로필 DTO에 넣지 않으며 공개 프로필 API는 없다.
 저장은 서버 DB 정본이며 브라우저 저장소에 프로필을 저장하지 않는다.
 
+### 대화 보관함과 찜 (2026-10-31)
+
+- `GET /api/chats?workId=&folderId=&offset=&limit=`: 본인 대화만 최근 메시지 활동순으로 반환한다. workId/folderId는 UUID, folderId=`unfiled`는 미분류다. offset 0~10000, limit 1~100(기본 50). 각 항목은 chat/title/preview/coverUrl/folderId/updatedAt이다. 작품 상세의 이어하기는 workId와 limit=1을 사용한다.
+- `PATCH /api/chats/:id`: `{title?:string|null, folderId?:string|null}`. 이름 1~80자, null은 원작 제목 복원이다. 폴더는 본인 소유만 허용하고 null은 미분류로 이동한다. 성공은 갱신한 ChatView이며 고정된 작품·버전·페르소나는 바꾸지 않는다. 기존 DELETE는 진행 중 요청에 409를 유지한다.
+- `GET/POST /api/me/chat-folders`, `PATCH/DELETE /api/me/chat-folders/:id`: 본인 폴더만 조회·변경한다. 쓰기 본문은 `{name}`(1~50자), 응답은 `{id,name}`. 동일 이름은 409, 삭제는 소속 대화의 폴더만 해제하고 대화를 보존한다.
+- `GET /api/me/favorites?offset=`: 공개 발행 작품을 60개씩 반환한다. `GET /api/me/favorites/:workId`와 `PUT`의 `{saved:boolean}`은 찜 상태를 반환한다. 저장·해제는 멱등적이며 다른 사용자 ID를 받지 않는다. 비공개·미발행 작품은 새로 찜할 수 없고 목록에 노출하지 않는다.
+
+위 API는 모두 Privy 토큰을 검증하고 서버 사용자 ID로 범위를 제한한다. 프로필 본인 조회 계약은 유지하며, 별도 공개 작품 DTO의 선택적 `creatorName`만 추가한다. Studio 초안의 `showCreator`를 명시적으로 켜고 발행한 작품만 현재 프로필 닉네임을 공개한다. 기존 작품은 false이며 이메일·DID·아바타·소개는 공개하지 않는다.
+
+`POST /api/studio/works/:workId/assets/:assetId/image`는 소유한 코드 슬롯에 기존과 같은 검증·정규화된 PNG 바이트를 업로드한다. 응답은 새 `{id,code,label,url,revision}`(201)이며 같은 최신 파일 재시도는 기존 행을 반환한다. 최신 슬롯이 바뀐 뒤 다른 파일을 올리면 409다. 이전 행·URL은 발행본과 고정 대화를 위해 보존한다. 브라우저는 반환한 새 ID를 초안에 연결하고 기존 revision 저장·복구 흐름을 사용한다. URL 조회는 기존 공개 참조/소유권/고정 대화 권한을 검증한다. 교체 이력까지 작품별 200개 한도를 적용한다.
+
 ### 기존 데이터
+
+2026-10-31 시각 표현 확장:
+
+- PublicWorkSnapshot의 선택적 `gallery`: 최대 20개 `{id,title,imageUrl,introduction?}`. 공개 배치 선택이며 업로드만으로 추가하지 않는다. id 64자, title 100자, introduction은 boolean이다. 인물의 `caption`은 공개 200자, 시작 상황의 `imageUrl`은 선택 항목이다.
+- 소유한 업로드 자산으로 URL을 연결하거나 출처·해시가 고정된 공개 번들 이미지를 사용한다. 다른 작품의 업로드 URL은 사용할 수 없다. 이 필드는 기존 JSON 스냅샷에 저장하므로 새 DB 마이그레이션은 없다.
+- 상세의 `snapshot.images`는 읽기 전용이다. 공개 프롤로그·첫 대사가 실제로 참조한 이미지 코드만 서버가 해석한다. 전체 비공개 자산 목록이나 내부 이미지 설명은 반환하지 않는다. 작성자가 명시한 공개 갤러리 설명 또는 일반 장면 레이블을 사용한다.
+- 공개 작품 화면의 내부 미디어 조회는 세션 토큰을 요구하지 않는 클라이언트를 사용한다. 서버의 공개 참조 검사는 그대로 적용하며 대화·제작의 비공개 이미지 조회는 기존 인증 클라이언트를 유지한다.
+- 대화 view의 `characters`는 해당 대화의 고정된 작품 버전에서 공개 이름·이미지·한 줄 소개만 반환한다. 최신 작품 발행으로 기존 대화의 인물 이미지를 교체하지 않는다.
+- Studio 목록에 `coverUrl`, `updatedAt`(ISO-8601)을 추가한다. 일반 이미지 업로드의 선택적 `X-Image-Label`은 URL 인코딩된 설명(최대 200자)이며 본문은 기존 정규화 PNG다.
+- 보호 이미지 조회는 `image/png` 또는 채택된 불변 반응 이미지의 `image/webp`를 반환한다. WebP 번들 5개는 public 디렉터리에 두지 않으며, 정상 소유권·공개 참조·고정 대화 검사 이후에만 원본 해시를 검증해 읽는다. 일반 업로드의 PNG 검증은 유지한다. 클라이언트는 두 MIME만 허용하며 토큰을 외부 이미지 URL에 보내지 않는다.
+- 기존 시드 원고와 해시는 유지한다. `scripts/seed/attach-artwork.ts`는 수정된 초안을 거부하고 명시적으로 새 발행본만 추가한다. 실제 사용자 DB에 대한 이 명령 실행과 실제 로그인 검증은 이번 요청에서 제외했다.
 
 - `UserDto`: 내부 id, privyDid, displayName, createdAt. 본인 응답 전용이며 공개 작품에 포함하지 않는다.
 - `PublicWorkDto`: id, creatorId, mode(character/story), title, description,
-  coverUrl, tags, publishedVersionId, createdAt. 서버는 이 필드만 명시적으로 선택한다.
+  coverUrl, tags, publishedVersionId, createdAt 및 선택적 creatorName. 서버는 이 필드만 명시적으로 선택한다.
 - `PublicWorkDetailDto`: PublicWorkDto + snapshot(PublicWorkSnapshot/null). 공개 상세는 발행 버전의 중첩 필드를 whitelist로 반환한다.
 - `PrivateWorkVersionDto`: id, workId, version, systemPrompt, hiddenSettings, publicSnapshot,
   createdAt. publicSnapshot은 초안의 부분 입력도 반환한다. 작성자 소유권 확인 이후만 반환한다.

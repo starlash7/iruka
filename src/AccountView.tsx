@@ -1,7 +1,6 @@
 import type { User } from "@privy-io/react-auth";
 
-import {AccountProfileHero} from "./features/discover/account/AccountProfileHero";
-import {ReaderAvatar,ReaderAccountArt} from "./features/discover/ReaderIdentity";
+import {ReaderAccountArt} from "./features/discover/ReaderIdentity";
 
 export type AccountViewProps = {
   walletPanel?: import("react").ReactNode;
@@ -23,12 +22,12 @@ export function AccountView({
 
   return (
     <div className="account-content">
-      {walletPanel?<AccountProfileHero accountLabel="내 계정" overviewLabel="개요" inventoryLabel="보관함"/>:<ReaderAccountArt/>}
+      {!authenticated&&<ReaderAccountArt/>}
       {authenticated && user ? (
         <>
-          <ReaderAvatar identity={user.id}/>
+          <h2>로그인 정보</h2>
           <dl>
-            <dt>이름</dt>
+            <dt>로그인 이름</dt>
             <dd>{user.google?.name?.trim() || "Iruka 사용자"}</dd>
             {(user.email?.address || user.google?.email) && (
               <>

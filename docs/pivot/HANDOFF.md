@@ -276,3 +276,269 @@ Deferred contract/identity work is listed in plans/reader-ux-first-batch.md.
 - Local private recent chats still report missing server Privy configuration.
   Real OAuth-to-chat/publish is not validated; no authentication bypass, remote
   service changes, paid calls, main merge or deployment were performed.
+
+## 2026-10-31 Account and work-detail reference follow-up
+
+- Baseline is integration `061c630` from PR #14. The new feature branch retains
+  that complete story-platform history; `main` remains the historical TCG tree.
+- Reused the approved reference audit and read-only signed-in Crack profile/menu
+  and Uummai menu observations. No competitor account data, artwork or content
+  was copied; restricted detail views were not unlocked or configured.
+- My Page uses a compact responsive profile card and activity destinations.
+  Profile failures retain those links, and a refresh failure retains the same
+  user's last loaded profile. Login identity/settings are separated from the
+  saved profile; optional wallets and conversation library remain available.
+- Work detail adds anchors for existing public sections and one mobile start
+  action above the navigation. Missing artwork remains explicitly absent.
+- Start options wait for authenticated readiness. Login cancellation/retry
+  returns to the same sheet/work without header-triggered reloads. The native
+  dialog releases its top layer for the SDK portal; closing the sheet restores
+  focus to the original start button. Existing development fixtures stay explicit.
+
+Verification (Node 24.14.0 via `npm exec --package=node@24.14.0`):
+
+- Existing-lockfile `npm ci --no-audit --no-fund`: passed.
+- Baseline `npm test`: 202/202. New focused tests first failed in five cases.
+- Final `npm test`: 208 passed, 0 failed/skipped; `npm run build`: exit 0.
+  Existing Privy annotation and large-chunk warnings remain. `git diff --check`
+  passed. No dependency, API, database or model-policy changes.
+- Ego lite TaskSpace 4: original components with a labelled local auth/HTTP
+  fixture, profile and work detail at 390/768/1440px, measured horizontal
+  overflow 0 and no mobile CTA/navigation overlap. Screenshots inspected.
+- Profile: failed save retains draft, successful save updates header, refresh
+  error retains saved data, initial error retains four activity destinations,
+  retry recovers, cancel restores focus. Long 30-character nickname and long
+  bio fit at 390px; editor actions are usable after normal vertical scrolling.
+- Start sheet: no private option reads before login/cancellation; SDK portal
+  is not blocked by a native modal; retry and success keep the same page/work.
+  390px options dialog has no horizontal overflow; Tab stays inside and Escape
+  restores the start button. Fixture pages reported no runtime errors.
+
+Private artifacts: `.context/reader-{mypage,work}-{390,768,1440}.png`,
+`reader-start-390.png`, `reader-profile-editor-390.png`, and
+`reader-account-work-{tests,build}-final.log`. The screenshots use synthetic data
+and say so. These checks do not prove real Privy OAuth/OTP, production profile
+persistence, remote DB, model output or paid credit settlement. No production
+authentication bypass, paid call, chain transaction, main merge or deployment.
+## 2026-10-31 Reader library, search and image-code expansion
+
+- Work detail separates Continue (latest activity for that exact work) and New
+  conversation. New retains opening/persona/model selection. Auth restoration and
+  signed-out states do not mount private conversation/favorite requests.
+- Private library supports custom titles, 50-row pages, folder create/rename/delete,
+  moving chats and confirmed chat deletion. Deleting a folder keeps its chats
+  unfiled. Mutations preserve the pinned version/persona; pending chat deletion
+  remains 409. Errors stay in the dialog, retry preserves input, and Escape/save
+  restore useful keyboard focus.
+- Search highlights literal text on the selected loaded message path, navigates
+  matching messages and never generates a response. Font size (14–24px) and line
+  spacing are bounded device preferences; denied storage remains usable.
+- Home/search/tag retain filters while loading another 60 works, prevent duplicate
+  requests/rows, ignore obsolete responses, and keep previous cards on failure.
+  Private favorites have an authenticated `/favorites` destination from My Page
+  and the profile menu. Only publicly published works appear there.
+- `showCreator` is an explicit Studio publishing choice, false for existing works.
+  Public DTOs expose the saved nickname only when opted in; private profile fields
+  and hidden prompts remain excluded.
+- Named image-code slots now upload/replace real files and bind the returned
+  immutable asset revision to the draft. Existing published and pinned images
+  survive replacements; hash-equal retries reuse the latest asset. Different
+  stale uploads fail with 409. The existing 200-record work cap includes history.
+- Additive migrations: foundation `0006_reader_library.sql`, Studio
+  `0201_asset_versions.sql`. Product migrations, clients, explicit development
+  adapters, feature/API map and user documentation are updated together.
+
+Verification (Node 24.14.0 through npm exec):
+
+- Final `npm test`: **216 passed, 0 failed/skipped**. `npm run build`: **exit 0**;
+  existing Privy annotation and large-chunk warnings remain. `git diff --check`
+  passed. Logs: `.context/reader-expansion-{tests,build}-final.log`.
+- Real local handler/DB tests cover anonymous/cross-user rejection, invalid names,
+  folder uniqueness/moves/deletion, recent activity and exact-work filtering,
+  pending deletion, opt-in/withdrawn author disclosure, private/hidden favorites,
+  60+ paging, repeatable upgrades and immutable code image access/replacement.
+  UI regressions cover literal/XSS-safe search, reading/storage denial, dialogs,
+  private-client tokens and auth readiness. Earlier failures from migration counts
+  and an incorrect test MIME assumption were corrected before the final run.
+- Ego lite TaskSpace 17 used the real product handlers and local PGlite database,
+  injected test authentication and the deterministic local model. Six routes at
+  **390/768/1440px** had no horizontal overflow or runtime errors; work CTAs did
+  not overlap mobile navigation. Responsive measurements are in
+  `.context/reader-expansion-responsive.json`.
+- Browser: rename/move/folder CRUD and confirmed chat deletion; failed save retains
+  input and retry succeeds; folder deletion preserves conversations; Escape and
+  successful save restore focus. Signed-out work detail issued only its public
+  work read, and signed-out chat did not mount the private chat room.
+- Search moved between two matching messages, font/spacing survived reload, and
+  the mobile composer stayed within the 844px viewport. Discovery retained 60
+  cards after an injected failure and reached **65 distinct cards** on retry.
+  Saved works displayed the opted-in creator name. Code upload/replacement saved
+  immutable revisions while retaining the original published version; interrupted
+  upload retains its local file/preview for retry.
+
+Inspected private screenshots: `.context/reader-library-{desktop,mobile}.png`,
+`reader-work-continue-mobile.png`, `reader-search-mobile.png`,
+`reader-code-upload-{desktop,mobile}.png`, `reader-favorites-desktop.png`.
+These contain synthetic local data and approved original Iruka image assets.
+Real Privy OAuth/OTP, remote PostgreSQL, production image storage and live LLM
+generation remain unverified. No paid provider call, chain transaction,
+deployment or main merge was performed. Draft delivery remains PR #19 against
+the story-platform integration branch, since `main` is still the historical tree.
+## 2026-10-31 Visual story experience and original artwork
+
+User explicitly excluded actual DB and real login verification. This change uses
+automatic isolated tests and a labelled, in-memory HTTP/auth UI fixture. No user
+DB, real OAuth flow, remote storage, paid model or deployment was exercised.
+
+- Reviewed the reference audit and original `starlash7/crack` artwork at
+  `58545d092ffef20d1b44e6d8ada6ee5e001fd310`. Deliver 24 byte-identical public
+  covers/portraits/intro/opening files and five adopted private Chaeri reactions.
+  Manifests record source, role, bytes and SHA-256. Unadopted cards/reactions and
+  spoiler scenes are excluded. Evidence: seed/ARTWORK.md and the archived
+  reference selection record. Source worktrees were not changed.
+- Public introduction/gallery/opening artwork, public character captions, safe
+  inline image-code rendering and accessible enlargement are shared with Studio
+  preview. A duplicate opening thumbnail is suppressed when the same image is
+  already present inline. Public image reads do not depend on login tokens.
+- Discovery preserves full poster artwork with a separate featured poster and
+  ambient banner. Detail tags collapse after four items, and long copy wraps.
+- Chat uses portraits from its pinned work version, image enlargement and parsed
+  status cards with a complete text fallback. Private reactions stay outside
+  public/ and pass normal media authorization. Hash-verified bundled WebP is
+  served as image/webp; ordinary uploads retain normalized PNG validation.
+- Studio list has cover thumbnails, published/draft filters, name search and
+  modification dates. Removed the duplicate full account/wallet screen from its
+  toolbar. Compact readiness/sign-in guidance prevents mounting private editor
+  state for restoring or anonymous sessions; optional wallet/account destinations
+  remain intact. This is code/fixture coverage, not actual login verification.
+- Image management includes thumbnail overview, code/description search, usage
+  filters, per-file batch progress/retry (20 files), public gallery selection,
+  cover/character/opening placement and gallery ordering/descriptions/removal.
+  Replacement updates current draft references while preserving earlier versions.
+  Hidden tabs/offscreen private images defer their network requests.
+- JSON presentation contracts are validated/projected and owned-image bindings
+  checked. No new DB schema migration or package dependency is required.
+- Existing seed work.json files/hashes are untouched. The explicit local
+  `scripts/seed/attach-artwork.ts --development` command refuses source mismatch
+  or edited drafts, adds new publications and is repeatable. It was tested only
+  against temporary test databases, and was **not run on the user's actual DB**.
+
+Verification:
+
+- Node 24.14.0: npm test **227 passed, 0 failed/skipped**; npm run build **exit 0**.
+  Existing Privy annotation and chunk-size warnings remain. git diff --check
+  passed. Final logs: `.context/visual-story-{tests,build}-final.log`.
+- New regressions cover all 29 hashes, safe public projection, private WebP MIME
+  and pinned access, seed attachment/rollback/idempotency, XSS-safe previews,
+  name-matched portraits, structured/text status, current-draft asset rebinding,
+  compact Studio auth gating and tokenless public image reads.
+- Final static-path review reproduced a Vite development-server bypass: raw seed
+  images/manuscripts were directly served. Vite fs.deny now blocks seed/** while
+  preserving its default secret/key exclusions. A red/green HTTP regression
+  verifies public artwork 200 and both raw and /@fs private seed paths 403.
+- Ego lite TaskSpace 19: six routes at **390/768/1440px**, 18 measurements, zero
+  horizontal overflow, CTA/nav overlap or runtime errors. Mobile composer bottom
+  was 844px at an 844px viewport. See visual-story-responsive.json in .context.
+- Native enlargement and original-size scrolling stayed within the page;
+  Escape restored the triggering image control. Work detail had six gallery
+  images/six portraits and one opening image, without raw image codes or private
+  reaction codes. The 24 public files and five private reactions were inspected.
+- Studio filters/search, two-file batch success, injected second-file failure and
+  failed-file-only retry, gallery/intro selection and image replacement succeeded.
+  Replacement retained the earlier published gallery. Hidden editor tabs issued
+  zero private-media requests; selecting a reaction loaded its 1536x1024 WebP.
+- Screenshots inspected under .context: visual-home-{390,1440}, visual-work-
+  {390,1440}, visual-gallery-390, visual-chat-{390,1440}, visual-studio-list-1440,
+  visual-studio-images-{390,1440}, visual-original-assets-review and
+  visual-private-reactions-1440 (all .png). They use approved story art and an
+  explicitly synthetic session. No competitor account screenshot is delivered.
+
+Separate later planning items remain the drama/video/BGM engine and executable
+creator JSX/HTML. This delivery completes the normal reader/creator visual flow;
+it does not claim those separate runtime systems or operational readiness.
+
+
+## 2026-11-01 전체 UI 디테일 및 신규 제품 일러스트
+
+사용자 요청에 따라 실제 DB·로그인 검증을 제외한 UI/UX 전반을 점검·수정했다.
+스펙: `docs/superpowers/specs/2026-11-01-ui-detail-polish.md`, 실행 체크리스트:
+`plans/ui-detail-polish.md`, 결정: `decisions/2026-11-01-ui-detail-polish.md`.
+
+변경:
+
+- 화면마다 달랐던 셸 너비·타이포·여백·카드·버튼 효과를 통일했다. 반복된 상단
+  탐색 탭 대신 현재 위치를 표시하고, 사이드바에 찜 보관함을 추가했다. 선택적
+  네트워크 메뉴는 계정 영역에 보존했다. 버튼의 반복 광택 애니메이션을 정리했다.
+- 홈 첫 배너에 원본 책/문 일러스트를 제작해 적용했다. 작품 배너는 읽을 수 있는
+  밝은 배경과 별도 표지를 쓰며, 두 작품 이하일 때 데스크톱 카드가 빈 열을 남기지
+  않도록 표지+소개 카드로 표시한다. 이어하기에 작품 썸네일과 제작 진입을 적용했다.
+- 작품·검색·대화 빈 상태용 SVG 3개를 직접 작성했다. 빈 찜/대화 보관함에서
+  탐색으로 돌아갈 수 있다. 생성 도구·최종 프롬프트·파일 경로·해시는
+  `docs/assets/ui-illustrations.md`에 기록했다. 기존 원본 작품 29개·로고는 유지했다.
+- 상세의 표지·작품 정보·태그·소개/갤러리/인물/시작 장면 크기와 여백을 정리했다.
+  소개 이미지의 최대 표시 높이를 제한하면서 원본 확대를 유지한다. 모바일 CTA와
+  정보 내비게이션을 확인했다. 채팅의 마지막 메시지 상태 카드를 기본으로 펼친다.
+- 대화 보관함에 표지와 관리 아이콘을 연결했다. 실제 크레딧 라우트의 잔액 카드·
+  사용 내역·빈 상태를 정리했다. 마이페이지는 동일한 셸/버튼을 사용한다. 페르소나
+  비로그인 상태의 전체 계정·지갑 중복 화면을 공통 안내로 교체했다.
+- 스튜디오 새 작품 동작을 제목 옆으로 옮기고 목록 필터·썸네일·상태를 정리했다.
+  편집 화면은 고정 저장 바, 접어 확인하는 초안/발행 안내, 데스크톱 표지 별도 열을 쓴다. 필수 입력이 남으면 발행 안내를 펼친다.
+  이미지 도구는 전용 탭으로 분리했다. 가로 탭의 선택 항목이 보이게 이동하며
+  다음/이전 단계는 해당 탭에 포커스를 주고 저장 바 아래로 이동한다.
+- 실제 브라우저에서 모달 입력의 React autoFocus가 숨긴 dialog에서 먼저 실행되어
+  닫기 버튼에 포커스가 남는 것을 발견했다. 공통 Modal에 명시적 initialFocus를
+  추가해 페르소나/폴더/메시지 수정은 입력칸, 페르소나 삭제는 취소로 진입한다.
+- 320px 창에서 body 최소 너비와 스크롤바가 충돌하던 가로 넘침, 검색창의 이중
+  테두리도 수정했다. 새 DB 스키마·서버 API·환경변수·의존성 변경은 없다.
+
+검증:
+
+- Node 24.14.0: `npm test` **227 passed, 0 failed/skipped**, `npm run build`
+  **exit 0**, `git diff --check` 통과. 기존 SDK annotation/chunk-size 경고 유지.
+  최종 로그: `.context/ui-polish-{tests,build}-final.log`.
+- Ego lite TaskSpace 3, 명시적 인메모리 HTTP/auth UI fixture. 실제 DB 접속·OAuth
+  완료·지갑 실행·모델 호출 없이 검증했다. 홈/검색/랭킹/태그/작품 2종/대화 목록/
+  채팅/찜/제작 목록/편집/계정/페르소나/크레딧/404, 총 15개 경로를
+  **320/390/768/1440px**에서 확인했다. 60개 측정에서 가로 넘침·CTA/하단 메뉴
+  겹침·런타임 오류·확인된 이미지 로딩 실패가 없었다.
+  `.context/ui-polish-responsive.json`에 측정 기록이 있다.
+- 빈 상태 4곳의 전용 그래픽, 검색 API 오류와 같은 화면의 재시도 복구를 확인했다.
+  비로그인 6개 경로에서는 개인 API 요청이 **0건**이었다. 이는 테스트 세션에서의
+  UI 마운트 검증이며 실제 인증 성공 증거가 아니다. 기록: ui-polish-states.json.
+- 모바일 편집에서 이미지 검색, 다음 단계 포커스/고정 바 간격(탭 top 약84px,
+  저장 바 bottom69px), 방향키·Home/End로 가로 탭 이동을 확인했다.
+- 390/1440px 이미지 확대와 시작 시트의 넘침 없음, Escape와 트리거 포커스 복귀,
+  페르소나·폴더 모달 및 프로필 팝오버 Escape를 확인했다. 사용할 모델이 없는
+  fixture에서는 시작 버튼이 비활성화되고 모델 선택창에도 해당 상태를 표시한다. 기록: ui-polish-keyboard.json.
+- 화면 스크린샷은 `.context/ui-polish-*-{390,1440}.png`. 홈/검색/상세/채팅/보관함/
+  제작 목록/편집/계정/찜/페르소나/크레딧 화면과 빈 상태, 시작 시트를 육안 검토했다.
+
+실제 사용자 DB 및 실제 로그인 검증은 요청대로 수행하지 않았다. 이전 원본 에셋
+연결 명령도 실제 DB에서 실행하지 않았다. 배포·main 병합·유료 LLM API 호출 없음.
+
+## 2026-11-01 왼쪽 메뉴 후속 수정
+
+- 메뉴 순서를 `홈 → 탐색 → Iruka ONLY → 랭킹 → 내 대화 → 찜한 작품 → 스튜디오가기`로 변경했다.
+- 홈은 `/`, 탐색은 기존 `/search`, 스튜디오는 `/studio`에 연결했다. 선택 항목의
+  옅은 핑크 배경·글자 강조를 유지하고 왼쪽 inset 선을 제거했다. 키보드 focus ring은 유지한다.
+- Iruka ONLY는 기존 태그 목록 `/tags/Iruka%20ONLY`를 사용한다. 이 태그가 붙은 공개
+  작품만 조회하며, 분류되지 않은 작품을 임의로 독점 작품으로 표시하지 않는다.
+  전용 목록 진입 시 왼쪽 ONLY 메뉴와 상단 제목이 선택 상태에 맞춰 표시된다.
+- 모바일 홈 메뉴도 홈 아이콘/이름과 선택 상태를 맞췄다. 실제 DB/로그인 검증은 제외했다.
+- Node24.14.0 `npm test`: **227 passed, 0 failed/skipped**, `npm run build`: **exit0**,
+  `git diff --check` 통과. 로그 `.context/sidebar-labels-{tests,build}.log`.
+- Ego TaskSpace9, 인메모리 UI fixture에서 홈/탐색/ONLY/스튜디오 클릭·이동·선택 상태를 확인했다.
+  활성 항목의 box-shadow none / border-left 0px / 핑크 배경을 측정했고 desktop1440/mobile390
+  가로 넘침 없음. 스크린샷 `.context/sidebar-labels-1440.png`, `sidebar-only-390.png`.
+
+## 2026-11-01 랭킹·찜한 작품 탭 제거
+
+- 요청에 따라 왼쪽 카테고리에서 랭킹·찜한 작품을 제거했다. 현재 순서는
+  홈 → 탐색 → Iruka ONLY → 내 대화 → 스튜디오가기다.
+- 모바일 하단과 홈 본문의 랭킹 탭도 제거했다. 기존 작품 찜 데이터·API·마이페이지
+  활동 링크와 직접 경로는 변경하지 않았다.
+- `npm test`: **227 passed, 0 failed/skipped**, `npm run build`: **exit0**,
+  `git diff --check` 통과. `.context/sidebar-remove-tabs-{tests,build}.log`.
+- Ego TaskSpace10, DB 없는 UI fixture에서1440/390px 메뉴 항목·탭 부재·가로 넘침
+  없음을 확인했다. `.context/sidebar-removed-tabs-{1440,390}.png`에 기록했다.
+  실제 DB/로그인 검증·배포는 수행하지 않았다.

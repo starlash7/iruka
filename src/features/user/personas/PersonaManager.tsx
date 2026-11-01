@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState, type FormEvent} from 'react';
+import {StateArtwork} from '../../../ui/StateArtwork';
 import {Button, Input, Modal} from '../../../ui';
 import type {PersonaDto} from '../../../shared/contracts';
 import {validatePersona, type PersonaClient} from './client';
@@ -68,7 +69,7 @@ export function PersonaManager({client}: {client: PersonaClient}) {
     <p role="status" className="persona-notice">{notice}</p>
     {loading && <p role="status">불러오는 중…</p>}
     {loadError && <div><p role="alert">{loadError}</p><Button variant="secondary" onClick={() => setRevision(value => value + 1)}>다시 시도</Button></div>}
-    {!loading && !loadError && !personas.length && <p>아직 페르소나가 없어요.</p>}
+    {!loading && !loadError && !personas.length && <div className="reader-state reader-state--empty"><StateArtwork kind="conversations"/><h2>이야기 속 나를 만들어 보세요</h2><p>아직 페르소나가 없어요. 이름과 소개를 저장하면 새 대화에서 선택할 수 있어요.</p></div>}
     {!loading && !loadError && <ul className="persona-list">{personas.map(persona => <li key={persona.id} className="persona-card">
       <h2>{persona.name}</h2><p className="persona-description">{persona.description || '소개 없음'}</p>
       <div className="persona-actions">
@@ -76,7 +77,7 @@ export function PersonaManager({client}: {client: PersonaClient}) {
         <Button variant="ghost" aria-label={`${persona.name} 삭제`} onClick={() => { setError(''); setNotice(''); setDeleting(persona); }}>삭제</Button>
       </div>
     </li>)}</ul>}
-    <Modal open={!!editor} title={editor === 'new' ? '새 페르소나' : '페르소나 수정'} onClose={closeDialog}>
+    <Modal initialFocus="input" open={!!editor} title={editor === 'new' ? '새 페르소나' : '페르소나 수정'} onClose={closeDialog}>
       <form className="persona-form" onSubmit={savePersona} aria-busy={busy}>
         <Input label="이름" value={name} onChange={event => setName(event.target.value)} required maxLength={50} disabled={busy} autoFocus />
         <label className="persona-field">소개<textarea value={description} onChange={event => setDescription(event.target.value)} maxLength={500} rows={5} disabled={busy} /></label>
@@ -84,10 +85,10 @@ export function PersonaManager({client}: {client: PersonaClient}) {
         <div className="persona-actions"><Button type="submit" disabled={busy}>{busy ? '저장 중…' : '저장'}</Button><Button variant="secondary" disabled={busy} onClick={closeDialog}>취소</Button></div>
       </form>
     </Modal>
-    <Modal open={!!deleting} title="페르소나 삭제" onClose={closeDialog}>
+    <Modal initialFocus="[data-dialog-cancel]" open={!!deleting} title="페르소나 삭제" onClose={closeDialog}>
       <div className="persona-form" aria-busy={busy}><p className="persona-description">‘{deleting?.name}’ 페르소나를 삭제할까요?</p>
         {error && <p role="alert">{error}</p>}
-        <div className="persona-actions"><Button variant="secondary" autoFocus disabled={busy} onClick={closeDialog}>취소</Button><Button disabled={busy} onClick={deletePersona}>{busy ? '삭제 중…' : '삭제'}</Button></div>
+        <div className="persona-actions"><Button variant="secondary" data-dialog-cancel autoFocus disabled={busy} onClick={closeDialog}>취소</Button><Button disabled={busy} onClick={deletePersona}>{busy ? '삭제 중…' : '삭제'}</Button></div>
       </div>
     </Modal>
   </div>;

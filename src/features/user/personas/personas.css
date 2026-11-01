@@ -8,3 +8,10 @@
 .persona-field { display: grid; gap: 8px; }
 .persona-field textarea { width: 100%; min-width: 0; resize: vertical; padding: 14px; border: 1px solid var(--line); border-radius: 18px; color: var(--ink); background: var(--surface); font: inherit; }
 .persona-notice:empty { display: none; }
+.personas>.reader-state {margin-top:24px;}
+.personas>.reader-state h2 {color:var(--reader-ink);font-size:18px;}
+.persona-list {margin-top:24px;}
+.persona-card {box-shadow:none;background:#fdfbfc;}
+.persona-card h2 {font-size:18px;}
+.persona-description {font-size:14px;}
+.persona-actions .ui-button {font-size:13px;}
