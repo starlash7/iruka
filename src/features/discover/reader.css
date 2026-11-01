@@ -110,7 +110,7 @@
 .reader-cover img{transition:transform .2s ease}
 .reader-cover:hover img{transform:scale(1.025)}
 .reader-work h3 a:hover{text-decoration:underline;text-underline-offset:4px}
-.reader-sidebar nav a[aria-current]{box-shadow:inset 3px 0 var(--reader-pink)}
+.reader-sidebar nav a[aria-current]{font-weight:650;}
 .reader-account{border:1px solid var(--reader-line);border-radius:18px;background:var(--reader-bg)}
 .reader-mobile-nav a[aria-current]{color:var(--reader-ink);font-weight:700}
 .reader-mobile-nav a[aria-current] svg{background:var(--reader-selected);box-shadow:0 0 0 6px var(--reader-selected);border-radius:8px}

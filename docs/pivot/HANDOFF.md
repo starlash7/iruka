@@ -515,3 +515,18 @@ it does not claim those separate runtime systems or operational readiness.
 
 실제 사용자 DB 및 실제 로그인 검증은 요청대로 수행하지 않았다. 이전 원본 에셋
 연결 명령도 실제 DB에서 실행하지 않았다. 배포·main 병합·유료 LLM API 호출 없음.
+
+## 2026-11-01 왼쪽 메뉴 후속 수정
+
+- 메뉴 순서를 `홈 → 탐색 → Iruka ONLY → 랭킹 → 내 대화 → 찜한 작품 → 스튜디오가기`로 변경했다.
+- 홈은 `/`, 탐색은 기존 `/search`, 스튜디오는 `/studio`에 연결했다. 선택 항목의
+  옅은 핑크 배경·글자 강조를 유지하고 왼쪽 inset 선을 제거했다. 키보드 focus ring은 유지한다.
+- Iruka ONLY는 기존 태그 목록 `/tags/Iruka%20ONLY`를 사용한다. 이 태그가 붙은 공개
+  작품만 조회하며, 분류되지 않은 작품을 임의로 독점 작품으로 표시하지 않는다.
+  전용 목록 진입 시 왼쪽 ONLY 메뉴와 상단 제목이 선택 상태에 맞춰 표시된다.
+- 모바일 홈 메뉴도 홈 아이콘/이름과 선택 상태를 맞췄다. 실제 DB/로그인 검증은 제외했다.
+- Node24.14.0 `npm test`: **227 passed, 0 failed/skipped**, `npm run build`: **exit0**,
+  `git diff --check` 통과. 로그 `.context/sidebar-labels-{tests,build}.log`.
+- Ego TaskSpace9, 인메모리 UI fixture에서 홈/탐색/ONLY/스튜디오 클릭·이동·선택 상태를 확인했다.
+  활성 항목의 box-shadow none / border-left 0px / 핑크 배경을 측정했고 desktop1440/mobile390
+  가로 넘침 없음. 스크린샷 `.context/sidebar-labels-1440.png`, `sidebar-only-390.png`.
