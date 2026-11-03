@@ -1,42 +1,28 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {createServer} from 'vite';
-import {createElement} from 'react';
-import {renderToStaticMarkup} from 'react-dom/server';
+import {createElement as h} from 'react';
+import {renderToStaticMarkup as render} from 'react-dom/server';
 
-test('only an initiated header login reloads; session restore and other surfaces do not',async()=>{
- let reloads=0;
+test('reader login navigates once requested and never reacts to restored SDK sessions',async()=>{
  const originalWindow=globalThis.window;
- globalThis.window={location:{reload(){reloads++;}}};
- globalThis.__readerAuthTest={};
- const server=await createServer({appType:'custom',cacheDir:'.context/reader-auth-test-cache',ssr:{noExternal:['@privy-io/react-auth']},define:{'import.meta.env.VITE_PRIVY_APP_ID':JSON.stringify('test-app')},optimizeDeps:{noDiscovery:true},server:{hmr:false,middlewareMode:true},
-  plugins:[{name:'reader-auth-test',enforce:'pre',resolveId(source){if(source==='@privy-io/react-auth')return '\0reader-auth-test';},load(id){if(id==='\0reader-auth-test')return `
-   export const getAccessToken=async()=>null;
-   export const usePrivy=()=>({ready:true,authenticated:true,user:{id:'did:privy:test'},logout:async()=>{}});
-   export const useLogin=callbacks=>{globalThis.__readerAuthTest.callbacks=callbacks;return {login(){}}};
-   export const useLinkAccount=()=>({linkWallet(){}});
-  `;}}]});
+ globalThis.window={location:{pathname:'/works/work-1',search:'?network=giwa',hash:'#work-openings'}};
+ const server=await createServer({appType:'custom',cacheDir:'.context/reader-auth-test-cache',optimizeDeps:{noDiscovery:true},server:{hmr:false,middlewareMode:true}});
  try{
   const {useReaderLogin}=await server.ssrLoadModule('/src/features/discover/useReaderLogin.ts');
-  let beginLogin;
-  function HeaderLogin(){beginLogin=useReaderLogin({reloadOnLogin:true,onError(){}});return null;}
-  renderToStaticMarkup(createElement(HeaderLogin));
-  const {onComplete}=globalThis.__readerAuthTest.callbacks;
-  onComplete({wasAlreadyAuthenticated:true});
-  onComplete({wasAlreadyAuthenticated:true});
-  assert.equal(reloads,0,'restoration must never restart SDK initialization');
-  onComplete({wasAlreadyAuthenticated:false});
-  assert.equal(reloads,0,'a login initiated in the start sheet must not be reloaded by the header');
-  beginLogin();
-  onComplete({wasAlreadyAuthenticated:false});
-  assert.equal(reloads,1,'new login clears the previous user view');
-  onComplete({wasAlreadyAuthenticated:true});
-  assert.equal(reloads,1,'restoring after that refresh must stop');
-  let complete=0;
-  function SheetLogin(){beginLogin=useReaderLogin({onComplete(){complete++;},onError(){}});return null;}
-  renderToStaticMarkup(createElement(SheetLogin));
-  beginLogin();globalThis.__readerAuthTest.callbacks.onComplete({wasAlreadyAuthenticated:false});
-  assert.equal(reloads,1,'the sheet must continue without a page reload');
-  assert.equal(complete,1);
- }finally{await server.close();delete globalThis.__readerAuthTest;if(originalWindow===undefined)delete globalThis.window;else globalThis.window=originalWindow;}
+  const {ReaderProvider}=await server.ssrLoadModule('/src/features/discover/ReaderProvider.tsx');
+  const {safeLoginReturn,loginHref}=await server.ssrLoadModule('/src/features/auth/loginRedirect.ts');
+  let beginLogin;const navigations=[];
+  function Entry(){beginLogin=useReaderLogin({onError(){assert.fail('navigation should work');}});return null;}
+  render(h(ReaderProvider,{api:{},navigate:path=>navigations.push(path)},h(Entry)));
+  assert.equal(navigations.length,0,'render/session restoration cannot initiate login');
+  beginLogin();assert.equal(navigations[0],loginHref('/works/work-1?network=giwa#work-openings'));
+  for(const unsafe of ['https://attacker.test','//attacker.test','/\\attacker.test','/login?next=/login','/unknown','/works/a%2Fb','/\n/attacker.test','/login/',null])assert.equal(safeLoginReturn(unsafe),'/account',String(unsafe));
+  assert.equal(safeLoginReturn('/works/work-1?start=1&opening=first&network=giwa&access_token=secret#work-openings'),'/works/work-1?network=giwa&start=1&opening=first#work-openings');
+  assert.equal(safeLoginReturn('/search?q=꽃&sort=new'),'/search?q=%EA%BD%83&sort=new');
+  let errors=0;
+  function Failing(){beginLogin=useReaderLogin({onError(){errors++;}});return null;}
+  render(h(ReaderProvider,{api:{},navigate(){throw Error('blocked');}},h(Failing)));
+  beginLogin();assert.equal(errors,1);
+ }finally{await server.close();if(originalWindow===undefined)delete globalThis.window;else globalThis.window=originalWindow;}
 });

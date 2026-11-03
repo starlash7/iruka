@@ -106,3 +106,19 @@ test('studio presents compact sign-in guidance without mounting anonymous privat
   assert.equal(mounted,0);assert.doesNotMatch(html,/private|지갑|출금/);assert.match(html,/작품 만들기/);
  }
 });
+
+test('start form restores only a valid opening from the login return URL',()=>{
+ const previous=globalThis.window;
+ const options={personas:[],models:[],balance:{available:0}};
+ const twoOpenings={...work,snapshot:{...work.snapshot,openings:[...work.snapshot.openings,{id:'second-opening',title:'다른 시작',prologue:'두 번째 장면',firstMessage:'',suggestedReplies:[]}]}};
+ globalThis.__accountWorkTest.session={ready:true,authenticated:true,user:{id:'did:privy:test'}};
+ globalThis.__accountWorkTest.resource={data:options,error:null,loading:false,reload(){}};
+ try{
+  for(const [requested,expected] of [['second-opening','second-opening'],['untrusted-opening','opening']]){
+   globalThis.window={location:{search:`?opening=${requested}`}};
+   const html=render(h(StartChatSheet,{open:true,authEnabled:true,work:twoOpenings,onClose(){}}));
+   const checked=(html.match(/<input\b[^>]*>/g)||[]).filter(tag=>tag.includes('checked=""'));
+   assert.equal(checked.length,1);assert.ok(checked[0].includes(`value="${expected}"`));
+  }
+ }finally{if(previous===undefined)delete globalThis.window;else globalThis.window=previous;}
+});

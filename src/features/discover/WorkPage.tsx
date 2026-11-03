@@ -1,4 +1,4 @@
-import {useRef,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import type {RoutePageProps} from '../../routes/paths';
 import {ReaderLayout} from './ReaderLayout';
 import {useReader} from './ReaderProvider';
@@ -15,7 +15,8 @@ import './work-detail.css';
 export default function WorkPage({params,authEnabled=false}:RoutePageProps){
  const {api,href}=useReader();
  const state=useResource(()=>api.getWork(params.id),[api,params.id]);
- const [starting,setStarting]=useState(false);
+ const [starting,setStarting]=useState(()=>typeof window!=='undefined'&&new URLSearchParams(window.location.search).get('start')==='1');
+ useEffect(()=>{if(!starting)return;const url=new URL(window.location.href);if(url.searchParams.has('start')){url.searchParams.delete('start');window.history.replaceState(null,'',url.pathname+url.search+url.hash);}},[starting]);
  const startButton=useRef<HTMLButtonElement|null>(null);
  function closeStart(){setStarting(false);requestAnimationFrame(()=>startButton.current?.focus());}
  const work=state.data;

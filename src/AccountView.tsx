@@ -47,7 +47,7 @@ export function AccountView({
         </>
       ) : (
         <>
-          <p>지갑 · Google · 이메일로 로그인</p>
+          <p>Google · 이메일로 로그인</p>
           <button className="iruka-action-button" onClick={onLogin} type="button">로그인</button>
         </>
       )}

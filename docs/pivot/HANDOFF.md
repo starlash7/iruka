@@ -559,3 +559,46 @@ it does not claim those separate runtime systems or operational readiness.
 - 문서 변경 후 Node24.14.0 `npm test`: **227 passed, 0 failed/skipped**,
   `npm run build`: **exit0**, 기존 SDK annotation/chunk-size 경고 유지,
   `git diff --check` 통과. `.context/login-reference-{tests,build}.log`.
+
+## 2026-11-03 — 공통 로그인 화면과 새 로컬 환경
+
+사용자가 조사 결과 구현과 새 환경 구성을 승인했다. `/login` 및 비로그인 마이페이지에
+Google → 이메일 OTP → 선택적 지갑의 공통 흰색/핑크 패널을 구현했다. 원본 스토리 포털
+일러스트와 기존 Iruka 브랜드를 사용했다. 대화/보관함/스튜디오 등 로그인 진입을 공통
+경로로 연결하고, 앱 내부 `next`만 허용한다. 인증 토큰/이메일을 복귀 URL에 싣지 않는다.
+작품 로그인 복귀 시 시작 창을 열고 유효한 시작 상황만 복원한다. 복귀 의도는 소모되어
+새로고침마다 시작 창이 반복되지 않는다. SDK의 복원 이벤트가 페이지를 반복 reload하던
+구독 구조 대신 로그인 완료 후 한 번의 이동으로 개인 화면을 새로 마운트한다.
+
+이메일 주소/코드 폼은 자동완성·키보드 제출·초기 포커스·전송/확인 중 중복 차단,
+60초 재전송 대기·이메일 변경·5회 실패 후 새 코드 요청·만료/오류 안내를 갖췄다.
+서버 만료 시간을 임의로 표시하지 않는다. Google은 Privy headless OAuth, 이메일은
+Privy headless OTP를 사용하고 지갑만 선택적으로 SDK 모달을 연다. 자동 지갑 생성은 off다.
+약관/개인정보 원문·동의 버전은 미확정으로 남기며 가짜 동의 완료를 기록하지 않는다.
+
+새 환경: `setup:local`은 기존 파일을 보존하며 `.env.local`을 0600으로 생성한다.
+실제 워크스페이스에서 비밀값 없이 생성하고 `.context/local-db` 마이그레이션을 적용했다.
+`env:check`는 값 출력 없이 앱 ID 일치/ES256 공개키/모델 설정을 진단한다. 현재 실제 Privy
+설정은 미입력이라 진단 결과는 TODO/exit 1이다. 대시보드는 로그아웃 상태이며 계정 소유자
+로그인이 필요하다. 절차는 `LOCAL_SETUP.md`에 기록했다.
+
+LLM: 기존 OpenAI 어댑터를 `.context/model-runtime.ts`의 명시적 안전·크레딧 정책으로만
+조합할 수 있도록 로컬 실행 경로를 연결했다. `LOCAL_LIVE_MODEL=1`과 서버 키를 모두 요구하며,
+기본 비활성화, 테스트 모델과 동시 선택 금지, production/Vercel 거부다. 자동 테스트 지급 정책을
+실제 모델로 복사하지 않았다. 운영 안전/한도/크레딧·원격 DB/백업/보존 정책은 미확정이다.
+실제 모델/유료 API 호출·원격 DB 생성·배포·main 병합은 실행하지 않았다.
+
+검증:
+
+- 실제 파일 DB 재시작 후 서명된 테스트 JWT→동일 DID/프로필 복원, 다른 DID 격리, 익명 거부를 검증했다. 실제 Privy OAuth 증거와 구분한다.
+- UI fixture에서 390/768/1440px 가로 넘침 0, 런타임 오류 0, 로그인 버튼 48px 이상/보조 메뉴 44px, Tab 포커스와 Enter 제출을 확인했다.
+- OTP 전송 실패/잘못된 코드/5회 제한/이메일 변경/60초 이후 실제 재전송과 코드 초기화/오류 해제/성공 복귀를 확인했다. Google 취소 후 재시도·검색 복귀, 지갑 취소 후 오류 복구, 작품→로그인→시작 창 복원을 확인했다. 모두 테스트용 인증 응답이며 실제 메일 발송이나 OAuth는 실행하지 않았다.
+- 실제 로컬 서버를 시작해 모델 목록 200(비활성), 익명 프로필 401, 인증 설정 없는 Bearer 요청 503을 확인했다. 실제 `/login`에서 설정 안내·버튼 비활성·가로 넘침 없음·Vite 오류 없음.
+- 최종 테스트/빌드 결과는 아래 전달 기록을 따른다. 스크린샷: `.context/login-390.png`, `login-768.png`, `login-1440.png`, `login-code-error-390.png`, `login-unconfigured-1440.png`.
+
+전달 검증(2026-11-03): Node 24.14.0, `npm test` **236 passed / 0 failed / 0 skipped**
+(43.5초), `npm run build` **exit 0**, `git diff --check` 통과. 기존 Privy/SDK annotation 및
+500kB chunk 경고는 유지된다. `.env.local`은 Git 제외·권한 0600임을 확인했다.
+환경 진단의 TODO/exit 1은 아직 입력되지 않은 실제 Privy 앱/공개키를 정확히 가리킨다.
+브라우저 Privy 대시보드는 계정 소유자의 로그인을 위해 인계했으며 실제 인증을 완료한
+증거로 기록하지 않는다. 앱 등록/Google·메일/운영 DB/실제 LLM은 후속 실서비스 검증이다.

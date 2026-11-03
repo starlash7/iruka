@@ -13,14 +13,14 @@ import walletIcon from './assets/iruka-icon-wallet.png';
 
 export function ReaderAccountMenu({showNetwork=false}:{showNetwork?:boolean}){
  const {href}=useReader();const transferBusy=useTransferBusy();
- return <>{showNetwork&&<NetworkSelector disabled={transferBusy} locale="ko"/>}{import.meta.env.VITE_PRIVY_APP_ID?.trim()?<PrivyReaderAccount/>:<a className="reader-login" href={href('/account')}>로그인</a>}</>;
+ return <>{showNetwork&&<NetworkSelector disabled={transferBusy} locale="ko"/>}{import.meta.env.VITE_PRIVY_APP_ID?.trim()?<PrivyReaderAccount/>:<a className="reader-login" href={href('/login')}>로그인</a>}</>;
 }
 function PrivyReaderAccount(){
  const {href}=useReader();
  const {ready,authenticated,user,logout}=usePrivy();
  const {data:profile}=useProfile(authenticated?user?.id:undefined);
  const [error,setError]=useState('');const [busy,setBusy]=useState(false);
- const login=useReaderLogin({reloadOnLogin:true,onComplete:()=>setError(''),onError:()=>setError('로그인하지 못했어요. 다시 시도해 주세요.')});
+ const login=useReaderLogin({onError:()=>setError('로그인하지 못했어요. 다시 시도해 주세요.')});
  const {linkWallet}=useLinkAccount({onSuccess:()=>setError(''),onError:()=>setError('지갑을 연결하지 못했어요. 다시 시도해 주세요.')});
  async function signOut(){setBusy(true);setError('');try{await logout();window.location.assign(href('/account'));}catch{setError('로그아웃하지 못했어요. 다시 시도해 주세요.');}finally{setBusy(false);}}
  if(!ready||(authenticated&&!user))return <button className="reader-login" disabled>확인 중</button>;

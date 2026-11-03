@@ -14,6 +14,7 @@ export const routes = [
   { id: 'favorites', path: '/favorites', owner: 'C' },
   { id: 'studio', path: '/studio', owner: 'B' },
   { id: 'editor', path: '/studio/:workId', owner: 'B' },
+  { id: 'login', path: '/login', owner: 'C' },
   { id: 'account', path: '/account', owner: 'C' },
   { id: 'personas', path: '/personas', owner: 'C' },
   { id: 'credits', path: '/credits', owner: 'D' },

@@ -9,6 +9,7 @@
 |---|---|
 | src/main.tsx | 브랜드 자료 hash 진입점과 앱 lazy 로드 |
 | src/app-main.tsx, privyConfig.ts | Google/이메일/지갑 인증 provider, 자동 지갑 생성 off |
+| src/features/auth/** | Google 우선 공통 로그인, 이메일 OTP·선택적 지갑, 안전한 작품 복귀 |
 | src/AuthActions.tsx, PrivyAuthActions.tsx, AccountView.tsx | 지갑에 의존하지 않는 로그인·계정 상태 |
 | src/App.tsx, src/routes | 공통 셸과 기능별 라우트(찜 보관함 포함) |
 | src/features | 채팅, 스튜디오, 탐색/사용자, 크레딧 화면 |
@@ -32,6 +33,8 @@
 | server/db, migrations | PostgreSQL 스키마, 파일 로컬 DB와 독립 테스트 DB |
 | server/core | Privy 검증, 계정/소유권, 작품 공개 경계, 버전 고정, 턴 멱등성, SSE/서비스 계약 |
 | server/app.ts, nodeServer.ts, dev.ts | 주입형 HTTP 라우터, Node 스트림 브리지, 로컬 구성 |
+| scripts/setup-local.mjs, check-environment.ts | 로컬 환경 초기화·비밀값을 출력하지 않는 설정 진단 |
+| server/product/modelRuntime.ts | 명시적 로컬 서버 정책으로만 실제 모델 어댑터 조합; 기본 비활성화 |
 | scripts/dev.mjs, migrate.ts | Vite/API 함께 실행, 실제 DB 마이그레이션 |
 | tests/core-* | DB/인증/권한/API/SSE/UI/멱등성 검증 |
 | src/BrandKitView.tsx, brand-kit.css, public/brand | 기존 브랜드 자료 |

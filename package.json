@@ -12,7 +12,9 @@
     "dev:api": "node --env-file-if-exists=.env.local --experimental-strip-types server/dev.ts",
     "db:migrate": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/migrate.ts",
     "test:db": "node --experimental-strip-types --test tests/core-db.test.mjs",
-    "typecheck:server": "tsc -p tsconfig.server.json"
+    "typecheck:server": "tsc -p tsconfig.server.json",
+    "setup:local": "node scripts/setup-local.mjs",
+    "env:check": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/check-environment.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.9",
