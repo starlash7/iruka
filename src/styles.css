@@ -20,7 +20,7 @@
   --shadow-md: 0 12px 40px rgb(104 70 82 / 6%);
 }
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; }
+body { margin: 0; min-width: 0; }
 a { color: var(--action-ink); text-decoration: none; }
 a:hover { text-decoration: underline; }
 button, input { font: inherit; }

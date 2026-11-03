@@ -1,10 +1,11 @@
+import {apiSecurityHeaders} from '../security/headers.ts';
 import { ApiError, toApiError } from './errors.ts';
 export function jsonResponse(data: unknown, requestId: string, status = 200) {
-  return new Response(JSON.stringify({data,requestId}),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-request-id':requestId}});
+  return new Response(JSON.stringify({data,requestId}),{status,headers:{...apiSecurityHeaders,'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-request-id':requestId}});
 }
 export function errorResponse(error: unknown, requestId: string) {
   const safe = toApiError(error);
-  return new Response(JSON.stringify({error:{code:safe.code,message:safe.message},requestId}),{status:safe.status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-request-id':requestId}});
+  return new Response(JSON.stringify({error:{code:safe.code,message:safe.message},requestId}),{status:safe.status,headers:{...apiSecurityHeaders,'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-request-id':requestId}});
 }
 export async function readJson(request: Request, maxBytes = 32768): Promise<Record<string, unknown>> {
   if (!request.headers.get('content-type')?.startsWith('application/json')) throw new ApiError('INVALID_REQUEST','JSON 요청이 필요해요.');

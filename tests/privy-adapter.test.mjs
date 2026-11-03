@@ -12,6 +12,7 @@ before(async () => {
     plugins: [{ name: 'test-auth-boundaries', enforce: 'pre',
       resolveId(source, importer) {
         if (source === '@privy-io/react-auth') return '\0test-privy';
+        if (source === './features/auth/LoginAccess') return '\0test-login-access';
         if (source === './AccountView' && importer?.endsWith('/PrivyAuthActions.tsx')) return '\0test-view';
       },
       load(id) {
@@ -21,6 +22,7 @@ before(async () => {
             globalThis.__authTest.callbacks = callbacks;
             return { login: options => globalThis.__authTest.logins.push(options) };
           };`;
+        if (id === '\0test-login-access') return `export function LoginAccess(props){globalThis.__authTest.loginAccess=props;return null;}`;
         if (id === '\0test-view') return `export function AccountView(props) { globalThis.__authTest.props = props; return null; }`;
       }
     }]
@@ -33,12 +35,12 @@ function render(session) {
   renderToStaticMarkup(createElement(PrivyAuthActions));
   return globalThis.__authTest;
 }
-test('login delegates wallet, Google and email methods to Privy', () => {
-  const state = render({ready: true, authenticated: false, user: null, logout() {}});
-  state.props.onLogin();
-  assert.deepEqual(state.logins, [{loginMethods: ['wallet', 'google', 'email']}]);
-  assert.equal(typeof state.callbacks.onError, 'function');
-  assert.equal(typeof state.callbacks.onComplete, 'function');
+test('anonymous and restoring accounts use the shared login boundary', () => {
+  for(const session of [{ready:true,authenticated:false,user:null},{ready:false,authenticated:true,user:null}]){
+    const state=render({...session,logout(){}});
+    assert.equal(state.loginAccess.enabled,true);
+    assert.equal(state.props,undefined,'account settings must not mount before an identity exists');
+  }
 });
 test('authenticated email-only user reaches account without wallet readiness', async () => {
   let logouts = 0;

@@ -1,20 +1,18 @@
 import {useMemo} from 'react';
-import {getAccessToken, usePrivy} from '@privy-io/react-auth';
+import {getAccessToken} from '@privy-io/react-auth';
 import {Page} from '../../ui';
-import {AuthActions} from '../../AuthActions';
+import {ReaderSession} from '../discover/ReaderSession';
+import {SignInNotice} from '../discover/SignInNotice';
 import type {RoutePageProps} from '../../routes/paths';
 import {createPersonaClient} from './personas/client';
 import {PersonaManager} from './personas/PersonaManager';
 
 export default function PersonasPage({authEnabled = false}: RoutePageProps) {
   return <Page title="내 페르소나" description="이야기 속 나의 모습을 관리하는 곳이에요.">
-    {authEnabled ? <AuthenticatedPersonas /> : <AuthActions enabled={false} />}
+    <ReaderSession enabled={authEnabled}>{session=>session.identity?<AuthenticatedPersonas key={session.identity}/>:<SignInNotice {...session} message="로그인 후 이야기 속 나의 모습을 저장할 수 있어요."/>}</ReaderSession>
   </Page>;
 }
 function AuthenticatedPersonas() {
-  const {ready, authenticated, user} = usePrivy();
   const client = useMemo(() => createPersonaClient({getAccessToken}), []);
-  if (!ready) return <p role="status">로그인 확인 중…</p>;
-  if (!authenticated || !user) return <AuthActions enabled />;
-  return <PersonaManager key={user.id} client={client} />;
+  return <PersonaManager client={client} />;
 }

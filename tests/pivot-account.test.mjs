@@ -15,7 +15,7 @@ const render = (props = {}) => renderToStaticMarkup(createElement(AccountView, {
   ready: true, authenticated: false, user: null, onLogin() {}, onLogout() {}, ...props
 }));
 test('offers wallet, Google and email login without automatic wallet creation', () => {
-  assert.deepEqual(config.loginMethods, ['wallet', 'google', 'email']);
+  assert.deepEqual(config.loginMethods, ['google', 'email', 'wallet']);
   assert.equal(config.embeddedWallets.ethereum.createOnLogin, 'off');
   assert.equal(config.embeddedWallets.solana.createOnLogin, 'off');
 });

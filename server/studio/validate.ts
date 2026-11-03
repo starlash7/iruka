@@ -1,5 +1,6 @@
 import {ApiError} from '../core/errors.ts';
 import {requireId} from '../core/http.ts';
+import {isBundledStoryImage} from '../media/bundled.ts';
 import type {StudioDraft} from '../../src/features/studio/types.ts';
 const fail=(field:string):never=>{throw new ApiError('INVALID_REQUEST',`${field} 입력을 확인해 주세요.`);};
 function object(value:unknown, keys:string[], field:string):Record<string,unknown> {
@@ -18,24 +19,27 @@ function array(value:unknown,max:number,field:string):unknown[] {
 function bool(value:unknown,field:string):boolean {if(typeof value!=='boolean')return fail(field);return value;}
 function url(value:unknown,field:string):string|null {
  if(value===null)return null; const result=text(value,2048,field);
- if(!/^https:\/\/[^\s]+$/.test(result)&&!/^\/api\/studio\/media\/[0-9a-f-]{36}\/[a-f0-9]{64}$/.test(result))fail(field);return result;
+ if(!/^https:\/\/[^\s]+$/.test(result)&&!/^\/api\/studio\/media\/[0-9a-f-]{36}\/[a-f0-9]{64}$/.test(result)&&!isBundledStoryImage(result))fail(field);return result;
 }
 function unique(values:string[],field:string){if(new Set(values).size!==values.length)fail(field);}
 /** Runtime validation rejects unknown fields, including fields outside the shared contract. */
 export function validateDraft(value:unknown,publish=false):StudioDraft {
- const d=object(value,['id','revision','mode','title','description','coverUrl','tags','publicSnapshot','privateConfig','assets'],'작품');
+ const d=object(value,['id','revision','mode','title','description','coverUrl','tags','publicSnapshot','privateConfig','assets','showCreator'],'작품');
+ if(d.showCreator!==undefined)bool(d.showCreator,'제작자 표시');
  if(d.id!==undefined)requireId(d.id);
  if(d.revision!==undefined&&(!Number.isSafeInteger(d.revision)||Number(d.revision)<1))fail('저장 버전');
  if(d.mode!=='story'&&d.mode!=='character')fail('모드');
  text(d.title,30,'작품 이름',publish);text(d.description,2000,'소개');url(d.coverUrl,'표지');
  array(d.tags,10,'태그').forEach(v=>text(v,50,'태그',true));
- const s=object(d.publicSnapshot,['tagline','playGuide','characters','openings'],'공개 설정');
+ const s=object(d.publicSnapshot,['tagline','playGuide','characters','openings','gallery'],'공개 설정');
+ if(s.gallery!==undefined){const gallery=array(s.gallery,20,'공개 갤러리').map(v=>{const item=object(v,['id','title','imageUrl','introduction'],'갤러리');text(item.id,64,'갤러리 ID',true);text(item.title,100,'이미지 설명');if(url(item.imageUrl,'갤러리 이미지')===null)fail('갤러리 이미지');if(item.introduction!==undefined)bool(item.introduction,'소개 이미지');return String(item.id);});unique(gallery,'갤러리 ID');}
  text(s.tagline,60,'한 줄 소개');text(s.playGuide,1500,'플레이 가이드');
  const characters=array(s.characters,50,'등장인물').map(v=>{
-  const c=object(v,['id','name','imageUrl'],'등장인물');text(c.id,64,'인물 ID',true);text(c.name,50,'이름',publish);url(c.imageUrl,'인물 이미지');return c;
+  const c=object(v,['id','name','imageUrl','caption'],'등장인물');text(c.id,64,'인물 ID',true);text(c.name,50,'이름',publish);url(c.imageUrl,'인물 이미지');if(c.caption!==undefined)text(c.caption,200,'공개 인물 소개');return c;
  });unique(characters.map(c=>String(c.id)),'인물 ID');
  const openings=array(s.openings,5,'시작 상황').map(v=>{
-  const o=object(v,['id','title','prologue','firstMessage','suggestedReplies'],'시작 상황');
+  const o=object(v,['id','title','prologue','firstMessage','suggestedReplies','imageUrl'],'시작 상황');
+  if(o.imageUrl!==undefined)url(o.imageUrl,'시작 이미지');
   text(o.id,64,'시작 ID',true);text(o.title,60,'시작 이름',publish);text(o.prologue,1500,'프롤로그',publish);text(o.firstMessage,500,'첫 대사');
   array(o.suggestedReplies,3,'추천 답변').forEach(v=>text(v,200,'추천 답변'));return o;
  });unique(openings.map(o=>String(o.id)),'시작 ID');if(publish&&!openings.length)fail('시작 상황');

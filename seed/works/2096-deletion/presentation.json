@@ -1,0 +1,50 @@
+{
+  "coverUrl": "/stories/2096-deletion/cover.png",
+  "characters": [
+    {
+      "id": "character-1",
+      "imageUrl": "/stories/2096-deletion/profile-1.png",
+      "caption": "전직 데이터 감사 복구사"
+    },
+    {
+      "id": "character-2",
+      "imageUrl": "/stories/2096-deletion/profile-2.png",
+      "caption": "주민 진료소"
+    },
+    {
+      "id": "character-3",
+      "imageUrl": "/stories/2096-deletion/profile-3.png",
+      "caption": "시 기록 보관소"
+    },
+    {
+      "id": "character-4",
+      "imageUrl": "/stories/2096-deletion/profile-4.png",
+      "caption": "기업 내부 감사인"
+    },
+    {
+      "id": "character-5",
+      "imageUrl": "/stories/2096-deletion/profile-5.png",
+      "caption": "기업 운영총괄"
+    },
+    {
+      "id": "character-6",
+      "imageUrl": "/stories/2096-deletion/profile-6.png",
+      "caption": "메쉬망 기술자"
+    },
+    {
+      "id": "character-7",
+      "imageUrl": "/stories/2096-deletion/profile-7.png",
+      "caption": "우회 경로 중개인"
+    }
+  ],
+  "gallery": [
+    {
+      "id": "intro-cherry",
+      "title": "체리 소개",
+      "imageUrl": "/stories/2096-deletion/intro-cherry.png",
+      "introduction": true
+    }
+  ],
+  "openings": [],
+  "codeImages": []
+}

@@ -1,7 +1,7 @@
 import type { PrivyClientConfig } from "@privy-io/react-auth";
 
 export const privyConfig: PrivyClientConfig = {
-  loginMethods: ["wallet", "google", "email"],
+  loginMethods: ["google", "email", "wallet"],
   appearance: {
     accentColor: "#F8C9DA",
     theme: "light",

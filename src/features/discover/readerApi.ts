@@ -1,16 +1,25 @@
 import {createApiClient,type ApiClientOptions} from '../../shared/apiClient.ts';
-import type {ChatDto,ChatEvent,CreditBalanceDto,MessageDto,PersonaDto,PublicWorkDetailDto,PublicWorkDto,TurnRequest} from '../../shared/contracts.ts';
+import type {ChatDto,ChatEvent,ChatFolderDto,CreditBalanceDto,MessageDto,PersonaDto,PublicWorkDetailDto,PublicWorkDto,TurnRequest} from '../../shared/contracts.ts';
 export interface WorkQuery {query?:string;tag?:string;mode?:string;offset?:number}
-export interface ChatSummary {chat:ChatDto;title:string;preview:string;coverUrl:string|null}
+export interface ChatSummary {chat:ChatDto;title:string;preview:string;coverUrl:string|null;folderId?:string|null;updatedAt?:string}
+export interface ChatQuery {workId?:string;folderId?:string;offset?:number;limit?:number}
 export interface ReaderMessage extends MessageDto {images?:{url:string;alt:string}[];status?:string;ending?:{id:string;title:string}|null}
-export interface ChatView {chat:ChatDto;title:string;messages:ReaderMessage[];memo:string;guide:string;suggestedReplies:string[];pendingTurn?:{id:string;status:string}|null}
+export interface ChatView {chat:ChatDto;title:string;characters?:Array<{id:string;name:string;imageUrl:string|null;caption?:string}>;messages:ReaderMessage[];memo:string;guide:string;suggestedReplies:string[];pendingTurn?:{id:string;status:string}|null}
 export interface ModelOption {id:string;name:string;credits:number|null;available:boolean}
 export interface ReaderApi {
  loadImage?(url:string,signal?:AbortSignal):Promise<Blob>;
  listWorks(query?:WorkQuery):Promise<PublicWorkDto[]>;
  getWork(id:string):Promise<PublicWorkDetailDto>;
  getRanking():Promise<PublicWorkDto[]>;
- listChats():Promise<ChatSummary[]>;
+ listChats(query?:ChatQuery):Promise<ChatSummary[]>;
+ listFolders():Promise<ChatFolderDto[]>;
+ saveFolder(name:string,id?:string):Promise<ChatFolderDto>;
+ deleteFolder(id:string):Promise<void>;
+ updateChat(id:string,input:{title?:string|null;folderId?:string|null}):Promise<ChatView>;
+ deleteChat(id:string):Promise<void>;
+ listFavorites(offset?:number):Promise<PublicWorkDto[]>;
+ getFavorite(id:string):Promise<{saved:boolean}>;
+ setFavorite(id:string,saved:boolean):Promise<{saved:boolean}>;
  listPersonas():Promise<PersonaDto[]>;
  getModels():Promise<ModelOption[]>;
  getBalance():Promise<CreditBalanceDto>;
@@ -35,7 +44,16 @@ export function createReaderApi(options:ApiClientOptions):ReaderApi{
   loadImage:client.image,
   listWorks(query={}){const params=new URLSearchParams();if(query.query)params.set('q',query.query);if(query.tag)params.set('tag',query.tag);if(query.mode)params.set('mode',query.mode);if(query.offset)params.set('offset',String(query.offset));return readPublic(`/api/discover/works?${params}`);},
   getWork:id=>readPublic(`/api/works/${encodeURIComponent(id)}`),getRanking:()=>readPublic('/api/discover/ranking'),
-  listChats:()=>read('/api/chats'),listPersonas:()=>read('/api/me/personas'),getModels:()=>read('/api/models'),getBalance:()=>read('/api/me/credits'),
+  listChats:(query={})=>read(`/api/chats?${new URLSearchParams(Object.entries(query).filter(([,value])=>value!==undefined).map(([key,value])=>[key,String(value)]))}`),
+  listFolders:()=>read('/api/me/chat-folders'),
+  saveFolder:(name,id)=>read(`/api/me/chat-folders${id?`/${encodeURIComponent(id)}`:''}`,json(id?'PATCH':'POST',{name})),
+  deleteFolder:async id=>{await read(`/api/me/chat-folders/${encodeURIComponent(id)}`,{method:'DELETE'});},
+  updateChat:(id,input)=>read(chatPath(id),json('PATCH',input)),
+  deleteChat:async id=>{await read(chatPath(id),{method:'DELETE'});},
+  listFavorites:(offset=0)=>read(`/api/me/favorites?offset=${offset}`),
+  getFavorite:id=>read(`/api/me/favorites/${encodeURIComponent(id)}`),
+  setFavorite:(id,saved)=>read(`/api/me/favorites/${encodeURIComponent(id)}`,json('PUT',{saved})),
+  listPersonas:()=>read('/api/me/personas'),getModels:()=>read('/api/models'),getBalance:()=>read('/api/me/credits'),
   startChat:async input=>(await read<{chat:ChatDto}>('/api/chats',json('POST',input))).chat,getChat:id=>read(`${chatPath(id)}/view`),
   saveMemo:async(id,memo)=>{await read(`${chatPath(id)}/memo`,json('PUT',{memo}));},
   editMessage:async(id,messageId,content)=>{await read(`${chatPath(id)}/messages/${encodeURIComponent(messageId)}`,json('PATCH',{content}));return read(`${chatPath(id)}/view`);},

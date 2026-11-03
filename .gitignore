@@ -7,7 +7,8 @@ docs/internal/
 /docs/JUDGING_GUIDE.md
 /GASOK_PHASE4.md
 .env
-.env.local
+.env.*
+!.env.example
 npm-debug.log*
 .vercel
 contracts/cache

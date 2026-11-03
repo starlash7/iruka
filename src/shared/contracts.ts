@@ -3,6 +3,7 @@ export interface UserDto { id: string; privyDid: string; displayName: string | n
 export interface ProfileDto { nickname: string; bio: string; avatar: string | null }
 export interface PersonaDto { id: string; userId: string; name: string; description: string; createdAt: string }
 export interface PublicWorkDto {
+  creatorName?: string;
   id: string; creatorId: string; mode: 'character' | 'story'; title: string;
   description: string; coverUrl: string | null; tags: string[];
   publishedVersionId: string | null; createdAt: string;
@@ -41,11 +42,15 @@ export interface CreditReservation { turnId: string; reserved: number; state: 'r
 
 /** Public version content; character details and opening contexts live only in privateConfig. */
 export interface PublicWorkSnapshot {
+  gallery?: Array<{id:string;title:string;imageUrl:string;introduction?:boolean}>;
+  /** Resolved public opening references, never the complete private asset list. */
+  images?: Array<{code:string;label:string;url:string}>;
   tagline: string;
   playGuide: string;
-  characters: Array<{ id: string; name: string; imageUrl: string | null }>;
+  characters: Array<{ id: string; name: string; imageUrl: string | null;caption?:string }>;
   openings: Array<{
     id: string; title: string; prologue: string; firstMessage: string;
+    imageUrl?:string|null;
     suggestedReplies: string[];
   }>;
 }
@@ -64,6 +69,7 @@ export interface PrivateWorkConfig {
 }
 /** Creation omits id; editing identifies an owned draft. Publishing is a separate operation. */
 export interface WorkDraftInput {
+  showCreator?: boolean;
   id?: string;
   mode: 'character' | 'story';
   title: string;
@@ -73,3 +79,4 @@ export interface WorkDraftInput {
   publicSnapshot: PublicWorkSnapshot;
   privateConfig: PrivateWorkConfig;
 }
+export interface ChatFolderDto {id:string;name:string}

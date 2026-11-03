@@ -19,7 +19,7 @@ export function useProfile(identity?:string){
   setState(previous=>({identity,data:previous.identity===identity?previous.data:null,error:'',loading:true}));
   client.request<ProfileDto>('/api/me/profile',{signal:controller.signal}).then(({data})=>{
    if(!controller.signal.aborted)setState({identity,data,error:'',loading:false});
-  }).catch(error=>{if(!controller.signal.aborted)setState({identity,data:null,error:error.message,loading:false});});
+  }).catch(error=>{if(!controller.signal.aborted)setState(previous=>({identity,data:previous.identity===identity?previous.data:null,error:error.message,loading:false}));});
   return()=>controller.abort();
  },[identity,revision]);
  async function save(profile:ProfileDto){
