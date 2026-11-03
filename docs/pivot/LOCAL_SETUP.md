@@ -11,7 +11,8 @@ Node 24.14 이상을 사용한다. 새 환경에 필요한 파일은 `npm run se
 3. 프런트 origin `http://127.0.0.1:5173`을 등록한다. localhost를 쓰면 `http://localhost:5173`도 등록한다. 실제 사용 origin과 OAuth 허용 복귀 URL을 대시보드 설정에 맞게 등록한다. `/login`으로 돌아와야 하며 `next` 쿼리를 포함한 Google 복귀를 실제로 검증한다.
 4. 앱 ID를 `.env.local`의 `VITE_PRIVY_APP_ID`, `PRIVY_APP_ID`에 동일하게 넣는다. 클라이언트 ID가 설정된 앱만 `VITE_PRIVY_CLIENT_ID`를 넣는다.
 5. 대시보드의 ES256 인증 검증 **공개키**를 `PRIVY_VERIFICATION_KEY`에 넣는다. PEM의 줄바꿈은 `\n` 리터럴로 적을 수 있다. Privy 앱 secret은 이 방식의 JWT 검증에 필요하지 않다.
-6. `npm run env:check`로 확인하고 `npm run dev`로 시작한다. 이 진단은 값을 출력하지 않으며 실제 OAuth/메일 수신을 대신하지 않는다.
+6. 다른 개발 포트를 쓰면 `API_ALLOWED_ORIGINS`에 실제 프런트 origin을 정확히 등록한다. 기본은 127.0.0.1/localhost의 5173 포트다.
+7. `npm run env:check`로 확인하고 `npm run dev`로 시작한다. 이 진단은 값을 출력하지 않으며 실제 OAuth/메일 수신을 대신하지 않는다.
 
 새 계정은 별도 비밀번호를 만들지 않는다. Google/이메일/선택적 지갑의 인증 결과인
 Privy DID를 서버가 JWT로 검증하고 DB 계정 키로 사용한다. 닉네임은 마이페이지에서 수정한다.

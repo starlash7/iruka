@@ -32,6 +32,7 @@
 | src/shared | DTO, API 클라이언트, SSE parser |
 | server/db, migrations | PostgreSQL 스키마, 파일 로컬 DB와 독립 테스트 DB |
 | server/core | Privy 검증, 계정/소유권, 작품 공개 경계, 버전 고정, 턴 멱등성, SSE/서비스 계약 |
+| server/security/**, server/chat/privateOutput.ts | 로컬 HTTP 속도/동시 처리/Origin·보안 헤더, 비공개 긴 출력 조각 검사 |
 | server/app.ts, nodeServer.ts, dev.ts | 주입형 HTTP 라우터, Node 스트림 브리지, 로컬 구성 |
 | scripts/setup-local.mjs, check-environment.ts | 로컬 환경 초기화·비밀값을 출력하지 않는 설정 진단 |
 | server/product/modelRuntime.ts | 명시적 로컬 서버 정책으로만 실제 모델 어댑터 조합; 기본 비활성화 |

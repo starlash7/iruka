@@ -10,7 +10,7 @@ const db=await openDatabase(process.env.DATABASE_URL?{databaseUrl:process.env.DA
 await migrateProductDatabase(db);
 const imageStorage=createLocalImageStorage(process.env.LOCAL_IMAGE_DIRECTORY??'.context/studio-images');
 const product=createProduct({...modelRuntime,db,imageStorage,verifyToken:createTokenVerifier({appId:process.env.PRIVY_APP_ID,verificationKey:process.env.PRIVY_VERIFICATION_KEY})});
-const server=createNodeServer(product.handler);
+const server=createNodeServer(product.handler,{allowedOrigins:(process.env.API_ALLOWED_ORIGINS??'http://127.0.0.1:5173,http://localhost:5173').split(',').map(value=>value.trim()).filter(Boolean)});
 let maintenance:Promise<void>|undefined;
 const maintain=()=>{if(!maintenance)maintenance=product.maintain().catch(()=>console.error('Local maintenance failed; retrying next cycle')).finally(()=>{maintenance=undefined;});};
 maintain();const timer=setInterval(maintain,15000);timer.unref();

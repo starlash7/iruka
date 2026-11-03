@@ -62,7 +62,10 @@ test('server SSE projects only public event fields before serializing provider o
   yield {type:'delta',requestId:'r',sequence:0,text:'공개 응답',systemPrompt:'hidden prompt',privateConfig:{secret:'hidden configuration'}};
   yield {...done,internalTrace:'hidden trace'};
  }};
- const wire=await (await createEventResponse(service,input())).text();
+ const response=await createEventResponse(service,input());
+ assert.equal(response.headers.get('cache-control'),'no-store, no-transform');
+ assert.equal(response.headers.get('x-content-type-options'),'nosniff');
+ const wire=await response.text();
  assert.match(wire,/공개 응답/);
  assert.doesNotMatch(wire,/systemPrompt|privateConfig|internalTrace|hidden/);
  const data=wire.split('\n').filter(line=>line.startsWith('data: ')).map(line=>JSON.parse(line.slice(6)));

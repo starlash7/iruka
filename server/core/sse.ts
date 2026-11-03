@@ -1,3 +1,4 @@
+import {apiSecurityHeaders} from '../security/headers.ts';
 import type {ChatEvent} from '../../src/shared/contracts.ts';
 import {validateChatEvent} from '../../src/shared/stream.ts';
 import type {StreamService,StreamTurnInput} from './interfaces.ts';
@@ -43,5 +44,5 @@ export async function createEventResponse(service:StreamService,input:StreamTurn
   },
   async cancel(reason){closed=true;cancellation.abort(reason);await closeIterator();}
  });
- return new Response(body,{headers:{'content-type':'text/event-stream; charset=utf-8','cache-control':'no-cache, no-transform','x-accel-buffering':'no','x-request-id':input.requestId}});
+ return new Response(body,{headers:{...apiSecurityHeaders,'content-type':'text/event-stream; charset=utf-8','cache-control':'no-store, no-transform','x-accel-buffering':'no','x-request-id':input.requestId}});
 }
