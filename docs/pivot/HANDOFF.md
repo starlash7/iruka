@@ -542,3 +542,20 @@ it does not claim those separate runtime systems or operational readiness.
 - Ego TaskSpace10, DB 없는 UI fixture에서1440/390px 메뉴 항목·탭 부재·가로 넘침
   없음을 확인했다. `.context/sidebar-removed-tabs-{1440,390}.png`에 기록했다.
   실제 DB/로그인 검증·배포는 수행하지 않았다.
+
+## 2026-11-03 로그인 레퍼런스 조사
+
+- 사용자 요청에 따라 버블챗·에덴챗 로그인 첫 화면, 기존 계정/이메일 화면과
+  버블챗 비밀번호 복구 진입을 실제로 확인했다. 뤼튼 공개 인증 포털·제타도 비교했다.
+- 사용자가 명시적으로 허용한 버블챗·에덴챗만 정상 로그아웃했다. 두 사이트는 현재
+  로그아웃 상태다. 크랙·베이비챗·젠잇의 기존 세션은 변경하지 않았다.
+- Google 등 공급자 인증·메일/OTP 발송·가입·동의 제출·계정 변경·메시지 전송 없음.
+  신규 가입 이후 단계·서버/LLM/DB 동작을 로그인 화면만 보고 추정하지 않았다.
+- 공개 가능한 관찰은 `docs/archive/reference/2026-11-03-login-screen-audit.md`,
+  다음 로그인/실제 연결 체크리스트는 `plans/login-integration-next.md`에 기록했다.
+  앱 코드·환경변수·DB·런타임 모델 설정은 변경하지 않았다.
+- Ego TaskSpace8에서 공개 로그인 화면만 .context/login-ref-* 스크린샷으로 저장했다.
+  해당 화면은 시각 참고 자료이며 경쟁사 에셋을 제품에 복사하지 않았다.
+- 문서 변경 후 Node24.14.0 `npm test`: **227 passed, 0 failed/skipped**,
+  `npm run build`: **exit0**, 기존 SDK annotation/chunk-size 경고 유지,
+  `git diff --check` 통과. `.context/login-reference-{tests,build}.log`.
